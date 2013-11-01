@@ -2,12 +2,12 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: http://super119.github.io
-title: My Octopress Blog
-subtitle: A blogging framework for hackers.
-author: Your Name
+url: http://www.markzhang.cn
+title: Make Things Cool
+subtitle: 2013 Happy Hacking
+author: Mark Zhang
 simple_search: http://google.com/search
-description:
+description: Linux Kernel Display Graphics HPC C PROGRAMMER
 
 # Default date format is "ordinal" (resulting in "July 22nd 2007")
 # You can customize the format as defined in
@@ -19,7 +19,7 @@ date_format: "ordinal"
 subscribe_rss: /atom.xml
 subscribe_email:
 # RSS feeds can list your email address if you like
-email:
+email: super119@139.com
 
 # ----------------------- #
 #    Jekyll & Plugins     #
