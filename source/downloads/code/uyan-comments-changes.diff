@@ -1,0 +1,41 @@
+diff --git a/_config.yml b/_config.yml
+index 6caabf1..98a32c8 100644
+--- a/_config.yml
++++ b/_config.yml
+@@ -93,6 +93,9 @@ delicious_count: 3
+ disqus_short_name:
+ disqus_show_comment_count: false
+
++# Uyan Comments
++uyan_id: <填写你的友言的uid>
++
+ # Google Analytics
+ google_analytics_tracking_id:
+
+diff --git a/source/_includes/post/uyan_comments.html b/source/_includes/post/uyan_comments.html
+new file mode 100644
+index 0000000..7e063c3
+--- /dev/null
++++ b/source/_includes/post/uyan_comments.html
+@@ -0,0 +1,4 @@
++<!-- UY BEGIN -->
++<div id="uyan_frame"></div>
++<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid={{ site.uyan_id }}"></script>
++<!-- UY END -->
+diff --git a/source/_layouts/post.html b/source/_layouts/post.html
+index da9e9c4..36bd433 100644
+--- a/source/_layouts/post.html
++++ b/source/_layouts/post.html
+@@ -25,10 +25,10 @@ single: true
+     </p>
+   </footer>
+ </article>
+-{% if site.disqus_short_name and page.comments == true %}
++{% if site.uyan_id and page.comments == true %}
+   <section>
+     <h1>Comments</h1>
+-    <div id="disqus_thread" aria-live="polite">{% include post/disqus_thread.html %}</div>
++    {% include post/uyan_comments.html %}
+   </section>
+ {% endif %}
+ </div>
