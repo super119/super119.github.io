@@ -93,6 +93,9 @@ delicious_count: 3
 disqus_short_name:
 disqus_show_comment_count: false
 
+# Uyan Comments
+uyan_id: 1860527
+
 # Google Analytics
 google_analytics_tracking_id:
 
