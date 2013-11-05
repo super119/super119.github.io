@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: 博客 | Make Things Cool]]></title>
+  <link href="http://markzhang.cn/blog/categories/bo-ke/atom.xml" rel="self"/>
+  <link href="http://markzhang.cn/"/>
+  <updated>2013-11-05T11:27:48+08:00</updated>
+  <id>http://markzhang.cn/</id>
+  <author>
+    <name><![CDATA[Mark Zhang]]></name>
+    <email><![CDATA[super119@139.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[博客 Code Names]]></title>
+    <link href="http://markzhang.cn/blog/2013/11/04/blog-code-names/"/>
+    <updated>2013-11-04T20:46:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2013/11/04/blog-code-names</id>
+    <content type="html"><![CDATA[<p>跟老美共事发现它们很喜欢每件事情都起个Code Name，所以我也给我的博客每年都取一个Code Name。命名的逻辑跟Ubuntu一样，从2013年的H开始，每个Code Name都是两个单词且开头字母相同。如下：</p>
+
+<!-- more -->
+
+
+<p>2014 Imagine Illimitable</p>
+
+<p>2013 Happy Hacking</p>
+]]></content>
+  </entry>
+  
+</feed>
