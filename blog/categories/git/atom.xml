@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: git | Make Things Cool]]></title>
+  <link href="http://www.markzhang.cn/blog/categories/git/atom.xml" rel="self"/>
+  <link href="http://www.markzhang.cn/"/>
+  <updated>2013-11-07T18:24:50+08:00</updated>
+  <id>http://www.markzhang.cn/</id>
+  <author>
+    <name><![CDATA[Mark Zhang]]></name>
+    <email><![CDATA[super119@139.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Linus说，请将这个配置加到你的.gitconfig]]></title>
+    <link href="http://www.markzhang.cn/blog/2013/11/07/linus-git-config/"/>
+    <updated>2013-11-07T18:18:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2013/11/07/linus-git-config</id>
+    <content type="html"><![CDATA[<p>近日Linus说，请将 <code>git config core.abbrev 12</code> 加到你的git repository中。事实上，这个config很有意义，可以加到你的全局git config中：</p>
+
+<!-- more -->
+
+
+<p><code>git config --global core.abbrev 12</code>。</p>
+
+<p>原因简单来说就是，git默认的7个字符的短HASH表示方法经常导致冲突，所以Linus建议改成12个字符。原文引用如下：</p>
+
+<blockquote><p>Linus jumped in to say that he would like everybody to run this command in their repositories:</p>
+
+<p>   git config core.abbrev 12</p>
+
+<p>That causes git to abbreviate commit hashes to 12 characters. The default of seven characters is too small to prevent occasional hash collisions in the kernel; it was, he said, a big mistake made early in git&rsquo;s history. He also noted that he spends a lot of time fixing up hashes in patch, many of which are &ldquo;clearly bogus.&rdquo; Most of the problems, most likely, are caused by the rebasing of trees.</p></blockquote>
+]]></content>
+  </entry>
+  
+</feed>
