@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2013-11-06T10:11:43+08:00</updated>
+  <updated>2013-11-07T10:08:01+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,92 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[在博客内容中插入Liquid代码时的注意点]]></title>
+    <link href="http://www.markzhang.cn/blog/2013/11/07/embed-liquid-codes-in-blog/"/>
+    <updated>2013-11-07T09:44:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2013/11/07/embed-liquid-codes-in-blog</id>
+    <content type="html"><![CDATA[<p>Octopress/Jekyll一个很好的功能就是可以非常方便的插入代码，深得码农的喜爱。不过这里有一个注意点就是，如果你插入的代码中含有Liquid代码，那很可能会导致编译出错，比如：</p>
+
+<!-- more -->
+
+
+
+
+<figure class='code'><figcaption><span>rake generate出错信息</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">## Generating Site with Jekyll</span>
+</span><span class='line'>unchanged sass/screen.scss
+</span><span class='line'>Configuration from /home/markz/Projects/blog/_config.yml
+</span><span class='line'>Building site: <span class="nb">source</span> -&gt; public
+</span><span class='line'>Liquid Exception: <span class="k">if </span>tag was never closed in 2013-11-05-add-uyan-comment.markdown
+</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:88:in <span class="sb">`</span>assert_missing_delimitation!<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:49:in `parse&#39;</span>
+</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/tag.rb:10:in <span class="sb">`</span>initialize<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/tags/if.rb:24:in `initialize&#39;</span>
+</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:28:in <span class="sb">`</span>new<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:28:in `parse&#39;</span>
+</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/document.rb:5:in <span class="sb">`</span>initialize<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/template.rb:58:in `new&#39;</span>
+</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/template.rb:58:in <span class="sb">`</span>parse<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/template.rb:46:in `parse&#39;</span>
+</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/convertible.rb:79:in <span class="sb">`</span>do_layout<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">/work/markz/Projects/blog/plugins/post_filters.rb:167:in `do_layout&#39;</span>
+</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/post.rb:195:in <span class="sb">`</span>render<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:200:in `block in render&#39;</span>
+</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:199:in <span class="sb">`</span>each<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:199:in `render&#39;</span>
+</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:41:in <span class="sb">`</span>process<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/bin/jekyll:264:in `&lt;top (required)&gt;&#39;</span>
+</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/bin/jekyll:23:in <span class="sb">`</span>load<span class="s1">&#39;</span>
+</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/bin/jekyll:23:in `&lt;main&gt;&#39;</span>
+</span><span class='line'>Build Failed
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>原因地球人都知道，就是博客中插入的代码含有Liquid的if标签。解决办法有两种：</p>
+
+<ol>
+<li><p>使用<code>{% include_file %}</code>。将代码存成一个文件，然后将其include到博客中来。</p></li>
+<li><p>使用raw标签，将代码（包含三个backticks）使用<code>{% raw %}</code>，<code>{% endraw %}</code>包起来即可。</p></li>
+</ol>
+
+
+<p><strong>Note:</strong> 上文中要将raw和endraw打印出来需要将其转义，其他标签都可以用<code>raw/endraw</code>搞定，但是要转义他们本身，要这么写：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">{{</span> <span class="s2">&quot;{% raw &quot;</span> <span class="o">}}</span>%<span class="o">}</span> <span class="o">{{</span> <span class="s2">&quot;{% endraw &quot;</span> <span class="o">}}</span>%<span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[在Octopress中使用友言，替换Disqus]]></title>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Octopress | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2013-11-06T10:11:43+08:00</updated>
+  <updated>2013-11-07T10:08:01+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,65 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[在博客内容中插入Liquid代码时的注意点]]></title>
+    <link href="http://www.markzhang.cn/blog/2013/11/07/embed-liquid-codes-in-blog/"/>
+    <updated>2013-11-07T09:44:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2013/11/07/embed-liquid-codes-in-blog</id>
+    <content type="html"><![CDATA[<p>Octopress/Jekyll一个很好的功能就是可以非常方便的插入代码，深得码农的喜爱。不过这里有一个注意点就是，如果你插入的代码中含有Liquid代码，那很可能会导致编译出错，比如：</p>
+
+<!-- more -->
+
+
+<p>``` bash rake generate出错信息</p>
+
+<h2>Generating Site with Jekyll</h2>
+
+<p>unchanged sass/screen.scss
+Configuration from /home/markz/Projects/blog/_config.yml
+Building site: source &ndash;> public
+Liquid Exception: if tag was never closed in 2013-11-05-add-uyan-comment.markdown
+/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:88:in <code>assert_missing_delimitation!'
+/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:49:in</code>parse'
+/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/tag.rb:10:in <code>initialize'
+/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/tags/if.rb:24:in</code>initialize'
+/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:28:in <code>new'
+/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:28:in</code>parse'
+/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/document.rb:5:in <code>initialize'
+/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/template.rb:58:in</code>new'
+/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/template.rb:58:in <code>parse'
+/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/template.rb:46:in</code>parse'
+/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/convertible.rb:79:in <code>do_layout'
+/work/markz/Projects/blog/plugins/post_filters.rb:167:in</code>do_layout'
+/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/post.rb:195:in <code>render'
+/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:200:in</code>block in render'
+/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:199:in <code>each'
+/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:199:in</code>render'
+/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:41:in <code>process'
+/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/bin/jekyll:264:in</code><top (required)>&lsquo;
+/home/markz/.rbenv/versions/1.9.3-p0/bin/jekyll:23:in <code>load'
+/home/markz/.rbenv/versions/1.9.3-p0/bin/jekyll:23:in</code><main>&rsquo;
+Build Failed
+```</p>
+
+<p>原因地球人都知道，就是博客中插入的代码含有Liquid的if标签。解决办法有两种：</p>
+
+<ol>
+<li><p>使用<code>{% include_file %}</code>。将代码存成一个文件，然后将其include到博客中来。</p></li>
+<li><p>使用raw标签，将代码（包含三个backticks）使用<code>{% raw %}</code>，<code>{% endraw %}</code>包起来即可。</p></li>
+</ol>
+
+
+<p><strong>Note:</strong> 上文中要将raw和endraw打印出来需要将其转义，其他标签都可以用<code>raw/endraw</code>搞定，但是要转义他们本身，要这么写：</p>
+
+<p>
+<code>bash
+{{ "{% raw " }}%} {{ "{% endraw " }}%}
+</code>
+</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[在Octopress中使用友言，替换Disqus]]></title>
