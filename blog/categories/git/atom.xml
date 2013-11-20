@@ -4,7 +4,7 @@
   <title><![CDATA[Category: git | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/git/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2013-11-07T18:24:50+08:00</updated>
+  <updated>2013-11-20T22:37:50+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,133 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Git常见命令和配置]]></title>
+    <link href="http://www.markzhang.cn/blog/2013/11/20/git-tips/"/>
+    <updated>2013-11-20T21:01:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2013/11/20/git-tips</id>
+    <content type="html"><![CDATA[<h2>常用配置</h2>
+
+<p>``` cfg git常用配置
+[color]</p>
+
+<pre><code>    ui = auto
+</code></pre>
+
+<p>[user]</p>
+
+<pre><code>    name = Mark Zhang
+    email = xxxx@xxxx.xxx
+</code></pre>
+
+<p>[core]</p>
+
+<pre><code>    editor = vim
+    abbrev = 12
+</code></pre>
+
+<p>[diff]</p>
+
+<pre><code>    tool = vimdiff
+    renames = true
+</code></pre>
+
+<p>[difftool]</p>
+
+<pre><code>    prompt = No
+</code></pre>
+
+<p>[sendemail]</p>
+
+<pre><code>    chainreplyto = false
+    smtpserver = xxxxxxxx
+    smtpencryption = tls
+    from = Mark Zhang &lt;xxxx@xxx.xxx&gt;
+    envelopesender = auto
+</code></pre>
+
+<p>[alias]</p>
+
+<pre><code>    s = status
+    cp = cherry-pick
+    ck = checkout
+    b = branch
+    lo = log --oneline
+    dt = difftool
+</code></pre>
+
+<p>```</p>
+
+<!-- more -->
+
+
+<h2>常用命令</h2>
+
+<ul>
+<li><code>git remote add &lt;name&gt; &lt;url&gt;</code></li>
+</ul>
+
+
+<p>如果要添加本地的一个git repository的话，<url>填写成 <code>git repository的路径/.git</code> 即可。</p>
+
+<ul>
+<li><p><code>git fetch -p &lt;remote name, e.g: origin&gt;</code></p></li>
+<li><p><code>git show &lt;commit id&gt;</code></p></li>
+<li><p><code>git push origin HEAD:next</code></p></li>
+</ul>
+
+
+<p>Push本地HEAD commit对应的branch到名为 <code>origin</code> 的远端仓库的 <code>next</code> branch上。</p>
+
+<ul>
+<li><code>git push origin +HEAD:next / git push -f origin HEAD:next</code></li>
+</ul>
+
+
+<p>所谓的Force update，也就是用本地的commit历史覆盖远端的。</p>
+
+<ul>
+<li><code>git push origin :next</code></li>
+</ul>
+
+
+<p>删除远端仓库的 <code>next</code> branch。</p>
+
+<ul>
+<li><code>git push --tags</code></li>
+</ul>
+
+
+<p>Push本地的tag列表到远端。</p>
+
+<ul>
+<li><p><code>git format-patch -&lt;N&gt;</code></p></li>
+<li><p><code>git format-patch &lt;commit id&gt;^..&lt;commit id&gt;</code></p></li>
+</ul>
+
+
+<p>这个命令可以用来为一个指定的commit生成patch。</p>
+
+<ul>
+<li><p><code>git format-patch --subject-prefix 'PATCH V2' --cover-letter</code></p></li>
+<li><p><code>git send-email --to=XXX --to=XXX --cc=XXX *.patch</code></p></li>
+<li><p><code>git send-email --no-signed-off-cc --to=XXX --to=XXX --cc=XXX *.patch</code></p></li>
+<li><p><code>git rebase -i &lt;commit id&gt;</code></p></li>
+<li><p><code>git checkout &lt;branch&gt; -- &lt;file path&gt;</code></p></li>
+</ul>
+
+
+<p>This can be used to checkout a specific file in a specific branch, update the corresponding file in current working tree</p>
+
+<ul>
+<li><code>git show &lt;branch&gt;:&lt;file path&gt; &gt;&amp; &lt;filename&gt;</code></li>
+</ul>
+
+
+<p>This can be used to checkout a specific file in a specific branch, but save in custom file while not updating the file in working tree</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linus说，请将这个配置加到你的.gitconfig]]></title>

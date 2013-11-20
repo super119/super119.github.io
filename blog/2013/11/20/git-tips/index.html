@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Make Things Cool</title>
+  <title>Git常见命令和配置 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
@@ -46,7 +46,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2013/11/20/git-tips/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -98,16 +98,13 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/20/git-tips/">Git常见命令和配置</a></h1>
+      
+        <h1 class="entry-title">Git常见命令和配置</h1>
       
     
     
@@ -131,7 +128,7 @@
   </header>
 
 
-  <div class="entry-content"><h2>常用配置</h2>
+<div class="entry-content"><h2>常用配置</h2>
 
 <figure class='code'><figcaption><span>git常用配置</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -190,29 +187,84 @@
 
 
 
+<!-- more -->
+
+
+<h2>常用命令</h2>
+
+<ul>
+<li><code>git remote add &lt;name&gt; &lt;url&gt;</code></li>
+</ul>
+
+
+<p>如果要添加本地的一个git repository的话，<url>填写成 <code>git repository的路径/.git</code> 即可。</p>
+
+<ul>
+<li><p><code>git fetch -p &lt;remote name, e.g: origin&gt;</code></p></li>
+<li><p><code>git show &lt;commit id&gt;</code></p></li>
+<li><p><code>git push origin HEAD:next</code></p></li>
+</ul>
+
+
+<p>Push本地HEAD commit对应的branch到名为 <code>origin</code> 的远端仓库的 <code>next</code> branch上。</p>
+
+<ul>
+<li><code>git push origin +HEAD:next / git push -f origin HEAD:next</code></li>
+</ul>
+
+
+<p>所谓的Force update，也就是用本地的commit历史覆盖远端的。</p>
+
+<ul>
+<li><code>git push origin :next</code></li>
+</ul>
+
+
+<p>删除远端仓库的 <code>next</code> branch。</p>
+
+<ul>
+<li><code>git push --tags</code></li>
+</ul>
+
+
+<p>Push本地的tag列表到远端。</p>
+
+<ul>
+<li><p><code>git format-patch -&lt;N&gt;</code></p></li>
+<li><p><code>git format-patch &lt;commit id&gt;^..&lt;commit id&gt;</code></p></li>
+</ul>
+
+
+<p>这个命令可以用来为一个指定的commit生成patch。</p>
+
+<ul>
+<li><p><code>git format-patch --subject-prefix 'PATCH V2' --cover-letter</code></p></li>
+<li><p><code>git send-email --to=XXX --to=XXX --cc=XXX *.patch</code></p></li>
+<li><p><code>git send-email --no-signed-off-cc --to=XXX --to=XXX --cc=XXX *.patch</code></p></li>
+<li><p><code>git rebase -i &lt;commit id&gt;</code></p></li>
+<li><p><code>git checkout &lt;branch&gt; -- &lt;file path&gt;</code></p></li>
+</ul>
+
+
+<p>This can be used to checkout a specific file in a specific branch, update the corresponding file in current working tree</p>
+
+<ul>
+<li><code>git show &lt;branch&gt;:&lt;file path&gt; &gt;&amp; &lt;filename&gt;</code></li>
+</ul>
+
+
+<p>This can be used to checkout a specific file in a specific branch, but save in custom file while not updating the file in working tree</p>
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/11/20/git-tips/">Read on &rarr;</a>
-    </footer>
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/07/linus-git-config/">Linus说，请将这个配置加到你的.gitconfig</a></h1>
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Mark Zhang</span></span>
+
       
-    
-    
-      <p class="meta">
-        
 
 
 
@@ -224,165 +276,45 @@
   
 
 
-<time datetime="2013-11-07T18:18:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
-        
-      </p>
+<time datetime="2013-11-20T21:01:00+08:00" pubdate data-updated="true">Nov 20<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/git/'>git</a>
+  
+</span>
+
+
+    </p>
     
-  </header>
-
-
-  <div class="entry-content"><p>近日Linus说，请将 <code>git config core.abbrev 12</code> 加到你的git repository中。事实上，这个config很有意义，可以加到你的全局git config中：</p>
-
+      <div class="sharing">
+  
+  
+  
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/11/07/linus-git-config/">Read on &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  
-    <article>
+    
+    <p class="meta">
       
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/07/embed-liquid-codes-in-blog/">在博客内容中插入Liquid代码时的注意点</a></h1>
+        <a class="basic-alignment left articlenav" href="/blog/2013/11/07/linus-git-config/" title="Previous Post: Linus说，请将这个配置加到你的.gitconfig">&laquo; Linus说，请将这个配置加到你的.gitconfig</a>
       
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-07T09:44:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Octopress/Jekyll一个很好的功能就是可以非常方便的插入代码，深得码农的喜爱。不过这里有一个注意点就是，如果你插入的代码中含有Liquid代码，那很可能会导致编译出错，比如：</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/11/07/embed-liquid-codes-in-blog/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/05/add-uyan-comment/">在Octopress中使用友言，替换Disqus</a></h1>
-      
-    
-    
-      <p class="meta">
-        
+    </p>
+  </footer>
+</article>
 
+  <section>
+    <h1>Comments</h1>
+    <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1860527"></script>
+<!-- UY END -->
 
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-05T21:56:00+08:00" pubdate data-updated="true">Nov 5<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Disqus应该是国外做的一个评论系统，按现在时髦的话说，不太接中国的地气，所以考虑换一个评论系统。具体做起来非常的简单，Octopress就像一个模板系统，以前Java火热的时候用过Velocity，大体思路都是利用一些markdown的语法填在预先写好的模板文件中，然后解析器解释该文件，从而生成最终需要的东西。</p>
-
-<p>在Octopress中，发表的博客文章使用的模板是<code>source/_layout/post.html</code>，打开之后搜索disqus就可以发现原来的disqus部分的代码。所以要将其替换成其他的评论系统就很直观了。这里我使用了友言，因为Google了一下貌似现在国内友言做的还不错。</p>
-
-<p>总体来说就是三步：</p>
+  </section>
 
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/11/05/add-uyan-comment/">Read on &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/04/blog-code-names/">博客 Code Names</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-04T20:46:00+08:00" pubdate data-updated="true">Nov 4<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>跟老美共事发现它们很喜欢每件事情都起个Code Name，所以我也给我的博客每年都取一个Code Name。命名的逻辑跟Ubuntu一样，从2013年的H开始，每个Code Name都是两个单词且开头字母相同。如下：</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/11/04/blog-code-names/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section>
@@ -419,7 +351,7 @@
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   
   <script type="text/javascript">
@@ -446,6 +378,7 @@
 
   
 </aside>
+
 
     </div>
   </div>
