@@ -1,0 +1,88 @@
+---
+layout: post
+title: "Git常见命令和配置"
+date: 2013-11-20 21:01
+comments: true
+categories: git
+---
+
+##常用配置##
+
+``` cfg git常用配置
+[color]
+        ui = auto
+[user]
+        name = Mark Zhang
+        email = xxxx@xxxx.xxx
+[core]
+        editor = vim
+        abbrev = 12
+[diff]
+        tool = vimdiff
+        renames = true
+[difftool]
+        prompt = No
+[sendemail]
+        chainreplyto = false
+        smtpserver = xxxxxxxx
+        smtpencryption = tls
+        from = Mark Zhang <xxxx@xxx.xxx>
+        envelopesender = auto
+[alias]
+        s = status
+        cp = cherry-pick
+        ck = checkout
+        b = branch
+        lo = log --oneline
+        dt = difftool
+```
+
+<!-- more -->
+
+##常用命令##
+
+- `git remote add <name> <url>`
+
+如果要添加本地的一个git repository的话，<url>填写成 `git repository的路径/.git` 即可。
+
+- `git fetch -p <remote name, e.g: origin>`
+
+- `git show <commit id>`
+
+- `git push origin HEAD:next`
+
+Push本地HEAD commit对应的branch到名为 `origin` 的远端仓库的 `next` branch上。
+
+- `git push origin +HEAD:next / git push -f origin HEAD:next`
+
+所谓的Force update，也就是用本地的commit历史覆盖远端的。
+
+- `git push origin :next`
+
+删除远端仓库的 `next` branch。
+
+- `git push --tags`
+
+Push本地的tag列表到远端。
+
+- `git format-patch -<N>`
+
+- `git format-patch <commit id>^..<commit id>`
+
+这个命令可以用来为一个指定的commit生成patch。
+
+- `git format-patch --subject-prefix 'PATCH V2' --cover-letter`
+
+- `git send-email --to=XXX --to=XXX --cc=XXX *.patch`
+
+- `git send-email --no-signed-off-cc --to=XXX --to=XXX --cc=XXX *.patch`
+
+- `git rebase -i <commit id>`
+
+- `git checkout <branch> -- <file path>`
+
+这个命令将指定branch中的指定文件checkout出来，更新当前working tree中的对应文件。
+
+- `git show <branch>:<file path> >& <filename>`
+
+这个命令将指定branch中的指定文件checkout出来，并存到 `<filename>` 指定的路径上。
