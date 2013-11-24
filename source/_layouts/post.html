@@ -31,9 +31,13 @@ single: true
     </p>
   </footer>
 </article>
+{% if site.jiathis_id %}
+  <section>
+    {% include post/jiathis.html %}
+  </section>
+{% endif %}
 {% if site.uyan_id and page.comments == true %}
   <section>
-    <h1>Comments</h1>
     {% include post/uyan_comments.html %}
   </section>
 {% endif %}
