@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux-kernel | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/linux-kernel/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2013-11-27T21:30:07+08:00</updated>
+  <updated>2013-11-27T21:35:06+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -99,7 +99,7 @@ the interrupt is wired to that CPU.  Only valid for PPI interrupts.
 
 <ol>
 <li><p>第二个member就是具体的中断号了。查阅SoC的手册就可以得到。</p></li>
-<li><p>第三个member指的是中断的触发方式，每个SoC是不同的，查阅SoC的手册就可以知道了。这里kernel的文档解释的还是比较清楚的，就是一个16bit的数，0-3, 8-15分别做了定义。</p></li>
+<li><p>第三个member指的是中断的触发方式，每个SoC是不同的，查阅SoC的手册就可以知道了。这里kernel的文档解释的还是比较清楚的，就是一个16bit的数，0-3, 8-15 bit分别做了定义。</p></li>
 </ol>
 
 ]]></content>
