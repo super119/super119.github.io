@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2013-11-24T11:31:06+08:00</updated>
+  <updated>2013-11-27T21:30:07+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,117 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Device tree: interrupts的解释]]></title>
+    <link href="http://www.markzhang.cn/blog/2013/11/27/dt-interrupts/"/>
+    <updated>2013-11-27T20:41:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2013/11/27/dt-interrupts</id>
+    <content type="html"><![CDATA[<p>Linux kernel现在使用Device tree（DT）来描述硬件设备。既然是描述硬件设备，那自然就需要对硬件充分了解才能理解DT。Interrupts就是一个例子。</p>
+
+<p>一般来说，DT中的 <code>interrupts</code> （本文不描述interrupt controller）看起来是这样的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">pmu</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">compatible</span> <span class="o">=</span> <span class="s">&quot;arm,cortex-a9-pmu&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">interrupts</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mi">0</span> <span class="mi">144</span> <span class="mh">0x04</span>
+</span><span class='line'>                      <span class="mi">0</span> <span class="mi">145</span> <span class="mh">0x04</span>
+</span><span class='line'>                      <span class="mi">0</span> <span class="mi">146</span> <span class="mh">0x04</span>
+</span><span class='line'>                      <span class="mi">0</span> <span class="mi">147</span> <span class="mh">0x04</span><span class="o">&gt;</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<!-- more -->
+
+
+<p>可以看到 <code>interrupts</code> 有三个member，对于这三个member，Linux kernel的文档是这样说的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">The</span> <span class="mi">1</span><span class="n">st</span> <span class="n">cell</span> <span class="n">is</span> <span class="n">the</span> <span class="n">interrupt</span> <span class="n">type</span><span class="p">;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">SPI</span> <span class="n">interrupts</span><span class="p">,</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">PPI</span>
+</span><span class='line'><span class="n">interrupts</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">The</span> <span class="mi">2</span><span class="n">nd</span> <span class="n">cell</span> <span class="n">contains</span> <span class="n">the</span> <span class="n">interrupt</span> <span class="n">number</span> <span class="k">for</span> <span class="n">the</span> <span class="n">interrupt</span> <span class="n">type</span><span class="p">.</span>
+</span><span class='line'><span class="n">SPI</span> <span class="n">interrupts</span> <span class="n">are</span> <span class="n">in</span> <span class="n">the</span> <span class="n">range</span> <span class="p">[</span><span class="mi">0</span><span class="o">-</span><span class="mi">987</span><span class="p">].</span>  <span class="n">PPI</span> <span class="n">interrupts</span> <span class="n">are</span> <span class="n">in</span> <span class="n">the</span>
+</span><span class='line'><span class="n">range</span> <span class="p">[</span><span class="mi">0</span><span class="o">-</span><span class="mi">15</span><span class="p">].</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">The</span> <span class="mi">3</span><span class="n">rd</span> <span class="n">cell</span> <span class="n">is</span> <span class="n">the</span> <span class="n">flags</span><span class="p">,</span> <span class="n">encoded</span> <span class="n">as</span> <span class="n">follows</span><span class="o">:</span>
+</span><span class='line'>  <span class="n">bits</span><span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">trigger</span> <span class="n">type</span> <span class="n">and</span> <span class="n">level</span> <span class="n">flags</span><span class="p">.</span>
+</span><span class='line'>      <span class="mi">1</span> <span class="o">=</span> <span class="n">low</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">high</span> <span class="n">edge</span> <span class="n">triggered</span>
+</span><span class='line'>      <span class="mi">2</span> <span class="o">=</span> <span class="n">high</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">low</span> <span class="n">edge</span> <span class="n">triggered</span>
+</span><span class='line'>      <span class="mi">4</span> <span class="o">=</span> <span class="n">active</span> <span class="n">high</span> <span class="n">level</span><span class="o">-</span><span class="n">sensitive</span>
+</span><span class='line'>      <span class="mi">8</span> <span class="o">=</span> <span class="n">active</span> <span class="n">low</span> <span class="n">level</span><span class="o">-</span><span class="n">sensitive</span>
+</span><span class='line'>  <span class="n">bits</span><span class="p">[</span><span class="mi">15</span><span class="o">:</span><span class="mi">8</span><span class="p">]</span> <span class="n">PPI</span> <span class="n">interrupt</span> <span class="n">cpu</span> <span class="n">mask</span><span class="p">.</span>  <span class="n">Each</span> <span class="n">bit</span> <span class="n">corresponds</span> <span class="n">to</span> <span class="n">each</span> <span class="n">of</span>
+</span><span class='line'>  <span class="n">the</span> <span class="mi">8</span> <span class="n">possible</span> <span class="n">cpus</span> <span class="n">attached</span> <span class="n">to</span> <span class="n">the</span> <span class="n">GIC</span><span class="p">.</span>  <span class="n">A</span> <span class="n">bit</span> <span class="n">set</span> <span class="n">to</span> <span class="sc">&#39;1&#39;</span> <span class="n">indicated</span>
+</span><span class='line'>  <span class="n">the</span> <span class="n">interrupt</span> <span class="n">is</span> <span class="n">wired</span> <span class="n">to</span> <span class="n">that</span> <span class="n">CPU</span><span class="p">.</span>  <span class="n">Only</span> <span class="n">valid</span> <span class="k">for</span> <span class="n">PPI</span> <span class="n">interrupts</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><em>来自：<code>Documentation/devicetree/bindings/arm/gic.txt</code></em></p>
+
+<p>如果不了解ARM GIC的话，其实也看不懂上面的描述，所以这里解释一下：</p>
+
+<ol>
+<li>第一个member表示该 <code>interrupt</code> 是 <code>SPI</code> 还是 <code>PPI</code>。<code>SPI</code> 和 <code>PPI</code> 的解释如下，来自ARM的文档：</li>
+</ol>
+
+
+<blockquote><p>Private Peripheral Interrupts</p>
+
+<p>A PPI is an interrupt generated by a peripheral that is specific to a single processor. There are seven PPIs for each CPU interface.</p></blockquote>
+
+<p>这是ARM A15的 <code>PPI</code> 的描述，如果是A9的话，每个CPU interface是5个 <code>PPI</code>。</p>
+
+<blockquote><p>Shared Peripheral Interrupts</p>
+
+<p>An interrupt generated by a peripheral that the Interrupt Controller can route to any, or all, processor interfaces.</p>
+
+<p>SPIs are triggered by events generated on associated interrupt input lines. The GIC can support up to 224 SPIs corresponding to the external IRQS[223:0] signal. The number of SPIs available depends on the implemented configuration of the Cortex-A15 MPCore processor. The permitted values are 0, 32, 64, 96, 128, 160, 192, or 224. SPIs start at ID32. The SPIs can be configured to be edge-triggered or active-HIGH level-sensitive.</p></blockquote>
+
+<p>第一句话就可以看出和 <code>PPI</code> 的区别。<code>SPI</code> 的数量可以配置，如32，64&hellip;最大支持224，而且SPI的编号从32开始。至于最后提到的 <code>edge-triggered</code>，<code>active-HIGH level-sensitive</code> 正好就是 <code>interrupts</code> 第三个member。</p>
+
+<p>所以，在一颗SoC中，绝大部分的中断都是 <code>SPI</code>。</p>
+
+<p>事实上，ARM还有一种中断：<code>SGI</code>，也就是软中断：</p>
+
+<blockquote><p>Software Generated Interrupt (SGI)</p>
+
+<p>Generated by writing to the Software Generated Interrupt Register (ICDSGIR).</p>
+
+<p>A maximum of 16 SGIs can be generated for each Cortex-A9 processor interface.</p></blockquote>
+
+<p>但是Device tree是用来描述硬件设备的，所以Linux kernel中 <code>interrupts</code> 的类型没有定义 <code>SGI</code>。</p>
+
+<ol>
+<li><p>第二个member就是具体的中断号了。查阅SoC的手册就可以得到。</p></li>
+<li><p>第三个member指的是中断的触发方式，每个SoC是不同的，查阅SoC的手册就可以知道了。这里kernel的文档解释的还是比较清楚的，就是一个16bit的数，0-3, 8-15分别做了定义。</p></li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Git常见命令和配置]]></title>

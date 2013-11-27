@@ -1,0 +1,380 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Device tree: interrupts的解释 - Make Things Cool</title>
+  <meta name="author" content="Mark Zhang">
+
+  
+  <meta name="description" content="Linux kernel现在使用Device tree（DT）来描述硬件设备。既然是描述硬件设备，那自然就需要对硬件充分了解才能理解DT。Interrupts就是一个例子。 一般来说，DT中的 interrupts （本文不描述interrupt controller）看起来是这样的： 1
+2
+3 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2013/11/27/dt-interrupts/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Make Things Cool" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">s/no/yes/g</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">Make Things Cool</a></h1>
+  
+    <h2>2013 Happy Hacking</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.markzhang.cn" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Device Tree: Interrupts的解释</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-27T20:41:00+08:00" pubdate data-updated="true">Nov 27<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Linux kernel现在使用Device tree（DT）来描述硬件设备。既然是描述硬件设备，那自然就需要对硬件充分了解才能理解DT。Interrupts就是一个例子。</p>
+
+<p>一般来说，DT中的 <code>interrupts</code> （本文不描述interrupt controller）看起来是这样的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">pmu</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">compatible</span> <span class="o">=</span> <span class="s">&quot;arm,cortex-a9-pmu&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">interrupts</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mi">0</span> <span class="mi">144</span> <span class="mh">0x04</span>
+</span><span class='line'>                      <span class="mi">0</span> <span class="mi">145</span> <span class="mh">0x04</span>
+</span><span class='line'>                      <span class="mi">0</span> <span class="mi">146</span> <span class="mh">0x04</span>
+</span><span class='line'>                      <span class="mi">0</span> <span class="mi">147</span> <span class="mh">0x04</span><span class="o">&gt;</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<!-- more -->
+
+
+<p>可以看到 <code>interrupts</code> 有三个member，对于这三个member，Linux kernel的文档是这样说的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">The</span> <span class="mi">1</span><span class="n">st</span> <span class="n">cell</span> <span class="n">is</span> <span class="n">the</span> <span class="n">interrupt</span> <span class="n">type</span><span class="p">;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">SPI</span> <span class="n">interrupts</span><span class="p">,</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">PPI</span>
+</span><span class='line'><span class="n">interrupts</span><span class="p">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">The</span> <span class="mi">2</span><span class="n">nd</span> <span class="n">cell</span> <span class="n">contains</span> <span class="n">the</span> <span class="n">interrupt</span> <span class="n">number</span> <span class="k">for</span> <span class="n">the</span> <span class="n">interrupt</span> <span class="n">type</span><span class="p">.</span>
+</span><span class='line'><span class="n">SPI</span> <span class="n">interrupts</span> <span class="n">are</span> <span class="n">in</span> <span class="n">the</span> <span class="n">range</span> <span class="p">[</span><span class="mi">0</span><span class="o">-</span><span class="mi">987</span><span class="p">].</span>  <span class="n">PPI</span> <span class="n">interrupts</span> <span class="n">are</span> <span class="n">in</span> <span class="n">the</span>
+</span><span class='line'><span class="n">range</span> <span class="p">[</span><span class="mi">0</span><span class="o">-</span><span class="mi">15</span><span class="p">].</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">The</span> <span class="mi">3</span><span class="n">rd</span> <span class="n">cell</span> <span class="n">is</span> <span class="n">the</span> <span class="n">flags</span><span class="p">,</span> <span class="n">encoded</span> <span class="n">as</span> <span class="n">follows</span><span class="o">:</span>
+</span><span class='line'>  <span class="n">bits</span><span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">trigger</span> <span class="n">type</span> <span class="n">and</span> <span class="n">level</span> <span class="n">flags</span><span class="p">.</span>
+</span><span class='line'>      <span class="mi">1</span> <span class="o">=</span> <span class="n">low</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">high</span> <span class="n">edge</span> <span class="n">triggered</span>
+</span><span class='line'>      <span class="mi">2</span> <span class="o">=</span> <span class="n">high</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">low</span> <span class="n">edge</span> <span class="n">triggered</span>
+</span><span class='line'>      <span class="mi">4</span> <span class="o">=</span> <span class="n">active</span> <span class="n">high</span> <span class="n">level</span><span class="o">-</span><span class="n">sensitive</span>
+</span><span class='line'>      <span class="mi">8</span> <span class="o">=</span> <span class="n">active</span> <span class="n">low</span> <span class="n">level</span><span class="o">-</span><span class="n">sensitive</span>
+</span><span class='line'>  <span class="n">bits</span><span class="p">[</span><span class="mi">15</span><span class="o">:</span><span class="mi">8</span><span class="p">]</span> <span class="n">PPI</span> <span class="n">interrupt</span> <span class="n">cpu</span> <span class="n">mask</span><span class="p">.</span>  <span class="n">Each</span> <span class="n">bit</span> <span class="n">corresponds</span> <span class="n">to</span> <span class="n">each</span> <span class="n">of</span>
+</span><span class='line'>  <span class="n">the</span> <span class="mi">8</span> <span class="n">possible</span> <span class="n">cpus</span> <span class="n">attached</span> <span class="n">to</span> <span class="n">the</span> <span class="n">GIC</span><span class="p">.</span>  <span class="n">A</span> <span class="n">bit</span> <span class="n">set</span> <span class="n">to</span> <span class="sc">&#39;1&#39;</span> <span class="n">indicated</span>
+</span><span class='line'>  <span class="n">the</span> <span class="n">interrupt</span> <span class="n">is</span> <span class="n">wired</span> <span class="n">to</span> <span class="n">that</span> <span class="n">CPU</span><span class="p">.</span>  <span class="n">Only</span> <span class="n">valid</span> <span class="k">for</span> <span class="n">PPI</span> <span class="n">interrupts</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><em>来自：<code>Documentation/devicetree/bindings/arm/gic.txt</code></em></p>
+
+<p>如果不了解ARM GIC的话，其实也看不懂上面的描述，所以这里解释一下：</p>
+
+<ol>
+<li>第一个member表示该 <code>interrupt</code> 是 <code>SPI</code> 还是 <code>PPI</code>。<code>SPI</code> 和 <code>PPI</code> 的解释如下，来自ARM的文档：</li>
+</ol>
+
+
+<blockquote><p>Private Peripheral Interrupts</p>
+
+<p>A PPI is an interrupt generated by a peripheral that is specific to a single processor. There are seven PPIs for each CPU interface.</p></blockquote>
+
+<p>这是ARM A15的 <code>PPI</code> 的描述，如果是A9的话，每个CPU interface是5个 <code>PPI</code>。</p>
+
+<blockquote><p>Shared Peripheral Interrupts</p>
+
+<p>An interrupt generated by a peripheral that the Interrupt Controller can route to any, or all, processor interfaces.</p>
+
+<p>SPIs are triggered by events generated on associated interrupt input lines. The GIC can support up to 224 SPIs corresponding to the external IRQS[223:0] signal. The number of SPIs available depends on the implemented configuration of the Cortex-A15 MPCore processor. The permitted values are 0, 32, 64, 96, 128, 160, 192, or 224. SPIs start at ID32. The SPIs can be configured to be edge-triggered or active-HIGH level-sensitive.</p></blockquote>
+
+<p>第一句话就可以看出和 <code>PPI</code> 的区别。<code>SPI</code> 的数量可以配置，如32，64&hellip;最大支持224，而且SPI的编号从32开始。至于最后提到的 <code>edge-triggered</code>，<code>active-HIGH level-sensitive</code> 正好就是 <code>interrupts</code> 第三个member。</p>
+
+<p>所以，在一颗SoC中，绝大部分的中断都是 <code>SPI</code>。</p>
+
+<p>事实上，ARM还有一种中断：<code>SGI</code>，也就是软中断：</p>
+
+<blockquote><p>Software Generated Interrupt (SGI)</p>
+
+<p>Generated by writing to the Software Generated Interrupt Register (ICDSGIR).</p>
+
+<p>A maximum of 16 SGIs can be generated for each Cortex-A9 processor interface.</p></blockquote>
+
+<p>但是Device tree是用来描述硬件设备的，所以Linux kernel中 <code>interrupts</code> 的类型没有定义 <code>SGI</code>。</p>
+
+<ol>
+<li><p>第二个member就是具体的中断号了。查阅SoC的手册就可以得到。</p></li>
+<li><p>第三个member指的是中断的触发方式，每个SoC是不同的，查阅SoC的手册就可以知道了。这里kernel的文档解释的还是比较清楚的，就是一个16bit的数，0-3, 8-15分别做了定义。</p></li>
+</ol>
+
+</div>
+
+
+  <footer>
+    <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
+      <strong>版权所有 &copy;2013 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
+原文链接: http://www.markzhang.cn/blog/2013/11/27/dt-interrupts/<br>
+您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
+    </section>
+
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Mark Zhang</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-27T20:41:00+08:00" pubdate data-updated="true">Nov 27<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/linux-kernel/'>linux-kernel</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2013/11/20/git-tips/" title="Previous Post: Git常见命令和配置">&laquo; Git常见命令和配置</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_24x24">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_kaixin001"></a>
+	<a href="http://www.jiathis.com/share?uid=1860527" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1352426099508779" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+  </section>
+
+
+  <section>
+    <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1860527"></script>
+<!-- UY END -->
+
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/blog'>Blog (1)</a></li><li><a href='/blog/categories/git'>git (2)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (1)</a></li><li><a href='/blog/categories/octopress'>Octopress (2)</a></li></ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/27/dt-interrupts/">Device Tree: Interrupts的解释</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/20/git-tips/">Git常见命令和配置</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/07/linus-git-config/">Linus说，请将这个配置加到你的.gitconfig</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/07/embed-liquid-codes-in-blog/">在博客内容中插入Liquid代码时的注意点</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/05/add-uyan-comment/">在Octopress中使用友言，替换Disqus</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'super119',
+            count: 0,
+            skip_forks: false,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Mark Zhang -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
