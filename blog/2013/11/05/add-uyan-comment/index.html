@@ -18,14 +18,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2013/11/05/add-uyan-comment/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2013/11/05/add-uyan-comment">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <link href="/atom.xml" rel="alternate" title="Make Things Cool" type="application/atom+xml">
-  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -75,9 +75,7 @@
   
   <header>
     
-      
-        <h1 class="entry-title">在Octopress中使用友言，替换Disqus</h1>
-      
+      <h1 class="entry-title">在Octopress中使用友言，替换Disqus</h1>
     
     
       <p class="meta">
@@ -209,12 +207,6 @@
 
 
   <footer>
-    <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
-      <strong>版权所有 &copy;2013 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2013/11/05/add-uyan-comment/<br>
-您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
-    </section>
-
     <p class="meta">
       
   
@@ -254,42 +246,14 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/11/04/blog-code-names/" title="Previous Post: 博客 Code Names">&laquo; 博客 Code Names</a>
+        <a class="basic-alignment left" href="/blog/2013/11/04/blog-code-names/" title="Previous Post: 博客 Code Names">&laquo; 博客 Code Names</a>
       
       
-        <a class="basic-alignment right articlenav" href="/blog/2013/11/07/embed-liquid-codes-in-blog/" title="Next Post: 在博客内容中插入Liquid代码时的注意点">在博客内容中插入Liquid代码时的注意点 &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2013/11/07/embed-liquid-codes-in-blog/" title="Next Post: 在博客内容中插入Liquid代码时的注意点">在博客内容中插入Liquid代码时的注意点 &raquo;</a>
       
     </p>
   </footer>
 </article>
-
-  <section>
-    <!-- JiaThis Button BEGIN -->
-<div class="jiathis_style_24x24">
-	<a class="jiathis_button_qzone"></a>
-	<a class="jiathis_button_tsina"></a>
-	<a class="jiathis_button_tqq"></a>
-	<a class="jiathis_button_renren"></a>
-	<a class="jiathis_button_kaixin001"></a>
-	<a href="http://www.jiathis.com/share?uid=1860527" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
-	<a class="jiathis_counter_style"></a>
-</div>
-<script type="text/javascript">
-var jiathis_config = {data_track_clickback:'true'};
-</script>
-<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1352426099508779" charset="utf-8"></script>
-<!-- JiaThis Button END -->
-
-  </section>
-
-
-  <section>
-    <!-- UY BEGIN -->
-<div id="uyan_frame"></div>
-<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1860527"></script>
-<!-- UY END -->
-
-  </section>
 
 </div>
 
@@ -333,7 +297,7 @@ var jiathis_config = {data_track_clickback:'true'};
   </ul>
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
