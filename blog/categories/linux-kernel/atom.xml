@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Linux-kernel | Make Things Cool]]></title>
+  <title><![CDATA[Category: linux-kernel | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/linux-kernel/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2013-12-01T17:48:49+08:00</updated>
+  <updated>2013-12-01T17:51:22+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Device Tree: Interrupts的解释]]></title>
+    <title type="html"><![CDATA[Device tree: interrupts的解释]]></title>
     <link href="http://www.markzhang.cn/blog/2013/11/27/dt-interrupts/"/>
     <updated>2013-11-27T20:41:00+08:00</updated>
     <id>http://www.markzhang.cn/blog/2013/11/27/dt-interrupts</id>
@@ -25,11 +25,11 @@
 <p>``` c
 pmu {</p>
 
-<pre><code>compatible = "arm,cortex-a9-pmu";
-interrupts = &lt;0 144 0x04
-          0 145 0x04
-          0 146 0x04
-          0 147 0x04&gt;;
+<pre><code>    compatible = "arm,cortex-a9-pmu";
+    interrupts = &lt;0 144 0x04
+                  0 145 0x04
+                  0 146 0x04
+                  0 147 0x04&gt;;
 </code></pre>
 
 <p>};

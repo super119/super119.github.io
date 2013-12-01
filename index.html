@@ -20,14 +20,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn">
+  <link rel="canonical" href="http://www.markzhang.cn/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="Make Things Cool" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/ender.js"></script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Make Things Cool" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -38,10 +38,17 @@
 
 <body   >
   <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">s/no/yes/g</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
   <h1><a href="/">Make Things Cool</a></h1>
   
     <h2>2013 Happy Hacking</h2>
   
+  <div class="clear"></div>
 </hgroup>
 
 </header>
@@ -73,7 +80,9 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/11/27/dt-interrupts/">Device Tree: Interrupts的解释</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/27/dt-interrupts/">Device Tree: Interrupts的解释</a></h1>
+      
     
     
       <p class="meta">
@@ -108,11 +117,11 @@
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 </pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">pmu</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">compatible</span> <span class="o">=</span> <span class="s">&quot;arm,cortex-a9-pmu&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="n">interrupts</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mi">0</span> <span class="mi">144</span> <span class="mh">0x04</span>
-</span><span class='line'>            <span class="mi">0</span> <span class="mi">145</span> <span class="mh">0x04</span>
-</span><span class='line'>            <span class="mi">0</span> <span class="mi">146</span> <span class="mh">0x04</span>
-</span><span class='line'>            <span class="mi">0</span> <span class="mi">147</span> <span class="mh">0x04</span><span class="o">&gt;</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">compatible</span> <span class="o">=</span> <span class="s">&quot;arm,cortex-a9-pmu&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">interrupts</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mi">0</span> <span class="mi">144</span> <span class="mh">0x04</span>
+</span><span class='line'>                      <span class="mi">0</span> <span class="mi">145</span> <span class="mh">0x04</span>
+</span><span class='line'>                      <span class="mi">0</span> <span class="mi">146</span> <span class="mh">0x04</span>
+</span><span class='line'>                      <span class="mi">0</span> <span class="mi">147</span> <span class="mh">0x04</span><span class="o">&gt;</span><span class="p">;</span>
 </span><span class='line'><span class="p">};</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -135,7 +144,9 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/11/20/git-tips/">Git常见命令和配置</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/20/git-tips/">Git常见命令和配置</a></h1>
+      
     
     
       <p class="meta">
@@ -233,7 +244,9 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/11/07/linus-git-config/">Linus说，请将这个配置加到你的.gitconfig</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/07/linus-git-config/">Linus说，请将这个配置加到你的.gitconfig</a></h1>
+      
     
     
       <p class="meta">
@@ -274,7 +287,9 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/11/07/embed-liquid-codes-in-blog/">在博客内容中插入Liquid代码时的注意点</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/07/embed-liquid-codes-in-blog/">在博客内容中插入Liquid代码时的注意点</a></h1>
+      
     
     
       <p class="meta">
@@ -315,7 +330,9 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/11/05/add-uyan-comment/">在Octopress中使用友言，替换Disqus</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/05/add-uyan-comment/">在Octopress中使用友言，替换Disqus</a></h1>
+      
     
     
       <p class="meta">
@@ -360,7 +377,9 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/11/04/blog-code-names/">博客 Code Names</a></h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/04/blog-code-names/">博客 Code Names</a></h1>
+      
     
     
       <p class="meta">
@@ -442,7 +461,7 @@
   </ul>
   
   <script type="text/javascript">
-    $(document).ready(function(){
+    $.domReady(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
