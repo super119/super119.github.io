@@ -12,11 +12,11 @@ Linux kernel现在使用Device tree（DT）来描述硬件设备。既然是描�
 
 ``` c
 pmu {
-        compatible = "arm,cortex-a9-pmu";
-        interrupts = <0 144 0x04
-                      0 145 0x04
-                      0 146 0x04
-                      0 147 0x04>;
+	compatible = "arm,cortex-a9-pmu";
+	interrupts = <0 144 0x04
+		      0 145 0x04
+		      0 146 0x04
+		      0 147 0x04>;
 };
 ```
 
