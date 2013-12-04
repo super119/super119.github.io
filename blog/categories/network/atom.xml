@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: network | Make Things Cool]]></title>
+  <link href="http://www.markzhang.cn/blog/categories/network/atom.xml" rel="self"/>
+  <link href="http://www.markzhang.cn/"/>
+  <updated>2013-12-04T14:38:07+08:00</updated>
+  <id>http://www.markzhang.cn/</id>
+  <author>
+    <name><![CDATA[Mark Zhang]]></name>
+    <email><![CDATA[super119@139.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Chnroutes的使用（Mac OS X Mavericks）]]></title>
+    <link href="http://www.markzhang.cn/blog/2013/12/04/chnroutes-on-mac/"/>
+    <updated>2013-12-04T14:00:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2013/12/04/chnroutes-on-mac</id>
+    <content type="html"><![CDATA[<p>翻墙是我朝人民的普遍需求。现在翻墙的普遍做法是搞一个VPN。买一个也好，找免费的也好。有了VPN之后面临的问题就是当VPN连接之后，所有的网络数据都会走VPN，这显然不是最高效的做法，对于一些没有被墙的网站或是应用，没有必要再走VPN，这样反而更慢。为此，<code>chnroutes</code>应蕴而生了。</p>
+
+<!-- more -->
+
+
+<p><code>chnroutes</code>就是一份路由表配置，它收集了绝大部分国内没有被墙的网站/IP，然后将他们加到路由表中，设定访问这些IP地址使用原来的网关（非VPN）。这样，在路由表中的IP地址就会走原来的网关，剩下来的就都走VPN了。</p>
+
+<p>在<code>https://code.google.com/p/chnroutes/</code>上下载<code>chnroutes.py</code>，在Mac OS X上运行就得到两个文件：<code>ip-up</code> 和 <code>ip-down</code>。</p>
+
+<p>打开文件一看就明白，没比这更简单的脚本了。<code>ip-up</code>就是使用netstat等命令取到非VPN的网关的IP地址，然后就调用<code>route</code>命令设置一大堆的路由信息。</p>
+
+<p>这里要注意的是，在我的Macbook上（Mac OS X Mavericks），<code>ip-up</code>取到的所谓<code>OLDGW</code>是不对的。<code>ip-up</code>试图去取非VPN的那个网关IP地址，但其实取到的是我所有的网关，也就是包含了VPN的和本地的两个网关IP地址。所以我注释掉了<code>ip-up</code>中获取<code>OLDGW</code>的一行，直接将<code>OLDGW</code>设置成了我本地的网关IP地址。</p>
+
+<p>这样，连接上VPN，然后运行<code>ip-up</code>就可以舒服的上网了。运行<code>ip-down</code>就可以删除掉<code>ip-up</code>添加的路由信息。</p>
+
+<p>为了验证<code>ip-up</code>的确做了我们所想的事情，可以用命令<code>traceroute</code>来验证，比如：<code>traceroute www.youku.com</code>，就可以看到数据是从本地网关走的，而如果是：<code>traceroute www.youtube.com</code>，就可以看到数据是从VPN走的。</p>
+]]></content>
+  </entry>
+  
+</feed>
