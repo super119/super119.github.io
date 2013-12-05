@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux-kernel | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/linux-kernel/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2013-11-27T21:35:06+08:00</updated>
+  <updated>2013-12-05T09:08:21+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -25,11 +25,11 @@
 <p>``` c
 pmu {</p>
 
-<pre><code>    compatible = "arm,cortex-a9-pmu";
-    interrupts = &lt;0 144 0x04
-                  0 145 0x04
-                  0 146 0x04
-                  0 147 0x04&gt;;
+<pre><code>compatible = "arm,cortex-a9-pmu";
+interrupts = &lt;0 144 0x04
+          0 145 0x04
+          0 146 0x04
+          0 147 0x04&gt;;
 </code></pre>
 
 <p>};

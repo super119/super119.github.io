@@ -9,9 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="Linux kernel现在使用Device tree（DT）来描述硬件设备。既然是描述硬件设备，那自然就需要对硬件充分了解才能理解DT。Interrupts就是一个例子。 一般来说，DT中的 interrupts （本文不描述interrupt controller）看起来是这样的： 1
-2
-3 &hellip;">
+  <meta name="description" content="翻墙是我朝人民的普遍需求。现在翻墙的普遍做法是搞一个VPN。买一个也好，找免费的也好。有了VPN之后面临的问题就是当VPN连接之后，所有的网络数据都会走VPN，这显然不是最高效的做法，对于一些没有被墙的网站或是应用，没有必要再走VPN，这样反而更慢。为此，chnroutes应蕴而生了。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +79,49 @@
   <header>
     
       <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/12/04/chnroutes-on-mac/">Chnroutes的使用（Mac OS X Mavericks）</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-04T14:00:00+08:00" pubdate data-updated="true">Dec 4<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>翻墙是我朝人民的普遍需求。现在翻墙的普遍做法是搞一个VPN。买一个也好，找免费的也好。有了VPN之后面临的问题就是当VPN连接之后，所有的网络数据都会走VPN，这显然不是最高效的做法，对于一些没有被墙的网站或是应用，没有必要再走VPN，这样反而更慢。为此，<code>chnroutes</code>应蕴而生了。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/12/04/chnroutes-on-mac/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
         <h1 class="entry-title"><a href="/blog/2013/11/27/dt-interrupts/">Device Tree: Interrupts的解释</a></h1>
       
     
@@ -117,11 +158,11 @@
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 </pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">pmu</span> <span class="p">{</span>
-</span><span class='line'>        <span class="n">compatible</span> <span class="o">=</span> <span class="s">&quot;arm,cortex-a9-pmu&quot;</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">interrupts</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mi">0</span> <span class="mi">144</span> <span class="mh">0x04</span>
-</span><span class='line'>                      <span class="mi">0</span> <span class="mi">145</span> <span class="mh">0x04</span>
-</span><span class='line'>                      <span class="mi">0</span> <span class="mi">146</span> <span class="mh">0x04</span>
-</span><span class='line'>                      <span class="mi">0</span> <span class="mi">147</span> <span class="mh">0x04</span><span class="o">&gt;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">compatible</span> <span class="o">=</span> <span class="s">&quot;arm,cortex-a9-pmu&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">interrupts</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mi">0</span> <span class="mi">144</span> <span class="mh">0x04</span>
+</span><span class='line'>            <span class="mi">0</span> <span class="mi">145</span> <span class="mh">0x04</span>
+</span><span class='line'>            <span class="mi">0</span> <span class="mi">146</span> <span class="mh">0x04</span>
+</span><span class='line'>            <span class="mi">0</span> <span class="mi">147</span> <span class="mh">0x04</span><span class="o">&gt;</span><span class="p">;</span>
 </span><span class='line'><span class="p">};</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -425,11 +466,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/blog'>Blog (1)</a></li><li><a href='/blog/categories/git'>git (2)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (1)</a></li><li><a href='/blog/categories/octopress'>Octopress (2)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/blog'>Blog (1)</a></li><li><a href='/blog/categories/git'>git (2)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (1)</a></li><li><a href='/blog/categories/network'>network (1)</a></li><li><a href='/blog/categories/octopress'>Octopress (2)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/12/04/chnroutes-on-mac/">Chnroutes的使用（Mac OS X Mavericks）</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/27/dt-interrupts/">Device Tree: Interrupts的解释</a>
@@ -445,10 +490,6 @@
     
       <li class="post">
         <a href="/blog/2013/11/07/embed-liquid-codes-in-blog/">在博客内容中插入Liquid代码时的注意点</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/05/add-uyan-comment/">在Octopress中使用友言，替换Disqus</a>
       </li>
     
   </ul>
