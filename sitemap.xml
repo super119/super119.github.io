@@ -2,42 +2,38 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://www.markzhang.cn/blog/2013/11/04/blog-code-names/</loc>
-        <lastmod>2013-12-01T17:50:45+08:00</lastmod>
+        <lastmod>2013-11-24T11:31:01+08:00</lastmod>
     </url>
     <url>
         <loc>http://www.markzhang.cn/blog/2013/11/05/add-uyan-comment/</loc>
-        <lastmod>2013-12-01T17:50:45+08:00</lastmod>
+        <lastmod>2013-11-24T11:31:01+08:00</lastmod>
     </url>
     <url>
         <loc>http://www.markzhang.cn/blog/2013/11/07/embed-liquid-codes-in-blog/</loc>
-        <lastmod>2013-12-01T17:50:45+08:00</lastmod>
+        <lastmod>2013-11-24T11:31:01+08:00</lastmod>
     </url>
     <url>
         <loc>http://www.markzhang.cn/blog/2013/11/07/linus-git-config/</loc>
-        <lastmod>2013-12-01T17:50:45+08:00</lastmod>
+        <lastmod>2013-11-24T11:31:01+08:00</lastmod>
     </url>
     <url>
         <loc>http://www.markzhang.cn/blog/2013/11/20/git-tips/</loc>
-        <lastmod>2013-12-01T17:50:45+08:00</lastmod>
+        <lastmod>2013-11-24T11:31:01+08:00</lastmod>
     </url>
     <url>
         <loc>http://www.markzhang.cn/blog/2013/11/27/dt-interrupts/</loc>
-        <lastmod>2013-12-01T17:58:49+08:00</lastmod>
-    </url>
-    <url>
-        <loc>http://www.markzhang.cn/blog/2013/12/04/chnroutes-on-mac/</loc>
-        <lastmod>2013-12-04T14:38:00+08:00</lastmod>
+        <lastmod>2013-11-27T21:31:28+08:00</lastmod>
     </url>
     <url>
         <loc>http://www.markzhang.cn/blog/archives/</loc>
-        <lastmod>2013-12-04T14:38:00+08:00</lastmod>
+        <lastmod>2013-11-27T21:31:28+08:00</lastmod>
     </url>
     <url>
         <loc>http://www.markzhang.cn/</loc>
-        <lastmod>2013-12-04T14:38:00+08:00</lastmod>
+        <lastmod>2013-11-27T21:31:28+08:00</lastmod>
     </url>
     <url>
         <loc>http://www.markzhang.cn/robots.txt</loc>
-        <lastmod>2013-12-01T17:48:01+08:00</lastmod>
+        <lastmod>2013-11-20T22:20:08+08:00</lastmod>
     </url>
 </urlset>
