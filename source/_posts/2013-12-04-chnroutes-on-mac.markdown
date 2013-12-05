@@ -12,7 +12,7 @@ categories: network
 
 `chnroutes`就是一份路由表配置，它收集了绝大部分国内没有被墙的网站/IP，然后将他们加到路由表中，设定访问这些IP地址使用原来的网关（非VPN）。这样，在路由表中的IP地址就会走原来的网关，剩下来的就都走VPN了。
 
-在`https://code.google.com/p/chnroutes/`上下载`chnroutes.py`，在Mac OS X上运行就得到两个文件：`ip-up` 和 `ip-down`。
+在`https://code.google.com/p/chnroutes/`上下载`chnroutes.py`，在Mac OS X上运行`./chnroutes.py -p mac`就得到两个文件：`ip-up` 和 `ip-down`。
 
 打开文件一看就明白，没比这更简单的脚本了。`ip-up`就是使用netstat等命令取到非VPN的网关的IP地址，然后就调用`route`命令设置一大堆的路由信息。
 
