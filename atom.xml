@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2013-12-05T09:08:21+08:00</updated>
+  <updated>2013-12-12T10:59:10+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -181,6 +181,7 @@
 <span class='line-number'>24</span>
 <span class='line-number'>25</span>
 <span class='line-number'>26</span>
+<span class='line-number'>27</span>
 </pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[color]</span>
 </span><span class='line'>        <span class="na">ui</span> <span class="o">=</span> <span class="s">auto</span>
 </span><span class='line'><span class="k">[user]</span>
@@ -189,6 +190,7 @@
 </span><span class='line'><span class="k">[core]</span>
 </span><span class='line'>        <span class="na">editor</span> <span class="o">=</span> <span class="s">vim</span>
 </span><span class='line'><span class="s">        abbrev = 12</span>
+</span><span class='line'><span class="s">        pager = less -X -F</span>
 </span><span class='line'><span class="k">[diff]</span>
 </span><span class='line'>        <span class="na">tool</span> <span class="o">=</span> <span class="s">vimdiff</span>
 </span><span class='line'><span class="s">        renames = true</span>
