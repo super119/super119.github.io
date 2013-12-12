@@ -17,6 +17,7 @@ categories: git
 [core]
         editor = vim
         abbrev = 12
+        pager = less -X -F
 [diff]
         tool = vimdiff
         renames = true
