@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Linus说，请将这个配置加到你的.gitconfig - Make Things Cool</title>
+  <title>MacOS X 如何截屏 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="近日Linus说，请将 git config core.abbrev 12 加到你的git repository中。事实上，这个config很有意义，可以加到你的全局git config中： git config --global core.abbrev 12。 原因简单来说就是， &hellip;">
+  <meta name="description" content="文章是从网上找来的，但是忘记当初的网址了，所以没写上转载的地址。如果您发现这是您的原创，请告知，我会加上转载信息，谢谢。 在Mac OS X下有很强大的截屏功能，它不仅仅是对屏幕的全屏COPY，而是包括很多细节在里面，就从这点来看，已经比过所有版本的Windows了。 下面我来向大家详细介绍一下 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2013/11/07/linus-git-config/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2013/12/25/macosx-screen-shot/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -76,7 +76,7 @@
   <header>
     
       
-        <h1 class="entry-title">Linus说，请将这个配置加到你的.gitconfig</h1>
+        <h1 class="entry-title">MacOS X 如何截屏</h1>
       
     
     
@@ -93,27 +93,29 @@
   
 
 
-<time datetime="2013-11-07T18:18:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
+<time datetime="2013-12-25T21:54:00+08:00" pubdate data-updated="true">Dec 25<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>近日Linus说，请将 <code>git config core.abbrev 12</code> 加到你的git repository中。事实上，这个config很有意义，可以加到你的全局git config中：</p>
+<div class="entry-content"><p><em>文章是从网上找来的，但是忘记当初的网址了，所以没写上转载的地址。如果您发现这是您的原创，请告知，我会加上转载信息，谢谢。</em></p>
+
+<p>在Mac OS X下有很强大的截屏功能，它不仅仅是对屏幕的全屏COPY，而是包括很多细节在里面，就从这点来看，已经比过所有版本的Windows了。</p>
+
+<p>下面我来向大家详细介绍一下： 　　</p>
 
 <!-- more -->
 
 
-<p><code>git config --global core.abbrev 12</code>。</p>
+<p>对全屏的截图我们可以通过按 苹果键（花键）+ Shift键 + 3来执行，之后伴随着清脆的一声提示音后，在桌面上就会生成一个图片文件，这就是刚刚截屏的图片了，默认文件类型是PNG的。</p>
 
-<p>原因简单来说就是，git默认的7个字符的短HASH表示方法经常导致冲突，所以Linus建议改成12个字符。原文引用如下：</p>
+<p>自定义截屏是很方便的一个功能，是可以通过按 苹果键（花键）+ Shift键 + 4来执行，当执行组合按键之后鼠标指针的光标会变成十字，现在你就可以画出你想要截取屏幕的范围了，画好后截出的图片也会放在桌面上。</p>
 
-<blockquote><p>Linus jumped in to say that he would like everybody to run this command in their repositories:</p>
+<p>另外，如果在按 苹果键（花键）+ Shift键 + 4后按下 空格键，鼠标指针就会变成一个小照相机，这时是截取对象方式的截屏，把小照相机放在你想截图的窗口上按鼠标左键后就执行了对该窗口的截屏，很方便吧，</p>
 
-<p>   git config core.abbrev 12</p>
-
-<p>That causes git to abbreviate commit hashes to 12 characters. The default of seven characters is too small to prevent occasional hash collisions in the kernel; it was, he said, a big mistake made early in git&rsquo;s history. He also noted that he spends a lot of time fixing up hashes in patch, many of which are &ldquo;clearly bogus.&rdquo; Most of the problems, most likely, are caused by the rebasing of trees.</p></blockquote>
+<p>还有一个用法就是苹果键（花键）+Shift键再 + Ctrl键 + 4，这样截出的文件就放入系统的剪贴板了，不会生成文件出来，在做文档时直接粘贴就很方便了。</p>
 </div>
 
 
@@ -121,7 +123,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2013 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2013/11/07/linus-git-config/<br>
+原文链接: http://www.markzhang.cn/blog/2013/12/25/macosx-screen-shot/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -144,12 +146,12 @@
   
 
 
-<time datetime="2013-11-07T18:18:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
+<time datetime="2013-12-25T21:54:00+08:00" pubdate data-updated="true">Dec 25<span>th</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/git/'>git</a>
+    <a class='category' href='/blog/categories/macosx/'>MacOSX</a>, <a class='category' href='/blog/categories/reprints/'>reprints</a>
   
 </span>
 
@@ -165,10 +167,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/11/07/embed-liquid-codes-in-blog/" title="Previous Post: 在博客内容中插入Liquid代码时的注意点">&laquo; 在博客内容中插入Liquid代码时的注意点</a>
+        <a class="basic-alignment left articlenav" href="/blog/2013/12/17/defeating-the-hackers/" title="Previous Post: Defeating the Hackers">&laquo; Defeating the Hackers</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/11/20/git-tips/" title="Next Post: Git常见命令和配置">Git常见命令和配置 &raquo;</a>
       
     </p>
   </footer>
