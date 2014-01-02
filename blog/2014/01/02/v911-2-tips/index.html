@@ -5,39 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Git常见命令和配置 - Make Things Cool</title>
+  <title>伟力v911-2 心得体会 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="常用配置 git常用配置1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-[color] ui = auto
-[user] name = Mark Zhang email = xxxx@xxxx.xxx &hellip;">
+  <meta name="description" content="伟力v911-2是一款很不错的入门4通航模。说不错，主要是它有以下的优点： 便宜，两百块不到搞定 :)
+耐炸，主要是飞机自重小。相比外观很漂亮，带什么合金外壳，还带闪灯的那种，增加了自重，所以电机相对要大功率的，还要增加电池容量。此外虽然机身有合金外壳，但是主轴、尾部没有啊， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -46,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2013/11/20/git-tips/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/01/02/v911-2-tips/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -104,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">Git常见命令和配置</h1>
+        <h1 class="entry-title">伟力v911-2 心得体会</h1>
       
     
     
@@ -121,141 +94,71 @@
   
 
 
-<time datetime="2013-11-20T21:01:00+08:00" pubdate data-updated="true">Nov 20<span>th</span>, 2013</time>
+<time datetime="2014-01-02T20:56:00+08:00" pubdate data-updated="true">Jan 2<span>nd</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>常用配置</h2>
+<div class="entry-content"><p>伟力v911-2是一款很不错的入门4通航模。说不错，主要是它有以下的优点：</p>
 
-<figure class='code'><figcaption><span>git常用配置</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[color]</span>
-</span><span class='line'>        <span class="na">ui</span> <span class="o">=</span> <span class="s">auto</span>
-</span><span class='line'><span class="k">[user]</span>
-</span><span class='line'>        <span class="na">name</span> <span class="o">=</span> <span class="s">Mark Zhang</span>
-</span><span class='line'><span class="s">        email = xxxx@xxxx.xxx</span>
-</span><span class='line'><span class="k">[core]</span>
-</span><span class='line'>        <span class="na">editor</span> <span class="o">=</span> <span class="s">vim</span>
-</span><span class='line'><span class="s">        abbrev = 12</span>
-</span><span class='line'><span class="s">        pager = less -X -F</span>
-</span><span class='line'><span class="k">[diff]</span>
-</span><span class='line'>        <span class="na">tool</span> <span class="o">=</span> <span class="s">vimdiff</span>
-</span><span class='line'><span class="s">        renames = true</span>
-</span><span class='line'><span class="k">[difftool]</span>
-</span><span class='line'>        <span class="na">prompt</span> <span class="o">=</span> <span class="s">No</span>
-</span><span class='line'><span class="k">[sendemail]</span>
-</span><span class='line'>        <span class="na">chainreplyto</span> <span class="o">=</span> <span class="s">false</span>
-</span><span class='line'><span class="s">        smtpserver = xxxxxxxx</span>
-</span><span class='line'><span class="s">        smtpencryption = tls</span>
-</span><span class='line'><span class="s">        from = Mark Zhang &lt;xxxx@xxx.xxx&gt;</span>
-</span><span class='line'><span class="s">        envelopesender = auto</span>
-</span><span class='line'><span class="k">[alias]</span>
-</span><span class='line'>        <span class="na">s</span> <span class="o">=</span> <span class="s">status</span>
-</span><span class='line'><span class="s">        cp = cherry-pick</span>
-</span><span class='line'><span class="s">        ck = checkout</span>
-</span><span class='line'><span class="s">        b = branch</span>
-</span><span class='line'><span class="s">        lo = log --oneline</span>
-</span><span class='line'><span class="s">        dt = difftool</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
+<ul>
+<li>便宜，两百块不到搞定  :)</li>
+<li>耐炸，主要是飞机自重小。相比外观很漂亮，带什么合金外壳，还带闪灯的那种，增加了自重，所以电机相对要大功率的，还要增加电池容量。此外虽然机身有合金外壳，但是主轴、尾部没有啊，所以掉下来这些部分就很容易挂掉。</li>
+<li>体积小，可以在室内飞行，不用专门到户外去找飞场。</li>
+<li>整机只有30个零件，维修方便</li>
+</ul>
 
 
 <!-- more -->
 
 
-<h2>常用命令</h2>
+<p>应该说这种结构简单，零件少容易拆解的飞机，可以方便的让我们了解直升机的一些基本原理。但是理论知识是一方面，真的摔坏了开始动手修理了，那就是另外一个问题了，有很多实际操作上的经验。</p>
+
+<p>网上都说尾电机是第一个容易挂的，很奇怪我的尾电机到现在还算“工作正常”。有的时候会发现不转，但概率很小。现在尾电机的主要问题就是有一些异响，但鉴于飞机锁尾、自旋都正常，就懒得去折腾它了。</p>
+
+<p>我的感受是，主旋翼容易挂。“挂”并不意味着一定是断掉了或是变形了，由于在炸机的时候主旋翼多多少少都会有一些损伤，所以炸多了就会发现飞机有一些异常情况，比如有异响，飞机震动的厉害等。这个时候就有可能是：</p>
 
 <ul>
-<li><code>git remote add &lt;name&gt; &lt;url&gt;</code></li>
+<li>主旋翼变形了，虽然看起来好像是好的。</li>
+<li>主旋翼磨损之后，两片桨可能重量不一致了，重心不对称了。</li>
 </ul>
 
 
-<p>如果要添加本地的一个git repository的话，<url>填写成 <code>git repository的路径/.git</code> 即可。</p>
+<p>所以，如果怀疑是主旋翼的问题，直接换一对上去试了再说。平常买配件的时候可以一次多买几对，反正五块钱一对。</p>
+
+<p>换主旋翼的时候，有一个问题，就是要重新安装那三个球头锁扣。我换了N次之后，发现有这么几个问题：</p>
 
 <ul>
-<li><p><code>git fetch -p &lt;remote name, e.g: origin&gt;</code></p></li>
-<li><p><code>git show &lt;commit id&gt;</code></p></li>
-<li><p><code>git push origin HEAD:next</code></p></li>
+<li>这三个锁扣都是塑料的，而且很软，而安装的时候又需要用力按，所以一不小心就会变形。</li>
+<li>一旦变形，特别是和桨连接的（中间那个）那个变形的话，会导致飞机向左或向右偏。因为变形之后，舵机拉动旋翼左右倾斜从而左右侧飞的时候，这个变形的锁扣会导致旋翼左右倾斜不顺畅。可以用手捏着平衡杆的一头，上下摇动，如果有阻滞感，那就是锁扣固定的不太好。正常情况下，平衡杆上下摇动是非常顺畅的。</li>
 </ul>
 
 
-<p>Push本地HEAD commit对应的branch到名为 <code>origin</code> 的远端仓库的 <code>next</code> branch上。</p>
+<p>所以，换这三个球头锁扣的时候，我是这样的：</p>
 
-<ul>
-<li><code>git push origin +HEAD:next / git push -f origin HEAD:next</code></li>
-</ul>
-
-
-<p>所谓的Force update，也就是用本地的commit历史覆盖远端的。</p>
-
-<ul>
-<li><code>git push origin :next</code></li>
-</ul>
+<ol>
+<li>先连接平衡杆</li>
+<li>另一头接好要接到桨上去的那个锁扣，然后将这个锁扣竖着对准桨的连接点按上去</li>
+<li>摇动一下平衡杆，让中间这个锁扣横过来，自然就扣住了桨。不要去尝试横着强行将这个锁扣按到桨上去，这样最容易变形</li>
+<li>连接好最后一个挂在十字盘上的锁扣</li>
+</ol>
 
 
-<p>删除远端仓库的 <code>next</code> branch。</p>
+<p>如果原来十字盘上的锁扣是扣着的，那么先拆下这个，然后再从第一步开始。我的经验是，当平衡杆和十字盘的锁扣都是扣着的时候，想尝试去安装中间那个锁扣（就是扣到桨上的那个），那是很困难的。因为这个时候这个锁扣只有横着才能扣上去，而想要横着扣上去那是相当的麻烦，很容易变形。要让这个锁扣竖着套上桨，然后动一下平衡杆，它就横过来了，很方便而且不会变形。</p>
 
-<ul>
-<li><code>git push --tags</code></li>
-</ul>
+<p>其他还有一些体会，网上都有一些文章，就不说了。比如连接舵机摇臂和十字盘的连杆，是有螺纹的，可以顺时针、逆时针旋转，从而加长或缩短连杆的长度，从而影响舵量。其实我觉得这个完全可以用遥控器上的微调来做到，没有必要大动干戈拆机去调这个连杆。</p>
 
+<p><img src="/downloads/image/v911.jpg" alt="v911-2" /></p>
 
-<p>Push本地的tag列表到远端。</p>
+<p>零件：</p>
 
-<ul>
-<li><p><code>git format-patch -&lt;N&gt;</code></p></li>
-<li><p><code>git format-patch &lt;commit id&gt;^..&lt;commit id&gt;</code></p></li>
-</ul>
+<p><img src="/downloads/image/v911-parts.jpg" alt="v911-2 零件图" /></p>
 
+<p>炸机：</p>
 
-<p>这个命令可以用来为一个指定的commit生成patch。</p>
-
-<ul>
-<li><p><code>git format-patch --subject-prefix 'PATCH V2' --cover-letter</code></p></li>
-<li><p><code>git send-email --to=XXX --to=XXX --cc=XXX *.patch</code></p></li>
-<li><p><code>git send-email --no-signed-off-cc --to=XXX --to=XXX --cc=XXX *.patch</code></p></li>
-<li><p><code>git rebase -i &lt;commit id&gt;</code></p></li>
-<li><p><code>git checkout &lt;branch&gt; -- &lt;file path&gt;</code></p></li>
-</ul>
-
-
-<p>这个命令将指定branch中的指定文件checkout出来，更新当前working tree中的对应文件。</p>
-
-<ul>
-<li><code>git show &lt;branch&gt;:&lt;file path&gt; &gt;&amp; &lt;filename&gt;</code></li>
-</ul>
-
-
-<p>这个命令将指定branch中的指定文件checkout出来，并存到 <code>&lt;filename&gt;</code> 指定的路径上。</p>
+<p><img src="/downloads/image/v911-zha.jpg" alt="v911-2 炸机图" /></p>
 </div>
 
 
@@ -263,7 +166,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2013/11/20/git-tips/<br>
+原文链接: http://www.markzhang.cn/blog/2014/01/02/v911-2-tips/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -286,12 +189,12 @@
   
 
 
-<time datetime="2013-11-20T21:01:00+08:00" pubdate data-updated="true">Nov 20<span>th</span>, 2013</time>
+<time datetime="2014-01-02T20:56:00+08:00" pubdate data-updated="true">Jan 2<span>nd</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/git/'>git</a>
+    <a class='category' href='/blog/categories/rcairplane/'>RCAirPlane</a>
   
 </span>
 
@@ -307,10 +210,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/11/07/linus-git-config/" title="Previous Post: Linus说，请将这个配置加到你的.gitconfig">&laquo; Linus说，请将这个配置加到你的.gitconfig</a>
+        <a class="basic-alignment left articlenav" href="/blog/2013/12/27/add-origin-statement-conditionally/" title="Previous Post: Octopress - 有条件的为文章添加转载声明">&laquo; Octopress - 有条件的为文章添加转载声明</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/11/27/dt-interrupts/" title="Next Post: Device tree: interrupts的解释">Device tree: interrupts的解释 &raquo;</a>
       
     </p>
   </footer>
