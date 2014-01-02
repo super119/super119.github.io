@@ -5,26 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>在博客内容中插入Liquid代码时的注意点 - Make Things Cool</title>
+  <title>Octopress - 有条件的为文章添加转载声明 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="Octopress/Jekyll一个很好的功能就是可以非常方便的插入代码，深得码农的喜爱。不过这里有一个注意点就是，如果你插入的代码中含有Liquid代码，那很可能会导致编译出错，比如： rake generate出错信息1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16 &hellip;">
+  <meta name="description" content="对于原创的文章，我在Octopress的post模板文件中，加入了一段转载声明。但对于一些好的文章，经常也会忍不住想要转载。所以，对于转载的文章，还出现这么一个转载声明就是打自己耳光了。很显然，要做个小手脚，对于转载的文章，去掉这个转载声明。有意思的是，在这个过程中，我居然发现 liquid &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -33,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2013/11/07/embed-liquid-codes-in-blog/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2013/12/27/add-origin-statement-conditionally/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -91,7 +76,7 @@
   <header>
     
       
-        <h1 class="entry-title">在博客内容中插入Liquid代码时的注意点</h1>
+        <h1 class="entry-title">Octopress - 有条件的为文章添加转载声明</h1>
       
     
     
@@ -108,21 +93,21 @@
   
 
 
-<time datetime="2013-11-07T09:44:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
+<time datetime="2013-12-27T15:33:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Octopress/Jekyll一个很好的功能就是可以非常方便的插入代码，深得码农的喜爱。不过这里有一个注意点就是，如果你插入的代码中含有Liquid代码，那很可能会导致编译出错，比如：</p>
+<div class="entry-content"><p>对于原创的文章，我在Octopress的post模板文件中，加入了一段转载声明。但对于一些好的文章，经常也会忍不住想要转载。所以，对于转载的文章，还出现这么一个转载声明就是打自己耳光了。很显然，要做个小手脚，对于转载的文章，去掉这个转载声明。有意思的是，在这个过程中，我居然发现 <code>liquid</code> 语法中没有 <code>逻辑非</code> ?!</p>
 
 <!-- more -->
 
 
+<p>模板文件的改动非常简单：</p>
 
-
-<figure class='code'><figcaption><span>rake generate出错信息</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -141,57 +126,35 @@
 <span class='line-number'>17</span>
 <span class='line-number'>18</span>
 <span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">## Generating Site with Jekyll</span>
-</span><span class='line'>unchanged sass/screen.scss
-</span><span class='line'>Configuration from /home/markz/Projects/blog/_config.yml
-</span><span class='line'>Building site: <span class="nb">source</span> -&gt; public
-</span><span class='line'>Liquid Exception: <span class="k">if </span>tag was never closed in 2013-11-05-add-uyan-comment.markdown
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:88:in <span class="sb">`</span>assert_missing_delimitation!<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:49:in `parse&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/tag.rb:10:in <span class="sb">`</span>initialize<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/tags/if.rb:24:in `initialize&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:28:in <span class="sb">`</span>new<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:28:in `parse&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/document.rb:5:in <span class="sb">`</span>initialize<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/template.rb:58:in `new&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/template.rb:58:in <span class="sb">`</span>parse<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/template.rb:46:in `parse&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/convertible.rb:79:in <span class="sb">`</span>do_layout<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/work/markz/Projects/blog/plugins/post_filters.rb:167:in `do_layout&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/post.rb:195:in <span class="sb">`</span>render<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:200:in `block in render&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:199:in <span class="sb">`</span>each<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:199:in `render&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:41:in <span class="sb">`</span>process<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/bin/jekyll:264:in `&lt;top (required)&gt;&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/bin/jekyll:23:in <span class="sb">`</span>load<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/bin/jekyll:23:in `&lt;main&gt;&#39;</span>
-</span><span class='line'>Build Failed
+</pre></td><td class='code'><pre><code class='diff'><span class='line'><span class="gh">diff --git a/source/_layouts/post.html b/source/_layouts/post.html</span>
+</span><span class='line'><span class="gh">index 5d83b4d201f6..12d6466734ec 100644</span>
+</span><span class='line'><span class="gd">--- a/source/_layouts/post.html</span>
+</span><span class='line'><span class="gi">+++ b/source/_layouts/post.html</span>
+</span><span class='line'><span class="gu">@@ -7,11 +7,14 @@ single: true</span>
+</span><span class='line'> &lt;article class=&quot;hentry&quot; role=&quot;article&quot;&gt;
+</span><span class='line'>   {% include article.html %}
+</span><span class='line'>   &lt;footer&gt;
+</span><span class='line'><span class="gi">+    {% if page.categories contains &quot;reprints&quot; %}</span>
+</span><span class='line'><span class="gi">+    {% else %}</span>
+</span><span class='line'>     &lt;section style=&quot;margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em&quot;&gt;
+</span><span class='line'>       &lt;strong&gt;版权所有 &amp;copy;{{ site.time | date: &#39;%Y&#39; }} 转载本站文章请注明： &lt;/strong&gt;转载自 http://markzhang.cn&lt;br&gt;
+</span><span class='line'> 原文链接: http://www.markzhang.cn{{ page.url }}&lt;br&gt;
+</span><span class='line'> 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
+</span><span class='line'>     &lt;/section&gt;
+</span><span class='line'><span class="gi">+    {% endif %}</span>
+</span><span class='line'>
+</span><span class='line'>     &lt;p class=&quot;meta&quot;&gt;
+</span><span class='line'>       {% include post/author.html %}
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>原因地球人都知道，就是博客中插入的代码含有Liquid的if标签。解决办法有两种：</p>
+<p>所以，大体上是这样：</p>
 
 <ol>
-<li><p>使用<code>{% include_file %}</code>。将代码存成一个文件，然后将其include到博客中来。</p></li>
-<li><p>使用raw标签，将代码（包含三个backticks）使用<code>{% raw %}</code>，<code>{% endraw %}</code>包起来即可。</p></li>
+<li>代码检查当前的文章是否属于 <code>reprints</code> 这个category，如果是的话，就不会加入转载声明那一段文字。</li>
+<li>由于Octopress中一篇文章可以属于多个category，所以，新增 <code>reprints</code> 这么一个category不会带来什么影响，反而还可以让我们通过这个category快速的浏览所有我们转载的文章。</li>
+<li>有意思的就是，正如前面所说，<code>liquid</code> 语法中没有 <code>逻辑非</code>，所以我在StackOverflow上找到了大家一般是这么做的：if后面直接接else. 相当的ugly，但是it works!</li>
 </ol>
-
-
-<p><strong>Note:</strong> 上文中要将raw和endraw打印出来需要将其转义，其他标签都可以用<code>raw/endraw</code>搞定，但是要转义他们本身，要这么写：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">{{</span> <span class="s2">&quot;{% raw &quot;</span> <span class="o">}}</span>%<span class="o">}</span> <span class="o">{{</span> <span class="s2">&quot;{% endraw &quot;</span> <span class="o">}}</span>%<span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
 
 </div>
 
@@ -200,7 +163,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2013/11/07/embed-liquid-codes-in-blog/<br>
+原文链接: http://www.markzhang.cn/blog/2013/12/27/add-origin-statement-conditionally/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -223,7 +186,7 @@
   
 
 
-<time datetime="2013-11-07T09:44:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
+<time datetime="2013-12-27T15:33:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
       
 
 <span class="categories">
@@ -244,10 +207,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/11/05/add-uyan-comment/" title="Previous Post: 在Octopress中使用友言，替换Disqus">&laquo; 在Octopress中使用友言，替换Disqus</a>
+        <a class="basic-alignment left articlenav" href="/blog/2013/12/25/macosx-screen-shot/" title="Previous Post: MacOS X 如何截屏">&laquo; MacOS X 如何截屏</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/11/07/linus-git-config/" title="Next Post: Linus说，请将这个配置加到你的.gitconfig">Linus说，请将这个配置加到你的.gitconfig &raquo;</a>
       
     </p>
   </footer>
