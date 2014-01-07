@@ -41,7 +41,7 @@ Build Failed
 
 原因地球人都知道，就是博客中插入的代码含有Liquid的if标签。解决办法有两种：
 
-1. 使用{% raw %}`{% include_file %}`{% endraw %}。将代码存成一个文件，然后将其include到博客中来。
+1. 使用{% raw %}`{% include_code %}`{% endraw %}。将代码存成一个文件，然后将其include到博客中来。
 
 2. 使用raw标签，将代码（包含三个backticks）使用`{{ "{% raw " }}%}`，`{{ "{% endraw " }}%}`包起来即可。
 
