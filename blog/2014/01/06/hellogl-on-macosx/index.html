@@ -1,0 +1,1027 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>OpenGL Programming on MacOS X (Mavericks) - Make Things Cool</title>
+  <meta name="author" content="Mark Zhang">
+
+  
+  <meta name="description" content="最近开始看《OpenGL Programming Guide 8th Edition》一书。所以很自然的，就会想把书中的源代码在MacOS X Mavericks上试验一遍。很显然程序是没法在Mavericks上run的，所以就对程序做了一些修改。在试验的过程中，自然也发现了一些书中没有说到的内容 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/01/06/hellogl-on-macosx/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Make Things Cool" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">s/no/yes/g</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">Make Things Cool</a></h1>
+  
+    <h2>2014 Imagine Illimitable</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.markzhang.cn" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">OpenGL Programming on MacOS X (Mavericks)</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-06T21:30:00+08:00" pubdate data-updated="true">Jan 6<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>最近开始看《OpenGL Programming Guide 8th Edition》一书。所以很自然的，就会想把书中的源代码在MacOS X Mavericks上试验一遍。很显然程序是没法在Mavericks上run的，所以就对程序做了一些修改。在试验的过程中，自然也发现了一些书中没有说到的内容，所以记录下来。</p>
+
+<p>事实上，这本书中的代码是在Windows上测试的，所以MacOS X上就会有一些不同。尤其体现在一些第三方的framework/library上。</p>
+
+<p>本文是在试验该书中第一个源程序的时候，发现的一些东西。和我们第一个编写的HelloWorld程序一样，我称该程序为HelloGL。</p>
+
+<!-- more -->
+
+
+<p>为了方便阅读，所有的代码在最后给出。系统的环境是Mavericks + Xcode 4.6.1。这里说一下我在原书给出的代码上，做出的一些修改：</p>
+
+<h2>有关GLEW</h2>
+
+<p>GLEW当然是可以使用的，只是不像GLUT，Mavericks没有自带GLEW，需要自己下载安装。不过安装也超级简单：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>make glew.lib
+</span><span class='line'>sudo make install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我尝试过直接make，也就是编译所有的内容（其中包括glewinfo等实用程序），在Mavericks上会编译失败（提示缺少AGL/agl.h）。所以我只编译了glew的库，事实上我们也只需要库就可以了。</p>
+
+<p>有了GLEW之后，只需要include一个 <code>GL/glew.h</code> 就搞定了。因为GLEW会将OpenGL中用到的所有的数据类型和函数都定义一遍，而且提供大量的宏，使我们可以查询一个具体的 <code>feature/函数</code> 在当前平台上是否存在。这也是GLEW的主要功能了。对于函数，GLEW会根据不同平台，去打开对应的库，取出对应函数的地址，从而让我们可以调用到该平台上正确的实现。参看书中的附录F：<code>OpenGL and Window Systems</code>，有详细的解释。</p>
+
+<p>不过StackOverflow上说，其实在MacOS X中，GLEW并不需要。我试验了一下，的确是不需要（当然我只是用本文中的这个简单的程序试验了一下）。理由是：</p>
+
+<blockquote><p>About glew, normally you don&rsquo;t require glew on MacOS due the way how the OpenGL layer is implemented in MacOS. You are restricted to the OpenGL features MacOS provides/exposes. So either the features are available via the headers of MacOS or not.</p>
+
+<p>The header would be #include &lt;OpenGL/gl3.h> where also the naming is missleading, it does not mean only OpenGL 3, it is the same like with the context.</p></blockquote>
+
+<h2>主程序的改动</h2>
+
+<p>主要改动了以下几点：</p>
+
+<ul>
+<li><p>去掉了 <code>include "vgl.h"</code>。因为这个头文件中啥实在东西没有，唯一一个需要用到的就是一个 <code>BUFFER_OFFSET</code> 宏的定义，把它拿到主程序文件中来了。</p></li>
+<li><p>代码中涉及的两个shader程序：<code>triangle.vert</code> 和 <code>triangle.frag</code>，改名成了 <code>simple.vert</code> 和 <code>simple.frag</code>。一来是感觉更贴切，二来是这两个shader程序在该书的源代码包中有，拷贝过来就能用了。</p></li>
+<li><p>如上面所说，GLEW不是必须的，所以我去掉了GLEW相关的代码。</p></li>
+<li><p>在main函数中增加了一行，用来打印当前GLSL的版本：</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Supported GLSL version is: &quot;</span> <span class="o">&lt;&lt;</span>
+</span><span class='line'>  <span class="n">glGetString</span><span class="p">(</span><span class="n">GL_SHADING_LANGUAGE_VERSION</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>因为后续也会提到，一开始运行程序的时候，会发现shader程序无法编译，所以增加了这一行打印，方便调试。这个也是来自StackOverflow上大佬们的建议。</p>
+
+<ul>
+<li>去掉了main函数中这两行代码：</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">glutInitContextVersion</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+</span><span class='line'><span class="n">glutInitContextProfile</span><span class="p">(</span><span class="n">GLUT_CORE_PROFILE</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>理由是，我没有使用书中建议的 <code>freeglut</code>。因为Mavericks，或者准确点来说Xcode自带了GLUT（应该是openglut），所以就没有必要再安装一个类似的玩意了。
+而Xcode自带的GLUT，是没有上述的两个函数的。</p>
+
+<ul>
+<li>最关键的一点改动：</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">glutInitDisplayMode</span><span class="p">(</span><span class="n">GLUT_RGBA</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>改成：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">glutInitDisplayMode</span><span class="p">(</span><span class="n">GLUT_3_2_CORE_PROFILE</span> <span class="o">|</span> <span class="n">GLUT_RGBA</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>正是由于改动#4，导致程序运行的时候，没有正确的选择OpenGL的版本和profile。所以如果没有这个改动，程序运行会发现shader程序没法编译，错误信息是：<code>unsupported version xxx</code>（shader程序的第一行就是#version）。所以我很小白的在StackOverflow上问了这个问题，最终得到了大佬的回答：</p>
+
+<blockquote><p>MacOS uses Legacy Profile as default for all created OpenGL context. Therefor by default only OpenGL up to 2.1 and GLSL up to 1.20 is supported.</p>
+
+<p>To use OpenGL 3.2+ you need to switch to the Core Profile. The naming here is a little bit confusing because it stats only 3.2Core profile, but actually this 3.2 or later (every OpenGL profile that is supported by the system/driver that is backwards compatible to 3.2)</p>
+
+<p>For glut (depends on the version of glut if it works) the command on MacOS is:</p>
+
+<p>glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | &hellip;  ) Where | &hellip; would be the other options you want to pass to glutInitDisplayMode.</p></blockquote>
+
+<p>正如上面所说，虽然名字叫3_2_CORE_PROFILE，但是其实会使用系统当前最新版本的OpenGL实现啦。上面GLEW一节中也说道，虽然include的头文件名字叫 <code>OpenGL/gl3.h</code>，但其实不是真的只是OpenGL 3啦。</p>
+
+<h2>LoadShaders的改动</h2>
+
+<p>LoadShaders是书中提供的一个用来读取、编译shader程序的一小段代码。这部分内容我几乎没有改动，除了：</p>
+
+<ul>
+<li><p>去掉了 <code>#include &lt;GL/gl.h&gt;</code> 等，改成了 <code>#include &lt;OpenGL/gl3.h&gt;</code>，当然如果你用GLEW，也可以改成：<code>#include &lt;GL/glew.h&gt;</code>。</p></li>
+<li><p>将LoadShader.cpp中的 <code>_DEBUG</code> 改成了 <code>DEBUG</code>。理由是：Xcode的Project中，如果是编译运行Debug版本，默认就会定义 <code>DEBUG</code> 这个宏，所以做这个修改就省的以后每次新建项目，都要再去定义 <code>_DEBUG</code> 了。</p></li>
+</ul>
+
+
+<h2>其他一些Tips</h2>
+
+<p>代码的改动就是上述的一些内容了。不过为了让程序能在Xcode中编译和运行，还需要做一些工作。这里就作为Tips来描述一下。</p>
+
+<p>注：其实也是没事找事，在终端下自己写一个Makefile就可以搞定的事情，偏要用Xcode。只是自从用了MacOS X之后，还没有用过Xcode，想尝试一下而已。</p>
+
+<ul>
+<li><p>有关GLEW的头文件。Xcode中的Project，有一个配置项叫做：<code>Always Search User Paths</code>。需要将这个改成Yes，并将 <code>User Header Search Paths</code> 设置成 <code>/usr/include</code>。否则代码编译的时候就会错误：找不到 <code>GL/glew.h</code>。从Linux编程过来的人表示极度不适应&hellip;</p></li>
+<li><p>GLEW的库文件。和Linux下的C编程一样，我们都知道需要在编译的时候给出一个链接的参数：<code>-lGLEW</code>。这可以在Xcode中Project设定的 <code>Other Linker Flags</code> 中设置。但是设置完了之后，再次报告链接错误：找不到libGLEW，但是文件明明就在 <code>/usr/lib</code> 目录下。从Linux编程过来的人再次表示极度不适应&hellip; 最后没办法，只能这样：</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo ln -s /usr/lib/libGLEW.dylib /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/lib/libGLEW.dylib
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>所以到了这里，可以基本明白了，Xcode是一个相对独立而且封闭的环境，所有的dependencies都被约束在了Xcode的体系下。我能再次吐槽么？</p>
+
+<ul>
+<li>如果要在Xcode中run/debug程序的话，两个shader文件：<code>simple.vert</code> 和 <code>simple.frag</code> 要放到Xcode运行程序的working directory中，也就是这个目录：</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/Users/mark/Library/Developer/Xcode/DerivedData/HelloGL-&lt;debug <span class="nb">hash </span>id&gt;/Build/Products/Debug
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>记得我们在主程序中添加的一行用来打印当前GLSL的版本的代码么？这里派上用处了，将你的shader程序中的 <code>#version xxx</code> 修改成这里打印出来的值，因为这才是你的系统当前支持的GLSL的版本。</p>
+
+<ul>
+<li>在Xcode Project设定中，将GLUT和OpenGL添加到 <code>Link Binary with Libraries</code> 中去。这个用过Xcode的都应该知道：</li>
+</ul>
+
+
+<p><img src="/downloads/image/HelloGL-link-libs.png" alt="HelloGL Link Binary with Libraries" /></p>
+
+<p>整个项目的文件列表是长这个样子的：</p>
+
+<p><img src="/downloads/image/HelloGL-files.png" alt="HelloGL files" /></p>
+
+<h2>代码</h2>
+
+<figure class='code'><figcaption><span>HelloGL主程序 c++ (main.cpp)</span> <a href='/downloads/code/HelloGL/main.cpp'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm"> * Installed by building glew source</span>
+</span><span class='line'><span class="cm"> * Also need to be included first because it defines all &quot;gl&quot; stuffs</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> * About glew, normally you don&#39;t require glew on MacOS due the way how the</span>
+</span><span class='line'><span class="cm"> * OpenGL layer is implemented in MacOS. You are restricted to the OpenGL</span>
+</span><span class='line'><span class="cm"> * features MacOS provides/exposes. So either the features are available via</span>
+</span><span class='line'><span class="cm"> * the headers of MacOS or not. There header would be #include &lt;OpenGL/gl3.h&gt;</span>
+</span><span class='line'><span class="cm"> * where also the naming is missleading, it does not mean only OpenGL 3,</span>
+</span><span class='line'><span class="cm"> * it is the same like with the context.</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="c1">//#include &lt;GL/glew.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#include &quot;LoadShaders.h&quot;</span>
+</span><span class='line'><span class="cp">#include &lt;GLUT/GLUT.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define BUFFER_OFFSET(x) ((const void*)(x))</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">enum</span> <span class="n">VAO_IDs</span> <span class="p">{</span> <span class="n">Triangles</span><span class="p">,</span> <span class="n">NumVAOs</span> <span class="p">};</span>
+</span><span class='line'><span class="k">enum</span> <span class="n">Buffer_IDs</span> <span class="p">{</span> <span class="n">ArrayBuffer</span><span class="p">,</span> <span class="n">NumBuffers</span> <span class="p">};</span>
+</span><span class='line'><span class="k">enum</span> <span class="n">Attrib_IDs</span> <span class="p">{</span> <span class="n">vPosition</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">GLuint</span> <span class="n">VAOs</span><span class="p">[</span><span class="n">NumVAOs</span><span class="p">];</span>
+</span><span class='line'><span class="n">GLuint</span> <span class="n">Buffers</span><span class="p">[</span><span class="n">NumBuffers</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">const</span> <span class="n">GLuint</span> <span class="n">NumVertices</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">glGenVertexArrays</span><span class="p">(</span><span class="n">NumVAOs</span><span class="p">,</span> <span class="n">VAOs</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">glBindVertexArray</span><span class="p">(</span><span class="n">VAOs</span><span class="p">[</span><span class="n">Triangles</span><span class="p">]);</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">GLfloat</span> <span class="n">vertices</span><span class="p">[</span><span class="n">NumVertices</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>      <span class="p">{</span> <span class="o">-</span><span class="mf">0.90</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.90</span> <span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span>  <span class="mf">0.85</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.90</span> <span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span> <span class="o">-</span><span class="mf">0.90</span><span class="p">,</span>  <span class="mf">0.85</span> <span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span>  <span class="mf">0.90</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.85</span> <span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span>  <span class="mf">0.90</span><span class="p">,</span>  <span class="mf">0.90</span> <span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span> <span class="o">-</span><span class="mf">0.85</span><span class="p">,</span>  <span class="mf">0.90</span> <span class="p">}</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">glGenBuffers</span><span class="p">(</span><span class="n">NumBuffers</span><span class="p">,</span> <span class="n">Buffers</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span> <span class="n">Buffers</span><span class="p">[</span><span class="n">ArrayBuffer</span><span class="p">]);</span>
+</span><span class='line'>  <span class="n">glBufferData</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">vertices</span><span class="p">),</span>
+</span><span class='line'>           <span class="n">vertices</span><span class="p">,</span> <span class="n">GL_STATIC_DRAW</span><span class="p">);</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">ShaderInfo</span> <span class="n">shaders</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>      <span class="p">{</span> <span class="n">GL_VERTEX_SHADER</span><span class="p">,</span> <span class="s">&quot;simple.vert&quot;</span> <span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span> <span class="n">GL_FRAGMENT_SHADER</span><span class="p">,</span> <span class="s">&quot;simple.frag&quot;</span> <span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span> <span class="n">GL_NONE</span><span class="p">,</span> <span class="nb">NULL</span> <span class="p">}</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">GLuint</span> <span class="n">program</span> <span class="o">=</span> <span class="n">LoadShaders</span><span class="p">(</span><span class="n">shaders</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">glUseProgram</span><span class="p">(</span><span class="n">program</span><span class="p">);</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">glVertexAttribPointer</span><span class="p">(</span><span class="n">vPosition</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">GL_FLOAT</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">GL_FALSE</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">BUFFER_OFFSET</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+</span><span class='line'>  <span class="n">glEnableVertexAttribArray</span><span class="p">(</span><span class="n">vPosition</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">display</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">glClear</span><span class="p">(</span><span class="n">GL_COLOR_BUFFER_BIT</span><span class="p">);</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">glBindVertexArray</span><span class="p">(</span><span class="n">VAOs</span><span class="p">[</span><span class="n">Triangles</span><span class="p">]);</span>
+</span><span class='line'>  <span class="n">glDrawArrays</span><span class="p">(</span><span class="n">GL_TRIANGLES</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">NumVertices</span><span class="p">);</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">glFlush</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">argv</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">glutInit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">glutInitDisplayMode</span><span class="p">(</span><span class="n">GLUT_3_2_CORE_PROFILE</span> <span class="o">|</span> <span class="n">GLUT_RGBA</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">glutInitWindowSize</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">glutCreateWindow</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cm">/*</span>
+</span><span class='line'><span class="cm">  * Normally don&#39;t need GLEW on MacOSX.</span>
+</span><span class='line'><span class="cm">  * But set glewExperimental to TRUE if you want to use it.</span>
+</span><span class='line'><span class="cm">  * Otherwise some funcs like &quot;glGenVertexArray&quot; will be NULL.</span>
+</span><span class='line'><span class="cm">  */</span>
+</span><span class='line'>  <span class="cm">/* glewExperimental = GL_TRUE;</span>
+</span><span class='line'><span class="cm"> if (glewInit()) {</span>
+</span><span class='line'><span class="cm">     cerr &lt;&lt; &quot;Unable to initialize GLEW... exiting&quot; &lt;&lt; endl;</span>
+</span><span class='line'><span class="cm">     exit(EXIT_FAILURE);</span>
+</span><span class='line'><span class="cm"> } */</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Supported GLSL version is: &quot;</span> <span class="o">&lt;&lt;</span>
+</span><span class='line'>      <span class="n">glGetString</span><span class="p">(</span><span class="n">GL_SHADING_LANGUAGE_VERSION</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">init</span><span class="p">();</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">glutDisplayFunc</span><span class="p">(</span><span class="n">display</span><span class="p">);</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">glutMainLoop</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>LoadShaders c++ (LoadShaders.cpp)</span> <a href='/downloads/code/HelloGL/LoadShaders.cpp'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="c1">//////////////////////////////////////////////////////////////////////////////</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">//  --- LoadShaders.cxx ---</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">//////////////////////////////////////////////////////////////////////////////</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#include &lt;cstdlib&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#include &quot;LoadShaders.h&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#ifdef __cplusplus</span>
+</span><span class='line'><span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="p">{</span>
+</span><span class='line'><span class="cp">#endif </span><span class="c1">// __cplusplus</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//----------------------------------------------------------------------------</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="k">const</span> <span class="n">GLchar</span><span class="o">*</span>
+</span><span class='line'><span class="n">ReadShader</span><span class="p">(</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">filename</span> <span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">FILE</span><span class="o">*</span> <span class="n">infile</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span> <span class="n">filename</span><span class="p">,</span> <span class="s">&quot;rb&quot;</span> <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="n">infile</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="cp">#ifdef DEBUG</span>
+</span><span class='line'>        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Unable to open file &#39;&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">filename</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;&#39;&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'><span class="cp">#endif </span><span class="cm">/* DEBUG */</span><span class="cp"></span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">fseek</span><span class="p">(</span> <span class="n">infile</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">SEEK_END</span> <span class="p">);</span>
+</span><span class='line'>    <span class="kt">long</span> <span class="n">len</span> <span class="o">=</span> <span class="n">ftell</span><span class="p">(</span> <span class="n">infile</span> <span class="p">);</span>
+</span><span class='line'>    <span class="n">fseek</span><span class="p">(</span> <span class="n">infile</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">SEEK_SET</span> <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">GLchar</span><span class="o">*</span> <span class="n">source</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GLchar</span><span class="p">[</span><span class="n">len</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">fread</span><span class="p">(</span> <span class="n">source</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">infile</span> <span class="p">);</span>
+</span><span class='line'>    <span class="n">fclose</span><span class="p">(</span> <span class="n">infile</span> <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">source</span><span class="p">[</span><span class="n">len</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="k">const_cast</span><span class="o">&lt;</span><span class="k">const</span> <span class="n">GLchar</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">source</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//----------------------------------------------------------------------------</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">GLuint</span>
+</span><span class='line'><span class="n">LoadShaders</span><span class="p">(</span> <span class="n">ShaderInfo</span><span class="o">*</span> <span class="n">shaders</span> <span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span> <span class="n">shaders</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">0</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">GLuint</span> <span class="n">program</span> <span class="o">=</span> <span class="n">glCreateProgram</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">ShaderInfo</span><span class="o">*</span> <span class="n">entry</span> <span class="o">=</span> <span class="n">shaders</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">while</span> <span class="p">(</span> <span class="n">entry</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">!=</span> <span class="n">GL_NONE</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">GLuint</span> <span class="n">shader</span> <span class="o">=</span> <span class="n">glCreateShader</span><span class="p">(</span> <span class="n">entry</span><span class="o">-&gt;</span><span class="n">type</span> <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">entry</span><span class="o">-&gt;</span><span class="n">shader</span> <span class="o">=</span> <span class="n">shader</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">const</span> <span class="n">GLchar</span><span class="o">*</span> <span class="n">source</span> <span class="o">=</span> <span class="n">ReadShader</span><span class="p">(</span> <span class="n">entry</span><span class="o">-&gt;</span><span class="n">filename</span> <span class="p">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span> <span class="n">source</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">for</span> <span class="p">(</span> <span class="n">entry</span> <span class="o">=</span> <span class="n">shaders</span><span class="p">;</span> <span class="n">entry</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">!=</span> <span class="n">GL_NONE</span><span class="p">;</span> <span class="o">++</span><span class="n">entry</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">glDeleteShader</span><span class="p">(</span> <span class="n">entry</span><span class="o">-&gt;</span><span class="n">shader</span> <span class="p">);</span>
+</span><span class='line'>                <span class="n">entry</span><span class="o">-&gt;</span><span class="n">shader</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">glShaderSource</span><span class="p">(</span> <span class="n">shader</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">source</span><span class="p">,</span> <span class="nb">NULL</span> <span class="p">);</span>
+</span><span class='line'>        <span class="k">delete</span> <span class="p">[]</span> <span class="n">source</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">glCompileShader</span><span class="p">(</span> <span class="n">shader</span> <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">GLint</span> <span class="n">compiled</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">glGetShaderiv</span><span class="p">(</span> <span class="n">shader</span><span class="p">,</span> <span class="n">GL_COMPILE_STATUS</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">compiled</span> <span class="p">);</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="n">compiled</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="cp">#ifdef DEBUG</span>
+</span><span class='line'>            <span class="n">GLsizei</span> <span class="n">len</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">glGetShaderiv</span><span class="p">(</span> <span class="n">shader</span><span class="p">,</span> <span class="n">GL_INFO_LOG_LENGTH</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">len</span> <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">GLchar</span><span class="o">*</span> <span class="n">log</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GLchar</span><span class="p">[</span><span class="n">len</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
+</span><span class='line'>            <span class="n">glGetShaderInfoLog</span><span class="p">(</span> <span class="n">shader</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">len</span><span class="p">,</span> <span class="n">log</span> <span class="p">);</span>
+</span><span class='line'>            <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Shader compilation failed: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">log</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">delete</span> <span class="p">[]</span> <span class="n">log</span><span class="p">;</span>
+</span><span class='line'><span class="cp">#endif </span><span class="cm">/* DEBUG */</span><span class="cp"></span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">glAttachShader</span><span class="p">(</span> <span class="n">program</span><span class="p">,</span> <span class="n">shader</span> <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="o">++</span><span class="n">entry</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#ifdef GL_VERSION_4_1</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span> <span class="n">GLEW_VERSION_4_1</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// glProgramParameteri( program, GL_PROGRAM_SEPARABLE, GL_TRUE );</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="cp">#endif </span><span class="cm">/* GL_VERSION_4_1 */</span><span class="cp"></span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">glLinkProgram</span><span class="p">(</span> <span class="n">program</span> <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">GLint</span> <span class="n">linked</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">glGetProgramiv</span><span class="p">(</span> <span class="n">program</span><span class="p">,</span> <span class="n">GL_LINK_STATUS</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">linked</span> <span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="n">linked</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="cp">#ifdef DEBUG</span>
+</span><span class='line'>        <span class="n">GLsizei</span> <span class="n">len</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">glGetProgramiv</span><span class="p">(</span> <span class="n">program</span><span class="p">,</span> <span class="n">GL_INFO_LOG_LENGTH</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">len</span> <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">GLchar</span><span class="o">*</span> <span class="n">log</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GLchar</span><span class="p">[</span><span class="n">len</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">glGetProgramInfoLog</span><span class="p">(</span> <span class="n">program</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">len</span><span class="p">,</span> <span class="n">log</span> <span class="p">);</span>
+</span><span class='line'>        <span class="n">std</span><span class="o">::</span><span class="n">cerr</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Shader linking failed: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">log</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">delete</span> <span class="p">[]</span> <span class="n">log</span><span class="p">;</span>
+</span><span class='line'><span class="cp">#endif </span><span class="cm">/* DEBUG */</span><span class="cp"></span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span> <span class="n">entry</span> <span class="o">=</span> <span class="n">shaders</span><span class="p">;</span> <span class="n">entry</span><span class="o">-&gt;</span><span class="n">type</span> <span class="o">!=</span> <span class="n">GL_NONE</span><span class="p">;</span> <span class="o">++</span><span class="n">entry</span> <span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>            <span class="n">glDeleteShader</span><span class="p">(</span> <span class="n">entry</span><span class="o">-&gt;</span><span class="n">shader</span> <span class="p">);</span>
+</span><span class='line'>            <span class="n">entry</span><span class="o">-&gt;</span><span class="n">shader</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">program</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//----------------------------------------------------------------------------</span>
+</span><span class='line'><span class="cp">#ifdef __cplusplus</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">#endif </span><span class="c1">// __cplusplus</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>LoadShaders头文件 cpp (LoadShaders.h)</span> <a href='/downloads/code/HelloGL/LoadShaders.h'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#ifndef __LOAD_SHADERS_H__</span>
+</span><span class='line'><span class="cp">#define __LOAD_SHADERS_H__</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#include &lt;OpenGL/gl3.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#ifdef __cplusplus</span>
+</span><span class='line'><span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="p">{</span>
+</span><span class='line'><span class="cp">#endif  </span><span class="c1">// __cplusplus</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//----------------------------------------------------------------------------</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">//  LoadShaders() takes an array of ShaderFile structures, each of which</span>
+</span><span class='line'><span class="c1">//    contains the type of the shader, and a pointer a C-style character</span>
+</span><span class='line'><span class="c1">//    string (i.e., a NULL-terminated array of characters) containing the</span>
+</span><span class='line'><span class="c1">//    entire shader source.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">//  The array of structures is terminated by a final Shader with the</span>
+</span><span class='line'><span class="c1">//    &quot;type&quot; field set to GL_NONE.</span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'><span class="c1">//  LoadShaders() returns the shader program value (as returned by</span>
+</span><span class='line'><span class="c1">//    glCreateProgram()) on success, or zero on failure. </span>
+</span><span class='line'><span class="c1">//</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">GLenum</span>       <span class="n">type</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">const</span> <span class="kt">char</span><span class="o">*</span>  <span class="n">filename</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">GLuint</span>       <span class="n">shader</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span> <span class="n">ShaderInfo</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">GLuint</span> <span class="n">LoadShaders</span><span class="p">(</span> <span class="n">ShaderInfo</span><span class="o">*</span> <span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//----------------------------------------------------------------------------</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#ifdef __cplusplus</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="cp">#endif </span><span class="c1">// __cplusplus</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#endif </span><span class="c1">// __LOAD_SHADERS_H__</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>simple.vert cpp (simple.vert)</span> <a href='/downloads/code/HelloGL/simple.vert'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#version 410 core</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">layout</span><span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="n">in</span> <span class="n">vec4</span> <span class="n">vPosition</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span>
+</span><span class='line'><span class="n">main</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">gl_Position</span> <span class="o">=</span> <span class="n">vPosition</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>simple.frag cpp (simple.frag)</span> <a href='/downloads/code/HelloGL/simple.frag'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#version 410 core</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">out</span> <span class="n">vec4</span> <span class="n">fColor</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span>
+</span><span class='line'><span class="n">main</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">fColor</span> <span class="o">=</span> <span class="n">vec4</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    
+    <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
+      <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
+原文链接: http://www.markzhang.cn/blog/2014/01/06/hellogl-on-macosx/<br>
+您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
+    </section>
+    
+
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Mark Zhang</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-06T21:30:00+08:00" pubdate data-updated="true">Jan 6<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/opengl/'>OpenGL</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2014/01/02/v911-2-tips/" title="Previous Post: 伟力v911-2 心得体会">&laquo; 伟力v911-2 心得体会</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_24x24">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_kaixin001"></a>
+	<a href="http://www.jiathis.com/share?uid=1860527" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1352426099508779" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+  </section>
+
+
+  <section>
+    <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1860527"></script>
+<!-- UY END -->
+
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/blog'>Blog (1)</a></li><li><a href='/blog/categories/git'>git (2)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (1)</a></li><li><a href='/blog/categories/macosx'>MacOSX (1)</a></li><li><a href='/blog/categories/network'>network (1)</a></li><li><a href='/blog/categories/octopress'>Octopress (3)</a></li><li><a href='/blog/categories/opengl'>OpenGL (1)</a></li><li><a href='/blog/categories/rcairplane'>RCAirPlane (1)</a></li><li><a href='/blog/categories/reprints'>reprints (1)</a></li><li><a href='/blog/categories/science'>science (1)</a></li></ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/01/06/hellogl-on-macosx/">OpenGL Programming on MacOS X (Mavericks)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/01/02/v911-2-tips/">伟力v911-2 心得体会</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/27/add-origin-statement-conditionally/">Octopress - 有条件的为文章添加转载声明</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/25/macosx-screen-shot/">MacOS X 如何截屏</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/17/defeating-the-hackers/">Defeating the Hackers</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'super119',
+            count: 0,
+            skip_forks: false,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Mark Zhang -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

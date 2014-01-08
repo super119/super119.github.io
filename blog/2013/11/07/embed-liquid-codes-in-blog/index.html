@@ -180,7 +180,7 @@
 <p>原因地球人都知道，就是博客中插入的代码含有Liquid的if标签。解决办法有两种：</p>
 
 <ol>
-<li><p>使用<code>{% include_file %}</code>。将代码存成一个文件，然后将其include到博客中来。</p></li>
+<li><p>使用<code>{% include_code %}</code>。将代码存成一个文件，然后将其include到博客中来。</p></li>
 <li><p>使用raw标签，将代码（包含三个backticks）使用<code>{% raw %}</code>，<code>{% endraw %}</code>包起来即可。</p></li>
 </ol>
 
@@ -287,11 +287,15 @@ var jiathis_config = {data_track_clickback:'true'};
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/blog'>Blog (1)</a></li><li><a href='/blog/categories/git'>git (2)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (1)</a></li><li><a href='/blog/categories/macosx'>MacOSX (1)</a></li><li><a href='/blog/categories/network'>network (1)</a></li><li><a href='/blog/categories/octopress'>Octopress (3)</a></li><li><a href='/blog/categories/rcairplane'>RCAirPlane (1)</a></li><li><a href='/blog/categories/reprints'>reprints (1)</a></li><li><a href='/blog/categories/science'>science (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/blog'>Blog (1)</a></li><li><a href='/blog/categories/git'>git (2)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (1)</a></li><li><a href='/blog/categories/macosx'>MacOSX (1)</a></li><li><a href='/blog/categories/network'>network (1)</a></li><li><a href='/blog/categories/octopress'>Octopress (3)</a></li><li><a href='/blog/categories/opengl'>OpenGL (1)</a></li><li><a href='/blog/categories/rcairplane'>RCAirPlane (1)</a></li><li><a href='/blog/categories/reprints'>reprints (1)</a></li><li><a href='/blog/categories/science'>science (1)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/01/06/hellogl-on-macosx/">OpenGL Programming on MacOS X (Mavericks)</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/01/02/v911-2-tips/">伟力v911-2 心得体会</a>
@@ -307,10 +311,6 @@ var jiathis_config = {data_track_clickback:'true'};
     
       <li class="post">
         <a href="/blog/2013/12/17/defeating-the-hackers/">Defeating the Hackers</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/04/chnroutes-on-mac/">Chnroutes的使用（Mac OS X Mavericks）</a>
       </li>
     
   </ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Octopress | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-01-02T21:49:05+08:00</updated>
+  <updated>2014-01-08T22:46:10+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -113,7 +113,7 @@ Build Failed
 <p>原因地球人都知道，就是博客中插入的代码含有Liquid的if标签。解决办法有两种：</p>
 
 <ol>
-<li><p>使用<code>{% include_file %}</code>。将代码存成一个文件，然后将其include到博客中来。</p></li>
+<li><p>使用<code>{% include_code %}</code>。将代码存成一个文件，然后将其include到博客中来。</p></li>
 <li><p>使用raw标签，将代码（包含三个backticks）使用<code>{% raw %}</code>，<code>{% endraw %}</code>包起来即可。</p></li>
 </ol>
 
