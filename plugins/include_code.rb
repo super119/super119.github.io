@@ -62,7 +62,7 @@ module Jekyll
         title = @title ? "#{@title} (#{file.basename})" : file.basename
         url = "/#{code_dir}/#{@file}"
         source = "<figure class='code'><figcaption><span>#{title}</span> <a href='#{url}'>download</a></figcaption>\n"
-        if @filetype == "h"
+        if @filetype == "h" || @filetype == "vert" || @filetype == "frag"
           @filetype = "cpp"
         end
         source += "#{highlight(code, @filetype)}</figure>"
