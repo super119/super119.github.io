@@ -3,7 +3,7 @@ layout: post
 title: "伟力v911-2 心得体会"
 date: 2014-01-02 20:56
 comments: true
-categories: RCAirPlane
+categories: RCHelicopter
 ---
 
 伟力v911-2是一款很不错的入门4通航模。说不错，主要是它有以下的优点：
