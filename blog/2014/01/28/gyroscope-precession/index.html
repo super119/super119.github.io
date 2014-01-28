@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Octopress - 有条件的为文章添加转载声明 - Make Things Cool</title>
+  <title>陀螺进动（Gyroscope Precession）和循环螺距（Cyclic Pitch） - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="对于原创的文章，我在Octopress的post模板文件中，加入了一段转载声明。但对于一些好的文章，经常也会忍不住想要转载。所以，对于转载的文章，还出现这么一个转载声明就是打自己耳光了。很显然，要做个小手脚，对于转载的文章，去掉这个转载声明。有意思的是，在这个过程中，我居然发现 liquid &hellip;">
+  <meta name="description" content="循环螺距就是通过改变十字盘（Swashplate），使直升机双桨上的升力造成差异，从而使直升机可以向前、向后、向左、向右移动。之所以称为“循环”（Cyclic），是因为双桨在旋转的过程中，其螺距循环的，有规律的进行改变。 在这其中有一个有意思的现象：陀螺进动（Gyroscope &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2013/12/27/add-origin-statement-conditionally/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/01/28/gyroscope-precession/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -76,7 +76,7 @@
   <header>
     
       
-        <h1 class="entry-title">Octopress - 有条件的为文章添加转载声明</h1>
+        <h1 class="entry-title">陀螺进动（Gyroscope Precession）和循环螺距（Cyclic Pitch）</h1>
       
     
     
@@ -93,69 +93,45 @@
   
 
 
-<time datetime="2013-12-27T15:33:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
+<time datetime="2014-01-28T16:10:00+08:00" pubdate data-updated="true">Jan 28<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>对于原创的文章，我在Octopress的post模板文件中，加入了一段转载声明。但对于一些好的文章，经常也会忍不住想要转载。所以，对于转载的文章，还出现这么一个转载声明就是打自己耳光了。很显然，要做个小手脚，对于转载的文章，去掉这个转载声明。有意思的是，在这个过程中，我居然发现 <code>liquid</code> 语法中没有 <code>逻辑非</code> ?!</p>
+<div class="entry-content"><p>循环螺距就是通过改变十字盘（Swashplate），使直升机双桨上的升力造成差异，从而使直升机可以向前、向后、向左、向右移动。之所以称为“循环”（Cyclic），是因为双桨在旋转的过程中，其螺距循环的，有规律的进行改变。</p>
+
+<p>在这其中有一个有意思的现象：陀螺进动（Gyroscope Precession）。有关这个现象我首先是在这里看到的：</p>
 
 <!-- more -->
 
 
-<p>模板文件的改动非常简单：</p>
+<p><a href="http://www.rchelicopterfun.com/gyroscopic-precession.html">http://www.rchelicopterfun.com/gyroscopic-precession.html</a></p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='diff'><span class='line'><span class="gh">diff --git a/source/_layouts/post.html b/source/_layouts/post.html</span>
-</span><span class='line'><span class="gh">index 5d83b4d201f6..12d6466734ec 100644</span>
-</span><span class='line'><span class="gd">--- a/source/_layouts/post.html</span>
-</span><span class='line'><span class="gi">+++ b/source/_layouts/post.html</span>
-</span><span class='line'><span class="gu">@@ -7,11 +7,14 @@ single: true</span>
-</span><span class='line'> &lt;article class=&quot;hentry&quot; role=&quot;article&quot;&gt;
-</span><span class='line'>   {% include article.html %}
-</span><span class='line'>   &lt;footer&gt;
-</span><span class='line'><span class="gi">+    {% if page.categories contains &quot;reprints&quot; %}</span>
-</span><span class='line'><span class="gi">+    {% else %}</span>
-</span><span class='line'>     &lt;section style=&quot;margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em&quot;&gt;
-</span><span class='line'>       &lt;strong&gt;版权所有 &amp;copy;{{ site.time | date: &#39;%Y&#39; }} 转载本站文章请注明： &lt;/strong&gt;转载自 http://markzhang.cn&lt;br&gt;
-</span><span class='line'> 原文链接: http://www.markzhang.cn{{ page.url }}&lt;br&gt;
-</span><span class='line'> 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
-</span><span class='line'>     &lt;/section&gt;
-</span><span class='line'><span class="gi">+    {% endif %}</span>
-</span><span class='line'>
-</span><span class='line'>     &lt;p class=&quot;meta&quot;&gt;
-</span><span class='line'>       {% include post/author.html %}
-</span></code></pre></td></tr></table></div></figure>
+<p>这篇文章写的很不错，特别是老外还自己拍了两段视频来解释这个事情，非常有趣。</p>
 
+<p>所谓“陀螺进动（Gyroscope Precession）“，指的是如果你给一个正在旋转的陀螺一个力的话，那么这个力产生的运动将与力的方向偏离90度。</p>
 
-<p>所以，大体上是这样：</p>
+<p>所以，在直升机上，高速旋转的主旋翼就相当于一个陀螺，那么当我们试图通过改变十字盘的姿态来使直升机向前后左右移动时，就需要注意这个90度的问题。</p>
 
-<ol>
-<li>代码检查当前的文章是否属于 <code>reprints</code> 这个category，如果是的话，就不会加入转载声明那一段文字。</li>
-<li>由于Octopress中一篇文章可以属于多个category，所以，新增 <code>reprints</code> 这么一个category不会带来什么影响，反而还可以让我们通过这个category快速的浏览所有我们转载的文章。</li>
-<li>有意思的就是，正如前面所说，<code>liquid</code> 语法中没有 <code>逻辑非</code>，所以我在StackOverflow上找到了大家一般是这么做的：if后面直接接else. 相当的ugly，但是it works!</li>
-</ol>
+<p>举例来说：假设我们想让直升机向前运动。那么很自然的，我们想象中应该是这样来实现：</p>
 
+<p>假设直升机的姿态是这样：视点是从上往下俯视直升机，直升机的头对准12点，尾对准6点，两个旋翼和直升机没有夹角，也就是旋翼也是对准12点和6点。那么此时我们只需要加大对准6点的旋翼的螺距，同时减小（甚至无需减小）对准12点的旋翼的螺距，那么这两片旋翼立刻产生升力差，从而导致直升机前倾从而向前运动。</p>
+
+<p>但是由于陀螺进动，我们知道如果按照上面的方法来做，直升机将会向右运动（如果是旋翼是顺时针旋转的话），而不是向前运动。所以，我们需要让旋翼在对准9点和3点这两个位置时，改变两片旋翼的螺距，产生升力差，最后由于陀螺进动，使直升机向前运动。</p>
+
+<p>OK，明白了上面的内容之后，很自然的，我们就会想到上述这些东西在直升机是，具体来说是在十字盘上，是如何实现的呢？我们知道，当我们操纵直升机向前后左右移动的时候，十字盘也是向前后左右倾斜的，那在陀螺进动下，为什么能让直升机正确的运动呢？</p>
+
+<p>答案是，旋翼的桨夹和十字盘有一个90度的夹角。引用一下论坛上某位模友的一张图：</p>
+
+<p><img src="/downloads/image/rotor-hub.jpg" alt="直升机桨夹 Helicopter Rotor Hub" /></p>
+
+<p>引用帖子的地址是：</p>
+
+<p><a href="http://bbs.mx3g.com/forum.php?mod=viewthread&amp;tid=208032&amp;ordertype=1">http://bbs.mx3g.com/forum.php?mod=viewthread&amp;tid=208032&amp;ordertype=1</a></p>
+
+<p>这下就很清楚了，虽然十字盘的姿态跟我们控制的是一致的，但是由于桨夹有90度的一个偏转，所以正好就满足了陀螺进动的要求。如果还是想不明白，拿出直升机来一看便知。</p>
 </div>
 
 
@@ -163,7 +139,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2013/12/27/add-origin-statement-conditionally/<br>
+原文链接: http://www.markzhang.cn/blog/2014/01/28/gyroscope-precession/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -186,12 +162,12 @@
   
 
 
-<time datetime="2013-12-27T15:33:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
+<time datetime="2014-01-28T16:10:00+08:00" pubdate data-updated="true">Jan 28<span>th</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/octopress/'>Octopress</a>
+    <a class='category' href='/blog/categories/rchelicopter/'>RCHelicopter</a>
   
 </span>
 
@@ -207,10 +183,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/12/25/macosx-screen-shot/" title="Previous Post: MacOS X 如何截屏">&laquo; MacOS X 如何截屏</a>
+        <a class="basic-alignment left articlenav" href="/blog/2014/01/20/internet-plugins-on-mavericks/" title="Previous Post: MacOS X Mavericks上的浏览器插件的问题">&laquo; MacOS X Mavericks上的浏览器插件的问题</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/01/02/v911-2-tips/" title="Next Post: 伟力v911-2 心得体会">伟力v911-2 心得体会 &raquo;</a>
       
     </p>
   </footer>

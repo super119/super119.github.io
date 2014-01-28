@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: RCAirPlane | Make Things Cool]]></title>
-  <link href="http://www.markzhang.cn/blog/categories/rcairplane/atom.xml" rel="self"/>
+  <title><![CDATA[Category: RCHelicopter | Make Things Cool]]></title>
+  <link href="http://www.markzhang.cn/blog/categories/rchelicopter/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-01-20T21:47:29+08:00</updated>
+  <updated>2014-01-28T16:43:04+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,46 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[陀螺进动（Gyroscope Precession）和循环螺距（Cyclic Pitch）]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/01/28/gyroscope-precession/"/>
+    <updated>2014-01-28T16:10:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/01/28/gyroscope-precession</id>
+    <content type="html"><![CDATA[<p>循环螺距就是通过改变十字盘（Swashplate），使直升机双桨上的升力造成差异，从而使直升机可以向前、向后、向左、向右移动。之所以称为“循环”（Cyclic），是因为双桨在旋转的过程中，其螺距循环的，有规律的进行改变。</p>
+
+<p>在这其中有一个有意思的现象：陀螺进动（Gyroscope Precession）。有关这个现象我首先是在这里看到的：</p>
+
+<!-- more -->
+
+
+<p><a href="http://www.rchelicopterfun.com/gyroscopic-precession.html">http://www.rchelicopterfun.com/gyroscopic-precession.html</a></p>
+
+<p>这篇文章写的很不错，特别是老外还自己拍了两段视频来解释这个事情，非常有趣。</p>
+
+<p>所谓“陀螺进动（Gyroscope Precession）“，指的是如果你给一个正在旋转的陀螺一个力的话，那么这个力产生的运动将与力的方向偏离90度。</p>
+
+<p>所以，在直升机上，高速旋转的主旋翼就相当于一个陀螺，那么当我们试图通过改变十字盘的姿态来使直升机向前后左右移动时，就需要注意这个90度的问题。</p>
+
+<p>举例来说：假设我们想让直升机向前运动。那么很自然的，我们想象中应该是这样来实现：</p>
+
+<p>假设直升机的姿态是这样：视点是从上往下俯视直升机，直升机的头对准12点，尾对准6点，两个旋翼和直升机没有夹角，也就是旋翼也是对准12点和6点。那么此时我们只需要加大对准6点的旋翼的螺距，同时减小（甚至无需减小）对准12点的旋翼的螺距，那么这两片旋翼立刻产生升力差，从而导致直升机前倾从而向前运动。</p>
+
+<p>但是由于陀螺进动，我们知道如果按照上面的方法来做，直升机将会向右运动（如果是旋翼是顺时针旋转的话），而不是向前运动。所以，我们需要让旋翼在对准9点和3点这两个位置时，改变两片旋翼的螺距，产生升力差，最后由于陀螺进动，使直升机向前运动。</p>
+
+<p>OK，明白了上面的内容之后，很自然的，我们就会想到上述这些东西在直升机是，具体来说是在十字盘上，是如何实现的呢？我们知道，当我们操纵直升机向前后左右移动的时候，十字盘也是向前后左右倾斜的，那在陀螺进动下，为什么能让直升机正确的运动呢？</p>
+
+<p>答案是，旋翼的桨夹和十字盘有一个90度的夹角。引用一下论坛上某位模友的一张图：</p>
+
+<p><img src="/downloads/image/rotor-hub.jpg" alt="直升机桨夹 Helicopter Rotor Hub" /></p>
+
+<p>引用帖子的地址是：</p>
+
+<p><a href="http://bbs.mx3g.com/forum.php?mod=viewthread&amp;tid=208032&amp;ordertype=1">http://bbs.mx3g.com/forum.php?mod=viewthread&amp;tid=208032&amp;ordertype=1</a></p>
+
+<p>这下就很清楚了，虽然十字盘的姿态跟我们控制的是一致的，但是由于桨夹有90度的一个偏转，所以正好就满足了陀螺进动的要求。如果还是想不明白，拿出直升机来一看便知。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[伟力v911-2 心得体会]]></title>
