@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Octopress - 有条件的为文章添加转载声明 - Make Things Cool</title>
+  <title>KGDB使用简介 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="对于原创的文章，我在Octopress的post模板文件中，加入了一段转载声明。但对于一些好的文章，经常也会忍不住想要转载。所以，对于转载的文章，还出现这么一个转载声明就是打自己耳光了。很显然，要做个小手脚，对于转载的文章，去掉这个转载声明。有意思的是，在这个过程中，我居然发现 liquid &hellip;">
+  <meta name="description" content="KGDB是调试linux kernel的一个工具，虽然没有userspace的gdb那么好用，但有些时候还是能派上一些用处。比如kernel启动的时候自动重启，用kgdb连上之后就可以在kernel重启之前被KGDB截获，从而打印出调用栈来。 具体步骤是这样： Kernel配置 make &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2013/12/27/add-origin-statement-conditionally/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/03/10/kgdb-howto/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -76,7 +76,7 @@
   <header>
     
       
-        <h1 class="entry-title">Octopress - 有条件的为文章添加转载声明</h1>
+        <h1 class="entry-title">KGDB使用简介</h1>
       
     
     
@@ -93,69 +93,82 @@
   
 
 
-<time datetime="2013-12-27T15:33:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
+<time datetime="2014-03-10T13:57:00+08:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>对于原创的文章，我在Octopress的post模板文件中，加入了一段转载声明。但对于一些好的文章，经常也会忍不住想要转载。所以，对于转载的文章，还出现这么一个转载声明就是打自己耳光了。很显然，要做个小手脚，对于转载的文章，去掉这个转载声明。有意思的是，在这个过程中，我居然发现 <code>liquid</code> 语法中没有 <code>逻辑非</code> ?!</p>
+<div class="entry-content"><p>KGDB是调试linux kernel的一个工具，虽然没有userspace的gdb那么好用，但有些时候还是能派上一些用处。比如kernel启动的时候自动重启，用kgdb连上之后就可以在kernel重启之前被KGDB截获，从而打印出调用栈来。</p>
 
 <!-- more -->
 
 
-<p>模板文件的改动非常简单：</p>
+<p>具体步骤是这样：</p>
+
+<h2>Kernel配置</h2>
+
+<ul>
+<li><code>make menuconfig</code>, under &ldquo;Kernel Hacking&rdquo;, enable &ldquo;KGDB&rdquo; &amp; &ldquo;KGDB over serial line&rdquo;. Enable &ldquo;compile kernel with debug info&rdquo;(CONFIG_DEBUG_INFO) &amp; &ldquo;enable frame pointer&rdquo;(CONFIG_FRAME_POINTER) options(both are under &ldquo;Kernel Hacking&rdquo;).</li>
+</ul>
+
+
+<p>有关CONFIG_FRAME_POINTER这个option，需要在enable了ARCH_CONFIG_FRAME_POINTERS这个option之后才会出现在Kernel hacking下面。</p>
+
+<p>这ARCH_CONFIG_FRAME_POINTERS在make menuconfig里面是找不到的。这个option是专门给其他人select用的。一般都是在ARCH config的时候会去select这个option</p>
+
+<p>比如x86下，一般会enable这个option。而ARM则不会（可能是考虑到生成的kernel文件尺寸和性能）。</p>
+
+<p>所以，在ARM下，可以编辑arch/arm/Kconfig，在CONFIG_ARM下面的一堆select的最后，添加上一句select CONFIG_ARCH_FRAME_POINTERS就可以了。</p>
+
+<p>从实验结果来看，只要enable了CONFIG_DEBUG_INFO，基本上就差不多了，能看到代码了。</p>
+
+<ul>
+<li>Add kernel option: <code>kgdboc=ttyS0,38400 kgdbwait</code> into kernel command line.</li>
+</ul>
+
+
+<p>根据我的实验，这里115200不行。在后面gdb设置<code>target remote /dev/ttyS0</code>的时候，会被告知最高支持到38400.</p>
+
+<p>所以，这里如果115200不行，就改成38400。</p>
+
+<p>注意这里将<code>/dev/ttyS0</code>修改成你的串口设备文件。</p>
+
+<ul>
+<li>Start kernel, kernel will wait for connection from remote PC&rsquo;s gdb.</li>
+</ul>
+
+
+<h2>PC端（remote machine）设置</h2>
+
+<ul>
+<li>On remote machine, <code>&lt;gdb path&gt; ./vmlinux</code> &mdash; this &ldquo;vmlinux&rdquo; mostly is under the root directory of kernel(a big kernel image with debug infos, not the one under arch/arm/boot, that is stripped version).</li>
+</ul>
+
+
+<p>需要注意的是，这里的GDB必须使用host是x86-64，target是ARM的那种GDB。我们PC上的gdb一般host和target都是x86-64。</p>
+
+<p>这样的GDB可以在一些常见的toolchain网站找到，比如linaro。</p>
+
+<ul>
+<li>Enter gdb commands:</li>
+</ul>
+
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='diff'><span class='line'><span class="gh">diff --git a/source/_layouts/post.html b/source/_layouts/post.html</span>
-</span><span class='line'><span class="gh">index 5d83b4d201f6..12d6466734ec 100644</span>
-</span><span class='line'><span class="gd">--- a/source/_layouts/post.html</span>
-</span><span class='line'><span class="gi">+++ b/source/_layouts/post.html</span>
-</span><span class='line'><span class="gu">@@ -7,11 +7,14 @@ single: true</span>
-</span><span class='line'> &lt;article class=&quot;hentry&quot; role=&quot;article&quot;&gt;
-</span><span class='line'>   {% include article.html %}
-</span><span class='line'>   &lt;footer&gt;
-</span><span class='line'><span class="gi">+    {% if page.categories contains &quot;reprints&quot; %}</span>
-</span><span class='line'><span class="gi">+    {% else %}</span>
-</span><span class='line'>     &lt;section style=&quot;margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em&quot;&gt;
-</span><span class='line'>       &lt;strong&gt;版权所有 &amp;copy;{{ site.time | date: &#39;%Y&#39; }} 转载本站文章请注明： &lt;/strong&gt;转载自 http://markzhang.cn&lt;br&gt;
-</span><span class='line'> 原文链接: http://www.markzhang.cn{{ page.url }}&lt;br&gt;
-</span><span class='line'> 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
-</span><span class='line'>     &lt;/section&gt;
-</span><span class='line'><span class="gi">+    {% endif %}</span>
-</span><span class='line'>
-</span><span class='line'>     &lt;p class=&quot;meta&quot;&gt;
-</span><span class='line'>       {% include post/author.html %}
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">set </span>remotebaud 38400
+</span><span class='line'>target remote /dev/ttyS0
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>所以，大体上是这样：</p>
+<ul>
+<li>Done. You can list source codes, set breakpoints now. Continue the debugging after finished.</li>
+</ul>
 
-<ol>
-<li>代码检查当前的文章是否属于 <code>reprints</code> 这个category，如果是的话，就不会加入转载声明那一段文字。</li>
-<li>由于Octopress中一篇文章可以属于多个category，所以，新增 <code>reprints</code> 这么一个category不会带来什么影响，反而还可以让我们通过这个category快速的浏览所有我们转载的文章。</li>
-<li>有意思的就是，正如前面所说，<code>liquid</code> 语法中没有 <code>逻辑非</code>，所以我在StackOverflow上找到了大家一般是这么做的：if后面直接接else. 相当的ugly，但是it works!</li>
-</ol>
 
+<p><em>CAUTION</em>: Close any other programs(normally it&rsquo;s minicom which we use to monitor serial outputs) which may occupy &ldquo;/dev/ttyS0&rdquo; before running gdb on remote machine. Otherwise gdb can&rsquo;t connect with target board.</p>
 </div>
 
 
@@ -163,7 +176,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2013/12/27/add-origin-statement-conditionally/<br>
+原文链接: http://www.markzhang.cn/blog/2014/03/10/kgdb-howto/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -186,12 +199,12 @@
   
 
 
-<time datetime="2013-12-27T15:33:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
+<time datetime="2014-03-10T13:57:00+08:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/octopress/'>Octopress</a>
+    <a class='category' href='/blog/categories/linux-kernel/'>linux-kernel</a>
   
 </span>
 
@@ -207,10 +220,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/12/25/macosx-screen-shot/" title="Previous Post: MacOS X 如何截屏">&laquo; MacOS X 如何截屏</a>
+        <a class="basic-alignment left articlenav" href="/blog/2014/02/08/virtualbox-ubuntu-dns-issue/" title="Previous Post: VirtualBox中安装Ubuntu，在有VPN的情况下会有DNS的问题">&laquo; VirtualBox中安装Ubuntu，在有VPN的情况下会有DNS的问题</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/01/02/v911-2-tips/" title="Next Post: 伟力v911-2 心得体会">伟力v911-2 心得体会 &raquo;</a>
       
     </p>
   </footer>
