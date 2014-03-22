@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-03-20T22:56:14+08:00</updated>
+  <updated>2014-03-22T20:32:48+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,63 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[架设无线桥接网络（WDS）]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/03/22/setup-wireless-wds/"/>
+    <updated>2014-03-22T19:54:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/03/22/setup-wireless-wds</id>
+    <content type="html"><![CDATA[<p>现在的无线路由器动辄3根天线，号称穿墙能力如何如何，信号可以从一楼一直覆盖到三楼。但是根据我几年来使用了N款无线路由器之后，发现都是扯。我现在使用的是一台ASUS的，3根天线，128M内存的无线路由器，支持刷第三方固件（如DD-WRT, Tomato），但是穿墙效果还是无法让人满意。路由器放在房间，客厅的信号就是时有时无。当然，我指的是使用ipad或者手机时，信号较弱，如果使用笔记本电脑要好一些。</p>
+
+<p>忍受了2年之后，我决定在客厅再放一个无线路由器，做无线桥接（WDS）使用，彻底摆脱信号之苦。</p>
+
+<!-- more -->
+
+
+<p>简单说下两台路由器：</p>
+
+<ol>
+<li><p>做AP用的，也是连接着Internet的，就是那台ASUS的，放在书房。</p></li>
+<li><p>做桥接用的，放在客厅的，是一台特价的时候买的四十块钱的Tenda（腾达）的无线路由器。</p></li>
+</ol>
+
+
+<p>其实网上介绍WDS的文章很多，但是很多文章都不适用于我的情况，所以做了很多次测试。</p>
+
+<p>最后配置完成之后，发现其实非常简单：</p>
+
+<h2>主路由器（做AP用的ASUS的那台）的配置</h2>
+
+<p>由于我这台ASUS的路由器给我刷了Tomato的固件，所以这里是Tomato中的配置方法。按照下图配置即可：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/tomato-ap-wds.png" alt="Tomato AP+WDS 配置" /></p>
+
+<ul>
+<li>工作模式设置成 <code>AP + WDS</code></li>
+<li>通道尽量选择一个没人使用的。现在每家每户都有无线路由器，所以常见通道很多人都在使用，挑一个没人使用的比较好</li>
+<li>无线加密还是按照以前的就好，现在基本上用的都是 <code>WPA2 Personal</code> 了</li>
+<li>WDS一项中，你可以将辅路由器的MAC地址填写进去，也可以像上面的图中所示，选成AUTO</li>
+</ul>
+
+
+<h2>辅路由器（做桥接用的Tenda的那台）的配置</h2>
+
+<p>忘记截图了，但是只需要确保以下几点即可：</p>
+
+<ul>
+<li>Internet连接要关闭，因为是做桥接用。没有关闭就设成有线网络连接Internet，反正我们不会插网线上去，所以等于禁用了</li>
+<li>LAN的网段不要设成跟主路由器一个网段，以免冲突。比如主路由器是192.168.1.x, 辅路由器就可以设成192.168.2.x</li>
+<li>关闭DHCP，因为所有的WIFI数据会被发送到主路由器去</li>
+<li>工作模式设成WDS，然后填写主路由器的无线MAC地址。一般的路由器都会有一个Scan按钮，可以给出所有的无线网络，选择主路由器那个即可</li>
+<li>无线加密设置成跟主路由器一样（加密方法、密钥），这很重要</li>
+</ul>
+
+
+<p>我这个Tenda的路由器，设成WDS模式之后，无线的SSID就会自动设置成跟主路由器一样。所以，当做完上面的设置之后，家里就只有一个无线信号，走到书房就自动连接到主路由器，走到客厅就会自动连接到辅路由器，Cool。</p>
+
+<p>Have a good day!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[在Ubuntu上连接Juniper SSL VPN]]></title>

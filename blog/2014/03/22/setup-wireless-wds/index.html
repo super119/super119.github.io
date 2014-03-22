@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Octopress - 有条件的为文章添加转载声明 - Make Things Cool</title>
+  <title>架设无线桥接网络（WDS） - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="对于原创的文章，我在Octopress的post模板文件中，加入了一段转载声明。但对于一些好的文章，经常也会忍不住想要转载。所以，对于转载的文章，还出现这么一个转载声明就是打自己耳光了。很显然，要做个小手脚，对于转载的文章，去掉这个转载声明。有意思的是，在这个过程中，我居然发现 liquid &hellip;">
+  <meta name="description" content="现在的无线路由器动辄3根天线，号称穿墙能力如何如何，信号可以从一楼一直覆盖到三楼。但是根据我几年来使用了N款无线路由器之后，发现都是扯。我现在使用的是一台ASUS的，3根天线，128M内存的无线路由器，支持刷第三方固件（如DD-WRT, Tomato），但是穿墙效果还是无法让人满意。路由器放在房间 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2013/12/27/add-origin-statement-conditionally/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/03/22/setup-wireless-wds/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -76,7 +76,7 @@
   <header>
     
       
-        <h1 class="entry-title">Octopress - 有条件的为文章添加转载声明</h1>
+        <h1 class="entry-title">架设无线桥接网络（WDS）</h1>
       
     
     
@@ -93,69 +93,62 @@
   
 
 
-<time datetime="2013-12-27T15:33:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
+<time datetime="2014-03-22T19:54:00+08:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>对于原创的文章，我在Octopress的post模板文件中，加入了一段转载声明。但对于一些好的文章，经常也会忍不住想要转载。所以，对于转载的文章，还出现这么一个转载声明就是打自己耳光了。很显然，要做个小手脚，对于转载的文章，去掉这个转载声明。有意思的是，在这个过程中，我居然发现 <code>liquid</code> 语法中没有 <code>逻辑非</code> ?!</p>
+<div class="entry-content"><p>现在的无线路由器动辄3根天线，号称穿墙能力如何如何，信号可以从一楼一直覆盖到三楼。但是根据我几年来使用了N款无线路由器之后，发现都是扯。我现在使用的是一台ASUS的，3根天线，128M内存的无线路由器，支持刷第三方固件（如DD-WRT, Tomato），但是穿墙效果还是无法让人满意。路由器放在房间，客厅的信号就是时有时无。当然，我指的是使用ipad或者手机时，信号较弱，如果使用笔记本电脑要好一些。</p>
+
+<p>忍受了2年之后，我决定在客厅再放一个无线路由器，做无线桥接（WDS）使用，彻底摆脱信号之苦。</p>
 
 <!-- more -->
 
 
-<p>模板文件的改动非常简单：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='diff'><span class='line'><span class="gh">diff --git a/source/_layouts/post.html b/source/_layouts/post.html</span>
-</span><span class='line'><span class="gh">index 5d83b4d201f6..12d6466734ec 100644</span>
-</span><span class='line'><span class="gd">--- a/source/_layouts/post.html</span>
-</span><span class='line'><span class="gi">+++ b/source/_layouts/post.html</span>
-</span><span class='line'><span class="gu">@@ -7,11 +7,14 @@ single: true</span>
-</span><span class='line'> &lt;article class=&quot;hentry&quot; role=&quot;article&quot;&gt;
-</span><span class='line'>   {% include article.html %}
-</span><span class='line'>   &lt;footer&gt;
-</span><span class='line'><span class="gi">+    {% if page.categories contains &quot;reprints&quot; %}</span>
-</span><span class='line'><span class="gi">+    {% else %}</span>
-</span><span class='line'>     &lt;section style=&quot;margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em&quot;&gt;
-</span><span class='line'>       &lt;strong&gt;版权所有 &amp;copy;{{ site.time | date: &#39;%Y&#39; }} 转载本站文章请注明： &lt;/strong&gt;转载自 http://markzhang.cn&lt;br&gt;
-</span><span class='line'> 原文链接: http://www.markzhang.cn{{ page.url }}&lt;br&gt;
-</span><span class='line'> 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
-</span><span class='line'>     &lt;/section&gt;
-</span><span class='line'><span class="gi">+    {% endif %}</span>
-</span><span class='line'>
-</span><span class='line'>     &lt;p class=&quot;meta&quot;&gt;
-</span><span class='line'>       {% include post/author.html %}
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>所以，大体上是这样：</p>
+<p>简单说下两台路由器：</p>
 
 <ol>
-<li>代码检查当前的文章是否属于 <code>reprints</code> 这个category，如果是的话，就不会加入转载声明那一段文字。</li>
-<li>由于Octopress中一篇文章可以属于多个category，所以，新增 <code>reprints</code> 这么一个category不会带来什么影响，反而还可以让我们通过这个category快速的浏览所有我们转载的文章。</li>
-<li>有意思的就是，正如前面所说，<code>liquid</code> 语法中没有 <code>逻辑非</code>，所以我在StackOverflow上找到了大家一般是这么做的：if后面直接接else. 相当的ugly，但是it works!</li>
+<li><p>做AP用的，也是连接着Internet的，就是那台ASUS的，放在书房。</p></li>
+<li><p>做桥接用的，放在客厅的，是一台特价的时候买的四十块钱的Tenda（腾达）的无线路由器。</p></li>
 </ol>
 
+
+<p>其实网上介绍WDS的文章很多，但是很多文章都不适用于我的情况，所以做了很多次测试。</p>
+
+<p>最后配置完成之后，发现其实非常简单：</p>
+
+<h2>主路由器（做AP用的ASUS的那台）的配置</h2>
+
+<p>由于我这台ASUS的路由器给我刷了Tomato的固件，所以这里是Tomato中的配置方法。按照下图配置即可：</p>
+
+<p><img src="/downloads/image/tomato-ap-wds.png" alt="Tomato AP+WDS 配置" /></p>
+
+<ul>
+<li>工作模式设置成 <code>AP + WDS</code></li>
+<li>通道尽量选择一个没人使用的。现在每家每户都有无线路由器，所以常见通道很多人都在使用，挑一个没人使用的比较好</li>
+<li>无线加密还是按照以前的就好，现在基本上用的都是 <code>WPA2 Personal</code> 了</li>
+<li>WDS一项中，你可以将辅路由器的MAC地址填写进去，也可以像上面的图中所示，选成AUTO</li>
+</ul>
+
+
+<h2>辅路由器（做桥接用的Tenda的那台）的配置</h2>
+
+<p>忘记截图了，但是只需要确保以下几点即可：</p>
+
+<ul>
+<li>Internet连接要关闭，因为是做桥接用。没有关闭就设成有线网络连接Internet，反正我们不会插网线上去，所以等于禁用了</li>
+<li>LAN的网段不要设成跟主路由器一个网段，以免冲突。比如主路由器是192.168.1.x, 辅路由器就可以设成192.168.2.x</li>
+<li>关闭DHCP，因为所有的WIFI数据会被发送到主路由器去</li>
+<li>工作模式设成WDS，然后填写主路由器的无线MAC地址。一般的路由器都会有一个Scan按钮，可以给出所有的无线网络，选择主路由器那个即可</li>
+<li>无线加密设置成跟主路由器一样（加密方法、密钥），这很重要</li>
+</ul>
+
+
+<p>我这个Tenda的路由器，设成WDS模式之后，无线的SSID就会自动设置成跟主路由器一样。所以，当做完上面的设置之后，家里就只有一个无线信号，走到书房就自动连接到主路由器，走到客厅就会自动连接到辅路由器，Cool。</p>
+
+<p>Have a good day!</p>
 </div>
 
 
@@ -163,7 +156,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2013/12/27/add-origin-statement-conditionally/<br>
+原文链接: http://www.markzhang.cn/blog/2014/03/22/setup-wireless-wds/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -186,12 +179,12 @@
   
 
 
-<time datetime="2013-12-27T15:33:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
+<time datetime="2014-03-22T19:54:00+08:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/octopress/'>Octopress</a>
+    <a class='category' href='/blog/categories/network/'>network</a>
   
 </span>
 
@@ -207,10 +200,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/12/25/macosx-screen-shot/" title="Previous Post: MacOS X 如何截屏">&laquo; MacOS X 如何截屏</a>
+        <a class="basic-alignment left articlenav" href="/blog/2014/03/20/juniper-vpn-on-ubuntu/" title="Previous Post: 在Ubuntu上连接Juniper SSL VPN">&laquo; 在Ubuntu上连接Juniper SSL VPN</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/01/02/v911-2-tips/" title="Next Post: 伟力v911-2 心得体会">伟力v911-2 心得体会 &raquo;</a>
       
     </p>
   </footer>
