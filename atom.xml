@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-03-22T20:32:48+08:00</updated>
+  <updated>2014-03-25T22:03:58+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,41 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[给Mac OS X上的Chrome添加SSL证书]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/03/25/mac-chrome-add-ssl-certification/"/>
+    <updated>2014-03-25T21:49:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/03/25/mac-chrome-add-ssl-certification</id>
+    <content type="html"><![CDATA[<p>Chrome在访问自签名SSL证书的网站时，会给出一个warning的页面，每次都要去点一下那个 <code>Proceed</code> 按钮特烦。每天点一次，日积月累下来每年也要花不少时间来点这个破玩意。Chrome就不能聪明一点来个诸如”记住我的选择“这样的按钮么？</p>
+
+<p>折腾总是发生在忍无可忍的时候，幸好要解决这个问题不麻烦。</p>
+
+<!-- more -->
+
+
+<ul>
+<li><p>首先就是把SSL证书导出了。这个非常容易，访问一下有SSL warning的那个网站，在Chrome给出的warning页面，地址栏的开头有一个被划了斜线的https，点那里就可以看到证书的信息，从而可以将证书导出出来。</p></li>
+<li><p>然后就是导入这个证书了。直接在Mac OS X的应用列表中启动 <code>Keychain Access</code>，当然你也可以在Chrome里面选择Settings &ndash;> Advanced settings &ndash;> Manage Certification，这样出来的就是Mac OS X的 <code>Keychain Access</code> 这个应用程序。</p></li>
+</ul>
+
+
+<p><img src="http://www.markzhang.cn/downloads/image/keychain-access.png" alt="Keychain Access" /></p>
+
+<ul>
+<li><p>在 <code>Keychain Access</code> 的界面中，点击左下的 + 按钮，选择刚才得到的SSL证书，就将该证书导入了。</p></li>
+<li><p>最后我们要选择 <code>Always Trust</code> 这个证书，否则SSL warning还是会有。在 <code>Keychain Access</code> 中，双击刚才导入的证书，在出现的对话框中，展开 <code>Trust</code> 那个部分，然后选择 <code>Always Trust</code> 就可以了。比如下图就是12306网站的SSL证书：</p></li>
+</ul>
+
+
+<p><img src="http://www.markzhang.cn/downloads/image/keychain-always-trust.png" alt="Always trust SSL certification" /></p>
+
+<ul>
+<li>重启Chrome，再访问那个网站，就没有SSL warning了。</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[架设无线桥接网络（WDS）]]></title>
