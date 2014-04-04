@@ -4,7 +4,7 @@
   <title><![CDATA[Category: git | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/git/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-03-25T22:03:58+08:00</updated>
+  <updated>2014-04-04T14:57:10+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,59 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Git都在说些啥（一）]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/04/04/git-gossip-1/"/>
+    <updated>2014-04-04T14:28:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/04/04/git-gossip-1</id>
+    <content type="html"><![CDATA[<p>当我们在做某些git操作的时候，git有的时候会给出一段一段的提示信息，而往往这些信息都是比较重要的。因为按照UNIX的设计哲学，执行成功或是无害操作，这些都是不会有任何提示信息的。做Linux的Hackers也奉行这种哲学，所以当git开始唠叨的时候，你真的需要关注一下它到底在罗嗦些啥。</p>
+
+<p>这篇文章描述的就是某一个git的唠叨。</p>
+
+<!-- more -->
+
+
+<p>有的时候，特别是当执行 <code>git checkout</code> 的时候，你可能会看到这样的信息：</p>
+
+<blockquote><p>Warning: you are leaving 30 commits behind, not connected to
+any of your branches:</p>
+
+<p>2553655 Merge branch &lsquo;master&rsquo; into prod</p>
+
+<p>6b07300 Fix build</p>
+
+<p>&hellip; and 28 more.</p>
+
+<p>If you want to keep them by creating a new branch, this may be a good time
+to do so with:</p>
+
+<p>git branch new_branch_name 654646464</p></blockquote>
+
+<p>注：以上信息来自：<a href="https://groups.google.com/forum/#!topic/git-users/4XC8KhZ-cBM">https://groups.google.com/forum/#!topic/git-users/4XC8KhZ-cBM</a></p>
+
+<p>所以git的这段罗嗦到底是什么意思？</p>
+
+<p>发生这种情况时，你一般工作在 <code>no branch</code> 上，也就是说，这个branch没有名字。也就是说，一旦你发生了 <code>git checkout</code> 操作之后，无法你是checkout到了一个有名字的branch，还是没有指定checkout的branch，就是更新本地的文件，这个 <code>no branch</code> 就再也回不去了，因为这个branch没有名字，所以你无法告诉git，我需要再回到这个branch上去。</p>
+
+<p>基于此，如果你在 <code>no branch</code> 上有一些commit（无论是你自己commit的，还是你cherry-pick的），那么，当发生 <code>git checkout</code> 的时候，git就会给出上面的信息，告诉你，如果你现在不做点事的话，之前你所在的 <code>no branch</code> 就再也回不去了，所以，这个时候你最好建一个branch来保证你还能回到 <code>no branch</code> 上去：</p>
+
+<blockquote><p>If you want to keep them by creating a new branch, this may be a good time
+to do so with:</p>
+
+<p>git branch new_branch_name 654646464</p></blockquote>
+
+<p>事实上，如果你真的碰到了这种情况，而且当git给出上面一段信息告诉了你利害关系之后，你仍然义无反顾的无视了git的警告，没有创建一个有名字的branch来保存之前你在 <code>no branch</code> 上的工作成果，最终在某一天你想起来，想要找回N久之前在 <code>no branch</code> 上的一些commit的话，你仍然还有一根救命稻草：</p>
+
+<p><code>git reflog</code></p>
+
+<p>基本上，<code>git reflog</code> 将给出所有“失联”的commit。也就是说，这些commit不属于任何branch（no connection），从git数据库中删掉也无所谓。</p>
+
+<p>所以，你最好期望 <code>git reflog</code> 中有你需要的commit，因为就像上面所说，这些commit本就是可以被安全删除的commit，如果你做过 <code>git gc</code>，或者是git自动做过 <code>git gc</code> 的话（git有一套逻辑来判断什么时候应该做一次gc），这些commit就真的没有了。</p>
+
+<p>注：上面一段说的有点严重，事实上，git对待失联的commit，有一个expire time的设定，所以也不是说一旦执行过 <code>git gc</code>，这些commit就真的没有了。但是为了安全起见，对于重要的commit，还是需要注意不要丢了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Git常见命令和配置]]></title>
