@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-04-04T14:57:10+08:00</updated>
+  <updated>2014-04-08T21:03:47+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,54 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[一站式密码管理器 - LastPass]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/04/08/lastpass/"/>
+    <updated>2014-04-08T19:56:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/04/08/lastpass</id>
+    <content type="html"><![CDATA[<p>我个人感觉，密码是相当反人类的设计。当你刚接触互联网的时候，可能感觉不到，甚至感觉理所当然，银行卡也需要设置密码呢。但是当访问的网站越来越多，各个站点论坛都需要注册用户、设置密码，多了之后密码就会变成非常痛苦的一种体验。</p>
+
+<!-- more -->
+
+
+<p>其实人自身就有很多唯一（Unique）的存在，密码不应该有存在的理由。之前我看过一个BBC的纪录片，为此还写过一篇博文：</p>
+
+<p><a href="http://markzhang.cn/blog/2013/12/17/defeating-the-hackers/">密码之外的新的安全认证手段</a></p>
+
+<p>之所以现在密码还被大量使用，可能现在技术还没有成熟、成本还没有降低到能普及的程度吧。</p>
+
+<p>所以现在也涌现出了很多“密码管理”类的网站和应用，LastPass就是其中之一。我简单使用了一下，感觉还是挺方便的。</p>
+
+<p>首先就是去<a href="http://www.lastpass.com">http://www.lastpass.com</a>注册一个账号了，不好意思，这里你又需要设置一个密码了。好在的是，设置了这个密码之后，以后的所有密码都不需要再记忆了，LastPass会帮你管理。所以，反过来说，一旦你的LastPass的密码被泄露的话，那后果就不堪设想了，所以为了安全起见，一些涉及到钱财类的密码还是单独设置吧，别依赖LastPass了。。。比如支付宝。:)</p>
+
+<p>然后就是在LastPass的主页上，点击“下载”，就会下载一个针对你的浏览器的插件。我使用的是Chrome，所以一个Chrome插件就自动下载并安装了。安装完成之后，点击工具栏上出现的 <code>*</code> 字图标，输入你的LastPass的账号和密码，一切就已经就绪了。</p>
+
+<p>LastPass有许多功能，比如表单的自动填写、Profile的设定等，但是我只使用了它的一个功能：自动生成密码。LastPass自动生成密码可以选择密码长度，默认是12个字符，也可以选择字符种类，比如包不包含特殊字符（默认不包含，因为有一些网站只接受字母和数字作为密码）等。</p>
+
+<p>所以接下来我就先登录了一个我常去的网站，进入到账户设定，修改密码的页面，在新密码设定的输入框中，点击LastPass，选择自动生成密码，LastPass就会生成一个12个字符的密码并自动填充到密码框中，并且该密码自动保存在了你的LastPass的账户里面：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/lastpass-saved-passwd.png" alt="LastPass自动生成并保存的密码" /></p>
+
+<p>上图显示的就是我新生成的淘宝的密码，这里面URL这一项很重要，LastPass会根据URL中的 <code>domain name</code> ，来检测你当前访问的网站是否在LastPass中有对应的密码记录。举上面的例子来说，URL是 <code>http://110.taobao.com/...</code>，所以下次只要你访问 <code>xxx.taobao.com/xxxx</code> 这样的网址，在网页中所有的密码输入框中都会出现一个 <code>*</code> 字图标，并且有一个下标1，表示该网站LastPass中有一个匹配的密码记录，只要点击这个 <code>*</code> 字图标，密码就自动填到密码框中了，很方便：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/lastpass-autofill.png" alt="LastPass自动填充密码" /></p>
+
+<p>那有的时候，有些网站，比如淘宝，支付宝，网银等，密码输入都是有控件的，所以LastPass没法自动在密码框里面插入那个 <code>*</code> 字图标，这个时候怎么办？这也没有问题，只是稍微麻烦一点。以我使用Chrome浏览器，还是访问淘宝来举例，只需要去点击工具栏上那个LastPass的图标（这个图标也有一个1字的下标，表示该网站有一个对应的密码记录），选择 <code>Show matching sites</code> &ndash;> <code>Generated password for taobao.com</code> &ndash;> <code>Copy password</code>，然后再到密码输入框里面去粘贴就好了。如果很不幸你的网站的密码输入框不允许粘贴，那你只能手动去LastPass的密码保存页面，找到那个密码，然后手动输入了。。。</p>
+
+<p>最后说一个我觉得是必须要设置的地方，就是 <code>Equivalent Domains</code>。要设置这个东西的原因在于，很多网站密码设置、修改不在一个domain上。比如126邮箱，使用的时候，我们登录的是www.126.com，但是修改密码的时候，是跳转到网易通行证的网站，也就是163.com；再比如139邮箱，登录的是139.com，但网页会自动跳转到10086.cn，又或者是cmpassport.com；淘宝也是，taobao.com/alipay.com/zhifubao.com这三个域名很多时候都是关联的，其实需要的都是相同的用户名和密码。上面提到，LastPass是根据 <code>domain name</code>，也就是域名来检测你当前访问的网页是否有匹配的密码记录的，所以如果你保存密码的时候，密码对应的域名是taobao.com，但是你现在访问某个alipay.com的网页，也需要这个密码，这个时候如果你不设置 <code>Equivalent Domains</code>的话，LastPass就不会自动提示密码了。</p>
+
+<p>所以，点击工具栏上LastPass的图标，选择 <code>My LastPass Vault</code> &ndash;> <code>Settings</code> &ndash;> <code>Equivalent Domains</code>标签页，在里面新增一个记录，比如这样：</p>
+
+<p><code>taobao.com, alipay.com</code></p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/lastpass-equivalent-domains.png" alt="LastPass Equivalent Domains" /></p>
+
+<p>保存之后，下次你访问某个alipay.com的页面，LastPass就会提示你淘宝的密码了。当然这里只是举例，如果你的淘宝账户和alipay的账户是分开的，那自然就不需要这样设置。</p>
+
+<p>最后，给你的LastPass的账户设置一个强密码，然后祈祷LastPass不会被墙，LastPass的密码数据库不会被盗吧！还有就是，真正涉及到钱的网站，比如支付宝、网银等，还是不要使用LastPass来管理密码吧，虽然记忆N个密码实在麻烦，但是麻烦总好过丢钱吧。。。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Git都在说些啥（一）]]></title>
@@ -1876,22 +1924,6 @@ to do so with:</p>
 
 
 <p><strong>Note:</strong> 有一个注意点就是友言会采集当前域名作为评论来源的一个index，来归类存放你的留言。所以在<code>rake preview</code>的时候，是看不到友言的评论框的。只有将你的博客上传到了网络上之后，你才能看到。因为很多时候我们开发完了都会使用<code>rake preview</code>先在本地<code>http://localhost:4000</code>上看一下，所以这是看不到的，并不是代码有问题。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[博客 Code Names]]></title>
-    <link href="http://www.markzhang.cn/blog/2013/11/04/blog-code-names/"/>
-    <updated>2013-11-04T20:46:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2013/11/04/blog-code-names</id>
-    <content type="html"><![CDATA[<p>跟老美共事发现它们很喜欢每件事情都起个Code Name，所以我也给我的博客每年都取一个Code Name。命名的逻辑跟Ubuntu一样，从2013年的H开始，每个Code Name都是两个单词且开头字母相同。如下：</p>
-
-<!-- more -->
-
-
-<p>2014 Imagine Illimitable</p>
-
-<p>2013 Happy Hacking</p>
 ]]></content>
   </entry>
   
