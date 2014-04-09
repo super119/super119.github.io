@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-04-08T21:03:47+08:00</updated>
+  <updated>2014-04-09T17:40:13+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,108 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux设备驱动suspend/resume的顺序]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/04/09/linux-driver-suspend-orders/"/>
+    <updated>2014-04-09T16:07:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/04/09/linux-driver-suspend-orders</id>
+    <content type="html"><![CDATA[<p>Linux在进入suspend的时候，会首先freeze userspace，然后挨个去调用设备驱动程序的suspend，最后调用architecture dependent的callback（非常奔放的描述了，其实有大量的细节问题存在）。Resume就是反过来执行一遍，最后重新enable userspace。那么作为设备驱动程序的编写者来说，主要就是要实现本驱动的suspend/resume逻辑。但是事实上，很多设备之间是有依赖性的，比如在ARM上，很多设备在resume之前，要求 <code>IOMMU</code> 要已经被enable，否则硬件上就会出现问题，因为访问的地址不对了。</p>
+
+<p>那么Linux是如何设计/定义各个设备驱动之间的suspend/resume的顺序的呢？</p>
+
+<!-- more -->
+
+
+<p>简单来说，就是以下几条逻辑：</p>
+
+<ul>
+<li><p>各设备驱动程序按照其对应的设备（device）注册的先后次序，来决定其suspend/resume的顺序。注意是该驱动对应的设备的注册顺序，不是驱动注册的顺序，所以和驱动的注册优先级无关（也就是和module_init, rootfs_init, subsys_initcall这些无关）。越早被注册的设备，其对应的驱动的suspend越晚被调用，其对应驱动的resume越早被调用；越晚被注册的设备，其对应的驱动的suspend越早被调用，其对应的驱动的resume越晚被调用。</p></li>
+<li><p>上面所说的逻辑往往不能满足我们的要求，因为现在的设备（device）都通过DT（Device Tree）的方式进行注册。那么，在DTS文件中，出现的越早的设备就越早被注册（可以参考函数 <code>of_platform_populate</code>）。而按照现在upstream linux kernel的约定，设备在DTS文件中，是按照其寄存器的地址，从低到高排序的，所以自然不可能满足我们的需求。</p></li>
+</ul>
+
+
+<p>那要怎么办？答案是驱动程序执行probe的时候返回 <code>-EPROBE_DEFER</code> 。</p>
+
+<p>对于现在ARM SoC上的设备和其驱动程序来说，Linux kernel都使用Platform device/Platform driver来描述他们。而Platform driver的probe函数就相当于是驱动的初始化函数，一般用来映射寄存器，分配必需的内存等等，看一个驱动程序的代码，一般也可以从Probe开始看起。</p>
+
+<p>Probe函数返回 <code>-EPROBE_DEFER</code>，指的是当一个设备驱动程序检测到其依赖的设备的驱动程序还没有ready的时候，返回这个出错码告诉kernel driver framework，我需要延缓自身的probe。还是举上面那个IOMMU的例子，如果一个设备依赖IOMMU，那么该设备的驱动在probe的时候，就应该检测iommu的驱动是否已经ready，如果没有那就要defer自己的probe。在Linux kernel driver framework中，收到驱动probe返回 <code>-EPROBE_DEFER</code>，就会将该驱动放入一个list中，一个workqueue来负责遍历这个list，从而再次执行这些驱动的probe函数（事实上，由于kernel driver framework不知道驱动互相之间的依赖关系，所以一旦有一个驱动成功probe了，kernel都会触发这个workqueue，让其去遍历一遍list）。</p>
+
+<p>上面说的是 <code>-EPROBE_DEFER</code> 的背景故事了，而事实上，当一个驱动的probe返回过 <code>-EPROBE_DEFER</code> ，而最终成功probe之后，kernel就会修改该驱动的suspend/resume的顺序了。这就是为什么驱动probe的时候返回 <code>-EPROBE_DEFER</code> 能影响其suspend/resume的次序的原因了：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cm">/*</span>
+</span><span class='line'><span class="cm"> * Force the device to the end of the dpm_list since</span>
+</span><span class='line'><span class="cm"> * the PM code assumes that the order we add things to</span>
+</span><span class='line'><span class="cm"> * the list is a good order for suspend but deferred</span>
+</span><span class='line'><span class="cm"> * probe makes that very unsafe.</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="n">device_pm_lock</span><span class="p">();</span>
+</span><span class='line'><span class="n">device_pm_move_last</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
+</span><span class='line'><span class="n">device_pm_unlock</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的代码来自函数：<code>deferred_probe_work_func</code>，也就是上面所说的defer probe的workqueue的工作函数。所以这里可以看到，当一个驱动最终在probe defer的work函数中probe成功之后，kernel会修改该驱动对应的设备（device）在 <code>dpm_list</code> 中的位置，而 <code>dpm_list</code> 正是kernel suspend/resume 驱动时候遍历的链表。看到调用了函数：<code>device_pm_move_last(dev);</code> 没？这个设备被移到了 <code>dpm_list</code> 的末尾。</p>
+
+<ul>
+<li>事情到此为止，可以说已经有了解决方案：我们可以使用 DEFER PROBE 的方式来调整驱动 suspend/resume 的顺序。不过这里要提一下，还有一条路也是可行的，那就是利用 <code>syscore suspend/resume</code>。</li>
+</ul>
+
+
+<p>syscore是Linux kernel定义的一个framework，我们可以将我们的驱动注册到syscore中去。syscore比较关键的就是 <code>syscore_ops</code> 这个结构：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">struct</span> <span class="n">syscore_ops</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">struct</span> <span class="n">list_head</span> <span class="n">node</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">suspend</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+</span><span class='line'>  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">resume</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+</span><span class='line'>  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">shutdown</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可以看到只有 suspend/resume/shutdown 这三个ops，所以看到这里大概也可以猜到了，注册到syscore中的驱动，其suspend函数是在所有其他驱动的suspend都调用过之后调用的，而其resume函数是在所有其他驱动的resume调用之前调用的。简单来说，syscore的驱动，suspend被晚调用保证其他驱动suspend的时候，syscore的驱动还活着；syscore的驱动，resume被很早调用，从而保证其他驱动resume的时候，syscore的驱动已经活着了。好绕。。。</p>
+
+<p>要将驱动注册到syscore中很简单，调用函数：<code>register_syscore_ops(&amp;your_driver_syscore_ops);</code> 就可以了。至于上面说到的syscore的suspend/resume的顺序，实现代码在这里：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">error</span> <span class="o">=</span> <span class="n">syscore_suspend</span><span class="p">();</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="o">*</span><span class="n">wakeup</span> <span class="o">=</span> <span class="n">pm_wakeup_pending</span><span class="p">();</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">suspend_test</span><span class="p">(</span><span class="n">TEST_CORE</span><span class="p">)</span> <span class="o">||</span> <span class="o">*</span><span class="n">wakeup</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">error</span> <span class="o">=</span> <span class="n">suspend_ops</span><span class="o">-&gt;</span><span class="n">enter</span><span class="p">(</span><span class="n">state</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">events_check_enabled</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="n">syscore_resume</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上代码来自函数：<code>suspend_enter</code>。可以看到当syscore_suspend被调用之后，就调用architecture dependent的 <code>suspend_ops-&gt;enter</code> 了，到这里整个系统就已经停下来了，进入suspend状态了。而当resume开始，<code>suspend_ops-&gt;enter</code> 返回之后，第一个被调用的就是 <code>syscore_resume</code>，所以上面那一段听起来好绕的逻辑就这么区区几行代码解释了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[一站式密码管理器 - LastPass]]></title>
@@ -1811,119 +1913,6 @@ to do so with:</p>
 
 
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[在Octopress中使用友言，替换Disqus]]></title>
-    <link href="http://www.markzhang.cn/blog/2013/11/05/add-uyan-comment/"/>
-    <updated>2013-11-05T21:56:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2013/11/05/add-uyan-comment</id>
-    <content type="html"><![CDATA[<p>Disqus应该是国外做的一个评论系统，按现在时髦的话说，不太接中国的地气，所以考虑换一个评论系统。具体做起来非常的简单，Octopress就像一个模板系统，以前Java火热的时候用过Velocity，大体思路都是利用一些markdown的语法填在预先写好的模板文件中，然后解析器解释该文件，从而生成最终需要的东西。</p>
-
-<p>在Octopress中，发表的博客文章使用的模板是<code>source/_layout/post.html</code>，打开之后搜索disqus就可以发现原来的disqus部分的代码。所以要将其替换成其他的评论系统就很直观了。这里我使用了友言，因为Google了一下貌似现在国内友言做的还不错。</p>
-
-<p>总体来说就是三步：</p>
-
-<!-- more -->
-
-
-<ol>
-<li>在<code>_config.yml</code>中添加一个配置项，比如<code>uyan_id: xxx</code></li>
-<li>添加一个被include的文件，用来存放友言提供给我们的插入代码，比如：<code>source/_include/post/uyan_comments.html</code></li>
-<li>修改<code>source/_layout/post.html</code>，将disqus的部分替换成使用友言。</li>
-</ol>
-
-
-<p>以下就是我的修改：</p>
-
-<figure class='code'><figcaption><span>上述三点的改动 diff (uyan-comments-changes.diff)</span> <a href='http://www.markzhang.cn/downloads/code/uyan-comments-changes.diff'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-</pre></td><td class='code'><pre><code class='diff'><span class='line'><span class="gh">diff --git a/_config.yml b/_config.yml</span>
-</span><span class='line'><span class="gh">index 6caabf1..98a32c8 100644</span>
-</span><span class='line'><span class="gd">--- a/_config.yml</span>
-</span><span class='line'><span class="gi">+++ b/_config.yml</span>
-</span><span class='line'><span class="gu">@@ -93,6 +93,9 @@ delicious_count: 3</span>
-</span><span class='line'> disqus_short_name:
-</span><span class='line'> disqus_show_comment_count: false
-</span><span class='line'>
-</span><span class='line'><span class="gi">+# Uyan Comments</span>
-</span><span class='line'><span class="gi">+uyan_id: &lt;填写你的友言的uid&gt;</span>
-</span><span class='line'><span class="gi">+</span>
-</span><span class='line'> # Google Analytics
-</span><span class='line'> google_analytics_tracking_id:
-</span><span class='line'>
-</span><span class='line'><span class="gh">diff --git a/source/_includes/post/uyan_comments.html b/source/_includes/post/uyan_comments.html</span>
-</span><span class='line'>new file mode 100644
-</span><span class='line'><span class="gh">index 0000000..7e063c3</span>
-</span><span class='line'><span class="gd">--- /dev/null</span>
-</span><span class='line'><span class="gi">+++ b/source/_includes/post/uyan_comments.html</span>
-</span><span class='line'><span class="gu">@@ -0,0 +1,4 @@</span>
-</span><span class='line'><span class="gi">+&lt;!-- UY BEGIN --&gt;</span>
-</span><span class='line'><span class="gi">+&lt;div id=&quot;uyan_frame&quot;&gt;&lt;/div&gt;</span>
-</span><span class='line'><span class="gi">+&lt;script type=&quot;text/javascript&quot; src=&quot;http://v2.uyan.cc/code/uyan.js?uid={{ site.uyan_id }}&quot;&gt;&lt;/script&gt;</span>
-</span><span class='line'><span class="gi">+&lt;!-- UY END --&gt;</span>
-</span><span class='line'><span class="gh">diff --git a/source/_layouts/post.html b/source/_layouts/post.html</span>
-</span><span class='line'><span class="gh">index da9e9c4..36bd433 100644</span>
-</span><span class='line'><span class="gd">--- a/source/_layouts/post.html</span>
-</span><span class='line'><span class="gi">+++ b/source/_layouts/post.html</span>
-</span><span class='line'><span class="gu">@@ -25,10 +25,10 @@ single: true</span>
-</span><span class='line'>     &lt;/p&gt;
-</span><span class='line'>   &lt;/footer&gt;
-</span><span class='line'> &lt;/article&gt;
-</span><span class='line'><span class="gd">-{% if site.disqus_short_name and page.comments == true %}</span>
-</span><span class='line'><span class="gi">+{% if site.uyan_id and page.comments == true %}</span>
-</span><span class='line'>   &lt;section&gt;
-</span><span class='line'>     &lt;h1&gt;Comments&lt;/h1&gt;
-</span><span class='line'><span class="gd">-    &lt;div id=&quot;disqus_thread&quot; aria-live=&quot;polite&quot;&gt;{% include post/disqus_thread.html %}&lt;/div&gt;</span>
-</span><span class='line'><span class="gi">+    {% include post/uyan_comments.html %}</span>
-</span><span class='line'>   &lt;/section&gt;
-</span><span class='line'> {% endif %}
-</span><span class='line'> &lt;/div&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>Note:</strong> 有一个注意点就是友言会采集当前域名作为评论来源的一个index，来归类存放你的留言。所以在<code>rake preview</code>的时候，是看不到友言的评论框的。只有将你的博客上传到了网络上之后，你才能看到。因为很多时候我们开发完了都会使用<code>rake preview</code>先在本地<code>http://localhost:4000</code>上看一下，所以这是看不到的，并不是代码有问题。</p>
 ]]></content>
   </entry>
   
