@@ -3,7 +3,7 @@ layout: post
 title: "在Octopress中使用友言，替换Disqus"
 date: 2013-11-05 21:56
 comments: true
-categories: Octopress
+categories: Blog
 ---
 
 Disqus应该是国外做的一个评论系统，按现在时髦的话说，不太接中国的地气，所以考虑换一个评论系统。具体做起来非常的简单，Octopress就像一个模板系统，以前Java火热的时候用过Velocity，大体思路都是利用一些markdown的语法填在预先写好的模板文件中，然后解析器解释该文件，从而生成最终需要的东西。

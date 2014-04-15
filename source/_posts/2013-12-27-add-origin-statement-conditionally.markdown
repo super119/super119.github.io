@@ -3,7 +3,7 @@ layout: post
 title: "Octopress - 有条件的为文章添加转载声明"
 date: 2013-12-27 15:33
 comments: true
-categories: Octopress
+categories: Blog
 ---
 
 对于原创的文章，我在Octopress的post模板文件中，加入了一段转载声明。但对于一些好的文章，经常也会忍不住想要转载。所以，对于转载的文章，还出现这么一个转载声明就是打自己耳光了。很显然，要做个小手脚，对于转载的文章，去掉这个转载声明。有意思的是，在这个过程中，我居然发现 `liquid` 语法中没有 `逻辑非` ?!

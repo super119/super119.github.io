@@ -3,7 +3,7 @@ layout: post
 title: "在博客内容中插入Liquid代码时的注意点"
 date: 2013-11-07 09:44
 comments: true
-categories: Octopress
+categories: Blog
 ---
 
 Octopress/Jekyll一个很好的功能就是可以非常方便的插入代码，深得码农的喜爱。不过这里有一个注意点就是，如果你插入的代码中含有Liquid代码，那很可能会导致编译出错，比如：
