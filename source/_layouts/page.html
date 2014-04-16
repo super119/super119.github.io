@@ -30,6 +30,11 @@ layout: default
     <div id="disqus_thread" aria-live="polite">{% include post/disqus_thread.html %}</div>
   </section>
 {% endif %}
+{% if site.uyan_id and page.comments == true %}
+  <section>
+    {% include post/uyan_comments.html %}
+  </section>
+{% endif %}
 </div>
 {% unless page.sidebar == false %}
 <aside class="sidebar">
