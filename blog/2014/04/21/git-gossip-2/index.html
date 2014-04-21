@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>在博客内容中插入Liquid代码时的注意点 - Make Things Cool</title>
+  <title>Git都在说些啥（二） - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="Octopress/Jekyll一个很好的功能就是可以非常方便的插入代码，深得码农的喜爱。不过这里有一个注意点就是，如果你插入的代码中含有Liquid代码，那很可能会导致编译出错，比如： rake generate出错信息1
+  <meta name="description" content="这一次我们来说说 git pull 的时候经常会碰到的一段信息。 1
 2
 3
 4
@@ -24,7 +24,14 @@
 13
 14
 15
-16 &hellip;">
+16
+17
+18
+19
+20
+21
+Marks-RMBP:~/Graphics/OpenGL-ProgrammingGuide$ git pull
+You &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -33,7 +40,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2013/11/07/embed-liquid-codes-in-blog/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/04/21/git-gossip-2/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -92,7 +99,7 @@
   <header>
     
       
-        <h1 class="entry-title">在博客内容中插入Liquid代码时的注意点</h1>
+        <h1 class="entry-title">Git都在说些啥（二）</h1>
       
     
     
@@ -109,21 +116,21 @@
   
 
 
-<time datetime="2013-11-07T09:44:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
+<time datetime="2014-04-21T21:33:00+08:00" pubdate data-updated="true">Apr 21<span>st</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Octopress/Jekyll一个很好的功能就是可以非常方便的插入代码，深得码农的喜爱。不过这里有一个注意点就是，如果你插入的代码中含有Liquid代码，那很可能会导致编译出错，比如：</p>
+<div class="entry-content"><p>这一次我们来说说 <code>git pull</code> 的时候经常会碰到的一段信息。</p>
 
 <!-- more -->
 
 
 
 
-<figure class='code'><figcaption><span>rake generate出错信息</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -144,56 +151,90 @@
 <span class='line-number'>19</span>
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">## Generating Site with Jekyll</span>
-</span><span class='line'>unchanged sass/screen.scss
-</span><span class='line'>Configuration from /home/markz/Projects/blog/_config.yml
-</span><span class='line'>Building site: <span class="nb">source</span> -&gt; public
-</span><span class='line'>Liquid Exception: <span class="k">if </span>tag was never closed in 2013-11-05-add-uyan-comment.markdown
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:88:in <span class="sb">`</span>assert_missing_delimitation!<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:49:in `parse&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/tag.rb:10:in <span class="sb">`</span>initialize<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/tags/if.rb:24:in `initialize&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:28:in <span class="sb">`</span>new<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:28:in `parse&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/document.rb:5:in <span class="sb">`</span>initialize<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/template.rb:58:in `new&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/template.rb:58:in <span class="sb">`</span>parse<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/template.rb:46:in `parse&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/convertible.rb:79:in <span class="sb">`</span>do_layout<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/work/markz/Projects/blog/plugins/post_filters.rb:167:in `do_layout&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/post.rb:195:in <span class="sb">`</span>render<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:200:in `block in render&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:199:in <span class="sb">`</span>each<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:199:in `render&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:41:in <span class="sb">`</span>process<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/bin/jekyll:264:in `&lt;top (required)&gt;&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/bin/jekyll:23:in <span class="sb">`</span>load<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/bin/jekyll:23:in `&lt;main&gt;&#39;</span>
-</span><span class='line'>Build Failed
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Marks-RMBP:~/Graphics/OpenGL-ProgrammingGuide<span class="nv">$ </span>git pull
+</span><span class='line'>You asked me to pull without telling me which branch you
+</span><span class='line'>want to merge with, and <span class="s1">&#39;branch.tmp.merge&#39;</span> in
+</span><span class='line'>your configuration file does not tell me, either. Please
+</span><span class='line'>specify which branch you want to use on the <span class="nb">command </span>line and
+</span><span class='line'>try again <span class="o">(</span>e.g. <span class="s1">&#39;git pull &lt;repository&gt; &lt;refspec&gt;&#39;</span><span class="o">)</span>.
+</span><span class='line'>
+</span><span class='line'>See git-pull<span class="o">(</span>1<span class="o">)</span> <span class="k">for </span>details.
+</span><span class='line'>
+</span><span class='line'>If you often merge with the same branch, you may want to
+</span><span class='line'>use something like the following in your configuration file:
+</span><span class='line'>
+</span><span class='line'>    <span class="o">[</span>branch <span class="s2">&quot;tmp&quot;</span><span class="o">]</span>
+</span><span class='line'>    <span class="nv">remote</span> <span class="o">=</span> &lt;nickname&gt;
+</span><span class='line'>    <span class="nv">merge</span> <span class="o">=</span> &lt;remote-ref&gt;
+</span><span class='line'>
+</span><span class='line'>    <span class="o">[</span>remote <span class="s2">&quot;&lt;nickname&gt;&quot;</span><span class="o">]</span>
+</span><span class='line'>    <span class="nv">url</span> <span class="o">=</span> &lt;url&gt;
+</span><span class='line'>    <span class="nv">fetch</span> <span class="o">=</span> &lt;refspec&gt;
+</span><span class='line'>
+</span><span class='line'>See git-config<span class="o">(</span>1<span class="o">)</span> <span class="k">for </span>details.
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>原因地球人都知道，就是博客中插入的代码含有Liquid的if标签。解决办法有两种：</p>
-
-<ol>
-<li><p>使用<code>{% include_code %}</code>。将代码存成一个文件，然后将其include到博客中来。</p></li>
-<li><p>使用raw标签，将代码（包含三个backticks）使用<code>{% raw %}</code>，<code>{% endraw %}</code>包起来即可。</p></li>
-</ol>
-
-
-<p><strong>Note:</strong> 上文中要将raw和endraw打印出来需要将其转义，其他标签都可以用<code>raw/endraw</code>搞定，但是要转义他们本身，要这么写：</p>
+<p>首先来看一下怎么操作，git就会唠叨上面一段话（假设我们现在在一个git repository的根目录，目前位于master branch）：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">{{</span> <span class="s2">&quot;{% raw &quot;</span> <span class="o">}}</span>%<span class="o">}</span> <span class="o">{{</span> <span class="s2">&quot;{% endraw &quot;</span> <span class="o">}}</span>%<span class="o">}</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git branch tmp
+</span><span class='line'>git checkout tmp
+</span><span class='line'>git pull
 </span></code></pre></td></tr></table></div></figure>
 
 
+<p>上面的三个命令很简单，首先就是基于当前的branch，创建一个新的branch叫 <code>tmp</code>，然后checkout到这个branch，最后执行 <code>git pull</code>。那为什么最后执行 <code>git pull</code> 的时候就会出现上面那一大段信息呢？</p>
 
+<p>其实很简单。我们都知道，<code>git pull</code> 是做两件事情：首先做 <code>git fetch</code>，也就是将远端仓库中的所有改动都取回来；然后就是做 <code>git merge</code>，也就是将远端仓库的某个branch和我们当前本地所在的branch做一次merge。</p>
+
+<p>所以，当 <code>git pull</code> 做第二件事情，也就是 <code>git merge</code> 的时候，它需要知道将本地的当前所在的这个branch和远端的哪个branch进行merge。当git不知道需要和远端的哪个branch进行merge时，就会出现上述的错误信息了。</p>
+
+<p>解决办法有两个：</p>
+
+<ul>
+<li><p>写全 <code>git pull</code> 命令，比如 <code>git pull origin master</code>。这样git就知道跟 <code>origin</code> 这个remote git仓库的master branch进行merge。</p></li>
+<li><p>使用 <code>git checkout -b &lt;branch name&gt; &lt;remote refs&gt;</code> 来创建branch，比如 <code>git checkout -b tmp origin/master</code>。这里我们在checkout的时候，明确指定了checkout名为origin的remote git仓库中的master branch，所以将来我们在这个tmp branch上进行 <code>git pull</code> 的时候，git自然就知道去和哪个远端的branch merge了。</p></li>
+</ul>
+
+
+<p><strong> NOTE：</strong> 事实上，<code>git branch</code> / <code>git checkout</code>，也可以使用 <code>-t</code> 这个参数来明确指定新的本地branch需要”track“哪个branch。</p>
+
+<p>最后提一下，一开头git的那段出错信息中提到的一些所谓的配置项：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>If you often merge with the same branch, you may want to
+</span><span class='line'>use something like the following in your configuration file:
+</span><span class='line'>
+</span><span class='line'>    <span class="o">[</span>branch <span class="s2">&quot;tmp&quot;</span><span class="o">]</span>
+</span><span class='line'>    <span class="nv">remote</span> <span class="o">=</span> &lt;nickname&gt;
+</span><span class='line'>    <span class="nv">merge</span> <span class="o">=</span> &lt;remote-ref&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>其实，这段信息的意思就是，git无法在你的git仓库的根目录下的 <code>.git/config</code> 中找到tmp这个branch的merge信息，也没有在你的全局git配置：<code>$HOME/.gitconfig</code> 中找到。</p>
+
+<p>而对于一个没有上述问题的branch，比如在本文所举的例子中，master branch，在 <code>.git/config</code> 中就有这样的设置：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>branch <span class="s2">&quot;master&quot;</span><span class="o">]</span>
+</span><span class='line'>  <span class="nv">remote</span> <span class="o">=</span> origin
+</span><span class='line'>  <span class="nv">merge</span> <span class="o">=</span> refs/heads/master
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>所以可以看到，其实git的逻辑很简单，只是我们需要确切的知道它究竟在干些啥，这样也就能理解它的抱怨了。</p>
 </div>
 
 
@@ -201,7 +242,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2013/11/07/embed-liquid-codes-in-blog/<br>
+原文链接: http://www.markzhang.cn/blog/2014/04/21/git-gossip-2/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -224,12 +265,12 @@
   
 
 
-<time datetime="2013-11-07T09:44:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
+<time datetime="2014-04-21T21:33:00+08:00" pubdate data-updated="true">Apr 21<span>st</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/blog/'>Blog</a>
+    <a class='category' href='/blog/categories/git/'>git</a>
   
 </span>
 
@@ -245,10 +286,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/11/05/add-uyan-comment/" title="Previous Post: 在Octopress中使用友言，替换Disqus">&laquo; 在Octopress中使用友言，替换Disqus</a>
+        <a class="basic-alignment left articlenav" href="/blog/2014/04/15/prime-lc-42t18-fix/" title="Previous Post: 厦华LC-42T18电视机维修">&laquo; 厦华LC-42T18电视机维修</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/11/07/linus-git-config/" title="Next Post: Linus说，请将这个配置加到你的.gitconfig">Linus说，请将这个配置加到你的.gitconfig &raquo;</a>
       
     </p>
   </footer>

@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-04-17T14:33:16+08:00</updated>
+  <updated>2014-04-21T22:17:57+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,126 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Git都在说些啥（二）]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/04/21/git-gossip-2/"/>
+    <updated>2014-04-21T21:33:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/04/21/git-gossip-2</id>
+    <content type="html"><![CDATA[<p>这一次我们来说说 <code>git pull</code> 的时候经常会碰到的一段信息。</p>
+
+<!-- more -->
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Marks-RMBP:~/Graphics/OpenGL-ProgrammingGuide<span class="nv">$ </span>git pull
+</span><span class='line'>You asked me to pull without telling me which branch you
+</span><span class='line'>want to merge with, and <span class="s1">&#39;branch.tmp.merge&#39;</span> in
+</span><span class='line'>your configuration file does not tell me, either. Please
+</span><span class='line'>specify which branch you want to use on the <span class="nb">command </span>line and
+</span><span class='line'>try again <span class="o">(</span>e.g. <span class="s1">&#39;git pull &lt;repository&gt; &lt;refspec&gt;&#39;</span><span class="o">)</span>.
+</span><span class='line'>
+</span><span class='line'>See git-pull<span class="o">(</span>1<span class="o">)</span> <span class="k">for </span>details.
+</span><span class='line'>
+</span><span class='line'>If you often merge with the same branch, you may want to
+</span><span class='line'>use something like the following in your configuration file:
+</span><span class='line'>
+</span><span class='line'>    <span class="o">[</span>branch <span class="s2">&quot;tmp&quot;</span><span class="o">]</span>
+</span><span class='line'>    <span class="nv">remote</span> <span class="o">=</span> &lt;nickname&gt;
+</span><span class='line'>    <span class="nv">merge</span> <span class="o">=</span> &lt;remote-ref&gt;
+</span><span class='line'>
+</span><span class='line'>    <span class="o">[</span>remote <span class="s2">&quot;&lt;nickname&gt;&quot;</span><span class="o">]</span>
+</span><span class='line'>    <span class="nv">url</span> <span class="o">=</span> &lt;url&gt;
+</span><span class='line'>    <span class="nv">fetch</span> <span class="o">=</span> &lt;refspec&gt;
+</span><span class='line'>
+</span><span class='line'>See git-config<span class="o">(</span>1<span class="o">)</span> <span class="k">for </span>details.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>首先来看一下怎么操作，git就会唠叨上面一段话（假设我们现在在一个git repository的根目录，目前位于master branch）：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git branch tmp
+</span><span class='line'>git checkout tmp
+</span><span class='line'>git pull
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面的三个命令很简单，首先就是基于当前的branch，创建一个新的branch叫 <code>tmp</code>，然后checkout到这个branch，最后执行 <code>git pull</code>。那为什么最后执行 <code>git pull</code> 的时候就会出现上面那一大段信息呢？</p>
+
+<p>其实很简单。我们都知道，<code>git pull</code> 是做两件事情：首先做 <code>git fetch</code>，也就是将远端仓库中的所有改动都取回来；然后就是做 <code>git merge</code>，也就是将远端仓库的某个branch和我们当前本地所在的branch做一次merge。</p>
+
+<p>所以，当 <code>git pull</code> 做第二件事情，也就是 <code>git merge</code> 的时候，它需要知道将本地的当前所在的这个branch和远端的哪个branch进行merge。当git不知道需要和远端的哪个branch进行merge时，就会出现上述的错误信息了。</p>
+
+<p>解决办法有两个：</p>
+
+<ul>
+<li><p>写全 <code>git pull</code> 命令，比如 <code>git pull origin master</code>。这样git就知道跟 <code>origin</code> 这个remote git仓库的master branch进行merge。</p></li>
+<li><p>使用 <code>git checkout -b &lt;branch name&gt; &lt;remote refs&gt;</code> 来创建branch，比如 <code>git checkout -b tmp origin/master</code>。这里我们在checkout的时候，明确指定了checkout名为origin的remote git仓库中的master branch，所以将来我们在这个tmp branch上进行 <code>git pull</code> 的时候，git自然就知道去和哪个远端的branch merge了。</p></li>
+</ul>
+
+
+<p><strong> NOTE：</strong> 事实上，<code>git branch</code> / <code>git checkout</code>，也可以使用 <code>-t</code> 这个参数来明确指定新的本地branch需要”track“哪个branch。</p>
+
+<p>最后提一下，一开头git的那段出错信息中提到的一些所谓的配置项：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>If you often merge with the same branch, you may want to
+</span><span class='line'>use something like the following in your configuration file:
+</span><span class='line'>
+</span><span class='line'>    <span class="o">[</span>branch <span class="s2">&quot;tmp&quot;</span><span class="o">]</span>
+</span><span class='line'>    <span class="nv">remote</span> <span class="o">=</span> &lt;nickname&gt;
+</span><span class='line'>    <span class="nv">merge</span> <span class="o">=</span> &lt;remote-ref&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>其实，这段信息的意思就是，git无法在你的git仓库的根目录下的 <code>.git/config</code> 中找到tmp这个branch的merge信息，也没有在你的全局git配置：<code>$HOME/.gitconfig</code> 中找到。</p>
+
+<p>而对于一个没有上述问题的branch，比如在本文所举的例子中，master branch，在 <code>.git/config</code> 中就有这样的设置：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>branch <span class="s2">&quot;master&quot;</span><span class="o">]</span>
+</span><span class='line'>  <span class="nv">remote</span> <span class="o">=</span> origin
+</span><span class='line'>  <span class="nv">merge</span> <span class="o">=</span> refs/heads/master
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>所以可以看到，其实git的逻辑很简单，只是我们需要确切的知道它究竟在干些啥，这样也就能理解它的抱怨了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[厦华LC-42T18电视机维修]]></title>
@@ -1866,28 +1986,6 @@ to do so with:</p>
 
 
 <p>这个命令将指定branch中的指定文件checkout出来，并存到 <code>&lt;filename&gt;</code> 指定的路径上。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linus说，请将这个配置加到你的.gitconfig]]></title>
-    <link href="http://www.markzhang.cn/blog/2013/11/07/linus-git-config/"/>
-    <updated>2013-11-07T18:18:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2013/11/07/linus-git-config</id>
-    <content type="html"><![CDATA[<p>近日Linus说，请将 <code>git config core.abbrev 12</code> 加到你的git repository中。事实上，这个config很有意义，可以加到你的全局git config中：</p>
-
-<!-- more -->
-
-
-<p><code>git config --global core.abbrev 12</code>。</p>
-
-<p>原因简单来说就是，git默认的7个字符的短HASH表示方法经常导致冲突，所以Linus建议改成12个字符。原文引用如下：</p>
-
-<blockquote><p>Linus jumped in to say that he would like everybody to run this command in their repositories:</p>
-
-<p>   git config core.abbrev 12</p>
-
-<p>That causes git to abbreviate commit hashes to 12 characters. The default of seven characters is too small to prevent occasional hash collisions in the kernel; it was, he said, a big mistake made early in git&rsquo;s history. He also noted that he spends a lot of time fixing up hashes in patch, many of which are &ldquo;clearly bogus.&rdquo; Most of the problems, most likely, are caused by the rebasing of trees.</p></blockquote>
 ]]></content>
   </entry>
   
