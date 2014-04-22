@@ -1,0 +1,51 @@
+---
+layout: post
+title: "Git都在说些啥（三）"
+date: 2014-04-22 07:58
+comments: true
+categories: git
+---
+
+这次来说说有关 `no branch` 的那些事。
+
+其实之前在[Git都在说些啥（一）](http://markzhang.cn/blog/2014/04/04/git-gossip-1/)中已经提过一些有关 `no branch` 的东西。这次再来看看其他两段git的提示信息，都是与 `no branch` 有关的。
+
+<!-- more -->
+
+``` bash
+Marks-RMBP:~/Graphics/OpenGL-ProgrammingGuide$ git ck origin/master
+Note: checking out 'origin/master'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b new_branch_name
+
+HEAD is now at 82b25d9b1856... HelloGL: Add missing shader files
+Marks-RMBP:~/Graphics/OpenGL-ProgrammingGuide$ git b
+* (no branch)
+  master
+  tmp
+Marks-RMBP:~/Graphics/OpenGL-ProgrammingGuide$ git pull
+You are not currently on a branch, so I cannot use any
+'branch.<branchname>.merge' in your configuration file.
+Please specify which remote branch you want to use on the command
+line and try again (e.g. 'git pull <repository> <refspec>').
+See git-pull(1) for details.
+```
+
+第一段信息来自命令 `git checkout origin/master`。Git的这段唠叨意思就是，哥们你checkout了一个版本，但是没有指定branch的名字，所以哥现在给你创建了一个特殊的branch，名字叫 `no branch`。这个branch特殊在哪呢，就是你可以在这个branch上工作，可以提交commit，但是将来你一旦离开了这个branch，比如你checkout到其他的branch上去了，那么你就再也回不来了哈。你做的那些commit就找不到了哈。所以哥们现在强烈建议你，以后checkout branch使用 `git checkout -b new_branch_name`。
+
+** 注：** 之前在[Git都在说些啥（一）](http://markzhang.cn/blog/2014/04/04/git-gossip-1/)提到过了，使用 `git reflog` 可以找回你在 `no branch` 上提交过的commit。前提是git还帮你留着这些commits。
+
+第二段提示信息来自执行 `git pull` 的时候，之前在[Git都在说些啥（二）](http://markzhang.cn/blog/2014/04/21/git-gossip-2/)中已经详细说了 `git pull` 会出现的这种错误信息。所以，这里想说的是，只要你工作在 `no branch` 上，那么执行 `git pull` 的时候，就必须写全了，比如：`git pull origin master`，这样git才知道怎么去做merge。
+
+说到这里，你可能会问，为什么git要搞这么一个莫名其貌，麻烦无比的 `no branch` 出来？其实 `no branch` 是有一些适用的场景的。`no branch` 相当于是一种临时branch，建立这个branch的唯一原因就是将来我们肯定会放弃掉这个branch，所以在做比如 `git rebase` 的时候，`no branch` 就很make sense了。因为我们知道 `git rebase` 的时候，git需要根据你的指令，将commits重新做排列、修正、squash等等，此时，git就会以第一个需要rebase的commit之前的那个commit为base，checkout到一个 `no branch` 上去，rebase做完之后，再最终将 `no branch` 覆盖掉你执行 `git rebase` 时的branch。所以，在这种场景下，使用 `no branch` 就比使用一个有名字的branch更加的make sense。
+
+还有一种场景你肯定熟悉，就是使用repo的时候。repo是Google做的一个Python脚本程序，用于管理多个git仓库。你会发现，经常你做完 `repo sync` 之后，来到其中任意一个git仓库（或者叫git project吧，repo中是称为project的），执行一下 `git branch`，你会发现你都处在 `no branch` 上。我的感觉是，repo针对每一个git project，是可以定义 `revision` 的（在.repo/manifest.xml中可以定义所有的git project，其中就可以针对每个project定义revision）。而这个revision，就是一个git commit的HASH，所以在这种场景下，repo在 `git fetch` 取得了该project远端的所有更新之后，如何将你本地的文件更新到你指定的revision上？肯定是执行 `git checkout <commit hash>` 这样的命令了，那么这个时候自然 `no branch` 就产生了。当然repo也可以很二的约定一个俗气无比的branch名字，比如 `git checkout -b this_really_sucks <commit hash>`？
+
+其实 `no branch` 本身没啥，只是由于相比其他的branch，`no branch` 有一些特殊的地方，所以在 `no branch` 上工作是，你就经常会收到git的一些抱怨，习惯了就好。
