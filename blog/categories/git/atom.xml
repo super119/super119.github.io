@@ -4,7 +4,7 @@
   <title><![CDATA[Category: git | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/git/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-04-21T22:17:57+08:00</updated>
+  <updated>2014-04-22T08:24:15+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,58 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Git都在说些啥（三）]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/04/22/git-gossip-3/"/>
+    <updated>2014-04-22T07:58:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/04/22/git-gossip-3</id>
+    <content type="html"><![CDATA[<p>这次来说说有关 <code>no branch</code> 的那些事。</p>
+
+<p>其实之前在<a href="http://markzhang.cn/blog/2014/04/04/git-gossip-1/">Git都在说些啥（一）</a>中已经提过一些有关 <code>no branch</code> 的东西。这次再来看看其他两段git的提示信息，都是与 <code>no branch</code> 有关的。</p>
+
+<!-- more -->
+
+
+<p>``` bash
+Marks-RMBP:~/Graphics/OpenGL-ProgrammingGuide$ git ck origin/master
+Note: checking out &lsquo;origin/master&rsquo;.</p>
+
+<p>You are in &lsquo;detached HEAD&rsquo; state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.</p>
+
+<p>If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:</p>
+
+<p>  git checkout -b new_branch_name</p>
+
+<p>HEAD is now at 82b25d9b1856&hellip; HelloGL: Add missing shader files
+Marks-RMBP:~/Graphics/OpenGL-ProgrammingGuide$ git b
+* (no branch)
+  master
+  tmp
+Marks-RMBP:~/Graphics/OpenGL-ProgrammingGuide$ git pull
+You are not currently on a branch, so I cannot use any
+&lsquo;branch.<branchname>.merge&rsquo; in your configuration file.
+Please specify which remote branch you want to use on the command
+line and try again (e.g. &lsquo;git pull <repository> <refspec>&rsquo;).
+See git-pull(1) for details.
+```</p>
+
+<p>第一段信息来自命令 <code>git checkout origin/master</code>。Git的这段唠叨意思就是，哥们你checkout了一个版本，但是没有指定branch的名字，所以哥现在给你创建了一个特殊的branch，名字叫 <code>no branch</code>。这个branch特殊在哪呢，就是你可以在这个branch上工作，可以提交commit，但是将来你一旦离开了这个branch，比如你checkout到其他的branch上去了，那么你就再也回不来了哈。你做的那些commit就找不到了哈。所以哥们现在强烈建议你，以后checkout branch使用 <code>git checkout -b new_branch_name</code>。</p>
+
+<p><strong> 注：</strong> 之前在<a href="http://markzhang.cn/blog/2014/04/04/git-gossip-1/">Git都在说些啥（一）</a>提到过了，使用 <code>git reflog</code> 可以找回你在 <code>no branch</code> 上提交过的commit。前提是git还帮你留着这些commits。</p>
+
+<p>第二段提示信息来自执行 <code>git pull</code> 的时候，之前在<a href="http://markzhang.cn/blog/2014/04/21/git-gossip-2/">Git都在说些啥（二）</a>中已经详细说了 <code>git pull</code> 会出现的这种错误信息。所以，这里想说的是，只要你工作在 <code>no branch</code> 上，那么执行 <code>git pull</code> 的时候，就必须写全了，比如：<code>git pull origin master</code>，这样git才知道怎么去做merge。</p>
+
+<p>说到这里，你可能会问，为什么git要搞这么一个莫名其貌，麻烦无比的 <code>no branch</code> 出来？其实 <code>no branch</code> 是有一些适用的场景的。<code>no branch</code> 相当于是一种临时branch，建立这个branch的唯一原因就是将来我们肯定会放弃掉这个branch，所以在做比如 <code>git rebase</code> 的时候，<code>no branch</code> 就很make sense了。因为我们知道 <code>git rebase</code> 的时候，git需要根据你的指令，将commits重新做排列、修正、squash等等，此时，git就会以第一个需要rebase的commit之前的那个commit为base，checkout到一个 <code>no branch</code> 上去，rebase做完之后，再最终将 <code>no branch</code> 覆盖掉你执行 <code>git rebase</code> 时的branch。所以，在这种场景下，使用 <code>no branch</code> 就比使用一个有名字的branch更加的make sense。</p>
+
+<p>还有一种场景你肯定熟悉，就是使用repo的时候。repo是Google做的一个Python脚本程序，用于管理多个git仓库。你会发现，经常你做完 <code>repo sync</code> 之后，来到其中任意一个git仓库（或者叫git project吧，repo中是称为project的），执行一下 <code>git branch</code>，你会发现你都处在 <code>no branch</code> 上。我的感觉是，repo针对每一个git project，是可以定义 <code>revision</code> 的（在.repo/manifest.xml中可以定义所有的git project，其中就可以针对每个project定义revision）。而这个revision，就是一个git commit的HASH，所以在这种场景下，repo在 <code>git fetch</code> 取得了该project远端的所有更新之后，如何将你本地的文件更新到你指定的revision上？肯定是执行 <code>git checkout &lt;commit hash&gt;</code> 这样的命令了，那么这个时候自然 <code>no branch</code> 就产生了。当然repo也可以很二的约定一个俗气无比的branch名字，比如 <code>git checkout -b this_really_sucks &lt;commit hash&gt;</code>？</p>
+
+<p>其实 <code>no branch</code> 本身没啥，只是由于相比其他的branch，<code>no branch</code> 有一些特殊的地方，所以在 <code>no branch</code> 上工作是，你就经常会收到git的一些抱怨，习惯了就好。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Git都在说些啥（二）]]></title>
