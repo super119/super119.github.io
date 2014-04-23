@@ -1,0 +1,209 @@
+##############################################################
+#
+#  Makefile Template for wxMac Applications
+#  Mark Wilkinson
+#  August 2005
+#
+#  This makefile is designed for experienced UNIX 
+#  developers who wish to learn how to build Mac OS X 
+#  packages (.app) using Makefiles rather than Apple's 
+#  Xcode IDE.
+#
+#  Developed with the assistance of Kevin Hock, CHB, 
+#    and DialogBlocks examples.
+#  Distribution of this file is subject to the terms of 
+#    the wxWindows License, see www.wxwidgets.org
+#
+##############################################################
+
+##############################################################
+#
+#  A Brief Tutorial on Packages
+#
+#  Rather than use resource forks on application
+#    files, as Apple did in their Classic operating
+#    system, Mac OS X uses application packages.
+#  Application packages have a .app extension and
+#    are actually directories which contain the
+#    true executable as well as several resource 
+#    files.  The structure of an application
+#    package is:
+#
+#    (program).app
+#     |
+#     +-- Contents
+#          |
+#          +--  Info.plist
+#          |
+#          +--  MacOS
+#          |     |
+#          |     +--  (program)
+#          |
+#          +--  PkgInfo
+#          |
+#          +--  Resources
+#                |
+#                +-- (icon file)
+#
+#    In this diagram "(program)" is the name of 
+#    the executable program.  "Contents," "MacOS," 
+#    and "Resouces," are directories.  "Info.plist"
+#    is an XML DTD file.  And "PkgInfo" is a text
+#    file containing data.
+#  This makefile generates the package directory
+#    structure, and it compiles and places the 
+#    executabel in the MacOS directory.  This 
+#    makefile also creates the "PkgInfo" and 
+#    "Info.plist" files.  The PkgInfo file is very
+#    simple.  Info.plist is an XML DTD and contains
+#    several variables, which can be examined in
+#    this makefile.
+#  You need to supply the source code and the icon
+#    file.  The icon file is copied into the 
+#    Resources directory of the package.
+#
+##############################################################
+
+##############################################################
+#
+#  These variables are used to compile the program.  You 
+#    will need to provide this information.  You may need
+#    to specify the full path to the wx-config executable.
+#    The output path can't be blank.  The program name
+#    and object names are essential.  You may use the icon
+#    file included with the wxMac distribution 
+#    (wxMac-2.6.1/src/mac/wxmac.icns) or create your own
+#    icon using the Apple Developer Tools 
+#    (/Developer/Applications/Utilities/Icon Composer).
+#
+#
+##############################################################
+
+WXCONFIG=/Users/mark/Graphics/wxWidgets-3.0.0/build-release/wx-config
+
+# can't be blank, otherwise "mkdir -p" fails
+OUTPUTPATH=out
+
+PROGRAM=HelloWxGL
+PROGVER=1.0
+
+OBJECTS=HelloWxGL.o
+
+ICONFILE=wxmac.icns
+
+##############################################################
+#
+#  These variables are used in the Info.plist and PkgInfo
+#    files.  Aside from the company name (which should have
+#    no spaces, like a domain name), you should not have
+#    to modify these variables.
+#
+##############################################################
+
+COMPANY=markzhang
+
+BUNDLEPACKAGE=APPL
+
+BUNDLESIGNATURE=????
+
+##############################################################
+#
+#  It should not be necessary to modify the Makefile
+#    below this line; although, you may have to make
+#    changes depending on your system configuration.
+#
+##############################################################
+
+CXX=g++
+
+BUNDLE=$(OUTPUTPATH)/$(PROGRAM).app
+MACICON=$(BUNDLE)/Contents/$(ICONFILE)
+MACPKGINFO=$(BUNDLE)/Contents/PkgInfo
+MACINFOPLIST=$(BUNDLE)/Contents/Info.plist 
+
+LIBS=`$(WXCONFIG) --libs`
+LINKERFLAGS= -lstdc++
+WARNINGFLAGS=
+OPTFLAGS=
+DEBUGFLAGS=-g
+
+CPPINC=`$(WXCONFIG) --inplace --cxxflags`
+LDFLAGS=$(LIBS) $(LINKERFLAGS)
+CPPFLAGS=$(CPPINC) $(GCCFLAGS) $(DEBUGFLAGS) $(OPTFLAGS) $(WARNINGFLAGS)
+
+all: $(BUNDLE) $(BUNDLE)/Contents/MacOS/$(PROGRAM) $(MACICON) $(MACPKGINFO) $(MACINFOPLIST)
+
+clean:
+	rm -f $(OBJECTS)
+	rm -fr $(BUNDLE)
+
+help:
+	@/bin/echo "Usage: make -f Makefile [all|clean|help]"
+
+#  This builds the bundle's directory structure.
+$(BUNDLE):
+	@/bin/echo "==== Building bundle directory structure ===="
+	mkdir -p $(OUTPUTPATH)
+	mkdir -p $(BUNDLE)/Contents
+	mkdir -p $(BUNDLE)/Contents/MacOS
+	mkdir -p $(BUNDLE)/Contents/Resources
+
+#  This builds the executable right inside the bundle.
+$(BUNDLE)/Contents/MacOS/$(PROGRAM): $(OBJECTS)
+	@/bin/echo "==== Building executable ===="
+	$(CXX) -o $(BUNDLE)/Contents/MacOS/$(PROGRAM) $(OBJECTS) $(LDFLAGS)
+
+#  This copies the icon file into the bundle.
+$(MACICON): $(ICONFILE)
+	@/bin/echo "==== Copying icon file into bundle ===="
+	cp -f $(ICONFILE) $(BUNDLE)/Contents/Resources/$(ICONFILE)
+
+#  NOTICE
+#  We need to use "/bin/echo", since the "echo" is the builtin program
+#  which doesn't have "-n" option.
+
+#  This creates the Contents/PkgInfo file.
+$(MACPKGINFO):
+	@/bin/echo "==== Creating PkgInfo ===="
+	touch $(MACPKGINFO)
+	@/bin/echo -n "$(BUNDLEPACKAGE)$(BUNDLESIGNATURE)" > $(MACPKGINFO)
+
+#  This creates the Contents/Info.plist file.
+$(MACINFOPLIST):
+	@/bin/echo "==== Creating Info.plist ===="
+	touch $(MACINFOPLIST)
+	@/bin/echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> $(MACINFOPLIST)
+	@/bin/echo -n "<!DOCTYPE plist PUBLIC " >> $(MACINFOPLIST)
+	@/bin/echo -n "\"-//Apple Computer//DTD PLIST 1.0//EN\" " >> $(MACINFOPLIST)
+	@/bin/echo "\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">" >> $(MACINFOPLIST)
+	@/bin/echo "<plist version=\"1.0\">" >> $(MACINFOPLIST)
+	@/bin/echo "<dict>" >> $(MACINFOPLIST)
+	@/bin/echo "   <key>CFBundleDevelopmentRegion</key>" >> $(MACINFOPLIST)
+	@/bin/echo "   <string>English</string>" >> $(MACINFOPLIST)
+	@/bin/echo "   <key>CFBundleExecutable</key>" >> $(MACINFOPLIST)
+	@/bin/echo "   <string>$(PROGRAM)</string>" >> $(MACINFOPLIST)
+	@/bin/echo "   <key>CFBundleIconFile</key>" >> $(MACINFOPLIST)
+	@/bin/echo "   <string>$(ICONFILE)</string>" >> $(MACINFOPLIST)
+	@/bin/echo "   <key>CFBundleName</key>" >> $(MACINFOPLIST)
+	@/bin/echo "   <string>$(PROGRAM)</string>" >> $(MACINFOPLIST)
+	@/bin/echo "   <key>CFBundleIdentifier</key>" >> $(MACINFOPLIST)
+	@/bin/echo "   <string>com.$(COMPANY).$(PROGRAM)</string>" >> $(MACINFOPLIST)
+	@/bin/echo "   <key>CFBundleInfoDictionaryVersion</key>" >> $(MACINFOPLIST)
+	@/bin/echo "   <string>6.0</string>" >> $(MACINFOPLIST)
+	@/bin/echo "   <key>CFBundlePackageType</key>" >> $(MACINFOPLIST)
+	@/bin/echo "   <string>$(BUNDLEPACKAGE)</string>" >> $(MACINFOPLIST)
+	@/bin/echo "   <key>CFBundleSignature</key>" >> $(MACINFOPLIST)
+	@/bin/echo "   <string>$(BUNDLESIGNATURE)</string>" >> $(MACINFOPLIST)
+	@/bin/echo "   <key>CFBundleVersion</key>" >> $(MACINFOPLIST)
+	@/bin/echo "   <string>$(PROGVER)</string>" >> $(MACINFOPLIST)
+	@/bin/echo "   <key>CFBundleShortVersionString</key>" >> $(MACINFOPLIST)
+	@/bin/echo "   <string>$(PROGVER)</string>" >> $(MACINFOPLIST)
+	@/bin/echo "   <key>CFBundleGetInfoString</key>" >> $(MACINFOPLIST)
+	@/bin/echo "   <string>$(PROGRAM), Version $(PROGVER), $(COMPANY)</string>" >> $(MACINFOPLIST)
+	@/bin/echo "</dict>" >> $(MACINFOPLIST)
+	@/bin/echo "</plist>" >> $(MACINFOPLIST)
+
+$(OBJECTS): %.o: %.cpp
+	$(CXX) -c -o $@ $(CPPFLAGS) $<
+
+.PHONY:    all clean

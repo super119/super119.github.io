@@ -1,0 +1,769 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>在Mavericks上使用Makefile编写wxWidgets程序 - Make Things Cool</title>
+  <meta name="author" content="Mark Zhang">
+
+  
+  <meta name="description" content="OpenGL的设计与操作系统无关，与窗口系统也无关，所以，要编写一个可以运行（能看到界面）的程序，还需要一些额外的GUI的框架，比如glut。 glut基本上是所有OpenGL教科书上的唯一推荐了，因为它的API简单，跨平台。所以读者不需要花额外的时间去了解并使用glut。但是glut比较老了， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/04/23/wxwidget-on-mavericks/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Make Things Cool" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">s/no/yes/g</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">Make Things Cool</a></h1>
+  
+    <h2>2014 Imagine Illimitable</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.markzhang.cn" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">在Mavericks上使用Makefile编写wxWidgets程序</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-23T23:31:00+08:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>OpenGL的设计与操作系统无关，与窗口系统也无关，所以，要编写一个可以运行（能看到界面）的程序，还需要一些额外的GUI的框架，比如glut。</p>
+
+<p>glut基本上是所有OpenGL教科书上的唯一推荐了，因为它的API简单，跨平台。所以读者不需要花额外的时间去了解并使用glut。但是glut比较老了，有点跟不上时代了。而且编译出来的东西是一个可执行文件，不是Mac OS X上的 <code>.app</code> 的那种Applicaiton。所以在StackOverflow上也有很多人推荐使用 <code>glfw</code>。我也去试用了一下，感觉还是太单薄了。</p>
+
+<p>既然要编写一个像样的OpenGL程序，就选择一个像样的GUI framework library吧，于是我决定使用wxWidgets。</p>
+
+<!-- more -->
+
+
+<h2>wxWidgets的编译安装</h2>
+
+<p>wxWidgets在Mac OS X Mavericks上的安装很简单，就是标准的configure/make/make install。只是configure需要指定一些option，否则wxWidgets无法找到一些必须的库。</p>
+
+<p>结合了wxWidgets wiki上的一些内容，我的编译过程是这样的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> &lt;root directory of wxWidgets <span class="nb">source</span>&gt;
+</span><span class='line'>mkdir build-release
+</span><span class='line'><span class="nb">cd </span>build-release
+</span><span class='line'>../configure --with-osx_cocoa --with-macosx-version-min<span class="o">=</span>10.7 --with-macosx-sdk<span class="o">=</span>/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk --prefix<span class="o">=</span><span class="s2">&quot;$(pwd)&quot;</span> --with-opengl
+</span><span class='line'>make
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我安装的还是较老版本的Xcode，所以可以看到上面的命令行中，SDK用的还是10.8的，不过不妨碍了。</p>
+
+<p>此外我没有执行make install，因为我也没打算给其他用户来使用。反正make过了之后，该有的东西（wx-config、wxWidgets的libraries）都有了。</p>
+
+<p>还有一点：执行完configure之后，你会发现这样的一行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>OpenGL support:   no
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但其实我们已经加了 <code>--with-opengl</code> 了，难道是configure没有找到Xcode中的OpenGL framework？经过一番Google，以及最后使用 <code>wx-config --libs</code> 来确认，其实OpenGL的支持已经有了，这个信息是一个错误信息。所以这应该算是一个bug了。</p>
+
+<h2>第一个使用Makefile的程序</h2>
+
+<p>接下来就是重头戏了，因为我不想使用Xcode来编写运行程序，太笨重了，而且写一个HelloWorld也需要在Xcode中建立一个Project，并且设置一堆东西。更何况使用Xcode，也无法详细了解整个编译过程。Linux程序员都懂的。</p>
+
+<p>所以我想要的是一个Makefile，我执行make就可以编译，而且要生成Mac OS X上的applicaiton（.app），而不是像使用glut的时候，只是生成了一个可执行文件。执行这个文件是能看到一个界面，但是无法拖动，某些功能还不正常。</p>
+
+<p>我看到wxWidgets自带的samples，就是可以通过make生成Mac OS X的 <code>.app</code> 应用的，所以这一定是可行的。于是Google了一下，果然发现wxWidgets的论坛上有答案：</p>
+
+<p><a href="http://forums.wxwidgets.org/viewtopic.php?f=23&amp;t=3768">http://forums.wxwidgets.org/viewtopic.php?f=23&amp;t=3768</a></p>
+
+<p>这个帖子中，帖子的作者Mark最后就给出了一个Makefile的template，使用这个Makefile就可以编译并最终生成一个 <code>.app</code>。</p>
+
+<p>于是立刻把这个Makefile拿过来试验了一下，需要做两处小改动：</p>
+
+<ul>
+<li><p>OUTPUTPATH必须要设置，而不是像注释中说的那样可以留空。否则后续的 <code>mkdir -p</code> 这个命令会失败。</p></li>
+<li><p>这个Makefile中所有的 <code>@echo</code> 命令要换成 <code>@/bin/echo</code>。因为这个Makefile中有三行这样的代码：<code>@echo -n xxxx</code>，<code>-n</code> 的意思是输出末尾不要加换行，但是Mavericks上，这个bash built-in的echo是没有 <code>-n</code> 这个option的，所以会导致最终生成的 <code>PkgInfo</code> 和 <code>Info.plist</code> 中有 <code>-n</code> 这样的字符串，从而导致最终的 <code>.app</code> 没法运行。在 <code>man echo</code> 中也提到了这个事情：</p></li>
+</ul>
+
+
+<blockquote><p>Some shells may provide a builtin echo command which is similar or identical to this utility. Most notably, the builtin echo in sh(1) does not accept the -n option. Consult the builtin(1) manual page.</p></blockquote>
+
+<p>做完这两处小改动之后，输入make就可以生成 <code>.app</code> 了，Cool！</p>
+
+<p>最后附上我的Makefile的模板：</p>
+
+<figure class='code'><figcaption><span>Makefile模板 bash (wxwidgets-makefile-template)</span> <a href='/downloads/code/wxwidgets-makefile-template'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'><span class="c">##############################################################</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#  Makefile Template for wxMac Applications</span>
+</span><span class='line'><span class="c">#  Mark Wilkinson</span>
+</span><span class='line'><span class="c">#  August 2005</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#  This makefile is designed for experienced UNIX </span>
+</span><span class='line'><span class="c">#  developers who wish to learn how to build Mac OS X </span>
+</span><span class='line'><span class="c">#  packages (.app) using Makefiles rather than Apple&#39;s </span>
+</span><span class='line'><span class="c">#  Xcode IDE.</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#  Developed with the assistance of Kevin Hock, CHB, </span>
+</span><span class='line'><span class="c">#    and DialogBlocks examples.</span>
+</span><span class='line'><span class="c">#  Distribution of this file is subject to the terms of </span>
+</span><span class='line'><span class="c">#    the wxWindows License, see www.wxwidgets.org</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">##############################################################</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">##############################################################</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#  A Brief Tutorial on Packages</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#  Rather than use resource forks on application</span>
+</span><span class='line'><span class="c">#    files, as Apple did in their Classic operating</span>
+</span><span class='line'><span class="c">#    system, Mac OS X uses application packages.</span>
+</span><span class='line'><span class="c">#  Application packages have a .app extension and</span>
+</span><span class='line'><span class="c">#    are actually directories which contain the</span>
+</span><span class='line'><span class="c">#    true executable as well as several resource </span>
+</span><span class='line'><span class="c">#    files.  The structure of an application</span>
+</span><span class='line'><span class="c">#    package is:</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#    (program).app</span>
+</span><span class='line'><span class="c">#     |</span>
+</span><span class='line'><span class="c">#     +-- Contents</span>
+</span><span class='line'><span class="c">#          |</span>
+</span><span class='line'><span class="c">#          +--  Info.plist</span>
+</span><span class='line'><span class="c">#          |</span>
+</span><span class='line'><span class="c">#          +--  MacOS</span>
+</span><span class='line'><span class="c">#          |     |</span>
+</span><span class='line'><span class="c">#          |     +--  (program)</span>
+</span><span class='line'><span class="c">#          |</span>
+</span><span class='line'><span class="c">#          +--  PkgInfo</span>
+</span><span class='line'><span class="c">#          |</span>
+</span><span class='line'><span class="c">#          +--  Resources</span>
+</span><span class='line'><span class="c">#                |</span>
+</span><span class='line'><span class="c">#                +-- (icon file)</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#    In this diagram &quot;(program)&quot; is the name of </span>
+</span><span class='line'><span class="c">#    the executable program.  &quot;Contents,&quot; &quot;MacOS,&quot; </span>
+</span><span class='line'><span class="c">#    and &quot;Resouces,&quot; are directories.  &quot;Info.plist&quot;</span>
+</span><span class='line'><span class="c">#    is an XML DTD file.  And &quot;PkgInfo&quot; is a text</span>
+</span><span class='line'><span class="c">#    file containing data.</span>
+</span><span class='line'><span class="c">#  This makefile generates the package directory</span>
+</span><span class='line'><span class="c">#    structure, and it compiles and places the </span>
+</span><span class='line'><span class="c">#    executabel in the MacOS directory.  This </span>
+</span><span class='line'><span class="c">#    makefile also creates the &quot;PkgInfo&quot; and </span>
+</span><span class='line'><span class="c">#    &quot;Info.plist&quot; files.  The PkgInfo file is very</span>
+</span><span class='line'><span class="c">#    simple.  Info.plist is an XML DTD and contains</span>
+</span><span class='line'><span class="c">#    several variables, which can be examined in</span>
+</span><span class='line'><span class="c">#    this makefile.</span>
+</span><span class='line'><span class="c">#  You need to supply the source code and the icon</span>
+</span><span class='line'><span class="c">#    file.  The icon file is copied into the </span>
+</span><span class='line'><span class="c">#    Resources directory of the package.</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">##############################################################</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">##############################################################</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#  These variables are used to compile the program.  You </span>
+</span><span class='line'><span class="c">#    will need to provide this information.  You may need</span>
+</span><span class='line'><span class="c">#    to specify the full path to the wx-config executable.</span>
+</span><span class='line'><span class="c">#    The output path can&#39;t be blank.  The program name</span>
+</span><span class='line'><span class="c">#    and object names are essential.  You may use the icon</span>
+</span><span class='line'><span class="c">#    file included with the wxMac distribution </span>
+</span><span class='line'><span class="c">#    (wxMac-2.6.1/src/mac/wxmac.icns) or create your own</span>
+</span><span class='line'><span class="c">#    icon using the Apple Developer Tools </span>
+</span><span class='line'><span class="c">#    (/Developer/Applications/Utilities/Icon Composer).</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">##############################################################</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">WXCONFIG</span><span class="p">=</span><span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">mark</span><span class="o">/</span><span class="n">Graphics</span><span class="o">/</span><span class="n">wxWidgets</span><span class="o">-</span><span class="mf">3.0</span><span class="p">.</span><span class="mi">0</span><span class="o">/</span><span class="n">build</span><span class="o">-</span><span class="n">release</span><span class="o">/</span><span class="n">wx</span><span class="o">-</span><span class="n">config</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># can&#39;t be blank, otherwise &quot;mkdir -p&quot; fails</span>
+</span><span class='line'><span class="n">OUTPUTPATH</span><span class="p">=</span><span class="n">out</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">PROGRAM</span><span class="p">=</span><span class="n">HelloWxGL</span>
+</span><span class='line'><span class="n">PROGVER</span><span class="p">=</span><span class="mf">1.0</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">OBJECTS</span><span class="p">=</span><span class="n">HelloWxGL</span><span class="p">.</span><span class="n">o</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ICONFILE</span><span class="p">=</span><span class="n">wxmac</span><span class="p">.</span><span class="n">icns</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">##############################################################</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#  These variables are used in the Info.plist and PkgInfo</span>
+</span><span class='line'><span class="c">#    files.  Aside from the company name (which should have</span>
+</span><span class='line'><span class="c">#    no spaces, like a domain name), you should not have</span>
+</span><span class='line'><span class="c">#    to modify these variables.</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">##############################################################</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">COMPANY</span><span class="p">=</span><span class="n">markzhang</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">BUNDLEPACKAGE</span><span class="p">=</span><span class="n">APPL</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">BUNDLESIGNATURE</span><span class="p">=</span>????
+</span><span class='line'>
+</span><span class='line'><span class="c">##############################################################</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">#  It should not be necessary to modify the Makefile</span>
+</span><span class='line'><span class="c">#    below this line; although, you may have to make</span>
+</span><span class='line'><span class="c">#    changes depending on your system configuration.</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'><span class="c">##############################################################</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">CXX</span><span class="p">=</span><span class="n">g</span><span class="o">++</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">BUNDLE</span><span class="p">=</span>$<span class="p">(</span><span class="n">OUTPUTPATH</span><span class="p">)</span><span class="o">/</span>$<span class="p">(</span><span class="n">PROGRAM</span><span class="p">).</span><span class="n">app</span>
+</span><span class='line'><span class="n">MACICON</span><span class="p">=</span>$<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span>$<span class="p">(</span><span class="n">ICONFILE</span><span class="p">)</span>
+</span><span class='line'><span class="n">MACPKGINFO</span><span class="p">=</span>$<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span><span class="n">PkgInfo</span>
+</span><span class='line'><span class="n">MACINFOPLIST</span><span class="p">=</span>$<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span><span class="n">Info</span><span class="p">.</span><span class="n">plist</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">LIBS</span><span class="p">=</span>`$<span class="p">(</span><span class="n">WXCONFIG</span><span class="p">)</span> <span class="o">--</span><span class="n">libs</span>`
+</span><span class='line'><span class="n">LINKERFLAGS</span><span class="p">=</span> <span class="o">-</span><span class="n">lstdc</span><span class="o">++</span>
+</span><span class='line'><span class="n">WARNINGFLAGS</span><span class="p">=</span>
+</span><span class='line'><span class="n">OPTFLAGS</span><span class="p">=</span>
+</span><span class='line'><span class="n">DEBUGFLAGS</span><span class="p">=</span><span class="o">-</span><span class="n">g</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">CPPINC</span><span class="p">=</span>`$<span class="p">(</span><span class="n">WXCONFIG</span><span class="p">)</span> <span class="o">--</span><span class="n">inplace</span> <span class="o">--</span><span class="n">cxxflags</span>`
+</span><span class='line'><span class="n">LDFLAGS</span><span class="p">=</span>$<span class="p">(</span><span class="n">LIBS</span><span class="p">)</span> $<span class="p">(</span><span class="n">LINKERFLAGS</span><span class="p">)</span>
+</span><span class='line'><span class="n">CPPFLAGS</span><span class="p">=</span>$<span class="p">(</span><span class="n">CPPINC</span><span class="p">)</span> $<span class="p">(</span><span class="n">GCCFLAGS</span><span class="p">)</span> $<span class="p">(</span><span class="n">DEBUGFLAGS</span><span class="p">)</span> $<span class="p">(</span><span class="n">OPTFLAGS</span><span class="p">)</span> $<span class="p">(</span><span class="n">WARNINGFLAGS</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">all</span><span class="p">:</span> $<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span> $<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span><span class="n">MacOS</span><span class="o">/</span>$<span class="p">(</span><span class="n">PROGRAM</span><span class="p">)</span> $<span class="p">(</span><span class="n">MACICON</span><span class="p">)</span> $<span class="p">(</span><span class="n">MACPKGINFO</span><span class="p">)</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">clean</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> $<span class="p">(</span><span class="n">OBJECTS</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">rm</span> <span class="o">-</span><span class="n">fr</span> $<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">help</span><span class="p">:</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;Usage: make -f Makefile [all|clean|help]&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#  This builds the bundle&#39;s directory structure.</span>
+</span><span class='line'>$<span class="p">(</span><span class="n">BUNDLE</span><span class="p">):</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;==== Building bundle directory structure ====&quot;</span>
+</span><span class='line'>  <span class="nb">mkdir</span> <span class="o">-</span><span class="n">p</span> $<span class="p">(</span><span class="n">OUTPUTPATH</span><span class="p">)</span>
+</span><span class='line'>  <span class="nb">mkdir</span> <span class="o">-</span><span class="n">p</span> $<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span>
+</span><span class='line'>  <span class="nb">mkdir</span> <span class="o">-</span><span class="n">p</span> $<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span><span class="n">MacOS</span>
+</span><span class='line'>  <span class="nb">mkdir</span> <span class="o">-</span><span class="n">p</span> $<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span><span class="n">Resources</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#  This builds the executable right inside the bundle.</span>
+</span><span class='line'>$<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span><span class="n">MacOS</span><span class="o">/</span>$<span class="p">(</span><span class="n">PROGRAM</span><span class="p">):</span> $<span class="p">(</span><span class="n">OBJECTS</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;==== Building executable ====&quot;</span>
+</span><span class='line'>  $<span class="p">(</span><span class="n">CXX</span><span class="p">)</span> <span class="o">-</span><span class="n">o</span> $<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span><span class="n">MacOS</span><span class="o">/</span>$<span class="p">(</span><span class="n">PROGRAM</span><span class="p">)</span> $<span class="p">(</span><span class="n">OBJECTS</span><span class="p">)</span> $<span class="p">(</span><span class="n">LDFLAGS</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#  This copies the icon file into the bundle.</span>
+</span><span class='line'>$<span class="p">(</span><span class="n">MACICON</span><span class="p">):</span> $<span class="p">(</span><span class="n">ICONFILE</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;==== Copying icon file into bundle ====&quot;</span>
+</span><span class='line'>  <span class="n">cp</span> <span class="o">-</span><span class="n">f</span> $<span class="p">(</span><span class="n">ICONFILE</span><span class="p">)</span> $<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span><span class="n">Resources</span><span class="o">/</span>$<span class="p">(</span><span class="n">ICONFILE</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#  NOTICE</span>
+</span><span class='line'><span class="c">#  We need to use &quot;/bin/echo&quot;, since the &quot;echo&quot; is the builtin program</span>
+</span><span class='line'><span class="c">#  which doesn&#39;t have &quot;-n&quot; option.</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#  This creates the Contents/PkgInfo file.</span>
+</span><span class='line'>$<span class="p">(</span><span class="n">MACPKGINFO</span><span class="p">):</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;==== Creating PkgInfo ====&quot;</span>
+</span><span class='line'>  <span class="n">touch</span> $<span class="p">(</span><span class="n">MACPKGINFO</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="o">-</span><span class="n">n</span> <span class="s">&quot;$(BUNDLEPACKAGE)$(BUNDLESIGNATURE)&quot;</span> <span class="o">&gt;</span> $<span class="p">(</span><span class="n">MACPKGINFO</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#  This creates the Contents/Info.plist file.</span>
+</span><span class='line'>$<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">):</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;==== Creating Info.plist ====&quot;</span>
+</span><span class='line'>  <span class="n">touch</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;&lt;?xml version=\&quot;</span><span class="mf">1.0</span><span class="o">\</span><span class="s">&quot; encoding=\&quot;</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span><span class="o">\</span><span class="s">&quot;?&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="o">-</span><span class="n">n</span> <span class="s">&quot;&lt;!DOCTYPE plist PUBLIC &quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="o">-</span><span class="n">n</span> <span class="s">&quot;\&quot;</span><span class="o">-//</span><span class="n">Apple</span> <span class="n">Computer</span><span class="o">//</span><span class="n">DTD</span> <span class="n">PLIST</span> <span class="mf">1.0</span><span class="o">//</span><span class="n">EN</span><span class="o">\</span><span class="s">&quot; &quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;\&quot;</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="p">.</span><span class="n">apple</span><span class="p">.</span><span class="n">com</span><span class="o">/</span><span class="n">DTDs</span><span class="o">/</span><span class="n">PropertyList</span><span class="o">-</span><span class="mf">1.0</span><span class="p">.</span><span class="n">dtd</span><span class="o">\</span><span class="s">&quot;&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;&lt;plist version=\&quot;</span><span class="mf">1.0</span><span class="o">\</span><span class="s">&quot;&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;&lt;dict&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleDevelopmentRegion&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;English&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleExecutable&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;$(PROGRAM)&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleIconFile&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;$(ICONFILE)&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleName&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;$(PROGRAM)&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleIdentifier&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;com.$(COMPANY).$(PROGRAM)&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleInfoDictionaryVersion&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;6.0&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundlePackageType&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;$(BUNDLEPACKAGE)&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleSignature&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;$(BUNDLESIGNATURE)&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleVersion&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;$(PROGVER)&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleShortVersionString&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;$(PROGVER)&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleGetInfoString&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;$(PROGRAM), Version $(PROGVER), $(COMPANY)&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;&lt;/dict&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;&lt;/plist&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>$<span class="p">(</span><span class="n">OBJECTS</span><span class="p">):</span> <span class="c">%.o: %.cpp</span>
+</span><span class='line'>  $<span class="p">(</span><span class="n">CXX</span><span class="p">)</span> <span class="o">-</span><span class="n">c</span> <span class="o">-</span><span class="n">o</span> $<span class="p">@</span> $<span class="p">(</span><span class="n">CPPFLAGS</span><span class="p">)</span> $<span class="o">&lt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">.</span><span class="n">PHONY</span><span class="p">:</span>    <span class="nb">all</span> <span class="n">clean</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/downloads/image/hellowxgl.png" alt="wxWidgets HelloWorld" /></p>
+</div>
+
+
+  <footer>
+    
+    <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
+      <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
+原文链接: http://www.markzhang.cn/blog/2014/04/23/wxwidget-on-mavericks/<br>
+您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
+    </section>
+    
+
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Mark Zhang</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-23T23:31:00+08:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/opengl/'>OpenGL</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2014/04/23/translation-rotation-scale-in-homogeneous-coordinate/" title="Previous Post: 需要齐次坐标的原因之二 - 所有的变换运算（平移、旋转、缩放）都可以用矩阵乘法来搞定">&laquo; 需要齐次坐标的原因之二 - 所有的变换运算（平移、旋转、缩放）都可以用矩阵乘法来搞定</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_24x24">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_kaixin001"></a>
+	<a href="http://www.jiathis.com/share?uid=1860527" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1352426099508779" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+  </section>
+
+
+  <section>
+    <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1860527"></script>
+<!-- UY END -->
+
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/git'>git (5)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/linux'>linux (2)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (3)</a></li><li><a href='/blog/categories/macosx'>MacOSX (3)</a></li><li><a href='/blog/categories/network'>network (4)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (2)</a></li><li><a href='/blog/categories/reprints'>reprints (3)</a></li><li><a href='/blog/categories/science'>science (1)</a></li></ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/04/23/wxwidget-on-mavericks/">在Mavericks上使用Makefile编写wxWidgets程序</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/23/translation-rotation-scale-in-homogeneous-coordinate/">需要齐次坐标的原因之二 - 所有的变换运算（平移、旋转、缩放）都可以用矩阵乘法来搞定</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/23/homogeneous-coordinates/">需要齐次坐标的原因</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/22/git-gossip-3/">Git都在说些啥（三）</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/21/git-gossip-2/">Git都在说些啥（二）</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'super119',
+            count: 0,
+            skip_forks: false,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Mark Zhang -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>&nbsp;&nbsp;
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1000375590'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1000375590%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
