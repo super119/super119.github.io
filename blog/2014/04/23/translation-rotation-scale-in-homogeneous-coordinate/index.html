@@ -5,39 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Git常见命令和配置 - Make Things Cool</title>
+  <title>需要齐次坐标的原因之二 - 所有的变换运算（平移、旋转、缩放）都可以用矩阵乘法来搞定 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="常用配置 git常用配置1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-[color] ui = auto
-[user] name = Mark Zhang email = xxxx@xxxx.xxx &hellip;">
+  <meta name="description" content="看三个图就清楚了。分别是平移、旋转和缩放的矩阵计算。如果没有额外的第四个量w（也就是齐次坐标），那么这三种变换是无法都使用矩阵乘法来解决的。变换都统一成矩阵乘法之后，就给硬件设计和软件架构带来了巨大的好处。 下面的三组公式就分别对应使用矩阵来实现平移（Translation）、旋转（ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -46,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2013/11/20/git-tips/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/04/23/translation-rotation-scale-in-homogeneous-coordinate/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -105,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">Git常见命令和配置</h1>
+        <h1 class="entry-title">需要齐次坐标的原因之二 - 所有的变换运算（平移、旋转、缩放）都可以用矩阵乘法来搞定</h1>
       
     
     
@@ -122,141 +94,25 @@
   
 
 
-<time datetime="2013-11-20T21:01:00+08:00" pubdate data-updated="true">Nov 20<span>th</span>, 2013</time>
+<time datetime="2014-04-23T13:55:00+08:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>常用配置</h2>
-
-<figure class='code'><figcaption><span>git常用配置</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[color]</span>
-</span><span class='line'>        <span class="na">ui</span> <span class="o">=</span> <span class="s">auto</span>
-</span><span class='line'><span class="k">[user]</span>
-</span><span class='line'>        <span class="na">name</span> <span class="o">=</span> <span class="s">Mark Zhang</span>
-</span><span class='line'><span class="s">        email = xxxx@xxxx.xxx</span>
-</span><span class='line'><span class="k">[core]</span>
-</span><span class='line'>        <span class="na">editor</span> <span class="o">=</span> <span class="s">vim</span>
-</span><span class='line'><span class="s">        abbrev = 12</span>
-</span><span class='line'><span class="s">        pager = less -X -F</span>
-</span><span class='line'><span class="k">[diff]</span>
-</span><span class='line'>        <span class="na">tool</span> <span class="o">=</span> <span class="s">vimdiff</span>
-</span><span class='line'><span class="s">        renames = true</span>
-</span><span class='line'><span class="k">[difftool]</span>
-</span><span class='line'>        <span class="na">prompt</span> <span class="o">=</span> <span class="s">No</span>
-</span><span class='line'><span class="k">[sendemail]</span>
-</span><span class='line'>        <span class="na">chainreplyto</span> <span class="o">=</span> <span class="s">false</span>
-</span><span class='line'><span class="s">        smtpserver = xxxxxxxx</span>
-</span><span class='line'><span class="s">        smtpencryption = tls</span>
-</span><span class='line'><span class="s">        from = Mark Zhang &lt;xxxx@xxx.xxx&gt;</span>
-</span><span class='line'><span class="s">        envelopesender = auto</span>
-</span><span class='line'><span class="k">[alias]</span>
-</span><span class='line'>        <span class="na">s</span> <span class="o">=</span> <span class="s">status</span>
-</span><span class='line'><span class="s">        cp = cherry-pick</span>
-</span><span class='line'><span class="s">        ck = checkout</span>
-</span><span class='line'><span class="s">        b = branch</span>
-</span><span class='line'><span class="s">        lo = log --oneline</span>
-</span><span class='line'><span class="s">        dt = difftool</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
+<div class="entry-content"><p>看三个图就清楚了。分别是平移、旋转和缩放的矩阵计算。如果没有额外的第四个量w（也就是齐次坐标），那么这三种变换是无法都使用矩阵乘法来解决的。变换都统一成矩阵乘法之后，就给硬件设计和软件架构带来了巨大的好处。</p>
 
 <!-- more -->
 
 
-<h2>常用命令</h2>
+<p>下面的三组公式就分别对应使用矩阵来实现平移（Translation）、旋转（Rotation）、缩放（Scale）：</p>
 
-<ul>
-<li><code>git remote add &lt;name&gt; &lt;url&gt;</code></li>
-</ul>
+<p><img src="/downloads/image/matrix-translation.png" alt="Translation" /></p>
 
+<p><img src="/downloads/image/matrix-rotation.png" alt="Rotation" /></p>
 
-<p>如果要添加本地的一个git repository的话，<url>填写成 <code>git repository的路径/.git</code> 即可。</p>
-
-<ul>
-<li><p><code>git fetch -p &lt;remote name, e.g: origin&gt;</code></p></li>
-<li><p><code>git show &lt;commit id&gt;</code></p></li>
-<li><p><code>git push origin HEAD:next</code></p></li>
-</ul>
-
-
-<p>Push本地HEAD commit对应的branch到名为 <code>origin</code> 的远端仓库的 <code>next</code> branch上。</p>
-
-<ul>
-<li><code>git push origin +HEAD:next / git push -f origin HEAD:next</code></li>
-</ul>
-
-
-<p>所谓的Force update，也就是用本地的commit历史覆盖远端的。</p>
-
-<ul>
-<li><code>git push origin :next</code></li>
-</ul>
-
-
-<p>删除远端仓库的 <code>next</code> branch。</p>
-
-<ul>
-<li><code>git push --tags</code></li>
-</ul>
-
-
-<p>Push本地的tag列表到远端。</p>
-
-<ul>
-<li><p><code>git format-patch -&lt;N&gt;</code></p></li>
-<li><p><code>git format-patch &lt;commit id&gt;^..&lt;commit id&gt;</code></p></li>
-</ul>
-
-
-<p>这个命令可以用来为一个指定的commit生成patch。</p>
-
-<ul>
-<li><p><code>git format-patch --subject-prefix 'PATCH V2' --cover-letter</code></p></li>
-<li><p><code>git send-email --to=XXX --to=XXX --cc=XXX *.patch</code></p></li>
-<li><p><code>git send-email --no-signed-off-cc --to=XXX --to=XXX --cc=XXX *.patch</code></p></li>
-<li><p><code>git rebase -i &lt;commit id&gt;</code></p></li>
-<li><p><code>git checkout &lt;branch&gt; -- &lt;file path&gt;</code></p></li>
-</ul>
-
-
-<p>这个命令将指定branch中的指定文件checkout出来，更新当前working tree中的对应文件。</p>
-
-<ul>
-<li><code>git show &lt;branch&gt;:&lt;file path&gt; &gt;&amp; &lt;filename&gt;</code></li>
-</ul>
-
-
-<p>这个命令将指定branch中的指定文件checkout出来，并存到 <code>&lt;filename&gt;</code> 指定的路径上。</p>
+<p><img src="/downloads/image/matrix-scale.png" alt="Scale" /></p>
 </div>
 
 
@@ -264,7 +120,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2013/11/20/git-tips/<br>
+原文链接: http://www.markzhang.cn/blog/2014/04/23/translation-rotation-scale-in-homogeneous-coordinate/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -287,12 +143,12 @@
   
 
 
-<time datetime="2013-11-20T21:01:00+08:00" pubdate data-updated="true">Nov 20<span>th</span>, 2013</time>
+<time datetime="2014-04-23T13:55:00+08:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/git/'>git</a>
+    <a class='category' href='/blog/categories/opengl/'>OpenGL</a>
   
 </span>
 
@@ -308,10 +164,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/11/07/linus-git-config/" title="Previous Post: Linus说，请将这个配置加到你的.gitconfig">&laquo; Linus说，请将这个配置加到你的.gitconfig</a>
+        <a class="basic-alignment left articlenav" href="/blog/2014/04/23/homogeneous-coordinates/" title="Previous Post: 需要齐次坐标的原因">&laquo; 需要齐次坐标的原因</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/11/27/dt-interrupts/" title="Next Post: Device tree: interrupts的解释">Device tree: interrupts的解释 &raquo;</a>
       
     </p>
   </footer>

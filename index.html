@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="这次来说说有关 no branch 的那些事。 其实之前在Git都在说些啥（一）中已经提过一些有关 no branch 的东西。这次再来看看其他两段git的提示信息，都是与 no branch 有关的。 ">
+  <meta name="description" content="看三个图就清楚了。分别是平移、旋转和缩放的矩阵计算。如果没有额外的第四个量w（也就是齐次坐标），那么这三种变换是无法都使用矩阵乘法来解决的。变换都统一成矩阵乘法之后，就给硬件设计和软件架构带来了巨大的好处。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,94 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/04/23/translation-rotation-scale-in-homogeneous-coordinate/">需要齐次坐标的原因之二 - 所有的变换运算（平移、旋转、缩放）都可以用矩阵乘法来搞定</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-23T13:55:00+08:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>看三个图就清楚了。分别是平移、旋转和缩放的矩阵计算。如果没有额外的第四个量w（也就是齐次坐标），那么这三种变换是无法都使用矩阵乘法来解决的。变换都统一成矩阵乘法之后，就给硬件设计和软件架构带来了巨大的好处。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/04/23/translation-rotation-scale-in-homogeneous-coordinate/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/04/23/homogeneous-coordinates/">需要齐次坐标的原因</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-23T13:40:00+08:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>原文链接：<a href="http://www.songho.ca/math/homogeneous/homogeneous.html">http://www.songho.ca/math/homogeneous/homogeneous.html</a></p>
+
+<p>翻译：罗朝辉 <a href="http://www.cnblogs.com/kesalin/">http://www.cnblogs.com/kesalin/</a></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/04/23/homogeneous-coordinates/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -432,94 +520,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/03/20/juniper-vpn-on-ubuntu/">在Ubuntu上连接Juniper SSL VPN</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-03-20T22:26:00+08:00" pubdate data-updated="true">Mar 20<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>现在国内很多外企都使用Juniper SSL VPN，来让员工可以在家连入到公司的网络。但是我发现，Juniper的SSL VPN在windows和Mac OS X上都可以很好的工作，但是在Ubuntu上貌似就有问题。就算你正确安装了Java Runtime，打开浏览器，<code>Host Checker</code> 和 <code>Network Connect</code> 也无法正常运行。有人说这是因为现在我们大多使用64位的Ubuntu，而 <code>Host Checker</code> 和 <code>Network Connect</code> 需要32位的浏览器和32位的JRE才能工作。</p>
-
-<p>我没有去深究32位的Ubuntu下是否Juniper VPN就真的可以正常工作了，因为我找到了一个更简单的办法。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/03/20/juniper-vpn-on-ubuntu/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/03/10/kgdb-howto/">KGDB使用简介</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-03-10T13:57:00+08:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>KGDB是调试linux kernel的一个工具，虽然没有userspace的gdb那么好用，但有些时候还是能派上一些用处。比如kernel启动的时候自动重启，用kgdb连上之后就可以在kernel重启之前被KGDB截获，从而打印出调用栈来。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/03/10/kgdb-howto/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -532,11 +532,19 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/git'>git (5)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/linux'>linux (2)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (3)</a></li><li><a href='/blog/categories/macosx'>MacOSX (3)</a></li><li><a href='/blog/categories/network'>network (4)</a></li><li><a href='/blog/categories/opengl'>OpenGL (1)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (2)</a></li><li><a href='/blog/categories/reprints'>reprints (1)</a></li><li><a href='/blog/categories/science'>science (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/git'>git (5)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/linux'>linux (2)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (3)</a></li><li><a href='/blog/categories/macosx'>MacOSX (3)</a></li><li><a href='/blog/categories/network'>network (4)</a></li><li><a href='/blog/categories/opengl'>OpenGL (3)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (2)</a></li><li><a href='/blog/categories/reprints'>reprints (2)</a></li><li><a href='/blog/categories/science'>science (1)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/04/23/translation-rotation-scale-in-homogeneous-coordinate/">需要齐次坐标的原因之二 - 所有的变换运算（平移、旋转、缩放）都可以用矩阵乘法来搞定</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/04/23/homogeneous-coordinates/">需要齐次坐标的原因</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/04/22/git-gossip-3/">Git都在说些啥（三）</a>
@@ -548,14 +556,6 @@
     
       <li class="post">
         <a href="/blog/2014/04/15/prime-lc-42t18-fix/">厦华LC-42T18电视机维修</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/04/09/linux-driver-suspend-orders/">Linux设备驱动suspend/resume的顺序</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/04/08/lastpass/">一站式密码管理器 - LastPass</a>
       </li>
     
   </ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-04-22T08:24:15+08:00</updated>
+  <updated>2014-04-23T14:02:04+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,71 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[需要齐次坐标的原因之二 - 所有的变换运算（平移、旋转、缩放）都可以用矩阵乘法来搞定]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/04/23/translation-rotation-scale-in-homogeneous-coordinate/"/>
+    <updated>2014-04-23T13:55:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/04/23/translation-rotation-scale-in-homogeneous-coordinate</id>
+    <content type="html"><![CDATA[<p>看三个图就清楚了。分别是平移、旋转和缩放的矩阵计算。如果没有额外的第四个量w（也就是齐次坐标），那么这三种变换是无法都使用矩阵乘法来解决的。变换都统一成矩阵乘法之后，就给硬件设计和软件架构带来了巨大的好处。</p>
+
+<!-- more -->
+
+
+<p>下面的三组公式就分别对应使用矩阵来实现平移（Translation）、旋转（Rotation）、缩放（Scale）：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/matrix-translation.png" alt="Translation" /></p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/matrix-rotation.png" alt="Rotation" /></p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/matrix-scale.png" alt="Scale" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[需要齐次坐标的原因]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/04/23/homogeneous-coordinates/"/>
+    <updated>2014-04-23T13:40:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/04/23/homogeneous-coordinates</id>
+    <content type="html"><![CDATA[<p>原文链接：<a href="http://www.songho.ca/math/homogeneous/homogeneous.html">http://www.songho.ca/math/homogeneous/homogeneous.html</a></p>
+
+<p>翻译：罗朝辉 <a href="http://www.cnblogs.com/kesalin/">http://www.cnblogs.com/kesalin/</a></p>
+
+<!-- more -->
+
+
+<p>在欧几里得几何空间里，两条平行线永远都不会相交。但是在投影空间中，两条铁轨在地平线处却是会相交的，因为在无限远处它们看起来相交于一点。</p>
+
+<p>在欧几里得（或称笛卡尔）空间里描述2D/3D 几何物体是很理想的，但在投影空间里面却并不见得。我们用 (x, y) 表示笛卡尔空间中的一个 2D 点，而处于无限远处的点 (∞,∞) 在笛卡尔空间里是没有意义的。投影空间里的两条平行线会在无限远处相交于一点，但笛卡尔空间里面无法搞定这个问题（因为无限远处的点在笛卡尔空间里是没有意义的）。</p>
+
+<p>由 August Ferdinand Möbius 提出的齐次坐标（Homogeneous coordinates）让我们能够在投影空间里进行图像和几何处理，齐次坐标用N + 1个分量来描述 N 维坐标。比如，2D 齐次坐标是在笛卡尔坐标(X, Y)的基础上增加一个新分量 w，变成(x, y, w)，其中笛卡尔坐标系中的大X，Y 与齐次坐标中的小x，y有如下对应关系：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">X</span> <span class="o">=</span> x / w
+</span><span class='line'><span class="nv">Y</span> <span class="o">=</span> y / w
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>笛卡尔坐标中的点 (1, 2) 在齐次坐标中就是 (1, 2, 1) 。如果这点移动到无限远(∞,∞)处，在齐次坐标中就是 (1, 2, 0) ，这样我们就避免了用没意义的&#8221;∞&#8221; 来描述无限远处的点。</p>
+
+<p><strong> 证明: 两平行线可以相交 </strong></p>
+
+<p>笛卡尔坐标系中，对于如下两个直线方程：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/linear-formula.png" alt="直线方程" /></p>
+
+<p>如果 C ≠ D，以上方程组无解；如果 C = D，那这两条线就是同一条线了。</p>
+
+<p>下面我们用 x/w, y/w 代替 x, y 放到投影空间里来求解：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/linear-formula-homogeneous.png" alt="齐次坐标直线方程" /></p>
+
+<p>现在我们就可以在 C ≠ D 的情况得到一组解 (x, y, 0)，代入得 (C &ndash; D)w = 0，因为 C ≠ D，所以 w = 0。因而，两条平行线相交于投影空间中无限远处的一点 (x, y, 0)。</p>
+
+<p>齐次坐标在计算机图形学中是有用的，将 3D 场景投影到 2D 平面的过程中就用到它了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Git都在说些啥（三）]]></title>
@@ -1792,141 +1857,6 @@ to do so with:</p>
 <p>然后，每次需要开机登录、认证的时候，计算机会启动一个特别设计的弹吉他游戏，你需要再次弹奏一次（只不过这次会简短很多），此时计算机就可以跟你之前弹奏的数据进行比较，从而对使用者的身份做认证。</p>
 
 <p>老实说，不管使用什么方式，我只希望这些东西尽快的实现并进入实用阶段，我实在厌烦了密码这个破玩意，不安全而且还需要你记忆他们。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Chnroutes的使用（Mac OS X Mavericks）]]></title>
-    <link href="http://www.markzhang.cn/blog/2013/12/04/chnroutes-on-mac/"/>
-    <updated>2013-12-04T14:00:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2013/12/04/chnroutes-on-mac</id>
-    <content type="html"><![CDATA[<p>翻墙是我朝人民的普遍需求。现在翻墙的普遍做法是搞一个VPN。买一个也好，找免费的也好。有了VPN之后面临的问题就是当VPN连接之后，所有的网络数据都会走VPN，这显然不是最高效的做法，对于一些没有被墙的网站或是应用，没有必要再走VPN，这样反而更慢。为此，<code>chnroutes</code>应蕴而生了。</p>
-
-<!-- more -->
-
-
-<p><code>chnroutes</code>就是一份路由表配置，它收集了绝大部分国内没有被墙的网站/IP，然后将他们加到路由表中，设定访问这些IP地址使用原来的网关（非VPN）。这样，在路由表中的IP地址就会走原来的网关，剩下来的就都走VPN了。</p>
-
-<p>在<code>https://code.google.com/p/chnroutes/</code>上下载<code>chnroutes.py</code>，在Mac OS X上运行<code>./chnroutes.py -p mac</code>就得到两个文件：<code>ip-up</code> 和 <code>ip-down</code>。</p>
-
-<p>打开文件一看就明白，没比这更简单的脚本了。<code>ip-up</code>就是使用netstat等命令取到非VPN的网关的IP地址，然后就调用<code>route</code>命令设置一大堆的路由信息。</p>
-
-<p>这里要注意的是，在我的Macbook上（Mac OS X Mavericks），<code>ip-up</code>取到的所谓<code>OLDGW</code>是不对的。<code>ip-up</code>试图去取非VPN的那个网关IP地址，但其实取到的是我所有的网关，也就是包含了VPN的和本地的两个网关IP地址。所以我注释掉了<code>ip-up</code>中获取<code>OLDGW</code>的一行，直接将<code>OLDGW</code>设置成了我本地的网关IP地址。</p>
-
-<p>这样，连接上VPN，然后运行<code>ip-up</code>就可以舒服的上网了。运行<code>ip-down</code>就可以删除掉<code>ip-up</code>添加的路由信息。</p>
-
-<p>为了验证<code>ip-up</code>的确做了我们所想的事情，可以用命令<code>traceroute</code>来验证，比如：<code>traceroute www.youku.com</code>，就可以看到数据是从本地网关走的，而如果是：<code>traceroute www.youtube.com</code>，就可以看到数据是从VPN走的。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Device tree: interrupts的解释]]></title>
-    <link href="http://www.markzhang.cn/blog/2013/11/27/dt-interrupts/"/>
-    <updated>2013-11-27T20:41:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2013/11/27/dt-interrupts</id>
-    <content type="html"><![CDATA[<p>Linux kernel现在使用Device tree（DT）来描述硬件设备。既然是描述硬件设备，那自然就需要对硬件充分了解才能理解DT。Interrupts就是一个例子。</p>
-
-<p>一般来说，DT中的 <code>interrupts</code> （本文不描述interrupt controller）看起来是这样的：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">pmu</span> <span class="p">{</span>
-</span><span class='line'>  <span class="n">compatible</span> <span class="o">=</span> <span class="s">&quot;arm,cortex-a9-pmu&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="n">interrupts</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mi">0</span> <span class="mi">144</span> <span class="mh">0x04</span>
-</span><span class='line'>            <span class="mi">0</span> <span class="mi">145</span> <span class="mh">0x04</span>
-</span><span class='line'>            <span class="mi">0</span> <span class="mi">146</span> <span class="mh">0x04</span>
-</span><span class='line'>            <span class="mi">0</span> <span class="mi">147</span> <span class="mh">0x04</span><span class="o">&gt;</span><span class="p">;</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<!-- more -->
-
-
-<p>可以看到 <code>interrupts</code> 有三个member，对于这三个member，Linux kernel的文档是这样说的：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">The</span> <span class="mi">1</span><span class="n">st</span> <span class="n">cell</span> <span class="n">is</span> <span class="n">the</span> <span class="n">interrupt</span> <span class="n">type</span><span class="p">;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">SPI</span> <span class="n">interrupts</span><span class="p">,</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">PPI</span>
-</span><span class='line'><span class="n">interrupts</span><span class="p">.</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">The</span> <span class="mi">2</span><span class="n">nd</span> <span class="n">cell</span> <span class="n">contains</span> <span class="n">the</span> <span class="n">interrupt</span> <span class="n">number</span> <span class="k">for</span> <span class="n">the</span> <span class="n">interrupt</span> <span class="n">type</span><span class="p">.</span>
-</span><span class='line'><span class="n">SPI</span> <span class="n">interrupts</span> <span class="n">are</span> <span class="n">in</span> <span class="n">the</span> <span class="n">range</span> <span class="p">[</span><span class="mi">0</span><span class="o">-</span><span class="mi">987</span><span class="p">].</span>  <span class="n">PPI</span> <span class="n">interrupts</span> <span class="n">are</span> <span class="n">in</span> <span class="n">the</span>
-</span><span class='line'><span class="n">range</span> <span class="p">[</span><span class="mi">0</span><span class="o">-</span><span class="mi">15</span><span class="p">].</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">The</span> <span class="mi">3</span><span class="n">rd</span> <span class="n">cell</span> <span class="n">is</span> <span class="n">the</span> <span class="n">flags</span><span class="p">,</span> <span class="n">encoded</span> <span class="n">as</span> <span class="n">follows</span><span class="o">:</span>
-</span><span class='line'>  <span class="n">bits</span><span class="p">[</span><span class="mi">3</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span> <span class="n">trigger</span> <span class="n">type</span> <span class="n">and</span> <span class="n">level</span> <span class="n">flags</span><span class="p">.</span>
-</span><span class='line'>      <span class="mi">1</span> <span class="o">=</span> <span class="n">low</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">high</span> <span class="n">edge</span> <span class="n">triggered</span>
-</span><span class='line'>      <span class="mi">2</span> <span class="o">=</span> <span class="n">high</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">low</span> <span class="n">edge</span> <span class="n">triggered</span>
-</span><span class='line'>      <span class="mi">4</span> <span class="o">=</span> <span class="n">active</span> <span class="n">high</span> <span class="n">level</span><span class="o">-</span><span class="n">sensitive</span>
-</span><span class='line'>      <span class="mi">8</span> <span class="o">=</span> <span class="n">active</span> <span class="n">low</span> <span class="n">level</span><span class="o">-</span><span class="n">sensitive</span>
-</span><span class='line'>  <span class="n">bits</span><span class="p">[</span><span class="mi">15</span><span class="o">:</span><span class="mi">8</span><span class="p">]</span> <span class="n">PPI</span> <span class="n">interrupt</span> <span class="n">cpu</span> <span class="n">mask</span><span class="p">.</span>  <span class="n">Each</span> <span class="n">bit</span> <span class="n">corresponds</span> <span class="n">to</span> <span class="n">each</span> <span class="n">of</span>
-</span><span class='line'>  <span class="n">the</span> <span class="mi">8</span> <span class="n">possible</span> <span class="n">cpus</span> <span class="n">attached</span> <span class="n">to</span> <span class="n">the</span> <span class="n">GIC</span><span class="p">.</span>  <span class="n">A</span> <span class="n">bit</span> <span class="n">set</span> <span class="n">to</span> <span class="sc">&#39;1&#39;</span> <span class="n">indicated</span>
-</span><span class='line'>  <span class="n">the</span> <span class="n">interrupt</span> <span class="n">is</span> <span class="n">wired</span> <span class="n">to</span> <span class="n">that</span> <span class="n">CPU</span><span class="p">.</span>  <span class="n">Only</span> <span class="n">valid</span> <span class="k">for</span> <span class="n">PPI</span> <span class="n">interrupts</span><span class="p">.</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><em>来自：<code>Documentation/devicetree/bindings/arm/gic.txt</code></em></p>
-
-<p>如果不了解ARM GIC的话，其实也看不懂上面的描述，所以这里解释一下：</p>
-
-<ol>
-<li>第一个member表示该 <code>interrupt</code> 是 <code>SPI</code> 还是 <code>PPI</code>。<code>SPI</code> 和 <code>PPI</code> 的解释如下，来自ARM的文档：</li>
-</ol>
-
-
-<blockquote><p>Private Peripheral Interrupts</p>
-
-<p>A PPI is an interrupt generated by a peripheral that is specific to a single processor. There are seven PPIs for each CPU interface.</p></blockquote>
-
-<p>这是ARM A15的 <code>PPI</code> 的描述，如果是A9的话，每个CPU interface是5个 <code>PPI</code>。</p>
-
-<blockquote><p>Shared Peripheral Interrupts</p>
-
-<p>An interrupt generated by a peripheral that the Interrupt Controller can route to any, or all, processor interfaces.</p>
-
-<p>SPIs are triggered by events generated on associated interrupt input lines. The GIC can support up to 224 SPIs corresponding to the external IRQS[223:0] signal. The number of SPIs available depends on the implemented configuration of the Cortex-A15 MPCore processor. The permitted values are 0, 32, 64, 96, 128, 160, 192, or 224. SPIs start at ID32. The SPIs can be configured to be edge-triggered or active-HIGH level-sensitive.</p></blockquote>
-
-<p>第一句话就可以看出和 <code>PPI</code> 的区别。<code>SPI</code> 的数量可以配置，如32，64&hellip;最大支持224，而且SPI的编号从32开始。至于最后提到的 <code>edge-triggered</code>，<code>active-HIGH level-sensitive</code> 正好就是 <code>interrupts</code> 第三个member。</p>
-
-<p>所以，在一颗SoC中，绝大部分的中断都是 <code>SPI</code>。</p>
-
-<p>事实上，ARM还有一种中断：<code>SGI</code>，也就是软中断：</p>
-
-<blockquote><p>Software Generated Interrupt (SGI)</p>
-
-<p>Generated by writing to the Software Generated Interrupt Register (ICDSGIR).</p>
-
-<p>A maximum of 16 SGIs can be generated for each Cortex-A9 processor interface.</p></blockquote>
-
-<p>但是Device tree是用来描述硬件设备的，所以Linux kernel中 <code>interrupts</code> 的类型没有定义 <code>SGI</code>。</p>
-
-<ol>
-<li><p>第二个member就是具体的中断号了。查阅SoC的手册就可以得到。</p></li>
-<li><p>第三个member指的是中断的触发方式，每个SoC是不同的，查阅SoC的手册就可以知道了。这里kernel的文档解释的还是比较清楚的，就是一个16bit的数，0-3, 8-15 bit分别做了定义。</p></li>
-</ol>
-
 ]]></content>
   </entry>
   
