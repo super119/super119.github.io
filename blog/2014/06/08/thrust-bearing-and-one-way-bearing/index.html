@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>VirtualBox中安装Ubuntu，在有VPN的情况下会有DNS的问题 - Make Things Cool</title>
+  <title>机械盲科普：推力轴承和单向轴承 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="标题表达的不是很清楚（否则标题就太长了。。。），意思是：如果我们在一台windows的机器上安装了VirtualBox，然后在里面安装Ubuntu，然后在windows中连上VPN，此时Ubuntu虚拟机中就会有DNS的问题。我测试的是最新版本的VirtualBox，Ubuntu是12.04的版本 &hellip;">
+  <meta name="description" content="航模直升机中有两个重要的轴承。一个是位于旋翼桨夹内的推力轴承，另外一个是位于大齿盘中间的单向轴承。由于自己对机械不怎么懂，所以就去琢磨了一下这两个玩意，也在5imx上发了帖子询问，最终整理成了此文。 本文中所有内容都来自http://bbs.5imx.com。 推力轴承 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/02/08/virtualbox-ubuntu-dns-issue/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/06/08/thrust-bearing-and-one-way-bearing/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">VirtualBox中安装Ubuntu，在有VPN的情况下会有DNS的问题</h1>
+        <h1 class="entry-title">机械盲科普：推力轴承和单向轴承</h1>
       
     
     
@@ -94,41 +94,63 @@
   
 
 
-<time datetime="2014-02-08T21:11:00+08:00" pubdate data-updated="true">Feb 8<span>th</span>, 2014</time>
+<time datetime="2014-06-08T21:08:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>标题表达的不是很清楚（否则标题就太长了。。。），意思是：如果我们在一台windows的机器上安装了VirtualBox，然后在里面安装Ubuntu，然后在windows中连上VPN，此时Ubuntu虚拟机中就会有DNS的问题。我测试的是最新版本的VirtualBox，Ubuntu是12.04的版本，不知道将来这个问题会不会解决。</p>
+<div class="entry-content"><p>航模直升机中有两个重要的轴承。一个是位于旋翼桨夹内的推力轴承，另外一个是位于大齿盘中间的单向轴承。由于自己对机械不怎么懂，所以就去琢磨了一下这两个玩意，也在5imx上发了帖子询问，最终整理成了此文。</p>
+
+<p>本文中所有内容都来自<a href="http://bbs.5imx.com">http://bbs.5imx.com</a>。</p>
 
 <!-- more -->
 
 
-<p>发现这个问题是因为我使用的VPN是可以翻墙的，举例来说可以访问到youtube，但是我发现在我的Ubuntu虚拟机中就无法访问youtube和其他一些我需要的网站。而且我发现Ubuntu中，浏览器的现象就是DNS解析都完成不了，所以就一直无法打开。</p>
+<h2>推力轴承</h2>
 
-<p>经过Google，在这里发现了答案：</p>
+<p>这个轴承指的是直升机旋翼头部分，装在桨夹里面的一个轴承：</p>
 
-<p><a href="http://superuser.com/questions/570984/virtualbox-guest-ubuntu-loses-dns-when-host-connects-to-vpn">http://superuser.com/questions/570984/virtualbox-guest-ubuntu-loses-dns-when-host-connects-to-vpn</a></p>
+<p><img src="/downloads/image/thrust-bearing.png" alt="推力轴承" /></p>
 
-<p>简单来说，你只需要这样做：</p>
+<p>论坛上，网络上也有叫这个轴承为 <code>止推轴承</code> 的，但是这个名字我感觉不准确，因为这个轴承的主要作用不是 <code>止推</code>，也无法防止 <code>射桨</code>，所以我这里还是叫它 <code>推力轴承</code>。当今世界通过网络获取信息的确方便了很多，但是也带来了很多误解，就是因为信息源、信息量太大了，需要自己琢磨理解才行。</p>
 
-<ol>
-<li>关闭虚拟机</li>
-<li>在Windows中打开cmd.exe，然后输入：</li>
-</ol>
+<p>需要这个轴承的原因是：我们都知道直升机的桨夹是可以绕横轴方向小幅度旋转的，也正是通过桨夹的这种旋转，来改变旋翼螺距的。注意这里我说的是旋翼头里面那根横轴，不是竖直的穿过十字盘的那根轴，那根叫主轴。横轴和主轴是垂直的。</p>
 
+<p>所以，为了让桨夹能够做这样的旋转运动，在桨夹内部，就必须要有一个套在横轴上的轴承，这样桨夹就可以顺着轴承做翻转，而横轴不需要运动。这样问题就出现了，当桨夹随着旋翼高速旋转时，桨夹会产生巨大的离心力，这个向外的离心力会导致轴承紧紧贴在固定横轴、桨夹的末尾的螺母上，从而使得轴承的转动变的费力，生涩。于是，推力轴承就被加入到了旋翼头的机械部件中来。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>C:\Program Files\Oracle\VirtualBox\VBoxManage.exe modifyvm "ubuntu" --natdnshostresolver1 on</span></code></pre></td></tr></table></div></figure>
+<p>推力轴承和普通轴承不同的是，它承受的是横轴轴向的力，也就是和桨夹高速旋转时产生的离心力方向一样的力。这样有了推力轴承专门承受离心力之后，使桨夹旋转的轴承就变的灵活、顺滑起来，从而可以轻松的实现螺距的变化。</p>
 
+<p>这里附上一张450 FBL直升机旋翼头的图，清晰的描述了上述的桨夹、横轴、轴承、推力轴承的安装方式和关系：</p>
 
-<p>命令中的<code>ubuntu</code>是我的ubuntu虚拟机的名字（VM name）。</p>
+<p><img src="/downloads/image/thrust-bearing-install.jpg" alt="旋翼头桨夹安装图" /></p>
 
-<p>上述链接中，作者也不太明白为什么，他是这么说的：</p>
+<p>最后再说一次，推力轴承和防射桨没有关系，防止射桨主要还是靠安装在横轴两端的圆头内六角螺母。也就是上图中最末尾的那个方块。这也是为什么论坛上很多人都建议经常检查并更换这个螺母的原因。</p>
 
-<blockquote><p>I suspect it&rsquo;s because when the VPN is active, the host is doing something special for DNS lookups besides just forwarding requests to the specified DNS servers that VirtualBox picked up from the Windows config.</p></blockquote>
+<p>5imx的这个帖子有有关推力轴承的很多讨论，很有帮助：</p>
+
+<p><a href="http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=930379">http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=930379</a></p>
+
+<h2>单向轴承</h2>
+
+<p>这里指的是大齿盘里面那个单向轴承：</p>
+
+<p><img src="/downloads/image/one-way-bearing.png" alt="单向轴承" /></p>
+
+<p>提到单向轴承，论坛上网上一般说它的作用是：在熄火降落（auto-rotation）的时候，由于此时电机停转，所以如果没有这个轴承，那么旋翼转动将带动电机旋转，而电机在不工作的时候，由于内部巨大的磁场阻力，会迅速消耗掉旋翼的旋转惯性，从而使熄火降落无法实现。</p>
+
+<p>但是这么说很容易就会产生误解：如果单向轴承的目的就是因为这个，那大齿盘中放一个普通的轴承不就可以了么？反正你不就是要求旋翼转，电机不转嘛？</p>
+
+<p>但是再仔细想一想，的确必须要单向轴承。因为如果是一个普通轴承的话，那电机旋转，大齿盘虽然跟着转，但旋翼和主轴就不会旋转了。论坛上举的很多的一个例子就是自行车的脚踏板，脚踏板和轮子中间就有一个单向轴承，这样我们踩脚踏板，轮子会转，而轮子转的时候，脚踏板并不会运动，一样的道理。</p>
+
+<p>所以再反过来解释一遍就是，当电机旋转，带动大齿盘转动，此时需要再带动主轴和旋翼旋转的话，就只有两个选择，第一就是大齿盘中没有轴承，大齿盘和主轴是固定连接在一起的；第二就是大齿盘中是一个单向轴承。而显然第一种情况下，就无法实现熄火降落了（如上所说），所以这个单向轴承是必须的。</p>
+
+<p>单向轴承也需要经常检查，如果单向轴承磨损的厉害，就会导致电机旋转时，旋翼 <code>打滑</code>，此时飞机上天后就会出现事故。最简单的检查单向轴承的方法是，把大齿盘捏住，然后转动旋翼头，应该是只可以朝一个方向旋转，朝另外一个方向旋转会有较大的阻力。如果两个方向上都可以旋转，那单向轴承就需要更换了。事实上，如果两个方向都可以非常顺利的旋转，那电机转旋翼就不会跟着转了。</p>
+
+<p>5imx上这个帖子很好的解释了单向轴承：</p>
+
+<p><a href="http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=938911">http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=938911</a></p>
 </div>
 
 
@@ -136,7 +158,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2014/02/08/virtualbox-ubuntu-dns-issue/<br>
+原文链接: http://www.markzhang.cn/blog/2014/06/08/thrust-bearing-and-one-way-bearing/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -159,12 +181,12 @@
   
 
 
-<time datetime="2014-02-08T21:11:00+08:00" pubdate data-updated="true">Feb 8<span>th</span>, 2014</time>
+<time datetime="2014-06-08T21:08:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/linux/'>linux</a>
+    <a class='category' href='/blog/categories/rchelicopter/'>RCHelicopter</a>
   
 </span>
 
@@ -180,10 +202,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2014/01/28/gyroscope-precession/" title="Previous Post: 陀螺进动（Gyroscope Precession）和循环螺距（Cyclic Pitch）">&laquo; 陀螺进动（Gyroscope Precession）和循环螺距（Cyclic Pitch）</a>
+        <a class="basic-alignment left articlenav" href="/blog/2014/06/08/zopo-c7-flash/" title="Previous Post: 卓普大黑（Zopo C7/zp990）刷原生ROM，root，升级触控屏，修改GPS">&laquo; 卓普大黑（Zopo C7/zp990）刷原生ROM，root，升级触控屏，修改GPS</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/03/10/kgdb-howto/" title="Next Post: KGDB使用简介">KGDB使用简介 &raquo;</a>
       
     </p>
   </footer>
