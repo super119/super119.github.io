@@ -4,7 +4,7 @@
   <title><![CDATA[Category: RCHelicopter | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/rchelicopter/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-06-08T22:09:52+08:00</updated>
+  <updated>2014-06-17T16:00:38+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,40 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[450 FBL 相位臂不顺滑？缺少一个小垫片]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/06/17/fbl-phase-arm-pad/"/>
+    <updated>2014-06-17T15:37:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/06/17/fbl-phase-arm-pad</id>
+    <content type="html"><![CDATA[<p>450 FBL有一个相位臂，没有这个相位臂那旋翼一旋转，十字盘拉杆就转成麻花了。但是由于十字盘是需要上下移动的（改变集体螺距），所以这个相位臂也是需要能运动的。基本上，当十字盘上下运动时，相位臂有两个地方也会发生运动：一个是中间部位，能改变角度；另外一个地方不起眼容易被忽略，就是相位臂固定在中联的那个位置，会发生转动。</p>
+
+<p>所以最近在拆装相位臂的时候，突然发现相位臂的转动不顺畅了，非常的生涩，结果发现丢了一个小垫片。</p>
+
+<!-- more -->
+
+
+<p>相位臂是长这个样子的：</p>
+
+<p><img src="/downloads/image/fbl-phase-arm.png" alt="450 FBL相位臂" /></p>
+
+<p><strong> 注：以上图片来自淘宝冰人工作室。 </strong></p>
+
+<p>有了图片就非常的容易理解了，很明显中间部分是可以转动的，这样十字盘上下的时候，这部分可以活动。另外一个可以活动的，如上所说，就是相位臂固定到中联的那个部分，也就是图片上穿过螺丝的那个部分。这部分看起来很简单，但其实里面有一个轴承。</p>
+
+<p>需要轴承也很容易想到，因为当十字盘上下运动的时候，相位臂中间部分被带动，从而也会最终带动相位臂固定在中联的这个头部，而头部被螺丝穿过固定在了中联上，那还怎么能转动呢？所以就需要一个轴承了。</p>
+
+<p>现在的问题是，光有一个轴承还不够，还缺少一个垫片。之前我就丢了这个垫片，导致相位臂安装在了中联上面之后，相位臂的运动非常的涩，此时如果把固定螺丝松一些，立马会感觉顺滑很多，但是很显然这个固定螺丝不能拧的太松，所以最终发现缺少了这么一个垫片：</p>
+
+<p><img src="/downloads/image/fbl-phase-arm-pad.png" alt="450 FBL相位臂垫片" /></p>
+
+<p><strong> 注：以上图片来自淘宝光明五金城。 </strong></p>
+
+<p>这个垫片的尺寸是：2.1x3.8x0.5，如果你用尺量一下相位臂头部的尺寸的话，会发现这个垫片正好嵌在相位臂上，覆盖住了头部轴承但是没有覆盖到外部的垫圈。这样一来就能说通了，加了这个垫片之后，相位臂头部的外部垫圈部分就不会接触到中联，从而就没有了巨大的摩擦阻力，而当相位臂头部要转动的时候，这个小垫片就会转动（因为垫片是最终贴合在中联上的），而这个垫片又是覆盖在相位臂头部轴承上的，所以轴承就被带动可以转动了。</p>
+
+<p>虽然说无副翼的直升机不一定需要FBL相位臂（比如亚拓的DFC），但是有FBL相位臂的，基本上都会需要这么一个垫片。之前没有研究这个问题，还以为是轴承坏了，差点买了一组新的相位臂（一百多块），其实就是缺了一个垫片，淘宝上五块钱一百个的东西。。。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[机械盲科普：推力轴承和单向轴承]]></title>

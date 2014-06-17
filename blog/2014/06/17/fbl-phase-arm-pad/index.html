@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>需要齐次坐标的原因之二 - 所有的变换运算（平移、旋转、缩放）都可以用矩阵乘法来搞定 - Make Things Cool</title>
+  <title>450 FBL 相位臂不顺滑？缺少一个小垫片 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="本文中的三张图片来自网络，但是我不记得当初的来源了，所以没有能给出出处。确定来源后将给出图片出处。 看三个图就清楚了。分别是平移、旋转和缩放的矩阵计算。如果没有额外的第四个量w（也就是齐次坐标），那么这三种变换是无法都使用矩阵乘法来解决的。变换都统一成矩阵乘法之后， &hellip;">
+  <meta name="description" content="450 FBL有一个相位臂，没有这个相位臂那旋翼一旋转，十字盘拉杆就转成麻花了。但是由于十字盘是需要上下移动的（改变集体螺距），所以这个相位臂也是需要能运动的。基本上，当十字盘上下运动时，相位臂有两个地方也会发生运动：一个是中间部位，能改变角度；另外一个地方不起眼容易被忽略， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/04/23/translation-rotation-scale-in-homogeneous-coordinate/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/06/17/fbl-phase-arm-pad/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">需要齐次坐标的原因之二 - 所有的变换运算（平移、旋转、缩放）都可以用矩阵乘法来搞定</h1>
+        <h1 class="entry-title">450 FBL 相位臂不顺滑？缺少一个小垫片</h1>
       
     
     
@@ -94,32 +94,49 @@
   
 
 
-<time datetime="2014-04-23T13:55:00+08:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2014</time>
+<time datetime="2014-06-17T15:37:00+08:00" pubdate data-updated="true">Jun 17<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>本文中的三张图片来自网络，但是我不记得当初的来源了，所以没有能给出出处。确定来源后将给出图片出处。</p>
+<div class="entry-content"><p>450 FBL有一个相位臂，没有这个相位臂那旋翼一旋转，十字盘拉杆就转成麻花了。但是由于十字盘是需要上下移动的（改变集体螺距），所以这个相位臂也是需要能运动的。基本上，当十字盘上下运动时，相位臂有两个地方也会发生运动：一个是中间部位，能改变角度；另外一个地方不起眼容易被忽略，就是相位臂固定在中联的那个位置，会发生转动。</p>
 
-<p>看三个图就清楚了。分别是平移、旋转和缩放的矩阵计算。如果没有额外的第四个量w（也就是齐次坐标），那么这三种变换是无法都使用矩阵乘法来解决的。变换都统一成矩阵乘法之后，就给硬件设计和软件架构带来了巨大的好处。</p>
+<p>所以最近在拆装相位臂的时候，突然发现相位臂的转动不顺畅了，非常的生涩，结果发现丢了一个小垫片。</p>
 
 <!-- more -->
 
 
-<p>下面的三组公式就分别对应使用矩阵来实现平移（Translation）、旋转（Rotation）、缩放（Scale）：</p>
+<p>相位臂是长这个样子的：</p>
 
-<p><img src="/downloads/image/matrix-translation.png" alt="Translation" /></p>
+<p><img src="/downloads/image/fbl-phase-arm.png" alt="450 FBL相位臂" /></p>
 
-<p><img src="/downloads/image/matrix-rotation.png" alt="Rotation" /></p>
+<p><strong> 注：以上图片来自淘宝冰人工作室。 </strong></p>
 
-<p><img src="/downloads/image/matrix-scale.png" alt="Scale" /></p>
+<p>有了图片就非常的容易理解了，很明显中间部分是可以转动的，这样十字盘上下的时候，这部分可以活动。另外一个可以活动的，如上所说，就是相位臂固定到中联的那个部分，也就是图片上穿过螺丝的那个部分。这部分看起来很简单，但其实里面有一个轴承。</p>
+
+<p>需要轴承也很容易想到，因为当十字盘上下运动的时候，相位臂中间部分被带动，从而也会最终带动相位臂固定在中联的这个头部，而头部被螺丝穿过固定在了中联上，那还怎么能转动呢？所以就需要一个轴承了。</p>
+
+<p>现在的问题是，光有一个轴承还不够，还缺少一个垫片。之前我就丢了这个垫片，导致相位臂安装在了中联上面之后，相位臂的运动非常的涩，此时如果把固定螺丝松一些，立马会感觉顺滑很多，但是很显然这个固定螺丝不能拧的太松，所以最终发现缺少了这么一个垫片：</p>
+
+<p><img src="/downloads/image/fbl-phase-arm-pad.png" alt="450 FBL相位臂垫片" /></p>
+
+<p><strong> 注：以上图片来自淘宝光明五金城。 </strong></p>
+
+<p>这个垫片的尺寸是：2.1x3.8x0.5，如果你用尺量一下相位臂头部的尺寸的话，会发现这个垫片正好嵌在相位臂上，覆盖住了头部轴承但是没有覆盖到外部的垫圈。这样一来就能说通了，加了这个垫片之后，相位臂头部的外部垫圈部分就不会接触到中联，从而就没有了巨大的摩擦阻力，而当相位臂头部要转动的时候，这个小垫片就会转动（因为垫片是最终贴合在中联上的），而这个垫片又是覆盖在相位臂头部轴承上的，所以轴承就被带动可以转动了。</p>
+
+<p>虽然说无副翼的直升机不一定需要FBL相位臂（比如亚拓的DFC），但是有FBL相位臂的，基本上都会需要这么一个垫片。之前没有研究这个问题，还以为是轴承坏了，差点买了一组新的相位臂（一百多块），其实就是缺了一个垫片，淘宝上五块钱一百个的东西。。。</p>
 </div>
 
 
   <footer>
     
+    <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
+      <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
+原文链接: http://www.markzhang.cn/blog/2014/06/17/fbl-phase-arm-pad/<br>
+您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
+    </section>
     
 
     <p class="meta">
@@ -140,12 +157,12 @@
   
 
 
-<time datetime="2014-04-23T13:55:00+08:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2014</time>
+<time datetime="2014-06-17T15:37:00+08:00" pubdate data-updated="true">Jun 17<span>th</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/opengl/'>OpenGL</a>, <a class='category' href='/blog/categories/reprints/'>reprints</a>
+    <a class='category' href='/blog/categories/rchelicopter/'>RCHelicopter</a>
   
 </span>
 
@@ -161,10 +178,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2014/04/23/homogeneous-coordinates/" title="Previous Post: 需要齐次坐标的原因">&laquo; 需要齐次坐标的原因</a>
+        <a class="basic-alignment left articlenav" href="/blog/2014/06/08/thrust-bearing-and-one-way-bearing/" title="Previous Post: 机械盲科普：推力轴承和单向轴承">&laquo; 机械盲科普：推力轴承和单向轴承</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/04/23/wxwidget-on-mavericks/" title="Next Post: 在Mavericks上使用Makefile编写wxWidgets程序">在Mavericks上使用Makefile编写wxWidgets程序 &raquo;</a>
       
     </p>
   </footer>

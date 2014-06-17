@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="跟老美共事发现它们很喜欢每件事情都起个Code Name，所以我也给我的博客每年都取一个Code Name。命名的逻辑跟Ubuntu一样，从2013年的H开始，每个Code Name都是两个单词且开头字母相同。如下： ">
+  <meta name="description" content="Disqus应该是国外做的一个评论系统，按现在时髦的话说，不太接中国的地气，所以考虑换一个评论系统。具体做起来非常的简单，Octopress就像一个模板系统，以前Java火热的时候用过Velocity，大体思路都是利用一些markdown的语法填在预先写好的模板文件中，然后解析器解释该文件， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,6 +80,53 @@
   <header>
     
       <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/05/add-uyan-comment/">在Octopress中使用友言，替换Disqus</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-05T21:56:00+08:00" pubdate data-updated="true">Nov 5<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Disqus应该是国外做的一个评论系统，按现在时髦的话说，不太接中国的地气，所以考虑换一个评论系统。具体做起来非常的简单，Octopress就像一个模板系统，以前Java火热的时候用过Velocity，大体思路都是利用一些markdown的语法填在预先写好的模板文件中，然后解析器解释该文件，从而生成最终需要的东西。</p>
+
+<p>在Octopress中，发表的博客文章使用的模板是<code>source/_layout/post.html</code>，打开之后搜索disqus就可以发现原来的disqus部分的代码。所以要将其替换成其他的评论系统就很直观了。这里我使用了友言，因为Google了一下貌似现在国内友言做的还不错。</p>
+
+<p>总体来说就是三步：</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/11/05/add-uyan-comment/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
         <h1 class="entry-title"><a href="/blog/2013/11/04/blog-code-names/">博客 Code Names</a></h1>
       
     
@@ -129,11 +176,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (1)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/git'>git (5)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/linux'>linux (3)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (3)</a></li><li><a href='/blog/categories/macosx'>MacOSX (3)</a></li><li><a href='/blog/categories/network'>network (4)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (3)</a></li><li><a href='/blog/categories/reprints'>reprints (3)</a></li><li><a href='/blog/categories/science'>science (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (1)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/git'>git (5)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/linux'>linux (3)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (3)</a></li><li><a href='/blog/categories/macosx'>MacOSX (3)</a></li><li><a href='/blog/categories/network'>network (4)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (4)</a></li><li><a href='/blog/categories/reprints'>reprints (3)</a></li><li><a href='/blog/categories/science'>science (1)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/06/17/fbl-phase-arm-pad/">450 FBL 相位臂不顺滑？缺少一个小垫片</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/06/08/thrust-bearing-and-one-way-bearing/">机械盲科普：推力轴承和单向轴承</a>
@@ -149,10 +200,6 @@
     
       <li class="post">
         <a href="/blog/2014/04/23/wxwidget-on-mavericks/">在Mavericks上使用Makefile编写wxWidgets程序</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/04/23/translation-rotation-scale-in-homogeneous-coordinate/">需要齐次坐标的原因之二 - 所有的变换运算（平移、旋转、缩放）都可以用矩阵乘法来搞定</a>
       </li>
     
   </ul>
