@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-06-17T16:00:38+08:00</updated>
+  <updated>2014-07-03T14:16:40+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,107 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Mac OS X(Mavericks) CommandLineTools 和 osx-gcc-installer]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/07/03/apple-cli-and-osx-gcc-installer/"/>
+    <updated>2014-07-03T13:22:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/07/03/apple-cli-and-osx-gcc-installer</id>
+    <content type="html"><![CDATA[<p>Mac OS X Command Line Tools是Mac开发人员经常会遇到的一个问题。Command Line Tools（以下简称CLI）其实就是一堆Unix/Linux上开发需要的基础东西，比如gcc, make, g++等。在Mac上开发，如果使用Xcode的话，是不需要这些东西的，因为Xcode已经集成了这些东西，在Xcode的IDE中直接进行编译调试，所以用户不需要关心这些东西有没有，在哪。</p>
+
+<p>但是如果我们在开发自己的基于Makefile的程序时，或者是要porting UNIX/Linux上的一些程序时，这些东西就变成必须的了。</p>
+
+<!-- more -->
+
+
+<p>苹果官方的CLI在苹果的网站上可以下载到，地址不需要自己去找，如果你已经安装了Xcode的话，那启动Xcode，选择菜单：<code>Xcode -&gt; Open Develop Tool -&gt; More Develop Tools</code>，然后浏览器就会被启动并来到下载苹果CLI的地方。下载dmg然后安装就完了。</p>
+
+<p>苹果的CLI安装完成之后，其实是安装了两个pkg：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>com.apple.pkg.CLTools_Executables
+</span><span class='line'>com.apple.pkg.MacOSX10_9_SDK
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>用 <code>pkgutils --files &lt;pkg name&gt;</code> 就可以看到安装了哪些文件，在什么地方。所以CLTools_Executables这个package，是安装在 <code>/Library/Developer</code> 目录下的，所以如果要使用gcc的话，把路径：<code>/Library/Developer/CommandLineTools/usr/bin/</code> 添加到PATH中去。</p>
+
+<p>你可以看到，苹果的这个CLI，有很多llvm, gcc, clang这样的东西，这里有篇文章解释的很好：</p>
+
+<p><a href="http://www.cnblogs.com/qoakzmxncb/archive/2013/04/18/3029105.html">http://www.cnblogs.com/qoakzmxncb/archive/2013/04/18/3029105.html</a></p>
+
+<p>说来就是这么简单的事情，但是你如果在Google上尝试寻找答案的话，你会发现这些答案基本上在Mac OS X 10.9（Mavericks）上都没法用，典型的答案有：</p>
+
+<ul>
+<li>运行 <code>xcode-select --install</code>，反正在我的机器上，<code>xcode-select</code> 压根没有 <code>--install</code> 这个option。</li>
+<li>执行程序：<code>/System/Library/CoreServices/Install Command Line Developer Tools.app</code>，其实这就是 <code>xcode-select --install</code> 去执行的程序，在我的Mac上运行没反应。</li>
+<li>还有一些文章说直接在终端运行gcc，就会跳出一个对话框让你安装CLI的，我也没有碰到这么神奇的事情。</li>
+</ul>
+
+
+<p>现在再来说说 <code>osx-gcc-installer</code>。</p>
+
+<p><code>osx-gcc-installer</code> 是github上一个开源的东西，估计是作者自己编译了苹果的一些open source的东西得到的：</p>
+
+<p><a href="https://github.com/kennethreitz/osx-gcc-installer">https://github.com/kennethreitz/osx-gcc-installer</a></p>
+
+<p>我对这个东西的理解是，在Mac OS X Lion/Mountain Lion之前，要安装苹果的CLI，是需要首先安装Xcode的（貌似是需要在安装了Xcode之后，在Xcode中有一个地方可以下载CLI），所以为了让我们在不安装Xcode的前提下得到gcc/make，就有了这个项目。该项目的README文件印证了这一点：</p>
+
+<blockquote><p>For Lion and Mountain Lion users, Apple now provides an official Command Line Tools for Xcode package that you can install without needing to install Xcode itself! You can download it from Apple&rsquo;s developer site (free registration required) and search for &ldquo;Command Line Tools&rdquo;.</p></blockquote>
+
+<p>之前我也安装过这个东西，现在如上面所说，我已经安装了苹果官方的CLI，所以很自然的我就想卸载掉这个东西，照例Google了一大圈之后，发现一般都是这么说的：</p>
+
+<blockquote><p>According to the creator of the package, you can install Xcode on top of it since it is just a subset. Then you can use the uninstall command to completely remove:</p>
+
+<p>sudo /Developer/Library/uninstall-devtools &mdash;mode=all</p>
+
+<p>Definitely not a quick uninstall, but it should work.</p></blockquote>
+
+<p>以上摘自StackOverflow: <a href="http://stackoverflow.com/questions/9332196/how-to-remove-the-osx-gcc-installer">http://stackoverflow.com/questions/9332196/how-to-remove-the-osx-gcc-installer</a></p>
+
+<p>但事实上，这个做法在Mavericks上也是不行的，首先，我压根就没有 <code>/Developer</code> 这个目录，据说是Xcode从4.3开始就是一个“绿色软件”，所有东西都在 <code>/Applications/Xcode.app</code> 下面了。</p>
+
+<p>此外，事实上我之前的确装过老版本的Xcode，在安装了 <code>osx-gcc-installer</code> 之后，的确有 <code>/Developer</code> 这个目录，但是运行了那个脚本之后，什么事情都没发生。<code>/usr/bin/gcc, /usr/bin/llvm-gcc-4.2</code> 这些文件还在那。</p>
+
+<p>所以还是自己想办法了，通过 <code>pkgutils --expand GCC-10.7-v2.pkg tmp</code> ，可以在 <code>GCC-10.7-v2.pkg</code> 解开（这个pkg也就是osx-gcc-installer在Mac OS X 10.8上的安装文件），可以看到这个pkg包含了9个package：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>drwxr-xr-x  6 mark  staff   204B  7  3 14:00 DevSDK.pkg
+</span><span class='line'>drwxr-xr-x  6 mark  staff   204B  7  3 14:00 DeveloperToolsCLI.pkg
+</span><span class='line'>drwxr-xr-x  6 mark  staff   204B  7  3 14:00 DeveloperToolsSystemSupport.pkg
+</span><span class='line'>-rw-r--r--  1 mark  staff   6.7K  8 12  2011 Distribution
+</span><span class='line'>drwxr-xr-x  3 mark  staff   102B  7  3 14:00 Resources
+</span><span class='line'>drwxr-xr-x  6 mark  staff   204B  7  3 14:00 VersionedDeveloperToolsSystemSupport.pkg
+</span><span class='line'>drwxr-xr-x  6 mark  staff   204B  7  3 14:00 X11SDK.pkg
+</span><span class='line'>drwxr-xr-x  6 mark  staff   204B  7  3 14:00 XcodeUserSystemSupport.pkg
+</span><span class='line'>drwxr-xr-x  6 mark  staff   204B  7  3 14:00 clang.pkg
+</span><span class='line'>drwxr-xr-x  6 mark  staff   204B  7  3 14:00 gcc4.2.pkg
+</span><span class='line'>drwxr-xr-x  6 mark  staff   204B  7  3 14:00 llvm-gcc4.2.pkg
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>所以我使用 UninstallPKG 这个软件将这9个packag都删除掉就OK了。UninstallPKG是收费软件，售价9.99美元，试用版只能执行三次Uninstall，不过通过使用我发现不是只能uninstall 3个package，而是限制只能使用3次，也就是说，你可以一次选择多个package一并删除。</p>
+
+<p>所以打开UninstallPKG，选择这9个package然后uninstall即可。注意这9个package的包名是上述名字后面都加了一个 <code>Leo</code>（估计是Snow Leopad的意思）。</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/uninstallpkg.png" alt="UninstallPKG" /></p>
+
+<p>所以到此简单来说，现在由于苹果提供了官方的CLI，所以其实 <code>osx-gcc-installer</code> 这个东西已经不再需要了。除非有一些你需要的其他东西依赖它。貌似现在新版的 HomeBrew 也是需要苹果的CLI而不是osx-gcc-installer了。<code>osx-gcc-installer</code> 的TroubleShooting是这样说的：</p>
+
+<blockquote><p>Do not install this if you already have Xcode installed! Mixing Xcode and osx-gcc-installer is known to cause various difficult-to-diagnose problems and is not recommended.</p></blockquote>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[450 FBL 相位臂不顺滑？缺少一个小垫片]]></title>
@@ -1620,30 +1721,6 @@ to do so with:</p>
 <p><a href="http://bbs.mx3g.com/forum.php?mod=viewthread&amp;tid=208032&amp;ordertype=1">http://bbs.mx3g.com/forum.php?mod=viewthread&amp;tid=208032&amp;ordertype=1</a></p>
 
 <p>这下就很清楚了，虽然十字盘的姿态跟我们控制的是一致的，但是由于桨夹有90度的一个偏转，所以正好就满足了陀螺进动的要求。如果还是想不明白，拿出直升机来一看便知。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MacOS X Mavericks上的浏览器插件的问题]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/01/20/internet-plugins-on-mavericks/"/>
-    <updated>2014-01-20T21:30:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/01/20/internet-plugins-on-mavericks</id>
-    <content type="html"><![CDATA[<p>升级了Mavericks之后，发现浏览器中的一些插件出问题了。最先遇到的就是在Safari中经常会蹦出来对话框说，是否要在该网站上运行迅雷（Thunder xxx）插件，有几个选项，yes/no/never for this site&hellip;. 后来又发现旺旺不工作了，也就是在浏览器中点击旺旺图标，旺旺出不来了&hellip;.</p>
-
-<p>所以花了点时间看了一下，原来现在在Safari中有专门的 <code>Internet plug-ins</code> 这样的设置了，而且该设置影响安装的所有浏览器（如Chrome, Firefox）。</p>
-
-<!-- more -->
-
-
-<p>首先进入Safari的Preferences（COMMAND + ,），在 <code>Security</code> 标签中，有 <code>Internet plug-ins</code> 这一项，我们需要先点击 <code>Allow Plug-ins</code>，然后点击后面的 <code>Manage Website Settings...</code> 按钮出现对话框：</p>
-
-<p><img src="http://www.markzhang.cn/downloads/image/manage-website-settings.png" alt="Manage Website Settings" /></p>
-
-<p>在这里就可以设置每个plugin的处理方式了，如上图所示，针对旺旺插件，我们选择了 <code>Allow Always</code>。你还可以在这里找到其他很多你需要用到的插件，比如淘宝的 <code>AliEdit</code>，也就是密码输入框的插件、迅雷的下载插件等等。值得一提的还有就是支付宝的插件，名字有点怪，叫：<code>npalicdo plugin</code>。</p>
-
-<p>有意思的是，在MacOS X上，所有的插件是统一安装在一个地方的：<code>/Library/Internet Plug-Ins</code>。所以插件一旦安装了，所有的浏览器就都能使用了。只是每个浏览器是否使能某个插件，在各自的设置里面，如上面介绍的Safari的。在Chrome中，那就是在页面：<code>chrome://plugins</code> 里面。</p>
-
-<p>所以其实比如下载了支付宝的浏览器插件，安装的时候，其实就是把文件拷贝到了 <code>/Library/Internet Plug-Ins</code> 这个目录下而已。</p>
 ]]></content>
   </entry>
   
