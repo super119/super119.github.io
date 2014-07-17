@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-07-03T14:16:40+08:00</updated>
+  <updated>2014-07-17T12:25:23+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,83 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Mac OS X（Mavericks）共享VPN给其他设备]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/07/17/mac-share-vpn-connection/"/>
+    <updated>2014-07-17T11:22:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/07/17/mac-share-vpn-connection</id>
+    <content type="html"><![CDATA[<p>之前写过一篇文章叫“Chnroutes的使用“，主要说的是如何通过使用 <code>chnroutes</code> 从而将国内和国外的路由分开，国内走正常路由，国外则走VPN。现在的问题是，如果在一台电脑上有了VPN之后，如何将这个VPN share给其他设备，比如PS3？</p>
+
+<!-- more -->
+
+
+<p>首先很自然想到的是Mac OS X（Mavericks）自带的 <code>Internet Sharing</code> 功能：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/mac-internet-sharing.png" alt="Mac OS X Internet Sharing" /></p>
+
+<p>但是通过使用后发现有如下的问题：</p>
+
+<ol>
+<li><p>你需要有两个网络设备，才能开始share。上面的截图也可以看到，你要选择一个 <code>From</code> 的设备，再选择 <code>To</code> 的网络设备（也就是说其他设备是通过本机的这个网络设备连接的）。</p></li>
+<li><p>当然你可以说，VPN在Mac OS X里面也是一个单独的网络设备啊。是，但是通过试验，如果你只有一个网络设备，比如WIFI，那么就意味着我们既需要通过这个WIFI去连接VPN，还要通过这个WIFI让其他的设备能够连到本机，这是没法做到的。试验的结果就是，当你开了 <code>Internet Sharing</code> 之后，你的VPN就拨不上去（一拨就掉）；当你开了VPN之后，<code>Inetnet Sharing</code> 一开你的VPN就掉。事实上，如果通过WIFI来share的话，你会发现Mac OS X会将WIFI配置成一个AP，所以自然一旦被enable，你的VPN就掉了。</p></li>
+<li><p>就算以上两点对你来说都没问题，这第三点就是绝望的来源：Mac OS X不会forward VPN的数据。也就是说，你想要通过Mac OS X的这个 <code>Internet Sharing</code> 功能来share你的VPN的话，是不可行的。</p></li>
+</ol>
+
+
+<p>所以没办法还是通过万能的Google来寻找答案，答案在这里：</p>
+
+<p><a href="http://rodrigo.sharpcube.com/2010/06/20/using-and-sharing-a-vpn-connection-on-your-mac/">http://rodrigo.sharpcube.com/2010/06/20/using-and-sharing-a-vpn-connection-on-your-mac/</a></p>
+
+<p>基本上就是需要我们写脚本来实现，上面这篇文章中，VPN使用的是OpenVPN，我测试的时候，使用的是PPTP的VPN，所以根据上文中 <code>Troubleshooting</code> 一节的描述，我做了这么两个脚本：</p>
+
+<figure class='code'><figcaption><span>开启VPN共享 bash (share-pptp-vpn.sh)</span> <a href='http://www.markzhang.cn/downloads/code/share-pptp-vpn.sh'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/sh</span>
+</span><span class='line'>
+</span><span class='line'>natd -same_ports -use_sockets -unregistered_only -dynamic -interface ppp0 -clamp_mss
+</span><span class='line'>ipfw -f flush
+</span><span class='line'>ipfw add divert natd ip from any to any via ppp0
+</span><span class='line'>ipfw add pass all from any to any
+</span><span class='line'>sysctl -w net.inet.ip.forwarding<span class="o">=</span>1
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>关闭VPN共享 bash (off-share-pptp-vpn.sh)</span> <a href='http://www.markzhang.cn/downloads/code/off-share-pptp-vpn.sh'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/sh</span>
+</span><span class='line'>
+</span><span class='line'>killall natd
+</span><span class='line'>ipfw -f flush
+</span><span class='line'>sysctl -w net.inet.ip.forwarding<span class="o">=</span>0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>所以当拨上了VPN之后，运行开启VPN共享那个脚本就OK了。在PS3上将网关指到Macbook的IP地址就可以了。</p>
+
+<p>最后一个遗留问题。Mac OS X的VPN高级设定中有这么一个checkbox：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/mac-send-traffic-over-vpn.png" alt="Send all traffic over VPN" /></p>
+
+<p>这个 <code>Send all traffic over VPN</code> 我不太理解是什么意思，是指本地NAT网络的地址不走VPN么？还是Mac OS X内置了类似 <code>chnroutes</code> 这样的功能？</p>
+
+<p>有意思的是，有的时候如果enable了这个选项，我发现PS3连接网络就会出现问题。而如果VPN已经拨上去了，再去enable这个选项貌似就没有影响。</p>
+
+<p>没有深究这个，所以这是目前的一个遗留问题。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Mac OS X(Mavericks) CommandLineTools 和 osx-gcc-installer]]></title>
@@ -1681,46 +1758,6 @@ to do so with:</p>
 <p>上述链接中，作者也不太明白为什么，他是这么说的：</p>
 
 <blockquote><p>I suspect it&rsquo;s because when the VPN is active, the host is doing something special for DNS lookups besides just forwarding requests to the specified DNS servers that VirtualBox picked up from the Windows config.</p></blockquote>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[陀螺进动（Gyroscope Precession）和循环螺距（Cyclic Pitch）]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/01/28/gyroscope-precession/"/>
-    <updated>2014-01-28T16:10:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/01/28/gyroscope-precession</id>
-    <content type="html"><![CDATA[<p>循环螺距就是通过改变十字盘（Swashplate），使直升机双桨上的升力造成差异，从而使直升机可以向前、向后、向左、向右移动。之所以称为“循环”（Cyclic），是因为双桨在旋转的过程中，其螺距循环的，有规律的进行改变。</p>
-
-<p>在这其中有一个有意思的现象：陀螺进动（Gyroscope Precession）。有关这个现象我首先是在这里看到的：</p>
-
-<!-- more -->
-
-
-<p><a href="http://www.rchelicopterfun.com/gyroscopic-precession.html">http://www.rchelicopterfun.com/gyroscopic-precession.html</a></p>
-
-<p>这篇文章写的很不错，特别是老外还自己拍了两段视频来解释这个事情，非常有趣。</p>
-
-<p>所谓“陀螺进动（Gyroscope Precession）“，指的是如果你给一个正在旋转的陀螺一个力的话，那么这个力产生的运动将与力的方向偏离90度。</p>
-
-<p>所以，在直升机上，高速旋转的主旋翼就相当于一个陀螺，那么当我们试图通过改变十字盘的姿态来使直升机向前后左右移动时，就需要注意这个90度的问题。</p>
-
-<p>举例来说：假设我们想让直升机向前运动。那么很自然的，我们想象中应该是这样来实现：</p>
-
-<p>假设直升机的姿态是这样：视点是从上往下俯视直升机，直升机的头对准12点，尾对准6点，两个旋翼和直升机没有夹角，也就是旋翼也是对准12点和6点。那么此时我们只需要加大对准6点的旋翼的螺距，同时减小（甚至无需减小）对准12点的旋翼的螺距，那么这两片旋翼立刻产生升力差，从而导致直升机前倾从而向前运动。</p>
-
-<p>但是由于陀螺进动，我们知道如果按照上面的方法来做，直升机将会向右运动（如果是旋翼是顺时针旋转的话），而不是向前运动。所以，我们需要让旋翼在对准9点和3点这两个位置时，改变两片旋翼的螺距，产生升力差，最后由于陀螺进动，使直升机向前运动。</p>
-
-<p>OK，明白了上面的内容之后，很自然的，我们就会想到上述这些东西在直升机是，具体来说是在十字盘上，是如何实现的呢？我们知道，当我们操纵直升机向前后左右移动的时候，十字盘也是向前后左右倾斜的，那在陀螺进动下，为什么能让直升机正确的运动呢？</p>
-
-<p>答案是，旋翼的桨夹和十字盘有一个90度的夹角。引用一下论坛上某位模友的一张图：</p>
-
-<p><img src="http://www.markzhang.cn/downloads/image/rotor-hub.jpg" alt="直升机桨夹 Helicopter Rotor Hub" /></p>
-
-<p>引用帖子的地址是：</p>
-
-<p><a href="http://bbs.mx3g.com/forum.php?mod=viewthread&amp;tid=208032&amp;ordertype=1">http://bbs.mx3g.com/forum.php?mod=viewthread&amp;tid=208032&amp;ordertype=1</a></p>
-
-<p>这下就很清楚了，虽然十字盘的姿态跟我们控制的是一致的，但是由于桨夹有90度的一个偏转，所以正好就满足了陀螺进动的要求。如果还是想不明白，拿出直升机来一看便知。</p>
 ]]></content>
   </entry>
   

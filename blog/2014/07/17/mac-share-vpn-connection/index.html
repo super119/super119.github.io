@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Linus说，请将这个配置加到你的.gitconfig - Make Things Cool</title>
+  <title>Mac OS X（Mavericks）共享VPN给其他设备 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="近日Linus说，请将 git config core.abbrev 12 加到你的git repository中。事实上，这个config很有意义，可以加到你的全局git config中： git config --global core.abbrev 12。 原因简单来说就是， &hellip;">
+  <meta name="description" content="之前写过一篇文章叫“Chnroutes的使用“，主要说的是如何通过使用 chnroutes 从而将国内和国外的路由分开，国内走正常路由，国外则走VPN。现在的问题是，如果在一台电脑上有了VPN之后，如何将这个VPN share给其他设备，比如PS3？ 首先很自然想到的是Mac OS X（ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2013/11/07/linus-git-config/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/07/17/mac-share-vpn-connection/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">Linus说，请将这个配置加到你的.gitconfig</h1>
+        <h1 class="entry-title">Mac OS X（Mavericks）共享VPN给其他设备</h1>
       
     
     
@@ -94,27 +94,82 @@
   
 
 
-<time datetime="2013-11-07T18:18:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
+<time datetime="2014-07-17T11:22:00+08:00" pubdate data-updated="true">Jul 17<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>近日Linus说，请将 <code>git config core.abbrev 12</code> 加到你的git repository中。事实上，这个config很有意义，可以加到你的全局git config中：</p>
+<div class="entry-content"><p>之前写过一篇文章叫“Chnroutes的使用“，主要说的是如何通过使用 <code>chnroutes</code> 从而将国内和国外的路由分开，国内走正常路由，国外则走VPN。现在的问题是，如果在一台电脑上有了VPN之后，如何将这个VPN share给其他设备，比如PS3？</p>
 
 <!-- more -->
 
 
-<p><code>git config --global core.abbrev 12</code>。</p>
+<p>首先很自然想到的是Mac OS X（Mavericks）自带的 <code>Internet Sharing</code> 功能：</p>
 
-<p>原因简单来说就是，git默认的7个字符的短HASH表示方法经常导致冲突，所以Linus建议改成12个字符。原文引用如下：</p>
+<p><img src="/downloads/image/mac-internet-sharing.png" alt="Mac OS X Internet Sharing" /></p>
 
-<blockquote><p>Linus jumped in to say that he would like everybody to run this command in their repositories:</p>
+<p>但是通过使用后发现有如下的问题：</p>
 
-<p>   git config core.abbrev 12</p>
+<ol>
+<li><p>你需要有两个网络设备，才能开始share。上面的截图也可以看到，你要选择一个 <code>From</code> 的设备，再选择 <code>To</code> 的网络设备（也就是说其他设备是通过本机的这个网络设备连接的）。</p></li>
+<li><p>当然你可以说，VPN在Mac OS X里面也是一个单独的网络设备啊。是，但是通过试验，如果你只有一个网络设备，比如WIFI，那么就意味着我们既需要通过这个WIFI去连接VPN，还要通过这个WIFI让其他的设备能够连到本机，这是没法做到的。试验的结果就是，当你开了 <code>Internet Sharing</code> 之后，你的VPN就拨不上去（一拨就掉）；当你开了VPN之后，<code>Inetnet Sharing</code> 一开你的VPN就掉。事实上，如果通过WIFI来share的话，你会发现Mac OS X会将WIFI配置成一个AP，所以自然一旦被enable，你的VPN就掉了。</p></li>
+<li><p>就算以上两点对你来说都没问题，这第三点就是绝望的来源：Mac OS X不会forward VPN的数据。也就是说，你想要通过Mac OS X的这个 <code>Internet Sharing</code> 功能来share你的VPN的话，是不可行的。</p></li>
+</ol>
 
-<p>That causes git to abbreviate commit hashes to 12 characters. The default of seven characters is too small to prevent occasional hash collisions in the kernel; it was, he said, a big mistake made early in git&rsquo;s history. He also noted that he spends a lot of time fixing up hashes in patch, many of which are &ldquo;clearly bogus.&rdquo; Most of the problems, most likely, are caused by the rebasing of trees.</p></blockquote>
+
+<p>所以没办法还是通过万能的Google来寻找答案，答案在这里：</p>
+
+<p><a href="http://rodrigo.sharpcube.com/2010/06/20/using-and-sharing-a-vpn-connection-on-your-mac/">http://rodrigo.sharpcube.com/2010/06/20/using-and-sharing-a-vpn-connection-on-your-mac/</a></p>
+
+<p>基本上就是需要我们写脚本来实现，上面这篇文章中，VPN使用的是OpenVPN，我测试的时候，使用的是PPTP的VPN，所以根据上文中 <code>Troubleshooting</code> 一节的描述，我做了这么两个脚本：</p>
+
+<figure class='code'><figcaption><span>开启VPN共享 bash (share-pptp-vpn.sh)</span> <a href='/downloads/code/share-pptp-vpn.sh'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/sh</span>
+</span><span class='line'>
+</span><span class='line'>natd -same_ports -use_sockets -unregistered_only -dynamic -interface ppp0 -clamp_mss
+</span><span class='line'>ipfw -f flush
+</span><span class='line'>ipfw add divert natd ip from any to any via ppp0
+</span><span class='line'>ipfw add pass all from any to any
+</span><span class='line'>sysctl -w net.inet.ip.forwarding<span class="o">=</span>1
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>关闭VPN共享 bash (off-share-pptp-vpn.sh)</span> <a href='/downloads/code/off-share-pptp-vpn.sh'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/sh</span>
+</span><span class='line'>
+</span><span class='line'>killall natd
+</span><span class='line'>ipfw -f flush
+</span><span class='line'>sysctl -w net.inet.ip.forwarding<span class="o">=</span>0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>所以当拨上了VPN之后，运行开启VPN共享那个脚本就OK了。在PS3上将网关指到Macbook的IP地址就可以了。</p>
+
+<p>最后一个遗留问题。Mac OS X的VPN高级设定中有这么一个checkbox：</p>
+
+<p><img src="/downloads/image/mac-send-traffic-over-vpn.png" alt="Send all traffic over VPN" /></p>
+
+<p>这个 <code>Send all traffic over VPN</code> 我不太理解是什么意思，是指本地NAT网络的地址不走VPN么？还是Mac OS X内置了类似 <code>chnroutes</code> 这样的功能？</p>
+
+<p>有意思的是，有的时候如果enable了这个选项，我发现PS3连接网络就会出现问题。而如果VPN已经拨上去了，再去enable这个选项貌似就没有影响。</p>
+
+<p>没有深究这个，所以这是目前的一个遗留问题。</p>
 </div>
 
 
@@ -122,7 +177,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2013/11/07/linus-git-config/<br>
+原文链接: http://www.markzhang.cn/blog/2014/07/17/mac-share-vpn-connection/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -145,12 +200,12 @@
   
 
 
-<time datetime="2013-11-07T18:18:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
+<time datetime="2014-07-17T11:22:00+08:00" pubdate data-updated="true">Jul 17<span>th</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/git/'>git</a>
+    <a class='category' href='/blog/categories/macosx/'>MacOSX</a>, <a class='category' href='/blog/categories/network/'>network</a>
   
 </span>
 
@@ -166,10 +221,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/11/07/embed-liquid-codes-in-blog/" title="Previous Post: 在博客内容中插入Liquid代码时的注意点">&laquo; 在博客内容中插入Liquid代码时的注意点</a>
+        <a class="basic-alignment left articlenav" href="/blog/2014/07/03/apple-cli-and-osx-gcc-installer/" title="Previous Post: Mac OS X(Mavericks) CommandLineTools 和 osx-gcc-installer">&laquo; Mac OS X(Mavericks) CommandLineTools 和 osx-gcc-installer</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/11/20/git-tips/" title="Next Post: Git常见命令和配置">Git常见命令和配置 &raquo;</a>
       
     </p>
   </footer>
