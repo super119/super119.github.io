@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: Android - Make Things Cool</title>
+  <title>Linux netfilter概述，mangle/nat/filter, prerouting/input/forward...到底是啥 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="Category: Android">
+  <meta name="description" content="本文转载自： http://shorewall.net/NetfilterOverview.html Netfilter consists of three tables: Filter, Nat and Mangle. Each table has a number of build-in &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cnblog/categories/android/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/07/23/netfilter-overview/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -72,37 +72,156 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: Android</h1>
+    
+      
+        <h1 class="entry-title">Linux Netfilter概述，mangle/nat/filter, Prerouting/input/forward...到底是啥</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-23T18:30:00+08:00" pubdate data-updated="true">Jul 23<span>rd</span>, 2014</time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p>本文转载自：</p>
 
-  
-  <h2>2014</h2>
+<p><a href="http://shorewall.net/NetfilterOverview.html">http://shorewall.net/NetfilterOverview.html</a></p>
 
-<article>
-  
-<h1><a href="/blog/2014/06/08/zopo-c7-flash/">卓普大黑（Zopo C7/zp990）刷原生ROM，root，升级触控屏，修改GPS</a></h1>
-<time datetime="2014-06-08T15:00:00+08:00" pubdate><span class='month'>Jun</span> <span class='day'>08</span> <span class='year'>2014</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/android/'>Android</a></span>
-</footer>
+<!-- more -->
 
 
-</article>
+<p>Netfilter consists of three tables: Filter, Nat and Mangle. Each table has a number of build-in chains: PREROUTING, INPUT, FORWARD, OUTPUT and POSTROUTING.</p>
 
+<p>Rules in the various tables are used as follows:</p>
+
+<p>Filter
+Packet filtering (rejecting, dropping or accepting packets)</p>
+
+<p>Nat
+Network Address Translation including DNAT, SNAT and Masquerading</p>
+
+<p>Mangle
+General packet header modification such as setting the TOS value or marking packets for policy routing and traffic shaping.</p>
+
+<p>Raw
+Used primarily for creating exemptions from connection tracking with the NOTRACK target. Also used for stateless DNAT.</p>
+
+<p>Rawpost
+Used for stateless SNAT.</p>
+
+<p>The following diagram shows how packets traverse the various builtin chains within Netfilter. Note that not all table/chain combinations are used.</p>
+
+<p><img src="/downloads/image/netfilter-overview.png" alt="Netfilter Overview" /></p>
+
+<p>&ldquo;Local Process” means a process running on the Shorewall system itself.</p>
+
+<p>A more elaborate version of this flow is available here and this one contrasts the Netfilter flow with that of ipchains.</p>
+
+<p>In the above diagram are boxes similar to this:</p>
+
+<p><img src="/downloads/image/netfilter-input-chain.png" alt="Input chain" /></p>
+
+<p>The above box gives the name of the built-in chain (INPUT) along with the names of the tables (Mangle and Filter) that the chain exists in and in the order that the chains are traversed. The above sample indicates that packets go first through the INPUT chain of the Mangle table then through the INPUT chain of the Filter table. When a chain is enclosed in parentheses, Shorewall does not use the named chain (INPUT) in that table (Mangle).</p>
+
+<p><strong> Keep in mind that chains in the Nat table are only traversed for new connection requests (including those related to existing connections) while the chains in the other tables are traversed on every packet. </strong></p>
 </div>
 
+
+  <footer>
+    
+    
+
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Mark Zhang</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-23T18:30:00+08:00" pubdate data-updated="true">Jul 23<span>rd</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/network/'>network</a>, <a class='category' href='/blog/categories/reprints/'>reprints</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2014/07/17/mac-share-vpn-connection/" title="Previous Post: Mac OS X（Mavericks）共享VPN给其他设备">&laquo; Mac OS X（Mavericks）共享VPN给其他设备</a>
+      
+      
+    </p>
+  </footer>
 </article>
 
+  <section>
+    <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_24x24">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_kaixin001"></a>
+	<a href="http://www.jiathis.com/share?uid=1860527" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1352426099508779" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+  </section>
+
+
+  <section>
+    <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1860527"></script>
+<!-- UY END -->
+
+  </section>
 
 </div>
 

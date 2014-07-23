@@ -4,7 +4,7 @@
   <title><![CDATA[Category: reprints | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/reprints/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-07-17T12:25:23+08:00</updated>
+  <updated>2014-07-23T18:38:41+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,55 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux netfilter概述，mangle/nat/filter, prerouting/input/forward...到底是啥]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/07/23/netfilter-overview/"/>
+    <updated>2014-07-23T18:30:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/07/23/netfilter-overview</id>
+    <content type="html"><![CDATA[<p>本文转载自：</p>
+
+<p><a href="http://shorewall.net/NetfilterOverview.html">http://shorewall.net/NetfilterOverview.html</a></p>
+
+<!-- more -->
+
+
+<p>Netfilter consists of three tables: Filter, Nat and Mangle. Each table has a number of build-in chains: PREROUTING, INPUT, FORWARD, OUTPUT and POSTROUTING.</p>
+
+<p>Rules in the various tables are used as follows:</p>
+
+<p>Filter
+Packet filtering (rejecting, dropping or accepting packets)</p>
+
+<p>Nat
+Network Address Translation including DNAT, SNAT and Masquerading</p>
+
+<p>Mangle
+General packet header modification such as setting the TOS value or marking packets for policy routing and traffic shaping.</p>
+
+<p>Raw
+Used primarily for creating exemptions from connection tracking with the NOTRACK target. Also used for stateless DNAT.</p>
+
+<p>Rawpost
+Used for stateless SNAT.</p>
+
+<p>The following diagram shows how packets traverse the various builtin chains within Netfilter. Note that not all table/chain combinations are used.</p>
+
+<p><img src="/downloads/image/netfilter-overview.png" alt="Netfilter Overview" /></p>
+
+<p>&ldquo;Local Process” means a process running on the Shorewall system itself.</p>
+
+<p>A more elaborate version of this flow is available here and this one contrasts the Netfilter flow with that of ipchains.</p>
+
+<p>In the above diagram are boxes similar to this:</p>
+
+<p><img src="/downloads/image/netfilter-input-chain.png" alt="Input chain" /></p>
+
+<p>The above box gives the name of the built-in chain (INPUT) along with the names of the tables (Mangle and Filter) that the chain exists in and in the order that the chains are traversed. The above sample indicates that packets go first through the INPUT chain of the Mangle table then through the INPUT chain of the Filter table. When a chain is enclosed in parentheses, Shorewall does not use the named chain (INPUT) in that table (Mangle).</p>
+
+<p><strong> Keep in mind that chains in the Nat table are only traversed for new connection requests (including those related to existing connections) while the chains in the other tables are traversed on every packet. </strong></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[需要齐次坐标的原因之二 - 所有的变换运算（平移、旋转、缩放）都可以用矩阵乘法来搞定]]></title>
