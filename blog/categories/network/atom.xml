@@ -4,7 +4,7 @@
   <title><![CDATA[Category: network | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/network/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-07-23T18:38:41+08:00</updated>
+  <updated>2014-07-24T18:40:37+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,94 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Winbox for Mac OS X，修改界面字体]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/07/24/winbox-mac-change-font/"/>
+    <updated>2014-07-24T18:19:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/07/24/winbox-mac-change-font</id>
+    <content type="html"><![CDATA[<p>RouterOS（或简称ROS）是拉脱维亚的Mikrotik开发的一个强大到变态（对于个人用户而言）的路由系统。基于Linux，支持x86和MIPS（routerboard）。也就是说，你可以找一台PC来，装上routeros，就变身成了一台路由器。所以也有很多人称RouterOS为软路由。</p>
+
+<p>Winbox是Mikrotik开发的RouterOS的管理工具（客户端）。当然，RouterOS也有网页版和命令行（终端，支持SSH，串口等）的管理界面，但是Winbox是相对来说最直观和好用的（当然用多了肯定到最后就是纯命令行了）。</p>
+
+<p>有一个问题就是，Winbox只有windows版的。在Mac和Linux上，要使用wine来运行（或安装虚拟机）。</p>
+
+<!-- more -->
+
+
+<p>对于Mac OS X，网上有爱好者已经做好了一个包，下载下来安装即可，不用自己去折腾安装和配置 <code>wine</code>。地址在这里：</p>
+
+<p><a href="http://wiki.mikrotik.com/wiki/MikroTik_WinBox_for_Mac_StandAlone">http://wiki.mikrotik.com/wiki/MikroTik_WinBox_for_Mac_StandAlone</a></p>
+
+<p>的确很好用，就是有一个问题，字体太难看。看起来用的是默认的宋体，所以英文显示效果不忍直视。</p>
+
+<p>所以很自然想修改字体。说起修改这个字体，其实就是修改windows的默认字体。参考了这篇文章：</p>
+
+<p><a href="http://linfan.info/blog/2012/03/01/wine-mac/">http://linfan.info/blog/2012/03/01/wine-mac/</a></p>
+
+<p>具体可以这么做：</p>
+
+<ul>
+<li>找一个喜欢的字体（Mac OS X自带了很多字体，如果安装了Office for Mac，那微软的很多字体也都有了），拷贝到 <code>/Applications/Winbox.app/drive_c/windows/Fonts</code> 目录下。比如我用的是微软雅黑：</li>
+</ul>
+
+
+<p><code>bash
+cp /Library/Fonts/Microsoft/Microsoft\ Yahei.ttf /Applications/WinBox.app/drive_c/windows/Fonts
+</code></p>
+
+<ul>
+<li>使用Wine运行注册表编辑器。这个打包好的Winbox for Mac，使用的是Wineskin（就是一个wine的wrapper，这样就把winbox.exe做成了Mac上的Winbox.app），所以这样：</li>
+</ul>
+
+
+<p><code>bash
+open /Applications/WinBox.app/Wineskin.app/
+</code></p>
+
+<p>然后点击 <code>Advanced</code> 按钮，再选择 <code>Tools</code> 标签页，最后点击 <code>Registry Editor (regedit)</code> 按钮，出现windows的注册表编辑器，导入这个注册表：</p>
+
+<p>``` ini
+REGEDIT4</p>
+
+<p>[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\FontSubstitutes]
+&ldquo;Microsoft Yahei&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Comic Sans MS&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Courier&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Courier New&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Fixedsys&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Helv&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Helvetica&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Lucida Console&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Lucida Sans&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Microsoft Sans Serif&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;MingLiU&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;PMingLiu&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;MS Shell Dlg&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;MS Shell Dlg 2&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;MS Dialog&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;MS Gothic&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;MS PGothic&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;MS UI Gothic&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;MS Mincho&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;MS PMincho&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;SimHei&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;SimSun&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;NSimSun&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;System&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Tahoma&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Times&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Times New Roman&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Tms Rmn&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Trebuchet MS&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Verdana&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+```</p>
+
+<p>这样就OK了，再次打开Winbox，终于看到舒服的界面了：</p>
+
+<p><img src="/downloads/image/mac-winbox-change-font.png" alt="Mac Winbox changed font" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux netfilter概述，mangle/nat/filter, prerouting/input/forward...到底是啥]]></title>
@@ -237,62 +325,6 @@ Used for stateless SNAT.</p>
 <p>我这个Tenda的路由器，设成WDS模式之后，无线的SSID就会自动设置成跟主路由器一样。所以，当做完上面的设置之后，家里就只有一个无线信号，走到书房就自动连接到主路由器，走到客厅就会自动连接到辅路由器，Cool。</p>
 
 <p>Have a good day!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[在Ubuntu上连接Juniper SSL VPN]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/03/20/juniper-vpn-on-ubuntu/"/>
-    <updated>2014-03-20T22:26:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/03/20/juniper-vpn-on-ubuntu</id>
-    <content type="html"><![CDATA[<p>现在国内很多外企都使用Juniper SSL VPN，来让员工可以在家连入到公司的网络。但是我发现，Juniper的SSL VPN在windows和Mac OS X上都可以很好的工作，但是在Ubuntu上貌似就有问题。就算你正确安装了Java Runtime，打开浏览器，<code>Host Checker</code> 和 <code>Network Connect</code> 也无法正常运行。有人说这是因为现在我们大多使用64位的Ubuntu，而 <code>Host Checker</code> 和 <code>Network Connect</code> 需要32位的浏览器和32位的JRE才能工作。</p>
-
-<p>我没有去深究32位的Ubuntu下是否Juniper VPN就真的可以正常工作了，因为我找到了一个更简单的办法。</p>
-
-<!-- more -->
-
-
-<p>这个方法来自这位大神，他自己分析了Juniper SSL VPN的工作过程，然后写了一个perl脚本解决了这个问题：</p>
-
-<p><a href="http://smallhacks.wordpress.com/2012/07/15/jvpn-perl-script-to-connect-to-the-juniper-vpn-with-host-checker-enabled/">http://smallhacks.wordpress.com/2012/07/15/jvpn-perl-script-to-connect-to-the-juniper-vpn-with-host-checker-enabled/</a></p>
-
-<p>对原理感兴趣的可以自己去看这篇文章（可能需要翻墙），这里简述一下步骤：</p>
-
-<ul>
-<li><p>从上面的文章提供的地址，下载 <code>jvpn-0.7.0.tar.bz2</code>。</p></li>
-<li><p>解开，将配置文件 <code>jvpn.ini</code> 拷贝一份以便输入自己的配置，比如：<code>cp jvpn.ini mark.ini</code>，然后编辑这些配置项：</p></li>
-</ul>
-
-
-<p><code>bash
-host: 你的VPN server的地址
-username: 用户名
-realm: 区域，一般的外企应该是 `Employee` 或者 `Contractor`
-verifycert: 是否验证SSL证书，如果你本地没有导入你的VPN server的SSL的证书的，可以写0，否则写1
-dnsprotect: 这可以防止Ubuntu的NetworkManager修改 `/etc/resolv.conf` 。我们需要修改这个文件从而修改DNS server的配置。
-mode: `ncsvc/ncui` 都可以
-</code></p>
-
-<ul>
-<li>然后就可以执行：<code>sudo perl ./jvpn.pl --conf mark.ini</code>。成功了就可以看到连到了VPN，按 <code>Ctrl+C</code> 可以中断连接。</li>
-</ul>
-
-
-<p><strong> Troubleshooting </strong></p>
-
-<ul>
-<li><code>sudo apt-get install libterm-readkey-perl</code>，如果jvpn.pl说 <code>Term::ReadKey module</code> 找不到的话</li>
-<li><code>sudo apt-get install lib32z1</code>，如果出现这样的错误： <code>libz.so.1: cannot open shared object file: No such file or directory</code></li>
-<li><code>sudo apt-get install gcc-multilib</code>，如果看到这样的错误： <code>bits/predefs.h: No such file or directory</code></li>
-<li><code>sudo apt-get install libhttp-request-ascgi-perl</code>，如果jvpn.pl说 <code>HTTP::Request module</code> 找不到的话</li>
-</ul>
-
-
-<p>这样在Ubuntu下，就可以使用Juniper SSL VPN了。很多外企的网络，自带翻墙，所以拨上VPN之后，除了工作之外，还可以实现自动翻墙。配合上chnroute，就完美了。不清楚chnroute有啥作用的，可以看我之前写的一篇文章：</p>
-
-<p><a href="http://markzhang.cn/blog/2013/12/04/chnroutes-on-mac/">Chnroutes的使用（Mac OS X Mavericks）</a></p>
-
-<p>最后附上目前最新版本的jvpn 0.7.0：<a href="/downloads/soft/jvpn-0.7.0.tar.bz2">jvpn-0.7.0.tar.bz2</a></p>
 ]]></content>
   </entry>
   

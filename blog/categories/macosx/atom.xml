@@ -4,7 +4,7 @@
   <title><![CDATA[Category: MacOSX | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/macosx/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-07-23T18:38:41+08:00</updated>
+  <updated>2014-07-24T18:40:37+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,94 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Winbox for Mac OS X，修改界面字体]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/07/24/winbox-mac-change-font/"/>
+    <updated>2014-07-24T18:19:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/07/24/winbox-mac-change-font</id>
+    <content type="html"><![CDATA[<p>RouterOS（或简称ROS）是拉脱维亚的Mikrotik开发的一个强大到变态（对于个人用户而言）的路由系统。基于Linux，支持x86和MIPS（routerboard）。也就是说，你可以找一台PC来，装上routeros，就变身成了一台路由器。所以也有很多人称RouterOS为软路由。</p>
+
+<p>Winbox是Mikrotik开发的RouterOS的管理工具（客户端）。当然，RouterOS也有网页版和命令行（终端，支持SSH，串口等）的管理界面，但是Winbox是相对来说最直观和好用的（当然用多了肯定到最后就是纯命令行了）。</p>
+
+<p>有一个问题就是，Winbox只有windows版的。在Mac和Linux上，要使用wine来运行（或安装虚拟机）。</p>
+
+<!-- more -->
+
+
+<p>对于Mac OS X，网上有爱好者已经做好了一个包，下载下来安装即可，不用自己去折腾安装和配置 <code>wine</code>。地址在这里：</p>
+
+<p><a href="http://wiki.mikrotik.com/wiki/MikroTik_WinBox_for_Mac_StandAlone">http://wiki.mikrotik.com/wiki/MikroTik_WinBox_for_Mac_StandAlone</a></p>
+
+<p>的确很好用，就是有一个问题，字体太难看。看起来用的是默认的宋体，所以英文显示效果不忍直视。</p>
+
+<p>所以很自然想修改字体。说起修改这个字体，其实就是修改windows的默认字体。参考了这篇文章：</p>
+
+<p><a href="http://linfan.info/blog/2012/03/01/wine-mac/">http://linfan.info/blog/2012/03/01/wine-mac/</a></p>
+
+<p>具体可以这么做：</p>
+
+<ul>
+<li>找一个喜欢的字体（Mac OS X自带了很多字体，如果安装了Office for Mac，那微软的很多字体也都有了），拷贝到 <code>/Applications/Winbox.app/drive_c/windows/Fonts</code> 目录下。比如我用的是微软雅黑：</li>
+</ul>
+
+
+<p><code>bash
+cp /Library/Fonts/Microsoft/Microsoft\ Yahei.ttf /Applications/WinBox.app/drive_c/windows/Fonts
+</code></p>
+
+<ul>
+<li>使用Wine运行注册表编辑器。这个打包好的Winbox for Mac，使用的是Wineskin（就是一个wine的wrapper，这样就把winbox.exe做成了Mac上的Winbox.app），所以这样：</li>
+</ul>
+
+
+<p><code>bash
+open /Applications/WinBox.app/Wineskin.app/
+</code></p>
+
+<p>然后点击 <code>Advanced</code> 按钮，再选择 <code>Tools</code> 标签页，最后点击 <code>Registry Editor (regedit)</code> 按钮，出现windows的注册表编辑器，导入这个注册表：</p>
+
+<p>``` ini
+REGEDIT4</p>
+
+<p>[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\FontSubstitutes]
+&ldquo;Microsoft Yahei&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Comic Sans MS&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Courier&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Courier New&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Fixedsys&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Helv&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Helvetica&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Lucida Console&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Lucida Sans&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Microsoft Sans Serif&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;MingLiU&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;PMingLiu&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;MS Shell Dlg&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;MS Shell Dlg 2&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;MS Dialog&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;MS Gothic&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;MS PGothic&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;MS UI Gothic&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;MS Mincho&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;MS PMincho&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;SimHei&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;SimSun&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;NSimSun&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;System&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Tahoma&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Times&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Times New Roman&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Tms Rmn&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Trebuchet MS&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+&ldquo;Verdana&rdquo;=&ldquo;Microsoft Yahei&rdquo;
+```</p>
+
+<p>这样就OK了，再次打开Winbox，终于看到舒服的界面了：</p>
+
+<p><img src="/downloads/image/mac-winbox-change-font.png" alt="Mac Winbox changed font" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Mac OS X（Mavericks）共享VPN给其他设备]]></title>
@@ -230,30 +318,6 @@ drwxr-xr-x  6 mark  staff   204B  7  3 14:00 llvm-gcc4.2.pkg
 <p>有意思的是，在MacOS X上，所有的插件是统一安装在一个地方的：<code>/Library/Internet Plug-Ins</code>。所以插件一旦安装了，所有的浏览器就都能使用了。只是每个浏览器是否使能某个插件，在各自的设置里面，如上面介绍的Safari的。在Chrome中，那就是在页面：<code>chrome://plugins</code> 里面。</p>
 
 <p>所以其实比如下载了支付宝的浏览器插件，安装的时候，其实就是把文件拷贝到了 <code>/Library/Internet Plug-Ins</code> 这个目录下而已。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[MacOS X 如何截屏]]></title>
-    <link href="http://www.markzhang.cn/blog/2013/12/25/macosx-screen-shot/"/>
-    <updated>2013-12-25T21:54:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2013/12/25/macosx-screen-shot</id>
-    <content type="html"><![CDATA[<p><em>文章是从网上找来的，但是忘记当初的网址了，所以没写上转载的地址。如果您发现这是您的原创，请告知，我会加上转载信息，谢谢。</em></p>
-
-<p>在Mac OS X下有很强大的截屏功能，它不仅仅是对屏幕的全屏COPY，而是包括很多细节在里面，就从这点来看，已经比过所有版本的Windows了。</p>
-
-<p>下面我来向大家详细介绍一下： 　　</p>
-
-<!-- more -->
-
-
-<p>对全屏的截图我们可以通过按 苹果键（花键）+ Shift键 + 3来执行，之后伴随着清脆的一声提示音后，在桌面上就会生成一个图片文件，这就是刚刚截屏的图片了，默认文件类型是PNG的。</p>
-
-<p>自定义截屏是很方便的一个功能，是可以通过按 苹果键（花键）+ Shift键 + 4来执行，当执行组合按键之后鼠标指针的光标会变成十字，现在你就可以画出你想要截取屏幕的范围了，画好后截出的图片也会放在桌面上。</p>
-
-<p>另外，如果在按 苹果键（花键）+ Shift键 + 4后按下 空格键，鼠标指针就会变成一个小照相机，这时是截取对象方式的截屏，把小照相机放在你想截图的窗口上按鼠标左键后就执行了对该窗口的截屏，很方便吧，</p>
-
-<p>还有一个用法就是苹果键（花键）+Shift键再 + Ctrl键 + 4，这样截出的文件就放入系统的剪贴板了，不会生成文件出来，在做文档时直接粘贴就很方便了。</p>
 ]]></content>
   </entry>
   
