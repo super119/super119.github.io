@@ -4,7 +4,7 @@
   <title><![CDATA[Category: git | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/git/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-08-01T13:16:07+08:00</updated>
+  <updated>2014-08-01T13:18:31+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -334,7 +334,7 @@ to do so with:</p>
 <p>这个命令将指定branch中的指定文件checkout出来，并存到 <code>&lt;filename&gt;</code> 指定的路径上。</p>
 
 <ul>
-<li>`git diff <branch a>..<branch b> &mdash; <file/folder path></li>
+<li><code>git diff &lt;branch a&gt;..&lt;branch b&gt; -- &lt;file/folder path&gt;</code></li>
 </ul>
 
 
