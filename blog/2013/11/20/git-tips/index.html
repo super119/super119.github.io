@@ -257,6 +257,13 @@
 
 
 <p>这个命令将指定branch中的指定文件checkout出来，并存到 <code>&lt;filename&gt;</code> 指定的路径上。</p>
+
+<ul>
+<li>`git diff <branch a>..<branch b> &mdash; <file/folder path></li>
+</ul>
+
+
+<p>这个命令可以用来比较两个branch上的不同，以diff的方式打印出来。而且可以通过加入 <code>--</code> 来比较指定的文件或者目录。我们都知道一般代码都有开发branch和release branch，那么当release branch上测试出现有问题，想看看开发branch上是否已经有fix的话，就可以用这个命令来看到release branch上到底都缺了一些什么改动。</p>
 </div>
 
 
