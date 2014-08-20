@@ -275,6 +275,8 @@
 
 <p>打开22端口是为了可以远程ssh RouterBoard，打开8291/3987/80端口是为了可以远程使用WinBox登录（可以额外添加src-address来限定只允许某个IP地址登录，这样可以增强安全性），接受53端口是为了DNS查询（实际上DNS一般都是使用UDP，TCP不需要打开），最后一条就是拦截所有外部的网络请求，请确保这一条一定位于所有规则的最后，iptables是匹配到一条规则之后就会返回的，所以如果这条不出现在最后，那么这一条之后的所有规则都会无法生效。</p>
 
+<p>这个最后一条规则，可以看到，是说如果是从 <code>SHUnicom</code> 这个接口进来的数据一律drop，而 <code>SHUnicom</code> 是我的宽带连接接口。想到这个宽带连接其实是在我的ether1-wan这个物理接口上，那么这里是否也可以设置成从 <code>ether1-wan</code> 接口进来的数据一律drop呢？仔细想想是不对的，<code>ether1-wan</code> 是物理接口，用于宽带拨号；而 <code>SHUnicom</code> 其实是一个PPPoE，它会创建一个虚拟的网卡interface，所以我们要drop的是从这个虚拟的网卡interface尝试进入RouterBoard的数据，而不是物理的 <code>ether1-wan</code> 上进入的数据。如果我们真的drop了 <code>ether1-wan</code> 上进来的数据，那就上不了网了，因为所有的返回的数据都被丢掉了。在PPPoE/VPN的时候，虚拟网卡会被创建，所以这个时候要分清楚虚拟网卡和物理网卡，免的设置错误的规则。</p>
+
 <p>能上网只是最基本需求了，接下来才是开始各种折腾的时候，VPN/chnroutes/DDNS/&hellip; 后续博客将记录这些。</p>
 </div>
 
