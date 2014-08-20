@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-08-20T16:46:45+08:00</updated>
+  <updated>2014-08-20T18:08:30+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,98 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[RouterOS配置记录（二）：chnroutes]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/08/20/ros-chnroutes/"/>
+    <updated>2014-08-20T16:52:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/08/20/ros-chnroutes</id>
+    <content type="html"><![CDATA[<p>之前写过一篇博客：Chnroutes的使用（Mac OS X Mavericks），讲述了在我的macbook pro上安装chnroutes，从而可以在上网的时候区分国内国外的IP，最终让国外的IP访问走VPN，国内的不走VPN。</p>
+
+<p><a href="http://markzhang.cn/blog/2013/12/04/chnroutes-on-mac/">Chnroutes的使用（Mac OS X Mavericks）</a></p>
+
+<p>现在有了ROS，事情就变的更加棒了，把chnroutes做在ROS上，那所有的网络设备就自动具备了chnroutes的功能。所以在刚配置好了ROS之后，我就尝试配置了chnroutes。</p>
+
+<!-- more -->
+
+
+<p>首先我的配置参考了这篇文章：</p>
+
+<p><a href="http://autorosvpn.blogspot.jp/2013/05/ros-vpn.html">ros智能vpn自动翻墙</a></p>
+
+<p>总的说来，在ROS上配置chnroutes，就是几个步骤：</p>
+
+<ol>
+<li>导入国内IP地址表</li>
+<li>对每个请求中的IP进行查找，如果不在国内IP地址列表中的，就标记一下</li>
+<li>在路由表中，根据标记，让数据走正常网关或是VPN</li>
+</ol>
+
+
+<h2>导入国内IP地址表</h2>
+
+<p>这个其实非常简单，用VI就搞定了。首先根据我之前的文章：Chnroutes的使用（Mac OS X Mavericks），在我的MBP上运行 <code>./chnroutes.py -p mac</code>，就会生成ip-up/ip-down这两个文件。</p>
+
+<p>ip-up文件里面就包含了所有的国内IP地址，所以接下来我们只需要将这个文件修改成ROS能认识的格式就行了，用VI就可以轻松搞定了。这里给出一个我目前在使用的（2014/7/22的数据）：</p>
+
+<p><a href="http://www.markzhang.cn/downloads/file/chinasites.rsc">2014/7/22 国内IP地址列表</a></p>
+
+<p>一般来说，这个列表不需要经常更新，在IPv4地址已经差不多消耗殆尽的今天，你能经常访问到新的属于国内的IP地址也不是件容易的事情。</p>
+
+<p>接下来就是把这个 <code>chinasites.rsc</code> 上传到RouterBoard上就OK了，可以用Filezilla，使用FTP的方式。或者你如果是windows平台，使用WinBox的话，也可以用拖拽的方式将文件拖到ROS的 <code>Files</code> 对话框中即可。</p>
+
+<p>上传了之后，点击ROS的 <code>New Terminal</code>，在命令行下输入：<code>import chinasites.rsc</code>，所有的国内IP地址列表就导入了，在ROS的 <code>IP</code> &ndash;> <code>Firewall</code> &ndash;> <code>Address Lists</code> 中就可以看到：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-ip-firewall-address-lists.png" alt="China IP address list" /></p>
+
+<p>在上图中可以看到，我们给这些IP地址都设了一个名字叫做 <code>novpn</code>，表示路由这些地址的时候，不需要走VPN，后面会看到如何使用的。</p>
+
+<h2>标记Packets</h2>
+
+<p>这是Linux netfilter/iptables非常强大的功能体现了，首先来看在ROS里面是怎么配置的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Flags: X - disabled, I - invalid, D - dynamic
+</span><span class='line'> 0   <span class="nv">chain</span><span class="o">=</span>prerouting <span class="nv">action</span><span class="o">=</span>mark-routing new-routing-mark<span class="o">=</span>vpn <span class="nv">passthrough</span><span class="o">=</span>yes
+</span><span class='line'>     dst-address<span class="o">=</span>!192.168.88.0/24 dst-address-list<span class="o">=</span>!novpn
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个配置项位于：<code>IP</code> &ndash;> <code>Firewall</code> &ndash;> <code>Mangle</code>。首先这个配置针对的是 <code>prerouting</code> 表，对Mangle/Prerouting还不清楚的，看我的这篇文章：</p>
+
+<p><a href="http://markzhang.cn/blog/2014/07/23/netfilter-overview/">Linux Netfilter overview</a></p>
+
+<p>然后，<code>dst-address-list=!novpn</code> 其实意思就是，如果目的地址不在 <code>novpn</code> 这个address list中的；最后 <code>action=mark-routing new-routing-mark=vpn</code> 就表示如果目的地址不在 <code>novpn</code> 中的，就给这些packet打上一个名为 <code>vpn</code> 的routing标记。</p>
+
+<p>当然，上述命令中的：<code>dst-address=!192.168.88.0/24</code>，这表示本地局域网的地址不受该条规则影响，这也是非常好理解的。</p>
+
+<p>所以总结来说，我们通过Linux netfilter的Mangle功能，成功的给不属于国内IP地址列表中的packet，打上了一个名为 <code>vpn</code> 的路由标记。</p>
+
+<p>这里需要提一下 <code>passthrough=yes</code> 这个东西的作用。<code>passthrough=yes</code> 表示packet经过了本规则的处理之后，还会继续往下传递，给下面的rules继续处理。相反的例子是 <code>IP</code> &ndash;> <code>Firewall</code> &ndash;> <code>Fliter</code> 中的规则，比如 <code>accept</code> 或者 <code>drop</code> ，一旦匹配到了这些规则，就不会再继续往下处理了（下面的规则就不会再去执行了），所以这就是为什么我在上篇文章中提到说有一条 <code>drop</code> 的规则一定要放在最后。</p>
+
+<p>所以这里我们设置了 <code>passthrough=yes</code> ，表示位于我们本条规则之后的规则还有机会继续被得到执行，所以你可以继续添加标记类的规则，或者其他任何Mangle的规则。所以再次重申，在Filter/Mangle这些表里，规则的顺序是很有影响的。</p>
+
+<h2>添加路由</h2>
+
+<p>点击 <code>IP</code> &ndash;> <code>Routes</code>，在 <code>Routes</code> 标签页，点击加号按钮添加一条路由规则：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-ip-routes.png" alt="ROS add routing" /></p>
+
+<ul>
+<li><p>Dst. Address，这表示哪些目的IP地址受这条路由影响，这里填写 <code>0.0.0.0/0</code> 表示所有IP地址。</p></li>
+<li><p>Gateway，这表示这条路由走哪个Interface，一般来说，这就是你的VPN的PPP连接了。</p></li>
+<li><p>Distance，这表示这条路由的权重。在之前的一篇介绍ROS的基础设置的文章中，有说到我们添加了一个PPPoE client来实现宽带拨号，在创建那个PPPoE Client的时候，有一个选项叫做：<code>Default Route Distance</code>，我的这项设置是10，而如上图所示，现在我们添加的这条路由，我的设置是1。其实很好理解，我们在添加PPPoE Client的时候，有选择 <code>Add Default Route</code>，所谓Default route就是路由所有IP地址：<code>0.0.0.0/0</code>的，那么现在我们又添加了一条路由，也是路由所有IP地址的，那应该选哪条路由呢？这就是根据路由的Distance来决定的。Distance值越小的，权重越高。</p></li>
+<li><p>Routing Mark，这里填写的是 <code>vpn</code>。</p></li>
+</ul>
+
+
+<p>所以总结来说，这条路由的作用就是，对于 <code>Routing Mark</code> 是 <code>vpn</code> 的packet，走我们指定的 <code>Gateway</code>。而且由于这条路由的权重高于默认路由，所以就实现了非国内的IP地址，走我们指定的Gateway，而国内的IP地址还是走默认路由（宽带连接的那条路由）。</p>
+
+<p>写了一堆字，其实做一下就是两分钟的事。ROS的确是非常Power的东西。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[RouterOS 配置记录（一）：基础设置]]></title>
@@ -1883,63 +1975,6 @@ to do so with:</p>
 <li>重启Chrome，再访问那个网站，就没有SSL warning了。</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[架设无线桥接网络（WDS）]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/03/22/setup-wireless-wds/"/>
-    <updated>2014-03-22T19:54:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/03/22/setup-wireless-wds</id>
-    <content type="html"><![CDATA[<p>现在的无线路由器动辄3根天线，号称穿墙能力如何如何，信号可以从一楼一直覆盖到三楼。但是根据我几年来使用了N款无线路由器之后，发现都是扯。我现在使用的是一台ASUS的，3根天线，128M内存的无线路由器，支持刷第三方固件（如DD-WRT, Tomato），但是穿墙效果还是无法让人满意。路由器放在房间，客厅的信号就是时有时无。当然，我指的是使用ipad或者手机时，信号较弱，如果使用笔记本电脑要好一些。</p>
-
-<p>忍受了2年之后，我决定在客厅再放一个无线路由器，做无线桥接（WDS）使用，彻底摆脱信号之苦。</p>
-
-<!-- more -->
-
-
-<p>简单说下两台路由器：</p>
-
-<ol>
-<li><p>做AP用的，也是连接着Internet的，就是那台ASUS的，放在书房。</p></li>
-<li><p>做桥接用的，放在客厅的，是一台特价的时候买的四十块钱的Tenda（腾达）的无线路由器。</p></li>
-</ol>
-
-
-<p>其实网上介绍WDS的文章很多，但是很多文章都不适用于我的情况，所以做了很多次测试。</p>
-
-<p>最后配置完成之后，发现其实非常简单：</p>
-
-<h2>主路由器（做AP用的ASUS的那台）的配置</h2>
-
-<p>由于我这台ASUS的路由器给我刷了Tomato的固件，所以这里是Tomato中的配置方法。按照下图配置即可：</p>
-
-<p><img src="http://www.markzhang.cn/downloads/image/tomato-ap-wds.png" alt="Tomato AP+WDS 配置" /></p>
-
-<ul>
-<li>工作模式设置成 <code>AP + WDS</code></li>
-<li>通道尽量选择一个没人使用的。现在每家每户都有无线路由器，所以常见通道很多人都在使用，挑一个没人使用的比较好</li>
-<li>无线加密还是按照以前的就好，现在基本上用的都是 <code>WPA2 Personal</code> 了</li>
-<li>WDS一项中，你可以将辅路由器的MAC地址填写进去，也可以像上面的图中所示，选成AUTO</li>
-</ul>
-
-
-<h2>辅路由器（做桥接用的Tenda的那台）的配置</h2>
-
-<p>忘记截图了，但是只需要确保以下几点即可：</p>
-
-<ul>
-<li>Internet连接要关闭，因为是做桥接用。没有关闭就设成有线网络连接Internet，反正我们不会插网线上去，所以等于禁用了</li>
-<li>LAN的网段不要设成跟主路由器一个网段，以免冲突。比如主路由器是192.168.1.x, 辅路由器就可以设成192.168.2.x</li>
-<li>关闭DHCP，因为所有的WIFI数据会被发送到主路由器去</li>
-<li>工作模式设成WDS，然后填写主路由器的无线MAC地址。一般的路由器都会有一个Scan按钮，可以给出所有的无线网络，选择主路由器那个即可</li>
-<li>无线加密设置成跟主路由器一样（加密方法、密钥），这很重要</li>
-</ul>
-
-
-<p>我这个Tenda的路由器，设成WDS模式之后，无线的SSID就会自动设置成跟主路由器一样。所以，当做完上面的设置之后，家里就只有一个无线信号，走到书房就自动连接到主路由器，走到客厅就会自动连接到辅路由器，Cool。</p>
-
-<p>Have a good day!</p>
 ]]></content>
   </entry>
   

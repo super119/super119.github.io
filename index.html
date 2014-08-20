@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="RouterOS（以下简称ROS）是一个软路由系统，由拉脱维亚的Mikrotik开发，完全基于Linux。项目刚开始的时候，只支持x86，所以我们可以找一台PC机来安装ROS，从而可以让PC机瞬间变身成一个软路由。 后来Mikrotik开发了专用的硬件设备：RouterBoard。 &hellip;">
+  <meta name="description" content="之前写过一篇博客：Chnroutes的使用（Mac OS X Mavericks），讲述了在我的macbook pro上安装chnroutes，从而可以在上网的时候区分国内国外的IP，最终让国外的IP访问走VPN，国内的不走VPN。 Chnroutes的使用（Mac OS X Mavericks &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/08/20/ros-chnroutes/">RouterOS配置记录（二）：chnroutes</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-20T16:52:00+08:00" pubdate data-updated="true">Aug 20<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>之前写过一篇博客：Chnroutes的使用（Mac OS X Mavericks），讲述了在我的macbook pro上安装chnroutes，从而可以在上网的时候区分国内国外的IP，最终让国外的IP访问走VPN，国内的不走VPN。</p>
+
+<p><a href="http://markzhang.cn/blog/2013/12/04/chnroutes-on-mac/">Chnroutes的使用（Mac OS X Mavericks）</a></p>
+
+<p>现在有了ROS，事情就变的更加棒了，把chnroutes做在ROS上，那所有的网络设备就自动具备了chnroutes的功能。所以在刚配置好了ROS之后，我就尝试配置了chnroutes。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/20/ros-chnroutes/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -493,53 +540,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/04/23/wxwidget-on-mavericks/">在Mavericks上使用Makefile编写wxWidgets程序</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-04-23T23:31:00+08:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>OpenGL的设计与操作系统无关，与窗口系统也无关，所以，要编写一个可以运行（能看到界面）的程序，还需要一些额外的GUI的框架，比如glut。</p>
-
-<p>glut基本上是所有OpenGL教科书上的唯一推荐了，因为它的API简单，跨平台。所以读者不需要花额外的时间去了解并使用glut。但是glut比较老了，有点跟不上时代了。而且编译出来的东西是一个可执行文件，不是Mac OS X上的 <code>.app</code> 的那种Applicaiton。所以在StackOverflow上也有很多人推荐使用 <code>glfw</code>。我也去试用了一下，感觉还是太单薄了。</p>
-
-<p>既然要编写一个像样的OpenGL程序，就选择一个像样的GUI framework library吧，于是我决定使用wxWidgets。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/04/23/wxwidget-on-mavericks/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -552,11 +552,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (1)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/git'>git (5)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/linux'>linux (3)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (3)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (8)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (4)</a></li><li><a href='/blog/categories/reprints'>reprints (4)</a></li><li><a href='/blog/categories/science'>science (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (1)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/git'>git (5)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/linux'>linux (3)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (3)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (9)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (4)</a></li><li><a href='/blog/categories/reprints'>reprints (4)</a></li><li><a href='/blog/categories/science'>science (1)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/20/ros-chnroutes/">RouterOS配置记录（二）：chnroutes</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/08/19/ros-basic-setup/">RouterOS 配置记录（一）：基础设置</a>
@@ -572,10 +576,6 @@
     
       <li class="post">
         <a href="/blog/2014/07/17/mac-share-vpn-connection/">Mac OS X（Mavericks）共享VPN给其他设备</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/07/03/apple-cli-and-osx-gcc-installer/">Mac OS X(Mavericks) CommandLineTools 和 Osx-gcc-installer</a>
       </li>
     
   </ul>

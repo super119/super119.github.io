@@ -4,7 +4,7 @@
   <title><![CDATA[Category: network | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/network/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-08-20T16:46:45+08:00</updated>
+  <updated>2014-08-20T18:08:30+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,98 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[RouterOS配置记录（二）：chnroutes]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/08/20/ros-chnroutes/"/>
+    <updated>2014-08-20T16:52:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/08/20/ros-chnroutes</id>
+    <content type="html"><![CDATA[<p>之前写过一篇博客：Chnroutes的使用（Mac OS X Mavericks），讲述了在我的macbook pro上安装chnroutes，从而可以在上网的时候区分国内国外的IP，最终让国外的IP访问走VPN，国内的不走VPN。</p>
+
+<p><a href="http://markzhang.cn/blog/2013/12/04/chnroutes-on-mac/">Chnroutes的使用（Mac OS X Mavericks）</a></p>
+
+<p>现在有了ROS，事情就变的更加棒了，把chnroutes做在ROS上，那所有的网络设备就自动具备了chnroutes的功能。所以在刚配置好了ROS之后，我就尝试配置了chnroutes。</p>
+
+<!-- more -->
+
+
+<p>首先我的配置参考了这篇文章：</p>
+
+<p><a href="http://autorosvpn.blogspot.jp/2013/05/ros-vpn.html">ros智能vpn自动翻墙</a></p>
+
+<p>总的说来，在ROS上配置chnroutes，就是几个步骤：</p>
+
+<ol>
+<li>导入国内IP地址表</li>
+<li>对每个请求中的IP进行查找，如果不在国内IP地址列表中的，就标记一下</li>
+<li>在路由表中，根据标记，让数据走正常网关或是VPN</li>
+</ol>
+
+
+<h2>导入国内IP地址表</h2>
+
+<p>这个其实非常简单，用VI就搞定了。首先根据我之前的文章：Chnroutes的使用（Mac OS X Mavericks），在我的MBP上运行 <code>./chnroutes.py -p mac</code>，就会生成ip-up/ip-down这两个文件。</p>
+
+<p>ip-up文件里面就包含了所有的国内IP地址，所以接下来我们只需要将这个文件修改成ROS能认识的格式就行了，用VI就可以轻松搞定了。这里给出一个我目前在使用的（2014/7/22的数据）：</p>
+
+<p><a href="/downloads/file/chinasites.rsc">2014/7/22 国内IP地址列表</a></p>
+
+<p>一般来说，这个列表不需要经常更新，在IPv4地址已经差不多消耗殆尽的今天，你能经常访问到新的属于国内的IP地址也不是件容易的事情。</p>
+
+<p>接下来就是把这个 <code>chinasites.rsc</code> 上传到RouterBoard上就OK了，可以用Filezilla，使用FTP的方式。或者你如果是windows平台，使用WinBox的话，也可以用拖拽的方式将文件拖到ROS的 <code>Files</code> 对话框中即可。</p>
+
+<p>上传了之后，点击ROS的 <code>New Terminal</code>，在命令行下输入：<code>import chinasites.rsc</code>，所有的国内IP地址列表就导入了，在ROS的 <code>IP</code> &ndash;> <code>Firewall</code> &ndash;> <code>Address Lists</code> 中就可以看到：</p>
+
+<p><img src="/downloads/image/ros-ip-firewall-address-lists.png" alt="China IP address list" /></p>
+
+<p>在上图中可以看到，我们给这些IP地址都设了一个名字叫做 <code>novpn</code>，表示路由这些地址的时候，不需要走VPN，后面会看到如何使用的。</p>
+
+<h2>标记Packets</h2>
+
+<p>这是Linux netfilter/iptables非常强大的功能体现了，首先来看在ROS里面是怎么配置的：</p>
+
+<p>``` bash
+Flags: X &ndash; disabled, I &ndash; invalid, D &ndash; dynamic
+ 0   chain=prerouting action=mark-routing new-routing-mark=vpn passthrough=yes</p>
+
+<pre><code> dst-address=!192.168.88.0/24 dst-address-list=!novpn 
+</code></pre>
+
+<p>```</p>
+
+<p>这个配置项位于：<code>IP</code> &ndash;> <code>Firewall</code> &ndash;> <code>Mangle</code>。首先这个配置针对的是 <code>prerouting</code> 表，对Mangle/Prerouting还不清楚的，看我的这篇文章：</p>
+
+<p><a href="http://markzhang.cn/blog/2014/07/23/netfilter-overview/">Linux Netfilter overview</a></p>
+
+<p>然后，<code>dst-address-list=!novpn</code> 其实意思就是，如果目的地址不在 <code>novpn</code> 这个address list中的；最后 <code>action=mark-routing new-routing-mark=vpn</code> 就表示如果目的地址不在 <code>novpn</code> 中的，就给这些packet打上一个名为 <code>vpn</code> 的routing标记。</p>
+
+<p>当然，上述命令中的：<code>dst-address=!192.168.88.0/24</code>，这表示本地局域网的地址不受该条规则影响，这也是非常好理解的。</p>
+
+<p>所以总结来说，我们通过Linux netfilter的Mangle功能，成功的给不属于国内IP地址列表中的packet，打上了一个名为 <code>vpn</code> 的路由标记。</p>
+
+<p>这里需要提一下 <code>passthrough=yes</code> 这个东西的作用。<code>passthrough=yes</code> 表示packet经过了本规则的处理之后，还会继续往下传递，给下面的rules继续处理。相反的例子是 <code>IP</code> &ndash;> <code>Firewall</code> &ndash;> <code>Fliter</code> 中的规则，比如 <code>accept</code> 或者 <code>drop</code> ，一旦匹配到了这些规则，就不会再继续往下处理了（下面的规则就不会再去执行了），所以这就是为什么我在上篇文章中提到说有一条 <code>drop</code> 的规则一定要放在最后。</p>
+
+<p>所以这里我们设置了 <code>passthrough=yes</code> ，表示位于我们本条规则之后的规则还有机会继续被得到执行，所以你可以继续添加标记类的规则，或者其他任何Mangle的规则。所以再次重申，在Filter/Mangle这些表里，规则的顺序是很有影响的。</p>
+
+<h2>添加路由</h2>
+
+<p>点击 <code>IP</code> &ndash;> <code>Routes</code>，在 <code>Routes</code> 标签页，点击加号按钮添加一条路由规则：</p>
+
+<p><img src="/downloads/image/ros-ip-routes.png" alt="ROS add routing" /></p>
+
+<ul>
+<li><p>Dst. Address，这表示哪些目的IP地址受这条路由影响，这里填写 <code>0.0.0.0/0</code> 表示所有IP地址。</p></li>
+<li><p>Gateway，这表示这条路由走哪个Interface，一般来说，这就是你的VPN的PPP连接了。</p></li>
+<li><p>Distance，这表示这条路由的权重。在之前的一篇介绍ROS的基础设置的文章中，有说到我们添加了一个PPPoE client来实现宽带拨号，在创建那个PPPoE Client的时候，有一个选项叫做：<code>Default Route Distance</code>，我的这项设置是10，而如上图所示，现在我们添加的这条路由，我的设置是1。其实很好理解，我们在添加PPPoE Client的时候，有选择 <code>Add Default Route</code>，所谓Default route就是路由所有IP地址：<code>0.0.0.0/0</code>的，那么现在我们又添加了一条路由，也是路由所有IP地址的，那应该选哪条路由呢？这就是根据路由的Distance来决定的。Distance值越小的，权重越高。</p></li>
+<li><p>Routing Mark，这里填写的是 <code>vpn</code>。</p></li>
+</ul>
+
+
+<p>所以总结来说，这条路由的作用就是，对于 <code>Routing Mark</code> 是 <code>vpn</code> 的packet，走我们指定的 <code>Gateway</code>。而且由于这条路由的权重高于默认路由，所以就实现了非国内的IP地址，走我们指定的Gateway，而国内的IP地址还是走默认路由（宽带连接的那条路由）。</p>
+
+<p>写了一堆字，其实做一下就是两分钟的事。ROS的确是非常Power的东西。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[RouterOS 配置记录（一）：基础设置]]></title>
@@ -385,54 +477,6 @@ Used for stateless SNAT.</p>
 <p>有意思的是，有的时候如果enable了这个选项，我发现PS3连接网络就会出现问题。而如果VPN已经拨上去了，再去enable这个选项貌似就没有影响。</p>
 
 <p>没有深究这个，所以这是目前的一个遗留问题。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[一站式密码管理器 - LastPass]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/04/08/lastpass/"/>
-    <updated>2014-04-08T19:56:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/04/08/lastpass</id>
-    <content type="html"><![CDATA[<p>我个人感觉，密码是相当反人类的设计。当你刚接触互联网的时候，可能感觉不到，甚至感觉理所当然，银行卡也需要设置密码呢。但是当访问的网站越来越多，各个站点论坛都需要注册用户、设置密码，多了之后密码就会变成非常痛苦的一种体验。</p>
-
-<!-- more -->
-
-
-<p>其实人自身就有很多唯一（Unique）的存在，密码不应该有存在的理由。之前我看过一个BBC的纪录片，为此还写过一篇博文：</p>
-
-<p><a href="http://markzhang.cn/blog/2013/12/17/defeating-the-hackers/">密码之外的新的安全认证手段</a></p>
-
-<p>之所以现在密码还被大量使用，可能现在技术还没有成熟、成本还没有降低到能普及的程度吧。</p>
-
-<p>所以现在也涌现出了很多“密码管理”类的网站和应用，LastPass就是其中之一。我简单使用了一下，感觉还是挺方便的。</p>
-
-<p>首先就是去<a href="http://www.lastpass.com">http://www.lastpass.com</a>注册一个账号了，不好意思，这里你又需要设置一个密码了。好在的是，设置了这个密码之后，以后的所有密码都不需要再记忆了，LastPass会帮你管理。所以，反过来说，一旦你的LastPass的密码被泄露的话，那后果就不堪设想了，所以为了安全起见，一些涉及到钱财类的密码还是单独设置吧，别依赖LastPass了。。。比如支付宝。:)</p>
-
-<p>然后就是在LastPass的主页上，点击“下载”，就会下载一个针对你的浏览器的插件。我使用的是Chrome，所以一个Chrome插件就自动下载并安装了。安装完成之后，点击工具栏上出现的 <code>*</code> 字图标，输入你的LastPass的账号和密码，一切就已经就绪了。</p>
-
-<p>LastPass有许多功能，比如表单的自动填写、Profile的设定等，但是我只使用了它的一个功能：自动生成密码。LastPass自动生成密码可以选择密码长度，默认是12个字符，也可以选择字符种类，比如包不包含特殊字符（默认不包含，因为有一些网站只接受字母和数字作为密码）等。</p>
-
-<p>所以接下来我就先登录了一个我常去的网站，进入到账户设定，修改密码的页面，在新密码设定的输入框中，点击LastPass，选择自动生成密码，LastPass就会生成一个12个字符的密码并自动填充到密码框中，并且该密码自动保存在了你的LastPass的账户里面：</p>
-
-<p><img src="/downloads/image/lastpass-saved-passwd.png" alt="LastPass自动生成并保存的密码" /></p>
-
-<p>上图显示的就是我新生成的淘宝的密码，这里面URL这一项很重要，LastPass会根据URL中的 <code>domain name</code> ，来检测你当前访问的网站是否在LastPass中有对应的密码记录。举上面的例子来说，URL是 <code>http://110.taobao.com/...</code>，所以下次只要你访问 <code>xxx.taobao.com/xxxx</code> 这样的网址，在网页中所有的密码输入框中都会出现一个 <code>*</code> 字图标，并且有一个下标1，表示该网站LastPass中有一个匹配的密码记录，只要点击这个 <code>*</code> 字图标，密码就自动填到密码框中了，很方便：</p>
-
-<p><img src="/downloads/image/lastpass-autofill.png" alt="LastPass自动填充密码" /></p>
-
-<p>那有的时候，有些网站，比如淘宝，支付宝，网银等，密码输入都是有控件的，所以LastPass没法自动在密码框里面插入那个 <code>*</code> 字图标，这个时候怎么办？这也没有问题，只是稍微麻烦一点。以我使用Chrome浏览器，还是访问淘宝来举例，只需要去点击工具栏上那个LastPass的图标（这个图标也有一个1字的下标，表示该网站有一个对应的密码记录），选择 <code>Show matching sites</code> &ndash;> <code>Generated password for taobao.com</code> &ndash;> <code>Copy password</code>，然后再到密码输入框里面去粘贴就好了。如果很不幸你的网站的密码输入框不允许粘贴，那你只能手动去LastPass的密码保存页面，找到那个密码，然后手动输入了。。。</p>
-
-<p>最后说一个我觉得是必须要设置的地方，就是 <code>Equivalent Domains</code>。要设置这个东西的原因在于，很多网站密码设置、修改不在一个domain上。比如126邮箱，使用的时候，我们登录的是www.126.com，但是修改密码的时候，是跳转到网易通行证的网站，也就是163.com；再比如139邮箱，登录的是139.com，但网页会自动跳转到10086.cn，又或者是cmpassport.com；淘宝也是，taobao.com/alipay.com/zhifubao.com这三个域名很多时候都是关联的，其实需要的都是相同的用户名和密码。上面提到，LastPass是根据 <code>domain name</code>，也就是域名来检测你当前访问的网页是否有匹配的密码记录的，所以如果你保存密码的时候，密码对应的域名是taobao.com，但是你现在访问某个alipay.com的网页，也需要这个密码，这个时候如果你不设置 <code>Equivalent Domains</code>的话，LastPass就不会自动提示密码了。</p>
-
-<p>所以，点击工具栏上LastPass的图标，选择 <code>My LastPass Vault</code> &ndash;> <code>Settings</code> &ndash;> <code>Equivalent Domains</code>标签页，在里面新增一个记录，比如这样：</p>
-
-<p><code>taobao.com, alipay.com</code></p>
-
-<p><img src="/downloads/image/lastpass-equivalent-domains.png" alt="LastPass Equivalent Domains" /></p>
-
-<p>保存之后，下次你访问某个alipay.com的页面，LastPass就会提示你淘宝的密码了。当然这里只是举例，如果你的淘宝账户和alipay的账户是分开的，那自然就不需要这样设置。</p>
-
-<p>最后，给你的LastPass的账户设置一个强密码，然后祈祷LastPass不会被墙，LastPass的密码数据库不会被盗吧！还有就是，真正涉及到钱的网站，比如支付宝、网银等，还是不要使用LastPass来管理密码吧，虽然记忆N个密码实在麻烦，但是麻烦总好过丢钱吧。。。</p>
 ]]></content>
   </entry>
   
