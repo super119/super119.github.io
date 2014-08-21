@@ -1,0 +1,60 @@
+---
+layout: post
+title: "RouterOS配置记录（三）：DDNS"
+date: 2014-08-21 15:26
+comments: true
+categories: network
+---
+
+配置动态DNS主要是为了能让你的RouterBoard在Internet上被访问到，这样我就可以远程控制我的RouterBoard，同时也可以开始做端口映射，在内网做server...等。
+
+在ROS上配置DDNS非常简单，就是写一个script然后放到ROS的 `System` -> `Scheduler` 中就好了。不过在此之前，先去申请一个DDNS，我用的是3322的。
+
+不过在开始之前，你要先确保你的宽带连接拨号之后，得到的是一个真实的IP地址。现在电信/联通/移动宽带有的时候拨号会得到一个假IP地址，比如 `192.168.x.x`，`10.x.x.x`，甚至之前我得到过 `100.x.x.x`，这个也不是真实的IP地址（RFC编号为6598。RFC 6598 - IANA-Reserved IPv4 Prefix for Shared Address Space）。判断自己拨号得到的IP是否是真实IP很简单，打开 www.ipaddress.com，网站会告诉你你目前的IP地址，把这个IP跟你在ROS里面看到的你拨号得到的IP比较是不是一样就知道了。
+
+如果你得到的不是真实的IP地址，那就说明在运营商那边还有一层NAT，那么你做DDNS就没有用了，除非你用花生壳客户端这种专门的软件，但是花生壳客户端软件是没法装在ROS上的。可以打电话给宽带运营商投诉，让它给你分配真实的IP地址，如果它不从你可以打工信部电话投诉（我没试过，网友们说可以）。
+
+<!-- more -->
+
+所以先来看一下这个script是长什么模样：
+
+``` bash
+:global ednsuser "xxxxxxxx"
+:global ednspass "xxxxxxxx"
+:global ednshost "xxxxxxxx.3322.org"
+:global ednsinterface "SHUnicom"
+:global members "http://members.3322.net/dyndns/update\?system=dyndns"
+:global status
+:global status [/interface get [/interface find name=$ednsinterface] running]
+
+:if ($status!=false) do={
+:global ednslastip [:resolve $ednshost]
+:if ([ :typeof $ednslastip ] = nil ) do={ :global ednslastip "0" }
+:global ednsiph [ /ip address get [/ip address find interface=$ednsinterface ] address ]
+:global ednsip [:pick $ednsiph 0 [:find $ednsiph "/"]]
+:global ednsstr "&hostname=$ednshost&myip=$ednsip"
+:if ($ednslastip != $ednsip) do={
+/tool fetch url="$members$ednsstr" mode=http user=$ednsuser password=$ednspass dst-path=$ednshost
+:delay 4
+:global result [/file get $ednshost contents]
+:log info ($ednshost . " " .$result)
+/file remove $ednshost ;
+}
+}
+```
+
+以上script来自：[ROS DDNS update script](http://h2appy.blog.51cto.com/609721/776837)
+
+修改一下 `ednsuser`/`ednspass`/`ednshost`就可以使用了。
+
+简单来说这个script就是利用ROS的 `/tool fetch` 来访问一个网页：
+
+http://members.3322.net/dyndns/update?system=dyndns&hostname=xxx&myip=xxx
+
+这个方法也是3322官方提供的，3322的server就可以从这个http请求中得到你的真实IP地址了。
+
+然后就是来到ROS的 `System` -> `Scheduler`，点击加号按钮：
+
+![ROS Add scheduler](/downloads/image/ros-system-scheduler.png)
+
+把上面的你修改好的script贴到 `OnEvent` 那个编辑框里面，设定好名字和Interval就OK了。
