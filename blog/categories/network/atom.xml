@@ -4,7 +4,7 @@
   <title><![CDATA[Category: network | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/network/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-08-20T18:08:30+08:00</updated>
+  <updated>2014-08-21T15:48:20+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,67 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[RouterOS配置记录（三）：DDNS]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/08/21/ros-ddns/"/>
+    <updated>2014-08-21T15:26:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/08/21/ros-ddns</id>
+    <content type="html"><![CDATA[<p>配置动态DNS主要是为了能让你的RouterBoard在Internet上被访问到，这样我就可以远程控制我的RouterBoard，同时也可以开始做端口映射，在内网做server&hellip;等。</p>
+
+<p>在ROS上配置DDNS非常简单，就是写一个script然后放到ROS的 <code>System</code> &ndash;> <code>Scheduler</code> 中就好了。不过在此之前，先去申请一个DDNS，我用的是3322的。</p>
+
+<p>不过在开始之前，你要先确保你的宽带连接拨号之后，得到的是一个真实的IP地址。现在电信/联通/移动宽带有的时候拨号会得到一个假IP地址，比如 <code>192.168.x.x</code>，<code>10.x.x.x</code>，甚至之前我得到过 <code>100.x.x.x</code>，这个也不是真实的IP地址（RFC编号为6598。RFC 6598 &ndash; IANA-Reserved IPv4 Prefix for Shared Address Space）。判断自己拨号得到的IP是否是真实IP很简单，打开 www.ipaddress.com，网站会告诉你你目前的IP地址，把这个IP跟你在ROS里面看到的你拨号得到的IP比较是不是一样就知道了。</p>
+
+<p>如果你得到的不是真实的IP地址，那就说明在运营商那边还有一层NAT，那么你做DDNS就没有用了，除非你用花生壳客户端这种专门的软件，但是花生壳客户端软件是没法装在ROS上的。可以打电话给宽带运营商投诉，让它给你分配真实的IP地址，如果它不从你可以打工信部电话投诉（我没试过，网友们说可以）。</p>
+
+<!-- more -->
+
+
+<p>所以先来看一下这个script是长什么模样：</p>
+
+<p>``` bash
+:global ednsuser &ldquo;xxxxxxxx&rdquo;
+:global ednspass &ldquo;xxxxxxxx&rdquo;
+:global ednshost &ldquo;xxxxxxxx.3322.org&rdquo;
+:global ednsinterface &ldquo;SHUnicom&rdquo;
+:global members &ldquo;<a href="http://members.3322.net/dyndns/update?system=dyndns">http://members.3322.net/dyndns/update?system=dyndns</a>&rdquo;
+:global status
+:global status [/interface get [/interface find name=$ednsinterface] running]</p>
+
+<p>:if ($status!=false) do={
+:global ednslastip [:resolve $ednshost]
+:if ([ :typeof $ednslastip ] = nil ) do={ :global ednslastip &ldquo;0&rdquo; }
+:global ednsiph [ /ip address get [/ip address find interface=$ednsinterface ] address ]
+:global ednsip [:pick $ednsiph 0 [:find $ednsiph &ldquo;/&rdquo;]]
+:global ednsstr &ldquo;&amp;hostname=$ednshost&amp;myip=$ednsip&rdquo;
+:if ($ednslastip != $ednsip) do={
+/tool fetch url=&ldquo;$members$ednsstr&rdquo; mode=http user=$ednsuser password=$ednspass dst-path=$ednshost
+:delay 4
+:global result [/file get $ednshost contents]
+:log info ($ednshost . &ldquo; &rdquo; .$result)
+/file remove $ednshost ;
+}
+}
+```</p>
+
+<p>以上script来自：<a href="http://h2appy.blog.51cto.com/609721/776837">ROS DDNS update script</a></p>
+
+<p>修改一下 <code>ednsuser</code>/<code>ednspass</code>/<code>ednshost</code>就可以使用了。</p>
+
+<p>简单来说这个script就是利用ROS的 <code>/tool fetch</code> 来访问一个网页：</p>
+
+<p><a href="http://members.3322.net/dyndns/update?system=dyndns&amp;hostname=xxx&amp;myip=xxx">http://members.3322.net/dyndns/update?system=dyndns&amp;hostname=xxx&amp;myip=xxx</a></p>
+
+<p>这个方法也是3322官方提供的，3322的server就可以从这个http请求中得到你的真实IP地址了。</p>
+
+<p>然后就是来到ROS的 <code>System</code> &ndash;> <code>Scheduler</code>，点击加号按钮：</p>
+
+<p><img src="/downloads/image/ros-system-scheduler.png" alt="ROS Add scheduler" /></p>
+
+<p>把上面的你修改好的script贴到 <code>OnEvent</code> 那个编辑框里面，设定好名字和Interval就OK了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[RouterOS配置记录（二）：chnroutes]]></title>
@@ -404,79 +465,6 @@ Used for stateless SNAT.</p>
 <p>The above box gives the name of the built-in chain (INPUT) along with the names of the tables (Mangle and Filter) that the chain exists in and in the order that the chains are traversed. The above sample indicates that packets go first through the INPUT chain of the Mangle table then through the INPUT chain of the Filter table. When a chain is enclosed in parentheses, Shorewall does not use the named chain (INPUT) in that table (Mangle).</p>
 
 <p><strong> Keep in mind that chains in the Nat table are only traversed for new connection requests (including those related to existing connections) while the chains in the other tables are traversed on every packet. </strong></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Mac OS X（Mavericks）共享VPN给其他设备]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/07/17/mac-share-vpn-connection/"/>
-    <updated>2014-07-17T11:22:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/07/17/mac-share-vpn-connection</id>
-    <content type="html"><![CDATA[<p>之前写过一篇文章叫“Chnroutes的使用“，主要说的是如何通过使用 <code>chnroutes</code> 从而将国内和国外的路由分开，国内走正常路由，国外则走VPN。现在的问题是，如果在一台电脑上有了VPN之后，如何将这个VPN share给其他设备，比如PS3？</p>
-
-<!-- more -->
-
-
-<p>首先很自然想到的是Mac OS X（Mavericks）自带的 <code>Internet Sharing</code> 功能：</p>
-
-<p><img src="/downloads/image/mac-internet-sharing.png" alt="Mac OS X Internet Sharing" /></p>
-
-<p>但是通过使用后发现有如下的问题：</p>
-
-<ol>
-<li><p>你需要有两个网络设备，才能开始share。上面的截图也可以看到，你要选择一个 <code>From</code> 的设备，再选择 <code>To</code> 的网络设备（也就是说其他设备是通过本机的这个网络设备连接的）。</p></li>
-<li><p>当然你可以说，VPN在Mac OS X里面也是一个单独的网络设备啊。是，但是通过试验，如果你只有一个网络设备，比如WIFI，那么就意味着我们既需要通过这个WIFI去连接VPN，还要通过这个WIFI让其他的设备能够连到本机，这是没法做到的。试验的结果就是，当你开了 <code>Internet Sharing</code> 之后，你的VPN就拨不上去（一拨就掉）；当你开了VPN之后，<code>Inetnet Sharing</code> 一开你的VPN就掉。事实上，如果通过WIFI来share的话，你会发现Mac OS X会将WIFI配置成一个AP，所以自然一旦被enable，你的VPN就掉了。</p></li>
-<li><p>就算以上两点对你来说都没问题，这第三点就是绝望的来源：Mac OS X不会forward VPN的数据。也就是说，你想要通过Mac OS X的这个 <code>Internet Sharing</code> 功能来share你的VPN的话，是不可行的。</p></li>
-</ol>
-
-
-<p>所以没办法还是通过万能的Google来寻找答案，答案在这里：</p>
-
-<p><a href="http://rodrigo.sharpcube.com/2010/06/20/using-and-sharing-a-vpn-connection-on-your-mac/">http://rodrigo.sharpcube.com/2010/06/20/using-and-sharing-a-vpn-connection-on-your-mac/</a></p>
-
-<p>基本上就是需要我们写脚本来实现，上面这篇文章中，VPN使用的是OpenVPN，我测试的时候，使用的是PPTP的VPN，所以根据上文中 <code>Troubleshooting</code> 一节的描述，我做了这么两个脚本：</p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>开启VPN共享 bash (share-pptp-vpn.sh)</span> <a href='/downloads/code/share-pptp-vpn.sh'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/sh</span>
-</span><span class='line'>
-</span><span class='line'>natd -same_ports -use_sockets -unregistered_only -dynamic -interface ppp0 -clamp_mss
-</span><span class='line'>ipfw -f flush
-</span><span class='line'>ipfw add divert natd ip from any to any via ppp0
-</span><span class='line'>ipfw add pass all from any to any
-</span><span class='line'>sysctl -w net.inet.ip.forwarding<span class="o">=</span>1
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>关闭VPN共享 bash (off-share-pptp-vpn.sh)</span> <a href='/downloads/code/off-share-pptp-vpn.sh'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/sh</span>
-</span><span class='line'>
-</span><span class='line'>killall natd
-</span><span class='line'>ipfw -f flush
-</span><span class='line'>sysctl -w net.inet.ip.forwarding<span class="o">=</span>0
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>所以当拨上了VPN之后，运行开启VPN共享那个脚本就OK了。在PS3上将网关指到Macbook的IP地址就可以了。</p>
-
-<p>最后一个遗留问题。Mac OS X的VPN高级设定中有这么一个checkbox：</p>
-
-<p><img src="/downloads/image/mac-send-traffic-over-vpn.png" alt="Send all traffic over VPN" /></p>
-
-<p>这个 <code>Send all traffic over VPN</code> 我不太理解是什么意思，是指本地NAT网络的地址不走VPN么？还是Mac OS X内置了类似 <code>chnroutes</code> 这样的功能？</p>
-
-<p>有意思的是，有的时候如果enable了这个选项，我发现PS3连接网络就会出现问题。而如果VPN已经拨上去了，再去enable这个选项貌似就没有影响。</p>
-
-<p>没有深究这个，所以这是目前的一个遗留问题。</p>
 ]]></content>
   </entry>
   

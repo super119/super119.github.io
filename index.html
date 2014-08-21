@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="之前写过一篇博客：Chnroutes的使用（Mac OS X Mavericks），讲述了在我的macbook pro上安装chnroutes，从而可以在上网的时候区分国内国外的IP，最终让国外的IP访问走VPN，国内的不走VPN。 Chnroutes的使用（Mac OS X Mavericks &hellip;">
+  <meta name="description" content="配置动态DNS主要是为了能让你的RouterBoard在Internet上被访问到，这样我就可以远程控制我的RouterBoard，同时也可以开始做端口映射，在内网做server&hellip;等。 在ROS上配置DDNS非常简单，就是写一个script然后放到ROS的 System &ndash &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,55 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/08/21/ros-ddns/">RouterOS配置记录（三）：DDNS</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-21T15:26:00+08:00" pubdate data-updated="true">Aug 21<span>st</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>配置动态DNS主要是为了能让你的RouterBoard在Internet上被访问到，这样我就可以远程控制我的RouterBoard，同时也可以开始做端口映射，在内网做server&hellip;等。</p>
+
+<p>在ROS上配置DDNS非常简单，就是写一个script然后放到ROS的 <code>System</code> &ndash;> <code>Scheduler</code> 中就好了。不过在此之前，先去申请一个DDNS，我用的是3322的。</p>
+
+<p>不过在开始之前，你要先确保你的宽带连接拨号之后，得到的是一个真实的IP地址。现在电信/联通/移动宽带有的时候拨号会得到一个假IP地址，比如 <code>192.168.x.x</code>，<code>10.x.x.x</code>，甚至之前我得到过 <code>100.x.x.x</code>，这个也不是真实的IP地址（RFC编号为6598。RFC 6598 &ndash; IANA-Reserved IPv4 Prefix for Shared Address Space）。判断自己拨号得到的IP是否是真实IP很简单，打开 www.ipaddress.com，网站会告诉你你目前的IP地址，把这个IP跟你在ROS里面看到的你拨号得到的IP比较是不是一样就知道了。</p>
+
+<p>如果你得到的不是真实的IP地址，那就说明在运营商那边还有一层NAT，那么你做DDNS就没有用了，除非你用花生壳客户端这种专门的软件，但是花生壳客户端软件是没法装在ROS上的。可以打电话给宽带运营商投诉，让它给你分配真实的IP地址，如果它不从你可以打工信部电话投诉（我没试过，网友们说可以）。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/21/ros-ddns/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -491,55 +540,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/06/03/ubuntu-disk-clone/">CloneZilla磁盘克隆，超快的更换硬盘</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-03T12:49:00+08:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>开发用的PC机用的是一块128G的SSD，安装的Ubuntu 12.04，速度明显比机械硬盘快了好多，唯一的不足就是容量太小。于是最近购入了一块新的240G的SSD，需要将原来128G的SSD上的东西全部克隆过来。</p>
-
-<p>对于Linux ext4文件分区系统的磁盘来说，<code>ghost</code>工作的并不好，工作的比较好的是<code>CloneZilla</code>，因为它能识别ext4的文件系统，从而使克隆变的无比快速，之前我写过一篇类似的文章：</p>
-
-<p><a href="http://www.cnblogs.com/super119/archive/2012/09/26/2703479.html">http://www.cnblogs.com/super119/archive/2012/09/26/2703479.html</a></p>
-
-<p>但是那一次的克隆是两块容量一样的磁盘，而这一次两块SSD的容量并不相同，所以我做了一些改变。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/06/03/ubuntu-disk-clone/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -552,11 +552,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (1)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/git'>git (5)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/linux'>linux (3)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (3)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (9)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (4)</a></li><li><a href='/blog/categories/reprints'>reprints (4)</a></li><li><a href='/blog/categories/science'>science (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (1)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/git'>git (5)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/linux'>linux (3)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (3)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (10)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (4)</a></li><li><a href='/blog/categories/reprints'>reprints (4)</a></li><li><a href='/blog/categories/science'>science (1)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/21/ros-ddns/">RouterOS配置记录（三）：DDNS</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/08/20/ros-chnroutes/">RouterOS配置记录（二）：chnroutes</a>
@@ -572,10 +576,6 @@
     
       <li class="post">
         <a href="/blog/2014/07/23/netfilter-overview/">Linux Netfilter概述，mangle/nat/filter, Prerouting/input/forward&#8230;到底是啥</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/07/17/mac-share-vpn-connection/">Mac OS X（Mavericks）共享VPN给其他设备</a>
       </li>
     
   </ul>

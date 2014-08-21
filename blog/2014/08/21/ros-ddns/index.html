@@ -5,26 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>在博客内容中插入Liquid代码时的注意点 - Make Things Cool</title>
+  <title>RouterOS配置记录（三）：DDNS - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="Octopress/Jekyll一个很好的功能就是可以非常方便的插入代码，深得码农的喜爱。不过这里有一个注意点就是，如果你插入的代码中含有Liquid代码，那很可能会导致编译出错，比如： rake generate出错信息1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16 &hellip;">
+  <meta name="description" content="配置动态DNS主要是为了能让你的RouterBoard在Internet上被访问到，这样我就可以远程控制我的RouterBoard，同时也可以开始做端口映射，在内网做server&hellip;等。 在ROS上配置DDNS非常简单，就是写一个script然后放到ROS的 System &ndash &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -33,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2013/11/07/embed-liquid-codes-in-blog/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/08/21/ros-ddns/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -92,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">在博客内容中插入Liquid代码时的注意点</h1>
+        <h1 class="entry-title">RouterOS配置记录（三）：DDNS</h1>
       
     
     
@@ -109,21 +94,27 @@
   
 
 
-<time datetime="2013-11-07T09:44:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
+<time datetime="2014-08-21T15:26:00+08:00" pubdate data-updated="true">Aug 21<span>st</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Octopress/Jekyll一个很好的功能就是可以非常方便的插入代码，深得码农的喜爱。不过这里有一个注意点就是，如果你插入的代码中含有Liquid代码，那很可能会导致编译出错，比如：</p>
+<div class="entry-content"><p>配置动态DNS主要是为了能让你的RouterBoard在Internet上被访问到，这样我就可以远程控制我的RouterBoard，同时也可以开始做端口映射，在内网做server&hellip;等。</p>
+
+<p>在ROS上配置DDNS非常简单，就是写一个script然后放到ROS的 <code>System</code> &ndash;> <code>Scheduler</code> 中就好了。不过在此之前，先去申请一个DDNS，我用的是3322的。</p>
+
+<p>不过在开始之前，你要先确保你的宽带连接拨号之后，得到的是一个真实的IP地址。现在电信/联通/移动宽带有的时候拨号会得到一个假IP地址，比如 <code>192.168.x.x</code>，<code>10.x.x.x</code>，甚至之前我得到过 <code>100.x.x.x</code>，这个也不是真实的IP地址（RFC编号为6598。RFC 6598 &ndash; IANA-Reserved IPv4 Prefix for Shared Address Space）。判断自己拨号得到的IP是否是真实IP很简单，打开 www.ipaddress.com，网站会告诉你你目前的IP地址，把这个IP跟你在ROS里面看到的你拨号得到的IP比较是不是一样就知道了。</p>
+
+<p>如果你得到的不是真实的IP地址，那就说明在运营商那边还有一层NAT，那么你做DDNS就没有用了，除非你用花生壳客户端这种专门的软件，但是花生壳客户端软件是没法装在ROS上的。可以打电话给宽带运营商投诉，让它给你分配真实的IP地址，如果它不从你可以打工信部电话投诉（我没试过，网友们说可以）。</p>
 
 <!-- more -->
 
 
+<p>所以先来看一下这个script是长什么模样：</p>
 
-
-<figure class='code'><figcaption><span>rake generate出错信息</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -145,55 +136,46 @@
 <span class='line-number'>20</span>
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">## Generating Site with Jekyll</span>
-</span><span class='line'>unchanged sass/screen.scss
-</span><span class='line'>Configuration from /home/markz/Projects/blog/_config.yml
-</span><span class='line'>Building site: <span class="nb">source</span> -&gt; public
-</span><span class='line'>Liquid Exception: <span class="k">if </span>tag was never closed in 2013-11-05-add-uyan-comment.markdown
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:88:in <span class="sb">`</span>assert_missing_delimitation!<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:49:in `parse&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/tag.rb:10:in <span class="sb">`</span>initialize<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/tags/if.rb:24:in `initialize&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:28:in <span class="sb">`</span>new<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/block.rb:28:in `parse&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/document.rb:5:in <span class="sb">`</span>initialize<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/template.rb:58:in `new&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/template.rb:58:in <span class="sb">`</span>parse<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/liquid-2.3.0/lib/liquid/template.rb:46:in `parse&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/convertible.rb:79:in <span class="sb">`</span>do_layout<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/work/markz/Projects/blog/plugins/post_filters.rb:167:in `do_layout&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/post.rb:195:in <span class="sb">`</span>render<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:200:in `block in render&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:199:in <span class="sb">`</span>each<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:199:in `render&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/lib/jekyll/site.rb:41:in <span class="sb">`</span>process<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/lib/ruby/gems/1.9.1/gems/jekyll-0.12.0/bin/jekyll:264:in `&lt;top (required)&gt;&#39;</span>
-</span><span class='line'>/home/markz/.rbenv/versions/1.9.3-p0/bin/jekyll:23:in <span class="sb">`</span>load<span class="s1">&#39;</span>
-</span><span class='line'><span class="s1">/home/markz/.rbenv/versions/1.9.3-p0/bin/jekyll:23:in `&lt;main&gt;&#39;</span>
-</span><span class='line'>Build Failed
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>:global ednsuser <span class="s2">&quot;xxxxxxxx&quot;</span>
+</span><span class='line'>:global ednspass <span class="s2">&quot;xxxxxxxx&quot;</span>
+</span><span class='line'>:global ednshost <span class="s2">&quot;xxxxxxxx.3322.org&quot;</span>
+</span><span class='line'>:global ednsinterface <span class="s2">&quot;SHUnicom&quot;</span>
+</span><span class='line'>:global members <span class="s2">&quot;http://members.3322.net/dyndns/update\?system=dyndns&quot;</span>
+</span><span class='line'>:global status
+</span><span class='line'>:global status <span class="o">[</span>/interface get <span class="o">[</span>/interface find <span class="nv">name</span><span class="o">=</span><span class="nv">$ednsinterface</span><span class="o">]</span> running<span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>:if <span class="o">(</span><span class="nv">$status</span>!<span class="o">=</span><span class="nb">false</span><span class="o">)</span> <span class="k">do</span><span class="o">={</span>
+</span><span class='line'>:global ednslastip <span class="o">[</span>:resolve <span class="nv">$ednshost</span><span class="o">]</span>
+</span><span class='line'>:if <span class="o">([</span> :typeof <span class="nv">$ednslastip</span> <span class="o">]</span> <span class="o">=</span> nil <span class="o">)</span> <span class="k">do</span><span class="o">={</span> :global ednslastip <span class="s2">&quot;0&quot;</span> <span class="o">}</span>
+</span><span class='line'>:global ednsiph <span class="o">[</span> /ip address get <span class="o">[</span>/ip address find <span class="nv">interface</span><span class="o">=</span><span class="nv">$ednsinterface</span> <span class="o">]</span> address <span class="o">]</span>
+</span><span class='line'>:global ednsip <span class="o">[</span>:pick <span class="nv">$ednsiph</span> 0 <span class="o">[</span>:find <span class="nv">$ednsiph</span> <span class="s2">&quot;/&quot;</span><span class="o">]]</span>
+</span><span class='line'>:global ednsstr <span class="s2">&quot;&amp;hostname=$ednshost&amp;myip=$ednsip&quot;</span>
+</span><span class='line'>:if <span class="o">(</span><span class="nv">$ednslastip</span> !<span class="o">=</span> <span class="nv">$ednsip</span><span class="o">)</span> <span class="k">do</span><span class="o">={</span>
+</span><span class='line'>/tool fetch <span class="nv">url</span><span class="o">=</span><span class="s2">&quot;$members$ednsstr&quot;</span> <span class="nv">mode</span><span class="o">=</span>http <span class="nv">user</span><span class="o">=</span><span class="nv">$ednsuser</span> <span class="nv">password</span><span class="o">=</span><span class="nv">$ednspass</span> dst-path<span class="o">=</span><span class="nv">$ednshost</span>
+</span><span class='line'>:delay 4
+</span><span class='line'>:global result <span class="o">[</span>/file get <span class="nv">$ednshost</span> contents<span class="o">]</span>
+</span><span class='line'>:log info <span class="o">(</span><span class="nv">$ednshost</span> . <span class="s2">&quot; &quot;</span> .<span class="nv">$result</span><span class="o">)</span>
+</span><span class='line'>/file remove <span class="nv">$ednshost</span> ;
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>原因地球人都知道，就是博客中插入的代码含有Liquid的if标签。解决办法有两种：</p>
+<p>以上script来自：<a href="http://h2appy.blog.51cto.com/609721/776837">ROS DDNS update script</a></p>
 
-<ol>
-<li><p>使用<code>{% include_code %}</code>。将代码存成一个文件，然后将其include到博客中来。</p></li>
-<li><p>使用raw标签，将代码（包含三个backticks）使用<code>{% raw %}</code>，<code>{% endraw %}</code>包起来即可。</p></li>
-</ol>
+<p>修改一下 <code>ednsuser</code>/<code>ednspass</code>/<code>ednshost</code>就可以使用了。</p>
 
+<p>简单来说这个script就是利用ROS的 <code>/tool fetch</code> 来访问一个网页：</p>
 
-<p><strong>Note:</strong> 上文中要将raw和endraw打印出来需要将其转义，其他标签都可以用<code>raw/endraw</code>搞定，但是要转义他们本身，要这么写：</p>
+<p><a href="http://members.3322.net/dyndns/update?system=dyndns&amp;hostname=xxx&amp;myip=xxx">http://members.3322.net/dyndns/update?system=dyndns&amp;hostname=xxx&amp;myip=xxx</a></p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">{{</span> <span class="s2">&quot;{% raw &quot;</span> <span class="o">}}</span>%<span class="o">}</span> <span class="o">{{</span> <span class="s2">&quot;{% endraw &quot;</span> <span class="o">}}</span>%<span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>这个方法也是3322官方提供的，3322的server就可以从这个http请求中得到你的真实IP地址了。</p>
 
+<p>然后就是来到ROS的 <code>System</code> &ndash;> <code>Scheduler</code>，点击加号按钮：</p>
 
+<p><img src="/downloads/image/ros-system-scheduler.png" alt="ROS Add scheduler" /></p>
 
+<p>把上面的你修改好的script贴到 <code>OnEvent</code> 那个编辑框里面，设定好名字和Interval就OK了。</p>
 </div>
 
 
@@ -201,7 +183,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2013/11/07/embed-liquid-codes-in-blog/<br>
+原文链接: http://www.markzhang.cn/blog/2014/08/21/ros-ddns/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -224,12 +206,12 @@
   
 
 
-<time datetime="2013-11-07T09:44:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
+<time datetime="2014-08-21T15:26:00+08:00" pubdate data-updated="true">Aug 21<span>st</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/blog/'>Blog</a>
+    <a class='category' href='/blog/categories/network/'>network</a>
   
 </span>
 
@@ -245,10 +227,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/11/05/add-uyan-comment/" title="Previous Post: 在Octopress中使用友言，替换Disqus">&laquo; 在Octopress中使用友言，替换Disqus</a>
+        <a class="basic-alignment left articlenav" href="/blog/2014/08/20/ros-chnroutes/" title="Previous Post: RouterOS配置记录（二）：chnroutes">&laquo; RouterOS配置记录（二）：chnroutes</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/11/07/linus-git-config/" title="Next Post: Linus说，请将这个配置加到你的.gitconfig">Linus说，请将这个配置加到你的.gitconfig &raquo;</a>
       
     </p>
   </footer>
