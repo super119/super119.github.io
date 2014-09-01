@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-08-21T15:48:20+08:00</updated>
+  <updated>2014-09-01T21:51:41+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,162 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[RouterOS配置记录（四）：OpenVPN Client]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/09/01/ros-openvpn/"/>
+    <updated>2014-09-01T15:42:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/09/01/ros-openvpn</id>
+    <content type="html"><![CDATA[<p>OpenVPN是现在使用相当广泛的一种VPN solution。它不使用特定协议（比如PPTP依赖于GRE协议，如果GRE协议被墙，PPTP就完了），也不使用特定端口，TCP/UDP都支持，性能表现也相当优异（UDP）。所以现在使用OpenVPN作为VPN的solution很多，在Mikrotik的论坛上可以找到大量赞美OpenVPN的帖子。</p>
+
+<p>但是，事实上当我把OpenVPN全部配置完成之后，发现两个问题：</p>
+
+<!-- more -->
+
+
+<ul>
+<li>OpenVPN已被墙，应该就是2013年（或者更早）的事情。虽然上面提到了OpenVPN不使用特定协议，不使用特定端口，但是聪明的GFW还是找到了OpenVPN TLS验证时的特征并墙之。所以如果你辛辛苦苦配置好了服务器端和客户端，客户端拨号的时候发现：&#8221;Peer disconnected/Connection reset&#8221;，那就是被墙的标志。OpenVPN TLS验证的时候，连接直接被reset了。</li>
+</ul>
+
+
+<p>针对这个问题，当然也有解决方案，那就是模糊TLS验证的数据，让GFW寻不到TLS的特征，比如：</p>
+
+<p><a href="http://igfw.net/archives/13018">http://igfw.net/archives/13018</a></p>
+
+<p>但是这种做法是没法在ROS上实现的。因为这要求修改OpenVPN sever和client的代码，而我们是无法修改ROS中的OpenVPN的实现的。</p>
+
+<ul>
+<li>ROS不支持UDP模式的OpenVPN。这个已经被广大ROS用户诟病已久，但不知道为什么Mikrotik就是不改：</li>
+</ul>
+
+
+<p><a href="http://forum.mikrotik.com/viewtopic.php?f=1&amp;t=26499">http://forum.mikrotik.com/viewtopic.php?f=1&amp;t=26499</a></p>
+
+<p>TCP模式的OpenVPN延迟（latency）很高，不适合诸如电话会议、在线游戏等场景。</p>
+
+<p>所以坦白说，有上述的两个问题，ROS+OpenVPN，已经没有太多的使用价值了。但是既然我已经将其配置完成了，所以本文还是将过程记录了下来。</p>
+
+<h2>OpenVPN server侧配置</h2>
+
+<p>OpenVPN server侧的配置稍微复杂一些，关键是要生成一堆证书、秘钥。但是也不是复杂到没法忍，关键是要有一篇好的turtorial。所以这里是我找到的一篇很好的文章，照做就行：</p>
+
+<p><a href="https://www.linode.com/docs/networking/vpn/secure-communications-with-openvpn-on-ubuntu-12-04-precise-and-debian-7">Secure communications with OpenVPN on Ubuntu 12.04</a></p>
+
+<p>照着上面的文章做就可以了，这里再给出我最终的OpenVPN server的配置文件作为一个参考：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>port 3389
+</span><span class='line'>proto tcp
+</span><span class='line'>dev tun
+</span><span class='line'>
+</span><span class='line'><span class="c">#Keys</span>
+</span><span class='line'>ca /etc/openvpn/easy-rsa/2.0/keys/ca.crt
+</span><span class='line'>cert /etc/openvpn/easy-rsa/2.0/keys/server.crt
+</span><span class='line'>key /etc/openvpn/easy-rsa/2.0/keys/server.key
+</span><span class='line'>dh /etc/openvpn/easy-rsa/2.0/keys/dh1024.pem
+</span><span class='line'>
+</span><span class='line'><span class="c"># This will be the internal tun0 connection IP</span>
+</span><span class='line'>server 10.8.0.0 255.255.255.0
+</span><span class='line'>ifconfig-pool-persist ipp.txt
+</span><span class='line'>
+</span><span class='line'><span class="c"># This will send all of a client&#39;s 10.x.x.x traffic through the VPN</span>
+</span><span class='line'><span class="c"># push &quot;route 10.0.0.0 255.0.0.0&quot;</span>
+</span><span class='line'>keepalive 10 120
+</span><span class='line'>
+</span><span class='line'><span class="c"># Mikrotik does not support LZO compression</span>
+</span><span class='line'><span class="c">#comp-lzo</span>
+</span><span class='line'>
+</span><span class='line'>auth SHA1
+</span><span class='line'><span class="c"># Select a cryptographic cipher.</span>
+</span><span class='line'><span class="c">#cipher BF-CBC        # Blowfish (default)</span>
+</span><span class='line'>cipher AES-256-CBC
+</span><span class='line'>
+</span><span class='line'><span class="c">#user nobody</span>
+</span><span class='line'><span class="c">#group nogroup</span>
+</span><span class='line'>status /var/log/openvpn/openvpn-status.log
+</span><span class='line'>
+</span><span class='line'>persist-key
+</span><span class='line'>persist-tun
+</span><span class='line'>verb 3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>几点解释：</p>
+
+<ol>
+<li>ROS的OpenVPN client只支持TCP，所以这里使用TCP模式：<code>proto tcp</code>。</li>
+<li>被注释的那句：<code>push "route 10.0.0.0 255.0.0.0"</code> 是可以用来给客户端设置路由表的，但是由于我的ROS有chnroutes，所以我会在我的ROS上设置路由表，所以我的OpenVPN server侧就没有push路由表给客户端了。</li>
+<li><code>comp-lzo</code> 一定要注释掉，这是因为ROS OpenVPN client不支持这个。所以ROS的OpenVPN UDP不支持，数据压缩又不支持，你就可以想想Mikrotik论坛上大家的怨气有多大了。有空可以上去搜看相关的帖子，相当欢乐。</li>
+<li>有关cipher，Blowfish, AES这些ROS OpenVPN client都是支持的，所以可以自由选择。使用默认的Blowfish就挺好。</li>
+<li>最后的 <code>verb 3</code> 可以改成诸如 <code>verb 6</code>，这样在 <code>/var/log/syslog</code> 中可以得到很多的log，客户端连不上OpenVPN server的时候，可以帮助调试和定位。</li>
+</ol>
+
+
+<p>配置完成之后，<code>sudo service openvpn restart</code>，OpenVPN server就ready了。</p>
+
+<h2>OpenVPN client侧配置（ROS）</h2>
+
+<p>相比server侧，ROS上client的配置就相对简单了很多。</p>
+
+<p>首先是上传证书和秘钥到ROS上：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-system-certificates.png" alt="Certificates" /></p>
+
+<p>这里其实是3个文件，client的公钥和私钥，还有就是server的证书，这三个文件首先upload到ROS上，然后在上图中点击 <code>Import</code> 按钮就可以导入了。</p>
+
+<p>然后就是创建一个OpenVPN的client了：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-ppp-openvpn.png" alt="PPP Create OpenVPN Client" /></p>
+
+<p>几点说明：</p>
+
+<ol>
+<li><code>Connect To</code> 和 <code>Port</code> 不用说了</li>
+<li><code>Mode</code> ，这个有两个选项：<code>IP</code> 和 <code>Ethernet</code>，这表示数据是走layer 3还是layer 2，反映到VPN创建出来的本地虚拟网卡，就是tun还是tap，一般来说OpenVPN都是tun，所以这里是选择 <code>IP</code>。如果你使用PPTP，就可以看到虚拟网卡是tap。</li>
+<li><code>User</code>，这个其实不需要，因为OpenVPN是使用证书来识别client的，每个client都会有一个证书。但是这里ROS需要填一个用户名，所以随便填一个就好（貌似OpenVPN也可以支持username/password的那种验证的，我没去调查）。</li>
+<li><code>Profile</code>，因为在下面会选择加密方式等，所以profile就选default就好，default意思就是按照server的默认设置来。</li>
+<li><code>Certificate</code>，这里要选择你upload到ROS上的，client的私钥，这个私钥是用来解密数据的。</li>
+<li><code>Auth</code> / <code>Cipher</code>，这个就选成跟server端的配置一致即可。</li>
+</ol>
+
+
+<h2>结束</h2>
+
+<p>所以总的来说，OpenVPN的配置并不复杂，只是ROS不支持UDP的OpenVPN，所以用来翻墙看看网页还是可以的，玩游戏啥的就要差不少。不过OpenVPN作为一个free的，性能优良的VPN solution，在国内网络中使用也是相当不错的。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[RouterOS配置记录（三）：DDNS]]></title>
@@ -1970,59 +2126,6 @@ Used for stateless SNAT.</p>
 <p>保存之后，下次你访问某个alipay.com的页面，LastPass就会提示你淘宝的密码了。当然这里只是举例，如果你的淘宝账户和alipay的账户是分开的，那自然就不需要这样设置。</p>
 
 <p>最后，给你的LastPass的账户设置一个强密码，然后祈祷LastPass不会被墙，LastPass的密码数据库不会被盗吧！还有就是，真正涉及到钱的网站，比如支付宝、网银等，还是不要使用LastPass来管理密码吧，虽然记忆N个密码实在麻烦，但是麻烦总好过丢钱吧。。。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Git都在说些啥（一）]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/04/04/git-gossip-1/"/>
-    <updated>2014-04-04T14:28:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/04/04/git-gossip-1</id>
-    <content type="html"><![CDATA[<p>当我们在做某些git操作的时候，git有的时候会给出一段一段的提示信息，而往往这些信息都是比较重要的。因为按照UNIX的设计哲学，执行成功或是无害操作，这些都是不会有任何提示信息的。做Linux的Hackers也奉行这种哲学，所以当git开始唠叨的时候，你真的需要关注一下它到底在罗嗦些啥。</p>
-
-<p>这篇文章描述的就是某一个git的唠叨。</p>
-
-<!-- more -->
-
-
-<p>有的时候，特别是当执行 <code>git checkout</code> 的时候，你可能会看到这样的信息：</p>
-
-<blockquote><p>Warning: you are leaving 30 commits behind, not connected to
-any of your branches:</p>
-
-<p>2553655 Merge branch &lsquo;master&rsquo; into prod</p>
-
-<p>6b07300 Fix build</p>
-
-<p>&hellip; and 28 more.</p>
-
-<p>If you want to keep them by creating a new branch, this may be a good time
-to do so with:</p>
-
-<p>git branch new_branch_name 654646464</p></blockquote>
-
-<p>注：以上信息来自：<a href="https://groups.google.com/forum/#!topic/git-users/4XC8KhZ-cBM">https://groups.google.com/forum/#!topic/git-users/4XC8KhZ-cBM</a></p>
-
-<p>所以git的这段罗嗦到底是什么意思？</p>
-
-<p>发生这种情况时，你一般工作在 <code>no branch</code> 上，也就是说，这个branch没有名字。也就是说，一旦你发生了 <code>git checkout</code> 操作之后，无法你是checkout到了一个有名字的branch，还是没有指定checkout的branch，就是更新本地的文件，这个 <code>no branch</code> 就再也回不去了，因为这个branch没有名字，所以你无法告诉git，我需要再回到这个branch上去。</p>
-
-<p>基于此，如果你在 <code>no branch</code> 上有一些commit（无论是你自己commit的，还是你cherry-pick的），那么，当发生 <code>git checkout</code> 的时候，git就会给出上面的信息，告诉你，如果你现在不做点事的话，之前你所在的 <code>no branch</code> 就再也回不去了，所以，这个时候你最好建一个branch来保证你还能回到 <code>no branch</code> 上去：</p>
-
-<blockquote><p>If you want to keep them by creating a new branch, this may be a good time
-to do so with:</p>
-
-<p>git branch new_branch_name 654646464</p></blockquote>
-
-<p>事实上，如果你真的碰到了这种情况，而且当git给出上面一段信息告诉了你利害关系之后，你仍然义无反顾的无视了git的警告，没有创建一个有名字的branch来保存之前你在 <code>no branch</code> 上的工作成果，最终在某一天你想起来，想要找回N久之前在 <code>no branch</code> 上的一些commit的话，你仍然还有一根救命稻草：</p>
-
-<p><code>git reflog</code></p>
-
-<p>基本上，<code>git reflog</code> 将给出所有“失联”的commit。也就是说，这些commit不属于任何branch（no connection），从git数据库中删掉也无所谓。</p>
-
-<p>所以，你最好期望 <code>git reflog</code> 中有你需要的commit，因为就像上面所说，这些commit本就是可以被安全删除的commit，如果你做过 <code>git gc</code>，或者是git自动做过 <code>git gc</code> 的话（git有一套逻辑来判断什么时候应该做一次gc），这些commit就真的没有了。</p>
-
-<p>注：上面一段说的有点严重，事实上，git对待失联的commit，有一个expire time的设定，所以也不是说一旦执行过 <code>git gc</code>，这些commit就真的没有了。但是为了安全起见，对于重要的commit，还是需要注意不要丢了。</p>
 ]]></content>
   </entry>
   

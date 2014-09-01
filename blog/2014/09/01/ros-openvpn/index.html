@@ -1,0 +1,427 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>RouterOS配置记录（四）：OpenVPN Client - Make Things Cool</title>
+  <meta name="author" content="Mark Zhang">
+
+  
+  <meta name="description" content="OpenVPN是现在使用相当广泛的一种VPN solution。它不使用特定协议（比如PPTP依赖于GRE协议，如果GRE协议被墙，PPTP就完了），也不使用特定端口，TCP/UDP都支持，性能表现也相当优异（UDP）。所以现在使用OpenVPN作为VPN的solution很多， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/09/01/ros-openvpn/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Make Things Cool" type="application/atom+xml">
+  <!-- <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'> -->
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!-- <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+<!-- <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">s/no/yes/g</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">Make Things Cool</a></h1>
+  
+    <h2>2014 Imagine Illimitable</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.markzhang.cn" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">RouterOS配置记录（四）：OpenVPN Client</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-01T15:42:00+08:00" pubdate data-updated="true">Sep 1<span>st</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>OpenVPN是现在使用相当广泛的一种VPN solution。它不使用特定协议（比如PPTP依赖于GRE协议，如果GRE协议被墙，PPTP就完了），也不使用特定端口，TCP/UDP都支持，性能表现也相当优异（UDP）。所以现在使用OpenVPN作为VPN的solution很多，在Mikrotik的论坛上可以找到大量赞美OpenVPN的帖子。</p>
+
+<p>但是，事实上当我把OpenVPN全部配置完成之后，发现两个问题：</p>
+
+<!-- more -->
+
+
+<ul>
+<li>OpenVPN已被墙，应该就是2013年（或者更早）的事情。虽然上面提到了OpenVPN不使用特定协议，不使用特定端口，但是聪明的GFW还是找到了OpenVPN TLS验证时的特征并墙之。所以如果你辛辛苦苦配置好了服务器端和客户端，客户端拨号的时候发现：&#8221;Peer disconnected/Connection reset&#8221;，那就是被墙的标志。OpenVPN TLS验证的时候，连接直接被reset了。</li>
+</ul>
+
+
+<p>针对这个问题，当然也有解决方案，那就是模糊TLS验证的数据，让GFW寻不到TLS的特征，比如：</p>
+
+<p><a href="http://igfw.net/archives/13018">http://igfw.net/archives/13018</a></p>
+
+<p>但是这种做法是没法在ROS上实现的。因为这要求修改OpenVPN sever和client的代码，而我们是无法修改ROS中的OpenVPN的实现的。</p>
+
+<ul>
+<li>ROS不支持UDP模式的OpenVPN。这个已经被广大ROS用户诟病已久，但不知道为什么Mikrotik就是不改：</li>
+</ul>
+
+
+<p><a href="http://forum.mikrotik.com/viewtopic.php?f=1&amp;t=26499">http://forum.mikrotik.com/viewtopic.php?f=1&amp;t=26499</a></p>
+
+<p>TCP模式的OpenVPN延迟（latency）很高，不适合诸如电话会议、在线游戏等场景。</p>
+
+<p>所以坦白说，有上述的两个问题，ROS+OpenVPN，已经没有太多的使用价值了。但是既然我已经将其配置完成了，所以本文还是将过程记录了下来。</p>
+
+<h2>OpenVPN server侧配置</h2>
+
+<p>OpenVPN server侧的配置稍微复杂一些，关键是要生成一堆证书、秘钥。但是也不是复杂到没法忍，关键是要有一篇好的turtorial。所以这里是我找到的一篇很好的文章，照做就行：</p>
+
+<p><a href="https://www.linode.com/docs/networking/vpn/secure-communications-with-openvpn-on-ubuntu-12-04-precise-and-debian-7">Secure communications with OpenVPN on Ubuntu 12.04</a></p>
+
+<p>照着上面的文章做就可以了，这里再给出我最终的OpenVPN server的配置文件作为一个参考：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>port 3389
+</span><span class='line'>proto tcp
+</span><span class='line'>dev tun
+</span><span class='line'>
+</span><span class='line'><span class="c">#Keys</span>
+</span><span class='line'>ca /etc/openvpn/easy-rsa/2.0/keys/ca.crt
+</span><span class='line'>cert /etc/openvpn/easy-rsa/2.0/keys/server.crt
+</span><span class='line'>key /etc/openvpn/easy-rsa/2.0/keys/server.key
+</span><span class='line'>dh /etc/openvpn/easy-rsa/2.0/keys/dh1024.pem
+</span><span class='line'>
+</span><span class='line'><span class="c"># This will be the internal tun0 connection IP</span>
+</span><span class='line'>server 10.8.0.0 255.255.255.0
+</span><span class='line'>ifconfig-pool-persist ipp.txt
+</span><span class='line'>
+</span><span class='line'><span class="c"># This will send all of a client&#39;s 10.x.x.x traffic through the VPN</span>
+</span><span class='line'><span class="c"># push &quot;route 10.0.0.0 255.0.0.0&quot;</span>
+</span><span class='line'>keepalive 10 120
+</span><span class='line'>
+</span><span class='line'><span class="c"># Mikrotik does not support LZO compression</span>
+</span><span class='line'><span class="c">#comp-lzo</span>
+</span><span class='line'>
+</span><span class='line'>auth SHA1
+</span><span class='line'><span class="c"># Select a cryptographic cipher.</span>
+</span><span class='line'><span class="c">#cipher BF-CBC        # Blowfish (default)</span>
+</span><span class='line'>cipher AES-256-CBC
+</span><span class='line'>
+</span><span class='line'><span class="c">#user nobody</span>
+</span><span class='line'><span class="c">#group nogroup</span>
+</span><span class='line'>status /var/log/openvpn/openvpn-status.log
+</span><span class='line'>
+</span><span class='line'>persist-key
+</span><span class='line'>persist-tun
+</span><span class='line'>verb 3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>几点解释：</p>
+
+<ol>
+<li>ROS的OpenVPN client只支持TCP，所以这里使用TCP模式：<code>proto tcp</code>。</li>
+<li>被注释的那句：<code>push "route 10.0.0.0 255.0.0.0"</code> 是可以用来给客户端设置路由表的，但是由于我的ROS有chnroutes，所以我会在我的ROS上设置路由表，所以我的OpenVPN server侧就没有push路由表给客户端了。</li>
+<li><code>comp-lzo</code> 一定要注释掉，这是因为ROS OpenVPN client不支持这个。所以ROS的OpenVPN UDP不支持，数据压缩又不支持，你就可以想想Mikrotik论坛上大家的怨气有多大了。有空可以上去搜看相关的帖子，相当欢乐。</li>
+<li>有关cipher，Blowfish, AES这些ROS OpenVPN client都是支持的，所以可以自由选择。使用默认的Blowfish就挺好。</li>
+<li>最后的 <code>verb 3</code> 可以改成诸如 <code>verb 6</code>，这样在 <code>/var/log/syslog</code> 中可以得到很多的log，客户端连不上OpenVPN server的时候，可以帮助调试和定位。</li>
+</ol>
+
+
+<p>配置完成之后，<code>sudo service openvpn restart</code>，OpenVPN server就ready了。</p>
+
+<h2>OpenVPN client侧配置（ROS）</h2>
+
+<p>相比server侧，ROS上client的配置就相对简单了很多。</p>
+
+<p>首先是上传证书和秘钥到ROS上：</p>
+
+<p><img src="/downloads/image/ros-system-certificates.png" alt="Certificates" /></p>
+
+<p>这里其实是3个文件，client的公钥和私钥，还有就是server的证书，这三个文件首先upload到ROS上，然后在上图中点击 <code>Import</code> 按钮就可以导入了。</p>
+
+<p>然后就是创建一个OpenVPN的client了：</p>
+
+<p><img src="/downloads/image/ros-ppp-openvpn.png" alt="PPP Create OpenVPN Client" /></p>
+
+<p>几点说明：</p>
+
+<ol>
+<li><code>Connect To</code> 和 <code>Port</code> 不用说了</li>
+<li><code>Mode</code> ，这个有两个选项：<code>IP</code> 和 <code>Ethernet</code>，这表示数据是走layer 3还是layer 2，反映到VPN创建出来的本地虚拟网卡，就是tun还是tap，一般来说OpenVPN都是tun，所以这里是选择 <code>IP</code>。如果你使用PPTP，就可以看到虚拟网卡是tap。</li>
+<li><code>User</code>，这个其实不需要，因为OpenVPN是使用证书来识别client的，每个client都会有一个证书。但是这里ROS需要填一个用户名，所以随便填一个就好（貌似OpenVPN也可以支持username/password的那种验证的，我没去调查）。</li>
+<li><code>Profile</code>，因为在下面会选择加密方式等，所以profile就选default就好，default意思就是按照server的默认设置来。</li>
+<li><code>Certificate</code>，这里要选择你upload到ROS上的，client的私钥，这个私钥是用来解密数据的。</li>
+<li><code>Auth</code> / <code>Cipher</code>，这个就选成跟server端的配置一致即可。</li>
+</ol>
+
+
+<h2>结束</h2>
+
+<p>所以总的来说，OpenVPN的配置并不复杂，只是ROS不支持UDP的OpenVPN，所以用来翻墙看看网页还是可以的，玩游戏啥的就要差不少。不过OpenVPN作为一个free的，性能优良的VPN solution，在国内网络中使用也是相当不错的。</p>
+</div>
+
+
+  <footer>
+    
+    <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
+      <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
+原文链接: http://www.markzhang.cn/blog/2014/09/01/ros-openvpn/<br>
+您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
+    </section>
+    
+
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Mark Zhang</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-01T15:42:00+08:00" pubdate data-updated="true">Sep 1<span>st</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/network/'>network</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2014/08/21/ros-ddns/" title="Previous Post: RouterOS配置记录（三）：DDNS">&laquo; RouterOS配置记录（三）：DDNS</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_24x24">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_kaixin001"></a>
+	<a href="http://www.jiathis.com/share?uid=1860527" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1352426099508779" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+  </section>
+
+
+  <section>
+    <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1860527"></script>
+<!-- UY END -->
+
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (1)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/git'>git (5)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/linux'>linux (3)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (3)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (11)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (4)</a></li><li><a href='/blog/categories/reprints'>reprints (4)</a></li><li><a href='/blog/categories/science'>science (1)</a></li></ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/09/01/ros-openvpn/">RouterOS配置记录（四）：OpenVPN Client</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/21/ros-ddns/">RouterOS配置记录（三）：DDNS</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/20/ros-chnroutes/">RouterOS配置记录（二）：chnroutes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/19/ros-basic-setup/">RouterOS 配置记录（一）：基础设置</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/24/winbox-mac-change-font/">Winbox for Mac OS X，修改界面字体</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'super119',
+            count: 0,
+            skip_forks: false,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Mark Zhang -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>&nbsp;&nbsp;
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1000375590'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1000375590%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

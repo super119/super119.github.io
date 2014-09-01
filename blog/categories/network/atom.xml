@@ -4,7 +4,7 @@
   <title><![CDATA[Category: network | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/network/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-08-21T15:48:20+08:00</updated>
+  <updated>2014-09-01T21:51:41+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,139 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[RouterOS配置记录（四）：OpenVPN Client]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/09/01/ros-openvpn/"/>
+    <updated>2014-09-01T15:42:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/09/01/ros-openvpn</id>
+    <content type="html"><![CDATA[<p>OpenVPN是现在使用相当广泛的一种VPN solution。它不使用特定协议（比如PPTP依赖于GRE协议，如果GRE协议被墙，PPTP就完了），也不使用特定端口，TCP/UDP都支持，性能表现也相当优异（UDP）。所以现在使用OpenVPN作为VPN的solution很多，在Mikrotik的论坛上可以找到大量赞美OpenVPN的帖子。</p>
+
+<p>但是，事实上当我把OpenVPN全部配置完成之后，发现两个问题：</p>
+
+<!-- more -->
+
+
+<ul>
+<li>OpenVPN已被墙，应该就是2013年（或者更早）的事情。虽然上面提到了OpenVPN不使用特定协议，不使用特定端口，但是聪明的GFW还是找到了OpenVPN TLS验证时的特征并墙之。所以如果你辛辛苦苦配置好了服务器端和客户端，客户端拨号的时候发现："Peer disconnected/Connection reset"，那就是被墙的标志。OpenVPN TLS验证的时候，连接直接被reset了。</li>
+</ul>
+
+
+<p>针对这个问题，当然也有解决方案，那就是模糊TLS验证的数据，让GFW寻不到TLS的特征，比如：</p>
+
+<p><a href="http://igfw.net/archives/13018">http://igfw.net/archives/13018</a></p>
+
+<p>但是这种做法是没法在ROS上实现的。因为这要求修改OpenVPN sever和client的代码，而我们是无法修改ROS中的OpenVPN的实现的。</p>
+
+<ul>
+<li>ROS不支持UDP模式的OpenVPN。这个已经被广大ROS用户诟病已久，但不知道为什么Mikrotik就是不改：</li>
+</ul>
+
+
+<p><a href="http://forum.mikrotik.com/viewtopic.php?f=1&amp;t=26499">http://forum.mikrotik.com/viewtopic.php?f=1&amp;t=26499</a></p>
+
+<p>TCP模式的OpenVPN延迟（latency）很高，不适合诸如电话会议、在线游戏等场景。</p>
+
+<p>所以坦白说，有上述的两个问题，ROS+OpenVPN，已经没有太多的使用价值了。但是既然我已经将其配置完成了，所以本文还是将过程记录了下来。</p>
+
+<h2>OpenVPN server侧配置</h2>
+
+<p>OpenVPN server侧的配置稍微复杂一些，关键是要生成一堆证书、秘钥。但是也不是复杂到没法忍，关键是要有一篇好的turtorial。所以这里是我找到的一篇很好的文章，照做就行：</p>
+
+<p><a href="https://www.linode.com/docs/networking/vpn/secure-communications-with-openvpn-on-ubuntu-12-04-precise-and-debian-7">Secure communications with OpenVPN on Ubuntu 12.04</a></p>
+
+<p>照着上面的文章做就可以了，这里再给出我最终的OpenVPN server的配置文件作为一个参考：</p>
+
+<p>``` bash
+port 3389
+proto tcp
+dev tun</p>
+
+<h1>Keys</h1>
+
+<p>ca /etc/openvpn/easy-rsa/2.0/keys/ca.crt
+cert /etc/openvpn/easy-rsa/2.0/keys/server.crt
+key /etc/openvpn/easy-rsa/2.0/keys/server.key
+dh /etc/openvpn/easy-rsa/2.0/keys/dh1024.pem</p>
+
+<h1>This will be the internal tun0 connection IP</h1>
+
+<p>server 10.8.0.0 255.255.255.0
+ifconfig-pool-persist ipp.txt</p>
+
+<h1>This will send all of a client&rsquo;s 10.x.x.x traffic through the VPN</h1>
+
+<h1>push &ldquo;route 10.0.0.0 255.0.0.0&rdquo;</h1>
+
+<p>keepalive 10 120</p>
+
+<h1>Mikrotik does not support LZO compression</h1>
+
+<h1>comp-lzo</h1>
+
+<p>auth SHA1</p>
+
+<h1>Select a cryptographic cipher.</h1>
+
+<h1>cipher BF-CBC        # Blowfish (default)</h1>
+
+<p>cipher AES-256-CBC</p>
+
+<h1>user nobody</h1>
+
+<h1>group nogroup</h1>
+
+<p>status /var/log/openvpn/openvpn-status.log</p>
+
+<p>persist-key
+persist-tun
+verb 3
+```</p>
+
+<p>几点解释：</p>
+
+<ol>
+<li>ROS的OpenVPN client只支持TCP，所以这里使用TCP模式：<code>proto tcp</code>。</li>
+<li>被注释的那句：<code>push "route 10.0.0.0 255.0.0.0"</code> 是可以用来给客户端设置路由表的，但是由于我的ROS有chnroutes，所以我会在我的ROS上设置路由表，所以我的OpenVPN server侧就没有push路由表给客户端了。</li>
+<li><code>comp-lzo</code> 一定要注释掉，这是因为ROS OpenVPN client不支持这个。所以ROS的OpenVPN UDP不支持，数据压缩又不支持，你就可以想想Mikrotik论坛上大家的怨气有多大了。有空可以上去搜看相关的帖子，相当欢乐。</li>
+<li>有关cipher，Blowfish, AES这些ROS OpenVPN client都是支持的，所以可以自由选择。使用默认的Blowfish就挺好。</li>
+<li>最后的 <code>verb 3</code> 可以改成诸如 <code>verb 6</code>，这样在 <code>/var/log/syslog</code> 中可以得到很多的log，客户端连不上OpenVPN server的时候，可以帮助调试和定位。</li>
+</ol>
+
+
+<p>配置完成之后，<code>sudo service openvpn restart</code>，OpenVPN server就ready了。</p>
+
+<h2>OpenVPN client侧配置（ROS）</h2>
+
+<p>相比server侧，ROS上client的配置就相对简单了很多。</p>
+
+<p>首先是上传证书和秘钥到ROS上：</p>
+
+<p><img src="/downloads/image/ros-system-certificates.png" alt="Certificates" /></p>
+
+<p>这里其实是3个文件，client的公钥和私钥，还有就是server的证书，这三个文件首先upload到ROS上，然后在上图中点击 <code>Import</code> 按钮就可以导入了。</p>
+
+<p>然后就是创建一个OpenVPN的client了：</p>
+
+<p><img src="/downloads/image/ros-ppp-openvpn.png" alt="PPP Create OpenVPN Client" /></p>
+
+<p>几点说明：</p>
+
+<ol>
+<li><code>Connect To</code> 和 <code>Port</code> 不用说了</li>
+<li><code>Mode</code> ，这个有两个选项：<code>IP</code> 和 <code>Ethernet</code>，这表示数据是走layer 3还是layer 2，反映到VPN创建出来的本地虚拟网卡，就是tun还是tap，一般来说OpenVPN都是tun，所以这里是选择 <code>IP</code>。如果你使用PPTP，就可以看到虚拟网卡是tap。</li>
+<li><code>User</code>，这个其实不需要，因为OpenVPN是使用证书来识别client的，每个client都会有一个证书。但是这里ROS需要填一个用户名，所以随便填一个就好（貌似OpenVPN也可以支持username/password的那种验证的，我没去调查）。</li>
+<li><code>Profile</code>，因为在下面会选择加密方式等，所以profile就选default就好，default意思就是按照server的默认设置来。</li>
+<li><code>Certificate</code>，这里要选择你upload到ROS上的，client的私钥，这个私钥是用来解密数据的。</li>
+<li><code>Auth</code> / <code>Cipher</code>，这个就选成跟server端的配置一致即可。</li>
+</ol>
+
+
+<h2>结束</h2>
+
+<p>所以总的来说，OpenVPN的配置并不复杂，只是ROS不支持UDP的OpenVPN，所以用来翻墙看看网页还是可以的，玩游戏啥的就要差不少。不过OpenVPN作为一个free的，性能优良的VPN solution，在国内网络中使用也是相当不错的。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[RouterOS配置记录（三）：DDNS]]></title>
@@ -416,55 +549,6 @@ REGEDIT4</p>
 <p>这样就OK了，再次打开Winbox，终于看到舒服的界面了：</p>
 
 <p><img src="/downloads/image/mac-winbox-change-font.png" alt="Mac Winbox changed font" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux netfilter概述，mangle/nat/filter, prerouting/input/forward...到底是啥]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/07/23/netfilter-overview/"/>
-    <updated>2014-07-23T18:30:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/07/23/netfilter-overview</id>
-    <content type="html"><![CDATA[<p>本文转载自：</p>
-
-<p><a href="http://shorewall.net/NetfilterOverview.html">http://shorewall.net/NetfilterOverview.html</a></p>
-
-<!-- more -->
-
-
-<p>Netfilter consists of three tables: Filter, Nat and Mangle. Each table has a number of build-in chains: PREROUTING, INPUT, FORWARD, OUTPUT and POSTROUTING.</p>
-
-<p>Rules in the various tables are used as follows:</p>
-
-<p>Filter
-Packet filtering (rejecting, dropping or accepting packets)</p>
-
-<p>Nat
-Network Address Translation including DNAT, SNAT and Masquerading</p>
-
-<p>Mangle
-General packet header modification such as setting the TOS value or marking packets for policy routing and traffic shaping.</p>
-
-<p>Raw
-Used primarily for creating exemptions from connection tracking with the NOTRACK target. Also used for stateless DNAT.</p>
-
-<p>Rawpost
-Used for stateless SNAT.</p>
-
-<p>The following diagram shows how packets traverse the various builtin chains within Netfilter. Note that not all table/chain combinations are used.</p>
-
-<p><img src="/downloads/image/netfilter-overview.png" alt="Netfilter Overview" /></p>
-
-<p>&ldquo;Local Process” means a process running on the Shorewall system itself.</p>
-
-<p>A more elaborate version of this flow is available here and this one contrasts the Netfilter flow with that of ipchains.</p>
-
-<p>In the above diagram are boxes similar to this:</p>
-
-<p><img src="/downloads/image/netfilter-input-chain.png" alt="Input chain" /></p>
-
-<p>The above box gives the name of the built-in chain (INPUT) along with the names of the tables (Mangle and Filter) that the chain exists in and in the order that the chains are traversed. The above sample indicates that packets go first through the INPUT chain of the Mangle table then through the INPUT chain of the Filter table. When a chain is enclosed in parentheses, Shorewall does not use the named chain (INPUT) in that table (Mangle).</p>
-
-<p><strong> Keep in mind that chains in the Nat table are only traversed for new connection requests (including those related to existing connections) while the chains in the other tables are traversed on every packet. </strong></p>
 ]]></content>
   </entry>
   
