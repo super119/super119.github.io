@@ -1,0 +1,32 @@
+---
+layout: post
+title: "PS3 KillZone 3（杀戮地带3）黑屏死机问题"
+date: 2014-09-17 10:34
+comments: true
+categories: Games
+---
+
+PS3上的杀戮地带3，当升级了1.14（最新版本）之后，有一个黑屏死机的问题：
+
+[http://community.killzone.com/t5/Killzone-3-PS3/Patch-1-14-freezing-issues/td-p/1351164](http://community.killzone.com/t5/Killzone-3-PS3/Patch-1-14-freezing-issues/td-p/1351164)
+
+<!-- more -->
+
+最近我也买了一张二手的杀戮地带3，也碰到了这个问题。为此我Google看了好多帖子，基本上这些帖子七嘴八舌的都说这个问题的原因是：
+
+** 你的PS3更换过硬盘，而且更换的是一个高速的（比如7200 RPM），大容量的硬盘。**
+
+没错，我的PS3的确换过硬盘，因为原装的250G的坏掉了，所以我换了一个500G的7200 RPM的。但是我也不想就因为这个就再换一次硬盘啊，于是我继续Google看看有没有其他的办法，结果是我试了这么几种方法：
+
+- 进入PS3的恢复模式，重建Database
+- 进入PS3的恢复模式，格式化PS3
+- 完全格式化PS3（在PS3的XMB界面下）
+
+试验下来，以上三种方法均无效。最后没办法我找来一块以前用过的一块5400转160G的硬盘，换到PS3上，开机：
+
+- PS3提示系统软件丢失
+- PS3提示插入一个带有最新firmware的USB key，然后同时按下 `start` + `select` 开始重新往硬盘上安装系统软件
+- 于是我去download了一个4.65的firmware，放到U盘的 `PS3` -> `UPDATE` 目录下，就像给PS3升级系统软件一样
+- PS3会给硬盘重新分区并安装系统软件
+
+完成之后，登录PSN，插入杀戮地带3，再升级1.14，果然就好了。。。已无力吐槽，GG的程序员是临时工吧？
