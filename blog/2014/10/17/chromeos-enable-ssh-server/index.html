@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>MacOS X Mavericks上的浏览器插件的问题 - Make Things Cool</title>
+  <title>ChromeOS配置SSH Server - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="升级了Mavericks之后，发现浏览器中的一些插件出问题了。最先遇到的就是在Safari中经常会蹦出来对话框说，是否要在该网站上运行迅雷（Thunder xxx）插件，有几个选项，yes/no/never for this site&hellip;. 后来又发现旺旺不工作了， &hellip;">
+  <meta name="description" content="ChromeOS是一个相当&#8221;Linux&#8221;的OS。现在一般能拿到手的ChromeOS的设备很多都是Chromebook，所以本文是在一台Chromebook上做的测试。 ChromeOS默认的零售版本是什么开发类工具都没有的，包括ssh client都没有。要enable &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/01/20/internet-plugins-on-mavericks/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/10/17/chromeos-enable-ssh-server/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">MacOS X Mavericks上的浏览器插件的问题</h1>
+        <h1 class="entry-title">ChromeOS配置SSH Server</h1>
       
     
     
@@ -94,29 +94,82 @@
   
 
 
-<time datetime="2014-01-20T21:30:00+08:00" pubdate data-updated="true">Jan 20<span>th</span>, 2014</time>
+<time datetime="2014-10-17T12:52:00+08:00" pubdate data-updated="true">Oct 17<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>升级了Mavericks之后，发现浏览器中的一些插件出问题了。最先遇到的就是在Safari中经常会蹦出来对话框说，是否要在该网站上运行迅雷（Thunder xxx）插件，有几个选项，yes/no/never for this site&hellip;. 后来又发现旺旺不工作了，也就是在浏览器中点击旺旺图标，旺旺出不来了&hellip;.</p>
+<div class="entry-content"><p>ChromeOS是一个相当&#8221;Linux&#8221;的OS。现在一般能拿到手的ChromeOS的设备很多都是Chromebook，所以本文是在一台Chromebook上做的测试。</p>
 
-<p>所以花了点时间看了一下，原来现在在Safari中有专门的 <code>Internet plug-ins</code> 这样的设置了，而且该设置影响安装的所有浏览器（如Chrome, Firefox）。</p>
+<p>ChromeOS默认的零售版本是什么开发类工具都没有的，包括ssh client都没有。要enable SSH client/server，首先要将ChromeOS切换到 <code>Developer Mode</code>。在我手上的这台Chromebook上，做法很简单，就是三键同按开机即可（ESC + Refresh + Power）。</p>
+
+<p>具体的切换到 <code>Developer Mode</code> 的做法可以参考Google的ChromeOS网站上的文章。接下来来看怎么enable SSH Server。</p>
 
 <!-- more -->
 
 
-<p>首先进入Safari的Preferences（COMMAND + ,），在 <code>Security</code> 标签中，有 <code>Internet plug-ins</code> 这一项，我们需要先点击 <code>Allow Plug-ins</code>，然后点击后面的 <code>Manage Website Settings...</code> 按钮出现对话框：</p>
+<p>以下内容完全参考了文章：</p>
 
-<p><img src="/downloads/image/manage-website-settings.png" alt="Manage Website Settings" /></p>
+<p><a href="http://www.de7ec7ed.com/2013/05/ssh-daemon-samsung-chromebook-exynos.html">http://www.de7ec7ed.com/2013/05/ssh-daemon-samsung-chromebook-exynos.html</a></p>
 
-<p>在这里就可以设置每个plugin的处理方式了，如上图所示，针对旺旺插件，我们选择了 <code>Allow Always</code>。你还可以在这里找到其他很多你需要用到的插件，比如淘宝的 <code>AliEdit</code>，也就是密码输入框的插件、迅雷的下载插件等等。值得一提的还有就是支付宝的插件，名字有点怪，叫：<code>npalicdo plugin</code>。</p>
+<p>所以在这里基本上是做一个英翻中的工作。</p>
 
-<p>有意思的是，在MacOS X上，所有的插件是统一安装在一个地方的：<code>/Library/Internet Plug-Ins</code>。所以插件一旦安装了，所有的浏览器就都能使用了。只是每个浏览器是否使能某个插件，在各自的设置里面，如上面介绍的Safari的。在Chrome中，那就是在页面：<code>chrome://plugins</code> 里面。</p>
+<ul>
+<li><p>首先启动Chrome浏览器，按下 <code>ctrl + alt + t</code>，开启Crosh（浏览器界面的一个Terminal程序）。Crosh也是只有将ChromeOS切换成 <code>Developer Mode</code> 之后才有的。</p></li>
+<li><p>输入：<code>shell</code>，得到一个bash，然后输入 <code>sudo -i</code>，就可以得到root权限了。</p></li>
+<li><p>mkdir -p /mnt/stateful_partition/etc/ssh</p></li>
+<li><p>ssh-keygen -t dsa -f /mnt/stateful_partition/etc/ssh/ssh_host_dsa_key</p></li>
+<li><p>ssh-keygen -t rsa -f /mnt/stateful_partition/etc/ssh/ssh_host_rsa_key</p></li>
+<li><p>vi /etc/ssh/sshd_config，将 <code>PasswordAuthentication</code> 改成 <code>yes</code>。在这里也可以看到，为什么我们要在/mnt/stateful_partition下面创建etc/ssh目录，并在里面生成keys。就是因为在这个配置文件中指定了ssh key的路径。</p></li>
+<li><p>/sbin/iptables -A INPUT -p tcp &mdash;dport 22 -j ACCEPT</p></li>
+<li><p>给root用户设置一个密码，输入passwd即可。</p></li>
+<li><p>/usr/sbin/sshd，这样SSH server就启动起来了，可以从其他机器登录过来了。</p></li>
+</ul>
 
-<p>所以其实比如下载了支付宝的浏览器插件，安装的时候，其实就是把文件拷贝到了 <code>/Library/Internet Plug-Ins</code> 这个目录下而已。</p>
+
+<p>题外话：如果你是 <code>cd /usr/sbin;./sshd</code>，或者 <code>/usr/sbin</code> 在PATH里面，直接输入 <code>sshd</code> 启动，你会发现sshd无法启动，错误是：</p>
+
+<blockquote><p>sshd re-exec requires execution with an absolute path</p></blockquote>
+
+<p>Stackexchange有这个问题的回答，很有意思，有两点：</p>
+
+<blockquote><p>This is specific to OpenSSH from version 3.9 onwards.</p>
+
+<p>For every new connection, sshd will re-execute itself, to ensure that all execute-time randomisations are re-generated for each new connection. In order for sshd to re-execute itself, it needs to know the full path to itself.</p>
+
+<p>Here&rsquo;s a quote from the release notes for 3.9:</p>
+
+<p>Make sshd(8) re-execute itself on accepting a new connection. This security measure ensures that all execute-time randomisations are reapplied for each connection rather than once, for the master process&#8217; lifetime. This includes mmap and malloc mappings, shared library addressing, shared library mapping order, ProPolice and StackGhost cookies on systems that support such things</p></blockquote>
+
+<p>另外一个说法也有一定道理：</p>
+
+<blockquote><p>This is to prevent someone from injecting a sshd program somewhere in one of the directories in your PATH and you inadvertently executing it.</p></blockquote>
+
+<p>回到SSH server的配置上来，如果想ChromeOS开机的时候启动SSHD，写这样一个脚本放到 <code>/etc/init</code> 目录下面即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>start on started system-services
+</span><span class='line'>script
+</span><span class='line'>     /sbin/iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+</span><span class='line'>     /usr/sbin/sshd
+</span><span class='line'>end script
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后，突然想到，要做上面的所有的事情，要求ChromeOS的root partition是可写的，但是默认情况下，ChromeOS的root partition是read-only的。需要修改的话这样做：</p>
+
+<ul>
+<li><p>/usr/share/vboot/bin/make_dev_ssd.sh &mdash;remove_rootfs_verification &mdash;partitions 2</p></li>
+<li><p>做完上述命令后，需要重启ChromeOS</p></li>
+<li><p>重启完成之后，再开启一个Crosh，执行：mount -o rw,remount /，就可以将root partition变成可写的了。</p></li>
+</ul>
+
 </div>
 
 
@@ -124,7 +177,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2014/01/20/internet-plugins-on-mavericks/<br>
+原文链接: http://www.markzhang.cn/blog/2014/10/17/chromeos-enable-ssh-server/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -147,12 +200,12 @@
   
 
 
-<time datetime="2014-01-20T21:30:00+08:00" pubdate data-updated="true">Jan 20<span>th</span>, 2014</time>
+<time datetime="2014-10-17T12:52:00+08:00" pubdate data-updated="true">Oct 17<span>th</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/macosx/'>MacOSX</a>
+    <a class='category' href='/blog/categories/linux/'>linux</a>
   
 </span>
 
@@ -168,10 +221,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2014/01/06/hellogl-on-macosx/" title="Previous Post: OpenGL Programming on MacOS X (Mavericks)">&laquo; OpenGL Programming on MacOS X (Mavericks)</a>
+        <a class="basic-alignment left articlenav" href="/blog/2014/09/17/killzone-3-freezing-issue/" title="Previous Post: PS3 KillZone 3（杀戮地带3）黑屏死机问题">&laquo; PS3 KillZone 3（杀戮地带3）黑屏死机问题</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/01/28/gyroscope-precession/" title="Next Post: 陀螺进动（Gyroscope Precession）和循环螺距（Cyclic Pitch）">陀螺进动（Gyroscope Precession）和循环螺距（Cyclic Pitch） &raquo;</a>
       
     </p>
   </footer>

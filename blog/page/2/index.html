@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="航模直升机中有两个重要的轴承。一个是位于旋翼桨夹内的推力轴承，另外一个是位于大齿盘中间的单向轴承。由于自己对机械不怎么懂，所以就去琢磨了一下这两个玩意，也在5imx上发了帖子询问，最终整理成了此文。 本文中所有内容都来自http://bbs.5imx.com。 ">
+  <meta name="description" content="450 FBL有一个相位臂，没有这个相位臂那旋翼一旋转，十字盘拉杆就转成麻花了。但是由于十字盘是需要上下移动的（改变集体螺距），所以这个相位臂也是需要能运动的。基本上，当十字盘上下运动时，相位臂有两个地方也会发生运动：一个是中间部位，能改变角度；另外一个地方不起眼容易被忽略， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/06/17/fbl-phase-arm-pad/">450 FBL 相位臂不顺滑？缺少一个小垫片</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-17T15:37:00+08:00" pubdate data-updated="true">Jun 17<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>450 FBL有一个相位臂，没有这个相位臂那旋翼一旋转，十字盘拉杆就转成麻花了。但是由于十字盘是需要上下移动的（改变集体螺距），所以这个相位臂也是需要能运动的。基本上，当十字盘上下运动时，相位臂有两个地方也会发生运动：一个是中间部位，能改变角度；另外一个地方不起眼容易被忽略，就是相位臂固定在中联的那个位置，会发生转动。</p>
+
+<p>所以最近在拆装相位臂的时候，突然发现相位臂的转动不顺畅了，非常的生涩，结果发现丢了一个小垫片。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/06/17/fbl-phase-arm-pad/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -493,51 +538,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/04/09/linux-driver-suspend-orders/">Linux设备驱动suspend/resume的顺序</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-04-09T16:07:00+08:00" pubdate data-updated="true">Apr 9<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Linux在进入suspend的时候，会首先freeze userspace，然后挨个去调用设备驱动程序的suspend，最后调用architecture dependent的callback（非常奔放的描述了，其实有大量的细节问题存在）。Resume就是反过来执行一遍，最后重新enable userspace。那么作为设备驱动程序的编写者来说，主要就是要实现本驱动的suspend/resume逻辑。但是事实上，很多设备之间是有依赖性的，比如在ARM上，很多设备在resume之前，要求 <code>IOMMU</code> 要已经被enable，否则硬件上就会出现问题，因为访问的地址不对了。</p>
-
-<p>那么Linux是如何设计/定义各个设备驱动之间的suspend/resume的顺序的呢？</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/04/09/linux-driver-suspend-orders/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -552,11 +552,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (1)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (5)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/linux'>linux (3)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (3)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (11)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (4)</a></li><li><a href='/blog/categories/reprints'>reprints (4)</a></li><li><a href='/blog/categories/science'>science (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (1)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (5)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/linux'>linux (4)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (3)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (11)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (4)</a></li><li><a href='/blog/categories/reprints'>reprints (4)</a></li><li><a href='/blog/categories/science'>science (1)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/10/17/chromeos-enable-ssh-server/">ChromeOS配置SSH Server</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/09/17/killzone-3-freezing-issue/">PS3 KillZone 3（杀戮地带3）黑屏死机问题</a>
@@ -572,10 +576,6 @@
     
       <li class="post">
         <a href="/blog/2014/08/20/ros-chnroutes/">RouterOS配置记录（二）：chnroutes</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/08/19/ros-basic-setup/">RouterOS 配置记录（一）：基础设置</a>
       </li>
     
   </ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-09-17T10:52:19+08:00</updated>
+  <updated>2014-10-17T13:21:51+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,83 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ChromeOS配置SSH Server]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/10/17/chromeos-enable-ssh-server/"/>
+    <updated>2014-10-17T12:52:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/10/17/chromeos-enable-ssh-server</id>
+    <content type="html"><![CDATA[<p>ChromeOS是一个相当&#8221;Linux&#8221;的OS。现在一般能拿到手的ChromeOS的设备很多都是Chromebook，所以本文是在一台Chromebook上做的测试。</p>
+
+<p>ChromeOS默认的零售版本是什么开发类工具都没有的，包括ssh client都没有。要enable SSH client/server，首先要将ChromeOS切换到 <code>Developer Mode</code>。在我手上的这台Chromebook上，做法很简单，就是三键同按开机即可（ESC + Refresh + Power）。</p>
+
+<p>具体的切换到 <code>Developer Mode</code> 的做法可以参考Google的ChromeOS网站上的文章。接下来来看怎么enable SSH Server。</p>
+
+<!-- more -->
+
+
+<p>以下内容完全参考了文章：</p>
+
+<p><a href="http://www.de7ec7ed.com/2013/05/ssh-daemon-samsung-chromebook-exynos.html">http://www.de7ec7ed.com/2013/05/ssh-daemon-samsung-chromebook-exynos.html</a></p>
+
+<p>所以在这里基本上是做一个英翻中的工作。</p>
+
+<ul>
+<li><p>首先启动Chrome浏览器，按下 <code>ctrl + alt + t</code>，开启Crosh（浏览器界面的一个Terminal程序）。Crosh也是只有将ChromeOS切换成 <code>Developer Mode</code> 之后才有的。</p></li>
+<li><p>输入：<code>shell</code>，得到一个bash，然后输入 <code>sudo -i</code>，就可以得到root权限了。</p></li>
+<li><p>mkdir -p /mnt/stateful_partition/etc/ssh</p></li>
+<li><p>ssh-keygen -t dsa -f /mnt/stateful_partition/etc/ssh/ssh_host_dsa_key</p></li>
+<li><p>ssh-keygen -t rsa -f /mnt/stateful_partition/etc/ssh/ssh_host_rsa_key</p></li>
+<li><p>vi /etc/ssh/sshd_config，将 <code>PasswordAuthentication</code> 改成 <code>yes</code>。在这里也可以看到，为什么我们要在/mnt/stateful_partition下面创建etc/ssh目录，并在里面生成keys。就是因为在这个配置文件中指定了ssh key的路径。</p></li>
+<li><p>/sbin/iptables -A INPUT -p tcp &mdash;dport 22 -j ACCEPT</p></li>
+<li><p>给root用户设置一个密码，输入passwd即可。</p></li>
+<li><p>/usr/sbin/sshd，这样SSH server就启动起来了，可以从其他机器登录过来了。</p></li>
+</ul>
+
+
+<p>题外话：如果你是 <code>cd /usr/sbin;./sshd</code>，或者 <code>/usr/sbin</code> 在PATH里面，直接输入 <code>sshd</code> 启动，你会发现sshd无法启动，错误是：</p>
+
+<blockquote><p>sshd re-exec requires execution with an absolute path</p></blockquote>
+
+<p>Stackexchange有这个问题的回答，很有意思，有两点：</p>
+
+<blockquote><p>This is specific to OpenSSH from version 3.9 onwards.</p>
+
+<p>For every new connection, sshd will re-execute itself, to ensure that all execute-time randomisations are re-generated for each new connection. In order for sshd to re-execute itself, it needs to know the full path to itself.</p>
+
+<p>Here&rsquo;s a quote from the release notes for 3.9:</p>
+
+<p>Make sshd(8) re-execute itself on accepting a new connection. This security measure ensures that all execute-time randomisations are reapplied for each connection rather than once, for the master process&#8217; lifetime. This includes mmap and malloc mappings, shared library addressing, shared library mapping order, ProPolice and StackGhost cookies on systems that support such things</p></blockquote>
+
+<p>另外一个说法也有一定道理：</p>
+
+<blockquote><p>This is to prevent someone from injecting a sshd program somewhere in one of the directories in your PATH and you inadvertently executing it.</p></blockquote>
+
+<p>回到SSH server的配置上来，如果想ChromeOS开机的时候启动SSHD，写这样一个脚本放到 <code>/etc/init</code> 目录下面即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>start on started system-services
+</span><span class='line'>script
+</span><span class='line'>     /sbin/iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+</span><span class='line'>     /usr/sbin/sshd
+</span><span class='line'>end script
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后，突然想到，要做上面的所有的事情，要求ChromeOS的root partition是可写的，但是默认情况下，ChromeOS的root partition是read-only的。需要修改的话这样做：</p>
+
+<ul>
+<li><p>/usr/share/vboot/bin/make_dev_ssd.sh &mdash;remove_rootfs_verification &mdash;partitions 2</p></li>
+<li><p>做完上述命令后，需要重启ChromeOS</p></li>
+<li><p>重启完成之后，再开启一个Crosh，执行：mount -o rw,remount /，就可以将root partition变成可写的了。</p></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[PS3 KillZone 3（杀戮地带3）黑屏死机问题]]></title>
@@ -2015,108 +2092,6 @@ Used for stateless SNAT.</p>
 <p>用电烙铁将它们两个焊下来调换，为了保险再给N603加一个稳压管上去，全部搞定开机，哈哈，电视开始工作了！</p>
 
 <p>所以现在回头想想，修电视跟修电脑也差不多，基本上就是首先找到几个怀疑对象，然后替换法来试验。唯一麻烦一点的就是，电脑是一个一个模块的换，而电路板可能就是一个芯片、一个电容、一个电阻这样的替换测试，相对来说麻烦许多。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux设备驱动suspend/resume的顺序]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/04/09/linux-driver-suspend-orders/"/>
-    <updated>2014-04-09T16:07:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/04/09/linux-driver-suspend-orders</id>
-    <content type="html"><![CDATA[<p>Linux在进入suspend的时候，会首先freeze userspace，然后挨个去调用设备驱动程序的suspend，最后调用architecture dependent的callback（非常奔放的描述了，其实有大量的细节问题存在）。Resume就是反过来执行一遍，最后重新enable userspace。那么作为设备驱动程序的编写者来说，主要就是要实现本驱动的suspend/resume逻辑。但是事实上，很多设备之间是有依赖性的，比如在ARM上，很多设备在resume之前，要求 <code>IOMMU</code> 要已经被enable，否则硬件上就会出现问题，因为访问的地址不对了。</p>
-
-<p>那么Linux是如何设计/定义各个设备驱动之间的suspend/resume的顺序的呢？</p>
-
-<!-- more -->
-
-
-<p>简单来说，就是以下几条逻辑：</p>
-
-<ul>
-<li><p>各设备驱动程序按照其对应的设备（device）注册的先后次序，来决定其suspend/resume的顺序。注意是该驱动对应的设备的注册顺序，不是驱动注册的顺序，所以和驱动的注册优先级无关（也就是和module_init, rootfs_init, subsys_initcall这些无关）。越早被注册的设备，其对应的驱动的suspend越晚被调用，其对应驱动的resume越早被调用；越晚被注册的设备，其对应的驱动的suspend越早被调用，其对应的驱动的resume越晚被调用。</p></li>
-<li><p>上面所说的逻辑往往不能满足我们的要求，因为现在的设备（device）都通过DT（Device Tree）的方式进行注册。那么，在DTS文件中，出现的越早的设备就越早被注册（可以参考函数 <code>of_platform_populate</code>）。而按照现在upstream linux kernel的约定，设备在DTS文件中，是按照其寄存器的地址，从低到高排序的，所以自然不可能满足我们的需求。</p></li>
-</ul>
-
-
-<p>那要怎么办？答案是驱动程序执行probe的时候返回 <code>-EPROBE_DEFER</code> 。</p>
-
-<p>对于现在ARM SoC上的设备和其驱动程序来说，Linux kernel都使用Platform device/Platform driver来描述他们。而Platform driver的probe函数就相当于是驱动的初始化函数，一般用来映射寄存器，分配必需的内存等等，看一个驱动程序的代码，一般也可以从Probe开始看起。</p>
-
-<p>Probe函数返回 <code>-EPROBE_DEFER</code>，指的是当一个设备驱动程序检测到其依赖的设备的驱动程序还没有ready的时候，返回这个出错码告诉kernel driver framework，我需要延缓自身的probe。还是举上面那个IOMMU的例子，如果一个设备依赖IOMMU，那么该设备的驱动在probe的时候，就应该检测iommu的驱动是否已经ready，如果没有那就要defer自己的probe。在Linux kernel driver framework中，收到驱动probe返回 <code>-EPROBE_DEFER</code>，就会将该驱动放入一个list中，一个workqueue来负责遍历这个list，从而再次执行这些驱动的probe函数（事实上，由于kernel driver framework不知道驱动互相之间的依赖关系，所以一旦有一个驱动成功probe了，kernel都会触发这个workqueue，让其去遍历一遍list）。</p>
-
-<p>上面说的是 <code>-EPROBE_DEFER</code> 的背景故事了，而事实上，当一个驱动的probe返回过 <code>-EPROBE_DEFER</code> ，而最终成功probe之后，kernel就会修改该驱动的suspend/resume的顺序了。这就是为什么驱动probe的时候返回 <code>-EPROBE_DEFER</code> 能影响其suspend/resume的次序的原因了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cm">/*</span>
-</span><span class='line'><span class="cm"> * Force the device to the end of the dpm_list since</span>
-</span><span class='line'><span class="cm"> * the PM code assumes that the order we add things to</span>
-</span><span class='line'><span class="cm"> * the list is a good order for suspend but deferred</span>
-</span><span class='line'><span class="cm"> * probe makes that very unsafe.</span>
-</span><span class='line'><span class="cm"> */</span>
-</span><span class='line'><span class="n">device_pm_lock</span><span class="p">();</span>
-</span><span class='line'><span class="n">device_pm_move_last</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
-</span><span class='line'><span class="n">device_pm_unlock</span><span class="p">();</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面的代码来自函数：<code>deferred_probe_work_func</code>，也就是上面所说的defer probe的workqueue的工作函数。所以这里可以看到，当一个驱动最终在probe defer的work函数中probe成功之后，kernel会修改该驱动对应的设备（device）在 <code>dpm_list</code> 中的位置，而 <code>dpm_list</code> 正是kernel suspend/resume 驱动时候遍历的链表。看到调用了函数：<code>device_pm_move_last(dev);</code> 没？这个设备被移到了 <code>dpm_list</code> 的末尾。</p>
-
-<ul>
-<li>事情到此为止，可以说已经有了解决方案：我们可以使用 DEFER PROBE 的方式来调整驱动 suspend/resume 的顺序。不过这里要提一下，还有一条路也是可行的，那就是利用 <code>syscore suspend/resume</code>。</li>
-</ul>
-
-
-<p>syscore是Linux kernel定义的一个framework，我们可以将我们的驱动注册到syscore中去。syscore比较关键的就是 <code>syscore_ops</code> 这个结构：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">struct</span> <span class="n">syscore_ops</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">struct</span> <span class="n">list_head</span> <span class="n">node</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">suspend</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
-</span><span class='line'>  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">resume</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
-</span><span class='line'>  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">shutdown</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>可以看到只有 suspend/resume/shutdown 这三个ops，所以看到这里大概也可以猜到了，注册到syscore中的驱动，其suspend函数是在所有其他驱动的suspend都调用过之后调用的，而其resume函数是在所有其他驱动的resume调用之前调用的。简单来说，syscore的驱动，suspend被晚调用保证其他驱动suspend的时候，syscore的驱动还活着；syscore的驱动，resume被很早调用，从而保证其他驱动resume的时候，syscore的驱动已经活着了。好绕。。。</p>
-
-<p>要将驱动注册到syscore中很简单，调用函数：<code>register_syscore_ops(&amp;your_driver_syscore_ops);</code> 就可以了。至于上面说到的syscore的suspend/resume的顺序，实现代码在这里：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">error</span> <span class="o">=</span> <span class="n">syscore_suspend</span><span class="p">();</span>
-</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>  <span class="o">*</span><span class="n">wakeup</span> <span class="o">=</span> <span class="n">pm_wakeup_pending</span><span class="p">();</span>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">suspend_test</span><span class="p">(</span><span class="n">TEST_CORE</span><span class="p">)</span> <span class="o">||</span> <span class="o">*</span><span class="n">wakeup</span><span class="p">))</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">error</span> <span class="o">=</span> <span class="n">suspend_ops</span><span class="o">-&gt;</span><span class="n">enter</span><span class="p">(</span><span class="n">state</span><span class="p">);</span>
-</span><span class='line'>      <span class="n">events_check_enabled</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>  <span class="n">syscore_resume</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>以上代码来自函数：<code>suspend_enter</code>。可以看到当syscore_suspend被调用之后，就调用architecture dependent的 <code>suspend_ops-&gt;enter</code> 了，到这里整个系统就已经停下来了，进入suspend状态了。而当resume开始，<code>suspend_ops-&gt;enter</code> 返回之后，第一个被调用的就是 <code>syscore_resume</code>，所以上面那一段听起来好绕的逻辑就这么区区几行代码解释了。</p>
 ]]></content>
   </entry>
   
