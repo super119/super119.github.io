@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux-kernel | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/linux-kernel/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-10-17T13:21:51+08:00</updated>
+  <updated>2014-11-25T11:33:28+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,44 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Thunderbird 80(72) column - 邮件在80(72)列处line break]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/11/25/thunderbird-72-column/"/>
+    <updated>2014-11-25T11:13:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/11/25/thunderbird-72-column</id>
+    <content type="html"><![CDATA[<p>这个需求做linux kernel upstream的人都懂的&hellip;&hellip;要设置Thunderbird在80列正确换行，只需要这样：</p>
+
+<!-- more -->
+
+
+<ul>
+<li><p>Thunderbird如果撰写的邮件是plain text格式（在这里设置：Edit &ndash;> Account Settings &ndash;> Composition &amp; Addressing, you should uncheck Compose in HTML format for all accounts），那么自动就会在72列处做line wrap。但是需要注意的是，这里的line wrap只是在display邮件内容和撰写邮件时，你可以看到。当你发出邮件的时候，这个line wrap就没有了，换句话说，别人看到的你的邮件内容，还是很长的一行行的文字。所以需要下面一步。</p></li>
+<li><p>以下内容来自：</p></li>
+</ul>
+
+
+<p><a href="http://arapulido.com/2009/12/01/enabling-line-wrapping-in-thunderbird/#comment-807">http://arapulido.com/2009/12/01/enabling-line-wrapping-in-thunderbird/#comment-807</a></p>
+
+<p>下文中提到的option设置在：Edit &ndash;> Preferences &ndash;> Advanced (General tab) &ndash;> Configure Editor：</p>
+
+<blockquote><p>I am a happy user of the daily build of Thunderbird 3. Although it is still under development, is the best email client for Linux I’ve tried so far, at least, the one that better works for me. Email search &amp; filtering is fast and reliable.</p>
+
+<p>The only thing I don’t like is that wrapping your emails to 72 characters when sending plain text is not straightforward. Once you have selected to send your emails as plain text and have set the line wrap option to 72, there is still one more option to tweak.</p>
+
+<p>Thunderbird has a “feature” that sends by default all plain text with the option format=flowed, which unwraps the email in the client receiver. To turn this feature off, you have to toggle one of the options in the chrome editor:</p>
+
+<p>To disable flowed paragraphs, enforcing line breaks as formatted in the message, set the preference:</p>
+
+<p>mailnews.display.disable_format_flowed_support true
+(<a href="http://kb.mozillazine.org/Mail_content_types#Plain_text">http://kb.mozillazine.org/Mail_content_types#Plain_text</a>)</p>
+
+<p>To disable paragraph flow when you send plain text messages, and in the plain text part of multipart messages, set the preference:</p>
+
+<p>mailnews.send_plaintext_flowed false
+(<a href="http://kb.mozillazine.org/Mail_content_types#Disabling_paragraph_flow">http://kb.mozillazine.org/Mail_content_types#Disabling_paragraph_flow</a>)</p></blockquote>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux设备驱动suspend/resume的顺序]]></title>

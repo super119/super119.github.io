@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>伟力v911-2 心得体会 - Make Things Cool</title>
+  <title>Thunderbird 80(72) column - 邮件在80(72)列处line break - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="伟力v911-2是一款很不错的入门4通航模。说不错，主要是它有以下的优点： 便宜，两百块不到搞定 :)
-耐炸，主要是飞机自重小。相比外观很漂亮，带什么合金外壳，还带闪灯的那种，增加了自重，所以电机相对要大功率的，还要增加电池容量。此外虽然机身有合金外壳，但是主轴、尾部没有啊， &hellip;">
+  <meta name="description" content="这个需求做linux kernel upstream的人都懂的&hellip;&hellip;要设置Thunderbird在80列正确换行，只需要这样： Thunderbird如果撰写的邮件是plain text格式（在这里设置：Edit &ndash;> Account Settings & &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/01/02/v911-2-tips/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/11/25/thunderbird-72-column/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -78,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">伟力v911-2 心得体会</h1>
+        <h1 class="entry-title">Thunderbird 80(72) Column - 邮件在80(72)列处line Break</h1>
       
     
     
@@ -95,71 +94,43 @@
   
 
 
-<time datetime="2014-01-02T20:56:00+08:00" pubdate data-updated="true">Jan 2<span>nd</span>, 2014</time>
+<time datetime="2014-11-25T11:13:00+08:00" pubdate data-updated="true">Nov 25<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>伟力v911-2是一款很不错的入门4通航模。说不错，主要是它有以下的优点：</p>
-
-<ul>
-<li>便宜，两百块不到搞定  :)</li>
-<li>耐炸，主要是飞机自重小。相比外观很漂亮，带什么合金外壳，还带闪灯的那种，增加了自重，所以电机相对要大功率的，还要增加电池容量。此外虽然机身有合金外壳，但是主轴、尾部没有啊，所以掉下来这些部分就很容易挂掉。</li>
-<li>体积小，可以在室内飞行，不用专门到户外去找飞场。</li>
-<li>整机只有30个零件，维修方便</li>
-</ul>
-
+<div class="entry-content"><p>这个需求做linux kernel upstream的人都懂的&hellip;&hellip;要设置Thunderbird在80列正确换行，只需要这样：</p>
 
 <!-- more -->
 
 
-<p>应该说这种结构简单，零件少容易拆解的飞机，可以方便的让我们了解直升机的一些基本原理。但是理论知识是一方面，真的摔坏了开始动手修理了，那就是另外一个问题了，有很多实际操作上的经验。</p>
-
-<p>网上都说尾电机是第一个容易挂的，很奇怪我的尾电机到现在还算“工作正常”。有的时候会发现不转，但概率很小。现在尾电机的主要问题就是有一些异响，但鉴于飞机锁尾、自旋都正常，就懒得去折腾它了。</p>
-
-<p>我的感受是，主旋翼容易挂。“挂”并不意味着一定是断掉了或是变形了，由于在炸机的时候主旋翼多多少少都会有一些损伤，所以炸多了就会发现飞机有一些异常情况，比如有异响，飞机震动的厉害等。这个时候就有可能是：</p>
-
 <ul>
-<li>主旋翼变形了，虽然看起来好像是好的。</li>
-<li>主旋翼磨损之后，两片桨可能重量不一致了，重心不对称了。</li>
+<li><p>Thunderbird如果撰写的邮件是plain text格式（在这里设置：Edit &ndash;> Account Settings &ndash;> Composition &amp; Addressing, you should uncheck Compose in HTML format for all accounts），那么自动就会在72列处做line wrap。但是需要注意的是，这里的line wrap只是在display邮件内容和撰写邮件时，你可以看到。当你发出邮件的时候，这个line wrap就没有了，换句话说，别人看到的你的邮件内容，还是很长的一行行的文字。所以需要下面一步。</p></li>
+<li><p>以下内容来自：</p></li>
 </ul>
 
 
-<p>所以，如果怀疑是主旋翼的问题，直接换一对上去试了再说。平常买配件的时候可以一次多买几对，反正五块钱一对。</p>
+<p><a href="http://arapulido.com/2009/12/01/enabling-line-wrapping-in-thunderbird/#comment-807">http://arapulido.com/2009/12/01/enabling-line-wrapping-in-thunderbird/#comment-807</a></p>
 
-<p>换主旋翼的时候，有一个问题，就是要重新安装那三个球头锁扣。我换了N次之后，发现有这么几个问题：</p>
+<p>下文中提到的option设置在：Edit &ndash;> Preferences &ndash;> Advanced (General tab) &ndash;> Configure Editor：</p>
 
-<ul>
-<li>这三个锁扣都是塑料的，而且很软，而安装的时候又需要用力按，所以一不小心就会变形。</li>
-<li>一旦变形，特别是和桨连接的（中间那个）那个变形的话，会导致飞机向左或向右偏。因为变形之后，舵机拉动旋翼左右倾斜从而左右侧飞的时候，这个变形的锁扣会导致旋翼左右倾斜不顺畅。可以用手捏着平衡杆的一头，上下摇动，如果有阻滞感，那就是锁扣固定的不太好。正常情况下，平衡杆上下摇动是非常顺畅的。</li>
-</ul>
+<blockquote><p>I am a happy user of the daily build of Thunderbird 3. Although it is still under development, is the best email client for Linux I’ve tried so far, at least, the one that better works for me. Email search &amp; filtering is fast and reliable.</p>
 
+<p>The only thing I don’t like is that wrapping your emails to 72 characters when sending plain text is not straightforward. Once you have selected to send your emails as plain text and have set the line wrap option to 72, there is still one more option to tweak.</p>
 
-<p>所以，换这三个球头锁扣的时候，我是这样的：</p>
+<p>Thunderbird has a “feature” that sends by default all plain text with the option format=flowed, which unwraps the email in the client receiver. To turn this feature off, you have to toggle one of the options in the chrome editor:</p>
 
-<ol>
-<li>先连接平衡杆</li>
-<li>另一头接好要接到桨上去的那个锁扣，然后将这个锁扣竖着对准桨的连接点按上去</li>
-<li>摇动一下平衡杆，让中间这个锁扣横过来，自然就扣住了桨。不要去尝试横着强行将这个锁扣按到桨上去，这样最容易变形</li>
-<li>连接好最后一个挂在十字盘上的锁扣</li>
-</ol>
+<p>To disable flowed paragraphs, enforcing line breaks as formatted in the message, set the preference:</p>
 
+<p>mailnews.display.disable_format_flowed_support true
+(<a href="http://kb.mozillazine.org/Mail_content_types#Plain_text">http://kb.mozillazine.org/Mail_content_types#Plain_text</a>)</p>
 
-<p>如果原来十字盘上的锁扣是扣着的，那么先拆下这个，然后再从第一步开始。我的经验是，当平衡杆和十字盘的锁扣都是扣着的时候，想尝试去安装中间那个锁扣（就是扣到桨上的那个），那是很困难的。因为这个时候这个锁扣只有横着才能扣上去，而想要横着扣上去那是相当的麻烦，很容易变形。要让这个锁扣竖着套上桨，然后动一下平衡杆，它就横过来了，很方便而且不会变形。</p>
+<p>To disable paragraph flow when you send plain text messages, and in the plain text part of multipart messages, set the preference:</p>
 
-<p>其他还有一些体会，网上都有一些文章，就不说了。比如连接舵机摇臂和十字盘的连杆，是有螺纹的，可以顺时针、逆时针旋转，从而加长或缩短连杆的长度，从而影响舵量。其实我觉得这个完全可以用遥控器上的微调来做到，没有必要大动干戈拆机去调这个连杆。</p>
-
-<p><img src="/downloads/image/v911.jpg" alt="v911-2" /></p>
-
-<p>零件：</p>
-
-<p><img src="/downloads/image/v911-parts.jpg" alt="v911-2 零件图" /></p>
-
-<p>炸机：</p>
-
-<p><img src="/downloads/image/v911-zha.jpg" alt="v911-2 炸机图" /></p>
+<p>mailnews.send_plaintext_flowed false
+(<a href="http://kb.mozillazine.org/Mail_content_types#Disabling_paragraph_flow">http://kb.mozillazine.org/Mail_content_types#Disabling_paragraph_flow</a>)</p></blockquote>
 </div>
 
 
@@ -167,7 +138,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2014/01/02/v911-2-tips/<br>
+原文链接: http://www.markzhang.cn/blog/2014/11/25/thunderbird-72-column/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -190,12 +161,12 @@
   
 
 
-<time datetime="2014-01-02T20:56:00+08:00" pubdate data-updated="true">Jan 2<span>nd</span>, 2014</time>
+<time datetime="2014-11-25T11:13:00+08:00" pubdate data-updated="true">Nov 25<span>th</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/rchelicopter/'>RCHelicopter</a>
+    <a class='category' href='/blog/categories/linux/'>linux</a>, <a class='category' href='/blog/categories/linux-kernel/'>linux-kernel</a>
   
 </span>
 
@@ -211,10 +182,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/12/27/add-origin-statement-conditionally/" title="Previous Post: Octopress - 有条件的为文章添加转载声明">&laquo; Octopress - 有条件的为文章添加转载声明</a>
+        <a class="basic-alignment left articlenav" href="/blog/2014/10/17/chromeos-enable-ssh-server/" title="Previous Post: ChromeOS配置SSH Server">&laquo; ChromeOS配置SSH Server</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/01/06/hellogl-on-macosx/" title="Next Post: OpenGL Programming on MacOS X (Mavericks)">OpenGL Programming on MacOS X (Mavericks) &raquo;</a>
       
     </p>
   </footer>
