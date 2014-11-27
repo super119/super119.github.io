@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>KGDB使用简介 - Make Things Cool</title>
+  <title>捷克武器那么好，二战面对德国为什么没一点抵抗？ - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="KGDB是调试linux kernel的一个工具，虽然没有userspace的gdb那么好用，但有些时候还是能派上一些用处。比如kernel启动的时候自动重启，用kgdb连上之后就可以在kernel重启之前被KGDB截获，从而打印出调用栈来。 具体步骤是这样： Kernel配置 make &hellip;">
+  <meta name="description" content="转载自铁血社区：http://bbs.tiexue.net/post_5621844_1.html 捷克斯洛伐克虽然有很好的军事工业基础，但是其人口和军队都和纳粹德国没得比，并且之前并没有为战争做好准备，不过这是次要原因。 最主要的原因是当时的地缘政治环境将捷克逼到了绝路。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/03/10/kgdb-howto/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/11/27/czech-world-war-ii/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">KGDB使用简介</h1>
+        <h1 class="entry-title">捷克武器那么好，二战面对德国为什么没一点抵抗？</h1>
       
     
     
@@ -94,92 +94,36 @@
   
 
 
-<time datetime="2014-03-10T13:57:00+08:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
+<time datetime="2014-11-27T17:39:00+08:00" pubdate data-updated="true">Nov 27<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>KGDB是调试linux kernel的一个工具，虽然没有userspace的gdb那么好用，但有些时候还是能派上一些用处。比如kernel启动的时候自动重启，用kgdb连上之后就可以在kernel重启之前被KGDB截获，从而打印出调用栈来。</p>
+<div class="entry-content"><p>转载自铁血社区：<a href="http://bbs.tiexue.net/post_5621844_1.html">http://bbs.tiexue.net/post_5621844_1.html</a></p>
+
+<p>捷克斯洛伐克虽然有很好的军事工业基础，但是其人口和军队都和纳粹德国没得比，并且之前并没有为战争做好准备，不过这是次要原因。</p>
 
 <!-- more -->
 
 
-<p>具体步骤是这样：</p>
+<p>最主要的原因是当时的地缘政治环境将捷克逼到了绝路。尽管现代只着重宣传纳粹德国对捷克斯洛伐克的野心，但实际上由于一战结束后中欧、东南欧版图发生巨变，这个地区聚集了大量民族矛盾和领土纠纷。如原奥匈帝国解体、波兰重新独立、南斯拉夫成立、特兰西瓦尼亚并入罗马尼亚、德国领土萎缩，这就使得中欧的国际关系变得错综复杂。各国往往呈现国土内有大量邻国主体民族国民的状况，如捷克境内有大量的德意志人（毕竟是当初奥匈的主体民族）、匈牙利人、波兰人，罗马尼亚境内有德意志人、匈牙利人，而匈牙利境内又有大量德意志人等等。其结果就是各国的矛盾套成了连环套，希望瓜分捷克的并不仅仅只有德国，而是出于各自的利益考虑，包括德国、波兰、匈牙利等邻国，还有意大利这不接壤的国家都希望肢解掉捷克，南斯拉夫态度暧昧，罗马尼亚在德国和苏联间左右摇摆。</p>
 
-<h2>Kernel配置</h2>
+<p>法国曾经试图联合中欧小国建立一个同盟共同遏制德国扩张，甚至不惜与苏联结盟。但是这个努力显然被潜在同盟国各自的矛盾消解得一干二净。匈牙利接在德国之后试图肢解捷克，对罗马尼亚有特兰西瓦尼亚争议。后来他们如愿将捷克的有匈牙利人居住的领土吞并，顺带划走了20%捷克人。</p>
 
-<ul>
-<li><code>make menuconfig</code>, under &ldquo;Kernel Hacking&rdquo;, enable &ldquo;KGDB&rdquo; &amp; &ldquo;KGDB over serial line&rdquo;. Enable &ldquo;compile kernel with debug info&rdquo;(CONFIG_DEBUG_INFO) &amp; &ldquo;enable frame pointer&rdquo;(CONFIG_FRAME_POINTER) options(both are under &ldquo;Kernel Hacking&rdquo;).</li>
-</ul>
+<p>波兰试图以反正捷克要被肢解，那不如让波兰也乘机收复切欣地区扩充领土好对抗德国为借口，与纳粹德国一起共同对捷克施压，其张牙舞爪的姿态比德国还生猛。波兰甚至为了消除罗马尼亚同意苏军过境的可能，撺掇本来对捷克无野心的罗马尼亚共同参与瓜分捷克。而那个壮大波兰的借口也被波兰用来解释他们威胁吞并立陶宛的举动，立陶宛是因有苏联撑腰才顶住了压力，由于有德国的威胁，此时的苏联还是很仗义的（颇为黑色幽默，40年恰是苏联同意德国吞并立陶宛）。后来波兰获得了捷克的切欣地区。</p>
 
+<p>罗马尼亚的态度最能说明问题，各国认为如历史上那样对付捷克最符合自己利益。首先罗马尼亚与苏联接壤，并且有西乌克兰领土争议。其次罗马尼亚与匈牙利态度紧张，尽管它与德国不接壤，但是匈牙利明显准备做德国的跟班。因此罗马尼亚做出了最符合自身利益的决定：支持匈牙利吞并捷克的匈牙利人地区，但是坚决反对匈牙利吞并整个斯洛伐克，当然这意味着放苏军过境。同时声明当苏联进攻波兰时坚决站在波兰一边，但要是波兰不入侵捷克，苏联不会进攻波兰。</p>
 
-<p>有关CONFIG_FRAME_POINTER这个option，需要在enable了ARCH_CONFIG_FRAME_POINTERS这个option之后才会出现在Kernel hacking下面。</p>
+<p>这样捷克就变得非常令人崩溃了。苏联提出只要法国履行对捷克的保护义务它就绝对出兵。法国提出帮捷克要英国人一起进攻德国，至少波兰人得站在法国一边。而要波兰人此时还反过来帮法国避免捷克被肢解，那除非母猪会上树。英国人则见机不妙提出它只对法国有同盟义务，虽然英国人很不想捷克被肢解，但是当初破坏法国人的中欧同盟的恰恰又是他们，他们是有苦说不出。转回到苏联，他们虽然确实想保护捷克，但苦于有力无处使，也不能当真进攻波兰。</p>
 
-<p>这ARCH_CONFIG_FRAME_POINTERS在make menuconfig里面是找不到的。这个option是专门给其他人select用的。一般都是在ARCH config的时候会去select这个option</p>
-
-<p>比如x86下，一般会enable这个option。而ARM则不会（可能是考虑到生成的kernel文件尺寸和性能）。</p>
-
-<p>所以，在ARM下，可以编辑arch/arm/Kconfig，在CONFIG_ARM下面的一堆select的最后，添加上一句select CONFIG_ARCH_FRAME_POINTERS就可以了。</p>
-
-<p>从实验结果来看，只要enable了CONFIG_DEBUG_INFO，基本上就差不多了，能看到代码了。</p>
-
-<ul>
-<li>Add kernel option: <code>kgdboc=ttyS0,38400 kgdbwait</code> into kernel command line.</li>
-</ul>
-
-
-<p>根据我的实验，这里115200不行。在后面gdb设置<code>target remote /dev/ttyS0</code>的时候，会被告知最高支持到38400.</p>
-
-<p>所以，这里如果115200不行，就改成38400。</p>
-
-<p>注意这里将<code>/dev/ttyS0</code>修改成你的串口设备文件。</p>
-
-<ul>
-<li>Start kernel, kernel will wait for connection from remote PC&rsquo;s gdb.</li>
-</ul>
-
-
-<h2>PC端（remote machine）设置</h2>
-
-<ul>
-<li>On remote machine, <code>&lt;gdb path&gt; ./vmlinux</code> &mdash; this &ldquo;vmlinux&rdquo; mostly is under the root directory of kernel(a big kernel image with debug infos, not the one under arch/arm/boot, that is stripped version).</li>
-</ul>
-
-
-<p>需要注意的是，这里的GDB必须使用host是x86-64，target是ARM的那种GDB。我们PC上的gdb一般host和target都是x86-64。</p>
-
-<p>这样的GDB可以在一些常见的toolchain网站找到，比如linaro。</p>
-
-<ul>
-<li>Enter gdb commands:</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">set </span>remotebaud 38400
-</span><span class='line'>target remote /dev/ttyS0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>Done. You can list source codes, set breakpoints now. Continue the debugging after finished.</li>
-</ul>
-
-
-<p><em>CAUTION</em>: Close any other programs(normally it&rsquo;s minicom which we use to monitor serial outputs) which may occupy &ldquo;/dev/ttyS0&rdquo; before running gdb on remote machine. Otherwise gdb can&rsquo;t connect with target board.</p>
+<p>于是尽管捷克都开始过总动员，预计自身可以至少抵抗德国3到6个月，必要时也能顶住匈牙利的攻击，甚至被迫同意波兰的要求以使其退出战争，但他们抵抗成功的前提是西边的法国和东边的苏联都有实质性的援助，这两者最终都只是水中月。最后压垮了捷克的稻草是波兰的态度，波兰甚至根本不屑于见好就收，他们公开要求肢解掉捷克。这就是一个小国的悲哀，捷克如何能够在被两个大国抛弃，三个邻国重兵压境，外边还有两个看热闹的一个扇风点火的外加一个虽然热心帮忙但很可能居心叵测的国家共同侵凌下幸存呢？这就叫弱国无外交。于是最终，捷克斯洛伐克同意了三个邻国的领土要求，倒向德国成了一个卫星国。</p>
 </div>
 
 
   <footer>
     
-    <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
-      <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2014/03/10/kgdb-howto/<br>
-您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
-    </section>
     
 
     <p class="meta">
@@ -200,12 +144,12 @@
   
 
 
-<time datetime="2014-03-10T13:57:00+08:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
+<time datetime="2014-11-27T17:39:00+08:00" pubdate data-updated="true">Nov 27<span>th</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/linux-kernel/'>linux-kernel</a>
+    <a class='category' href='/blog/categories/history-science/'>History-Science</a>, <a class='category' href='/blog/categories/reprints/'>reprints</a>
   
 </span>
 
@@ -221,10 +165,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2014/02/08/virtualbox-ubuntu-dns-issue/" title="Previous Post: VirtualBox中安装Ubuntu，在有VPN的情况下会有DNS的问题">&laquo; VirtualBox中安装Ubuntu，在有VPN的情况下会有DNS的问题</a>
+        <a class="basic-alignment left articlenav" href="/blog/2014/11/25/thunderbird-72-column/" title="Previous Post: Thunderbird 80(72) column - 邮件在80(72)列处line break">&laquo; Thunderbird 80(72) column - 邮件在80(72)列处line break</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/03/20/juniper-vpn-on-ubuntu/" title="Next Post: 在Ubuntu上连接Juniper SSL VPN">在Ubuntu上连接Juniper SSL VPN &raquo;</a>
       
     </p>
   </footer>
