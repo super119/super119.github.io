@@ -3,7 +3,7 @@ layout: post
 title: "Defeating the Hackers"
 date: 2013-12-17 14:06
 comments: true
-categories: science
+categories: History-Science
 ---
 
 Defeating the Hackers是BBC拍摄的一部纪录片。本片主要描述了目前生活中，特别是网络中的各种安全问题（窃取隐私，盗取帐号，删除资料，控制设备。。。），然后引申出了计算机技术中的一些安全防范技术和手段，是相当通俗易懂的科普类纪录片。
