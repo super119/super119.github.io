@@ -4,7 +4,7 @@
   <title><![CDATA[Category: network | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/network/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-11-27T17:44:41+08:00</updated>
+  <updated>2014-12-09T18:10:09+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,68 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[RouterOS/远程启动/控制家里的PC]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/12/09/ros-rdp-wol/"/>
+    <updated>2014-12-09T17:35:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/12/09/ros-rdp-wol</id>
+    <content type="html"><![CDATA[<h2>远程启动</h2>
+
+<p>远程启动其实就是 <code>WOL(Wake on Lan)</code>，现在的PC机基本上都支持。需要两个东西：</p>
+
+<ul>
+<li>在BIOS里面打开 <code>WOL</code></li>
+<li>使用一个程序，发送WOL的一个包（所谓magic packet）给PC机</li>
+</ul>
+
+
+<p>先说第一个，在我的PC机上，这个设置是 Advanced Options &ndash;> APM &ndash;> Power on PCIE，设成 <code>Enabled</code> 即可。</p>
+
+<!-- more -->
+
+
+<p>再说第二个，很酷的是ROS就支持这个，这样你就不需要另外一台PC机常年开着了，ROS路由一直开着即可。在ROS中，打开 <code>New Terminal</code>，输入：</p>
+
+<p><code>bash
+/tool wol interface=&lt;连着你要唤醒的PC机的那个网口&gt; mac=&lt;要唤醒PC机的网卡的MAC地址&gt;
+</code></p>
+
+<p><img src="/downloads/image/ros-wol.png" alt="ROS Wake on Lan" /></p>
+
+<p>如果你的路由器不是ROS，或是没有WOL功能的话，那就需要另外一台PC来执行WOL的程序了。在Linux下，可以使用：</p>
+
+<p><code>bash
+sudo apt-get install etherwake
+wakeonlan &lt;mac address&gt;
+</code></p>
+
+<p>Windows下也一样，下载一个Wake on Lan的程序使用就行了。</p>
+
+<h2>远程控制</h2>
+
+<p>首先就是打开Windows的远程桌面功能。在 <code>高级系统设置 -&gt; 远程</code> 标签页里面：</p>
+
+<p><img src="/downloads/image/windows-rdp.png" alt="Windows RDP" /></p>
+
+<p>完了就是在ROS里面打开端口映射，这样你才可以从Internet上远程RDP到家里的PC机，需要映射的是著名的3389端口：</p>
+
+<p><code>bash
+chain=dstnat action=dst-nat to-addresses=&lt;xxx.xxx.xxx.xxx&gt; to-ports=3389 protocol=tcp dst-port=3389
+chain=dstnat action=dst-nat to-addresses=&lt;xxx.xxx.xxx.xxx&gt; to-ports=3389 protocol=udp dst-port=3389
+</code></p>
+
+<p>这样就可以远程登录了。Ubuntu下面有自带的 <code>Remmina Remote Desktop</code> 可以使用，Mac下我用的是 <code>Jump Desktop</code>，个人感觉很好用。</p>
+
+<p>最后一个小问题，有关远程登录机器开始菜单中没有 <code>关机</code> 这个功能，只需要打开 <code>Windows CMD</code>，也就是命令行界面，输入：</p>
+
+<p><code>bash
+shutdown /f /s
+</code></p>
+
+<p>就可以了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[RouterOS配置记录（四）：OpenVPN Client]]></title>
@@ -461,94 +523,6 @@ Flags: X &ndash; disabled, I &ndash; invalid, D &ndash; dynamic
 <p>这个最后一条规则，可以看到，是说如果是从 <code>SHUnicom</code> 这个接口进来的数据一律drop，而 <code>SHUnicom</code> 是我的宽带连接接口。想到这个宽带连接其实是在我的ether1-wan这个物理接口上，那么这里是否也可以设置成从 <code>ether1-wan</code> 接口进来的数据一律drop呢？仔细想想是不对的，<code>ether1-wan</code> 是物理接口，用于宽带拨号；而 <code>SHUnicom</code> 其实是一个PPPoE，它会创建一个虚拟的网卡interface，所以我们要drop的是从这个虚拟的网卡interface尝试进入RouterBoard的数据，而不是物理的 <code>ether1-wan</code> 上进入的数据。如果我们真的drop了 <code>ether1-wan</code> 上进来的数据，那就上不了网了，因为所有的返回的数据都被丢掉了。在PPPoE/VPN的时候，虚拟网卡会被创建，所以这个时候要分清楚虚拟网卡和物理网卡，免的设置错误的规则。</p>
 
 <p>能上网只是最基本需求了，接下来才是开始各种折腾的时候，VPN/chnroutes/DDNS/&hellip; 后续博客将记录这些。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Winbox for Mac OS X，修改界面字体]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/07/24/winbox-mac-change-font/"/>
-    <updated>2014-07-24T18:19:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/07/24/winbox-mac-change-font</id>
-    <content type="html"><![CDATA[<p>RouterOS（或简称ROS）是拉脱维亚的Mikrotik开发的一个强大到变态（对于个人用户而言）的路由系统。基于Linux，支持x86和MIPS（routerboard）。也就是说，你可以找一台PC来，装上routeros，就变身成了一台路由器。所以也有很多人称RouterOS为软路由。</p>
-
-<p>Winbox是Mikrotik开发的RouterOS的管理工具（客户端）。当然，RouterOS也有网页版和命令行（终端，支持SSH，串口等）的管理界面，但是Winbox是相对来说最直观和好用的（当然用多了肯定到最后就是纯命令行了）。</p>
-
-<p>有一个问题就是，Winbox只有windows版的。在Mac和Linux上，要使用wine来运行（或安装虚拟机）。</p>
-
-<!-- more -->
-
-
-<p>对于Mac OS X，网上有爱好者已经做好了一个包，下载下来安装即可，不用自己去折腾安装和配置 <code>wine</code>。地址在这里：</p>
-
-<p><a href="http://wiki.mikrotik.com/wiki/MikroTik_WinBox_for_Mac_StandAlone">http://wiki.mikrotik.com/wiki/MikroTik_WinBox_for_Mac_StandAlone</a></p>
-
-<p>的确很好用，就是有一个问题，字体太难看。看起来用的是默认的宋体，所以英文显示效果不忍直视。</p>
-
-<p>所以很自然想修改字体。说起修改这个字体，其实就是修改windows的默认字体。参考了这篇文章：</p>
-
-<p><a href="http://linfan.info/blog/2012/03/01/wine-mac/">http://linfan.info/blog/2012/03/01/wine-mac/</a></p>
-
-<p>具体可以这么做：</p>
-
-<ul>
-<li>找一个喜欢的字体（Mac OS X自带了很多字体，如果安装了Office for Mac，那微软的很多字体也都有了），拷贝到 <code>/Applications/Winbox.app/drive_c/windows/Fonts</code> 目录下。比如我用的是微软雅黑：</li>
-</ul>
-
-
-<p><code>bash
-cp /Library/Fonts/Microsoft/Microsoft\ Yahei.ttf /Applications/WinBox.app/drive_c/windows/Fonts
-</code></p>
-
-<ul>
-<li>使用Wine运行注册表编辑器。这个打包好的Winbox for Mac，使用的是Wineskin（就是一个wine的wrapper，这样就把winbox.exe做成了Mac上的Winbox.app），所以这样：</li>
-</ul>
-
-
-<p><code>bash
-open /Applications/WinBox.app/Wineskin.app/
-</code></p>
-
-<p>然后点击 <code>Advanced</code> 按钮，再选择 <code>Tools</code> 标签页，最后点击 <code>Registry Editor (regedit)</code> 按钮，出现windows的注册表编辑器，导入这个注册表：</p>
-
-<p>``` ini
-REGEDIT4</p>
-
-<p>[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\FontSubstitutes]
-&ldquo;Microsoft Yahei&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;Comic Sans MS&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;Courier&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;Courier New&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;Fixedsys&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;Helv&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;Helvetica&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;Lucida Console&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;Lucida Sans&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;Microsoft Sans Serif&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;MingLiU&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;PMingLiu&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;MS Shell Dlg&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;MS Shell Dlg 2&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;MS Dialog&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;MS Gothic&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;MS PGothic&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;MS UI Gothic&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;MS Mincho&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;MS PMincho&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;SimHei&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;SimSun&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;NSimSun&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;System&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;Tahoma&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;Times&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;Times New Roman&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;Tms Rmn&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;Trebuchet MS&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-&ldquo;Verdana&rdquo;=&ldquo;Microsoft Yahei&rdquo;
-```</p>
-
-<p>这样就OK了，再次打开Winbox，终于看到舒服的界面了：</p>
-
-<p><img src="/downloads/image/mac-winbox-change-font.png" alt="Mac Winbox changed font" /></p>
 ]]></content>
   </entry>
   

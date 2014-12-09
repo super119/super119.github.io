@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-11-27T17:44:41+08:00</updated>
+  <updated>2014-12-09T18:10:09+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,74 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[RouterOS/远程启动/控制家里的PC]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/12/09/ros-rdp-wol/"/>
+    <updated>2014-12-09T17:35:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/12/09/ros-rdp-wol</id>
+    <content type="html"><![CDATA[<h2>远程启动</h2>
+
+<p>远程启动其实就是 <code>WOL(Wake on Lan)</code>，现在的PC机基本上都支持。需要两个东西：</p>
+
+<ul>
+<li>在BIOS里面打开 <code>WOL</code></li>
+<li>使用一个程序，发送WOL的一个包（所谓magic packet）给PC机</li>
+</ul>
+
+
+<p>先说第一个，在我的PC机上，这个设置是 Advanced Options &ndash;> APM &ndash;> Power on PCIE，设成 <code>Enabled</code> 即可。</p>
+
+<!-- more -->
+
+
+<p>再说第二个，很酷的是ROS就支持这个，这样你就不需要另外一台PC机常年开着了，ROS路由一直开着即可。在ROS中，打开 <code>New Terminal</code>，输入：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/tool wol <span class="nv">interface</span><span class="o">=</span>&lt;连着你要唤醒的PC机的那个网口&gt; <span class="nv">mac</span><span class="o">=</span>&lt;要唤醒PC机的网卡的MAC地址&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-wol.png" alt="ROS Wake on Lan" /></p>
+
+<p>如果你的路由器不是ROS，或是没有WOL功能的话，那就需要另外一台PC来执行WOL的程序了。在Linux下，可以使用：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo apt-get install etherwake
+</span><span class='line'>wakeonlan &lt;mac address&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Windows下也一样，下载一个Wake on Lan的程序使用就行了。</p>
+
+<h2>远程控制</h2>
+
+<p>首先就是打开Windows的远程桌面功能。在 <code>高级系统设置 -&gt; 远程</code> 标签页里面：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/windows-rdp.png" alt="Windows RDP" /></p>
+
+<p>完了就是在ROS里面打开端口映射，这样你才可以从Internet上远程RDP到家里的PC机，需要映射的是著名的3389端口：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">chain</span><span class="o">=</span>dstnat <span class="nv">action</span><span class="o">=</span>dst-nat to-addresses<span class="o">=</span>&lt;xxx.xxx.xxx.xxx&gt; to-ports<span class="o">=</span>3389 <span class="nv">protocol</span><span class="o">=</span>tcp dst-port<span class="o">=</span>3389
+</span><span class='line'><span class="nv">chain</span><span class="o">=</span>dstnat <span class="nv">action</span><span class="o">=</span>dst-nat to-addresses<span class="o">=</span>&lt;xxx.xxx.xxx.xxx&gt; to-ports<span class="o">=</span>3389 <span class="nv">protocol</span><span class="o">=</span>udp dst-port<span class="o">=</span>3389
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样就可以远程登录了。Ubuntu下面有自带的 <code>Remmina Remote Desktop</code> 可以使用，Mac下我用的是 <code>Jump Desktop</code>，个人感觉很好用。</p>
+
+<p>最后一个小问题，有关远程登录机器开始菜单中没有 <code>关机</code> 这个功能，只需要打开 <code>Windows CMD</code>，也就是命令行界面，输入：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>shutdown /f /s
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>就可以了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[捷克武器那么好，二战面对德国为什么没一点抵抗？]]></title>
@@ -1898,83 +1966,6 @@ Used for stateless SNAT.</p>
 <p>现在我们就可以在 C ≠ D 的情况得到一组解 (x, y, 0)，代入得 (C &ndash; D)w = 0，因为 C ≠ D，所以 w = 0。因而，两条平行线相交于投影空间中无限远处的一点 (x, y, 0)。</p>
 
 <p>齐次坐标在计算机图形学中是有用的，将 3D 场景投影到 2D 平面的过程中就用到它了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Git都在说些啥（三）]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/04/22/git-gossip-3/"/>
-    <updated>2014-04-22T07:58:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/04/22/git-gossip-3</id>
-    <content type="html"><![CDATA[<p>这次来说说有关 <code>no branch</code> 的那些事。</p>
-
-<p>其实之前在<a href="http://markzhang.cn/blog/2014/04/04/git-gossip-1/">Git都在说些啥（一）</a>中已经提过一些有关 <code>no branch</code> 的东西。这次再来看看其他两段git的提示信息，都是与 <code>no branch</code> 有关的。</p>
-
-<!-- more -->
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Marks-RMBP:~/Graphics/OpenGL-ProgrammingGuide<span class="nv">$ </span>git ck origin/master
-</span><span class='line'>Note: checking out <span class="s1">&#39;origin/master&#39;</span>.
-</span><span class='line'>
-</span><span class='line'>You are in <span class="s1">&#39;detached HEAD&#39;</span> state. You can look around, make experimental
-</span><span class='line'>changes and commit them, and you can discard any commits you make in this
-</span><span class='line'>state without impacting any branches by performing another checkout.
-</span><span class='line'>
-</span><span class='line'>If you want to create a new branch to retain commits you create, you may
-</span><span class='line'><span class="k">do </span>so <span class="o">(</span>now or later<span class="o">)</span> by using -b with the checkout <span class="nb">command </span>again. Example:
-</span><span class='line'>
-</span><span class='line'>  git checkout -b new_branch_name
-</span><span class='line'>
-</span><span class='line'>HEAD is now at 82b25d9b1856... HelloGL: Add missing shader files
-</span><span class='line'>Marks-RMBP:~/Graphics/OpenGL-ProgrammingGuide<span class="nv">$ </span>git b
-</span><span class='line'>* <span class="o">(</span>no branch<span class="o">)</span>
-</span><span class='line'>  master
-</span><span class='line'>  tmp
-</span><span class='line'>Marks-RMBP:~/Graphics/OpenGL-ProgrammingGuide<span class="nv">$ </span>git pull
-</span><span class='line'>You are not currently on a branch, so I cannot use any
-</span><span class='line'><span class="s1">&#39;branch.&lt;branchname&gt;.merge&#39;</span> in your configuration file.
-</span><span class='line'>Please specify which remote branch you want to use on the <span class="nb">command</span>
-</span><span class='line'>line and try again <span class="o">(</span>e.g. <span class="s1">&#39;git pull &lt;repository&gt; &lt;refspec&gt;&#39;</span><span class="o">)</span>.
-</span><span class='line'>See git-pull<span class="o">(</span>1<span class="o">)</span> <span class="k">for </span>details.
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>第一段信息来自命令 <code>git checkout origin/master</code>。Git的这段唠叨意思就是，哥们你checkout了一个版本，但是没有指定branch的名字，所以哥现在给你创建了一个特殊的branch，名字叫 <code>no branch</code>。这个branch特殊在哪呢，就是你可以在这个branch上工作，可以提交commit，但是将来你一旦离开了这个branch，比如你checkout到其他的branch上去了，那么你就再也回不来了哈。你做的那些commit就找不到了哈。所以哥们现在强烈建议你，以后checkout branch使用 <code>git checkout -b new_branch_name</code>。</p>
-
-<p><strong> 注：</strong> 之前在<a href="http://markzhang.cn/blog/2014/04/04/git-gossip-1/">Git都在说些啥（一）</a>提到过了，使用 <code>git reflog</code> 可以找回你在 <code>no branch</code> 上提交过的commit。前提是git还帮你留着这些commits。</p>
-
-<p>第二段提示信息来自执行 <code>git pull</code> 的时候，之前在<a href="http://markzhang.cn/blog/2014/04/21/git-gossip-2/">Git都在说些啥（二）</a>中已经详细说了 <code>git pull</code> 会出现的这种错误信息。所以，这里想说的是，只要你工作在 <code>no branch</code> 上，那么执行 <code>git pull</code> 的时候，就必须写全了，比如：<code>git pull origin master</code>，这样git才知道怎么去做merge。</p>
-
-<p>说到这里，你可能会问，为什么git要搞这么一个莫名其貌，麻烦无比的 <code>no branch</code> 出来？其实 <code>no branch</code> 是有一些适用的场景的。<code>no branch</code> 相当于是一种临时branch，建立这个branch的唯一原因就是将来我们肯定会放弃掉这个branch，所以在做比如 <code>git rebase</code> 的时候，<code>no branch</code> 就很make sense了。因为我们知道 <code>git rebase</code> 的时候，git需要根据你的指令，将commits重新做排列、修正、squash等等，此时，git就会以第一个需要rebase的commit之前的那个commit为base，checkout到一个 <code>no branch</code> 上去，rebase做完之后，再最终将 <code>no branch</code> 覆盖掉你执行 <code>git rebase</code> 时的branch。所以，在这种场景下，使用 <code>no branch</code> 就比使用一个有名字的branch更加的make sense。</p>
-
-<p>还有一种场景你肯定熟悉，就是使用repo的时候。repo是Google做的一个Python脚本程序，用于管理多个git仓库。你会发现，经常你做完 <code>repo sync</code> 之后，来到其中任意一个git仓库（或者叫git project吧，repo中是称为project的），执行一下 <code>git branch</code>，你会发现你都处在 <code>no branch</code> 上。我的感觉是，repo针对每一个git project，是可以定义 <code>revision</code> 的（在.repo/manifest.xml中可以定义所有的git project，其中就可以针对每个project定义revision）。而这个revision，就是一个git commit的HASH，所以在这种场景下，repo在 <code>git fetch</code> 取得了该project远端的所有更新之后，如何将你本地的文件更新到你指定的revision上？肯定是执行 <code>git checkout &lt;commit hash&gt;</code> 这样的命令了，那么这个时候自然 <code>no branch</code> 就产生了。当然repo也可以很二的约定一个俗气无比的branch名字，比如 <code>git checkout -b this_really_sucks &lt;commit hash&gt;</code>？</p>
-
-<p>其实 <code>no branch</code> 本身没啥，只是由于相比其他的branch，<code>no branch</code> 有一些特殊的地方，所以在 <code>no branch</code> 上工作是，你就经常会收到git的一些抱怨，习惯了就好。</p>
 ]]></content>
   </entry>
   

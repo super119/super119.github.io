@@ -9,7 +9,8 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="转载自铁血社区：http://bbs.tiexue.net/post_5621844_1.html 捷克斯洛伐克虽然有很好的军事工业基础，但是其人口和军队都和纳粹德国没得比，并且之前并没有为战争做好准备，不过这是次要原因。 ">
+  <meta name="description" content="远程启动 远程启动其实就是 WOL(Wake on Lan)，现在的PC机基本上都支持。需要两个东西： 在BIOS里面打开 WOL
+使用一个程序，发送WOL的一个包（所谓magic packet）给PC机 先说第一个，在我的PC机上，这个设置是 Advanced Options &ndash;> &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +74,59 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/12/09/ros-rdp-wol/">RouterOS/远程启动/控制家里的PC</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-09T17:35:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>远程启动</h2>
+
+<p>远程启动其实就是 <code>WOL(Wake on Lan)</code>，现在的PC机基本上都支持。需要两个东西：</p>
+
+<ul>
+<li>在BIOS里面打开 <code>WOL</code></li>
+<li>使用一个程序，发送WOL的一个包（所谓magic packet）给PC机</li>
+</ul>
+
+
+<p>先说第一个，在我的PC机上，这个设置是 Advanced Options &ndash;> APM &ndash;> Power on PCIE，设成 <code>Enabled</code> 即可。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/12/09/ros-rdp-wol/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -489,51 +543,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/07/23/netfilter-overview/">Linux Netfilter概述，mangle/nat/filter, Prerouting/input/forward&#8230;到底是啥</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-23T18:30:00+08:00" pubdate data-updated="true">Jul 23<span>rd</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>本文转载自：</p>
-
-<p><a href="http://shorewall.net/NetfilterOverview.html">http://shorewall.net/NetfilterOverview.html</a></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/23/netfilter-overview/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -546,11 +555,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (1)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (5)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (2)</a></li><li><a href='/blog/categories/linux'>linux (5)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (4)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (11)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (4)</a></li><li><a href='/blog/categories/reprints'>reprints (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (1)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (5)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (2)</a></li><li><a href='/blog/categories/linux'>linux (5)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (4)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (12)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (4)</a></li><li><a href='/blog/categories/reprints'>reprints (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/09/ros-rdp-wol/">RouterOS/远程启动/控制家里的PC</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/11/27/czech-world-war-ii/">捷克武器那么好，二战面对德国为什么没一点抵抗？</a>
@@ -566,10 +579,6 @@
     
       <li class="post">
         <a href="/blog/2014/09/17/killzone-3-freezing-issue/">PS3 KillZone 3（杀戮地带3）黑屏死机问题</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/09/01/ros-openvpn/">RouterOS配置记录（四）：OpenVPN Client</a>
       </li>
     
   </ul>

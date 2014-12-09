@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Git都在说些啥（一） - Make Things Cool</title>
+  <title>RouterOS/远程启动/控制家里的PC - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="当我们在做某些git操作的时候，git有的时候会给出一段一段的提示信息，而往往这些信息都是比较重要的。因为按照UNIX的设计哲学，执行成功或是无害操作，这些都是不会有任何提示信息的。做Linux的Hackers也奉行这种哲学，所以当git开始唠叨的时候，你真的需要关注一下它到底在罗嗦些啥。 &hellip;">
+  <meta name="description" content="远程启动 远程启动其实就是 WOL(Wake on Lan)，现在的PC机基本上都支持。需要两个东西： 在BIOS里面打开 WOL
+使用一个程序，发送WOL的一个包（所谓magic packet）给PC机 先说第一个，在我的PC机上，这个设置是 Advanced Options &ndash;> &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/04/04/git-gossip-1/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/12/09/ros-rdp-wol/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +78,7 @@
   <header>
     
       
-        <h1 class="entry-title">Git都在说些啥（一）</h1>
+        <h1 class="entry-title">RouterOS/远程启动/控制家里的PC</h1>
       
     
     
@@ -94,58 +95,73 @@
   
 
 
-<time datetime="2014-04-04T14:28:00+08:00" pubdate data-updated="true">Apr 4<span>th</span>, 2014</time>
+<time datetime="2014-12-09T17:35:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>当我们在做某些git操作的时候，git有的时候会给出一段一段的提示信息，而往往这些信息都是比较重要的。因为按照UNIX的设计哲学，执行成功或是无害操作，这些都是不会有任何提示信息的。做Linux的Hackers也奉行这种哲学，所以当git开始唠叨的时候，你真的需要关注一下它到底在罗嗦些啥。</p>
+<div class="entry-content"><h2>远程启动</h2>
 
-<p>这篇文章描述的就是某一个git的唠叨。</p>
+<p>远程启动其实就是 <code>WOL(Wake on Lan)</code>，现在的PC机基本上都支持。需要两个东西：</p>
+
+<ul>
+<li>在BIOS里面打开 <code>WOL</code></li>
+<li>使用一个程序，发送WOL的一个包（所谓magic packet）给PC机</li>
+</ul>
+
+
+<p>先说第一个，在我的PC机上，这个设置是 Advanced Options &ndash;> APM &ndash;> Power on PCIE，设成 <code>Enabled</code> 即可。</p>
 
 <!-- more -->
 
 
-<p>有的时候，特别是当执行 <code>git checkout</code> 的时候，你可能会看到这样的信息：</p>
+<p>再说第二个，很酷的是ROS就支持这个，这样你就不需要另外一台PC机常年开着了，ROS路由一直开着即可。在ROS中，打开 <code>New Terminal</code>，输入：</p>
 
-<blockquote><p>Warning: you are leaving 30 commits behind, not connected to
-any of your branches:</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/tool wol <span class="nv">interface</span><span class="o">=</span>&lt;连着你要唤醒的PC机的那个网口&gt; <span class="nv">mac</span><span class="o">=</span>&lt;要唤醒PC机的网卡的MAC地址&gt;
+</span></code></pre></td></tr></table></div></figure>
 
-<p>2553655 Merge branch &lsquo;master&rsquo; into prod</p>
 
-<p>6b07300 Fix build</p>
+<p><img src="/downloads/image/ros-wol.png" alt="ROS Wake on Lan" /></p>
 
-<p>&hellip; and 28 more.</p>
+<p>如果你的路由器不是ROS，或是没有WOL功能的话，那就需要另外一台PC来执行WOL的程序了。在Linux下，可以使用：</p>
 
-<p>If you want to keep them by creating a new branch, this may be a good time
-to do so with:</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo apt-get install etherwake
+</span><span class='line'>wakeonlan &lt;mac address&gt;
+</span></code></pre></td></tr></table></div></figure>
 
-<p>git branch new_branch_name 654646464</p></blockquote>
 
-<p>注：以上信息来自：<a href="https://groups.google.com/forum/#!topic/git-users/4XC8KhZ-cBM">https://groups.google.com/forum/#!topic/git-users/4XC8KhZ-cBM</a></p>
+<p>Windows下也一样，下载一个Wake on Lan的程序使用就行了。</p>
 
-<p>所以git的这段罗嗦到底是什么意思？</p>
+<h2>远程控制</h2>
 
-<p>发生这种情况时，你一般工作在 <code>no branch</code> 上，也就是说，这个branch没有名字。也就是说，一旦你发生了 <code>git checkout</code> 操作之后，无法你是checkout到了一个有名字的branch，还是没有指定checkout的branch，就是更新本地的文件，这个 <code>no branch</code> 就再也回不去了，因为这个branch没有名字，所以你无法告诉git，我需要再回到这个branch上去。</p>
+<p>首先就是打开Windows的远程桌面功能。在 <code>高级系统设置 -&gt; 远程</code> 标签页里面：</p>
 
-<p>基于此，如果你在 <code>no branch</code> 上有一些commit（无论是你自己commit的，还是你cherry-pick的），那么，当发生 <code>git checkout</code> 的时候，git就会给出上面的信息，告诉你，如果你现在不做点事的话，之前你所在的 <code>no branch</code> 就再也回不去了，所以，这个时候你最好建一个branch来保证你还能回到 <code>no branch</code> 上去：</p>
+<p><img src="/downloads/image/windows-rdp.png" alt="Windows RDP" /></p>
 
-<blockquote><p>If you want to keep them by creating a new branch, this may be a good time
-to do so with:</p>
+<p>完了就是在ROS里面打开端口映射，这样你才可以从Internet上远程RDP到家里的PC机，需要映射的是著名的3389端口：</p>
 
-<p>git branch new_branch_name 654646464</p></blockquote>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">chain</span><span class="o">=</span>dstnat <span class="nv">action</span><span class="o">=</span>dst-nat to-addresses<span class="o">=</span>&lt;xxx.xxx.xxx.xxx&gt; to-ports<span class="o">=</span>3389 <span class="nv">protocol</span><span class="o">=</span>tcp dst-port<span class="o">=</span>3389
+</span><span class='line'><span class="nv">chain</span><span class="o">=</span>dstnat <span class="nv">action</span><span class="o">=</span>dst-nat to-addresses<span class="o">=</span>&lt;xxx.xxx.xxx.xxx&gt; to-ports<span class="o">=</span>3389 <span class="nv">protocol</span><span class="o">=</span>udp dst-port<span class="o">=</span>3389
+</span></code></pre></td></tr></table></div></figure>
 
-<p>事实上，如果你真的碰到了这种情况，而且当git给出上面一段信息告诉了你利害关系之后，你仍然义无反顾的无视了git的警告，没有创建一个有名字的branch来保存之前你在 <code>no branch</code> 上的工作成果，最终在某一天你想起来，想要找回N久之前在 <code>no branch</code> 上的一些commit的话，你仍然还有一根救命稻草：</p>
 
-<p><code>git reflog</code></p>
+<p>这样就可以远程登录了。Ubuntu下面有自带的 <code>Remmina Remote Desktop</code> 可以使用，Mac下我用的是 <code>Jump Desktop</code>，个人感觉很好用。</p>
 
-<p>基本上，<code>git reflog</code> 将给出所有“失联”的commit。也就是说，这些commit不属于任何branch（no connection），从git数据库中删掉也无所谓。</p>
+<p>最后一个小问题，有关远程登录机器开始菜单中没有 <code>关机</code> 这个功能，只需要打开 <code>Windows CMD</code>，也就是命令行界面，输入：</p>
 
-<p>所以，你最好期望 <code>git reflog</code> 中有你需要的commit，因为就像上面所说，这些commit本就是可以被安全删除的commit，如果你做过 <code>git gc</code>，或者是git自动做过 <code>git gc</code> 的话（git有一套逻辑来判断什么时候应该做一次gc），这些commit就真的没有了。</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>shutdown /f /s
+</span></code></pre></td></tr></table></div></figure>
 
-<p>注：上面一段说的有点严重，事实上，git对待失联的commit，有一个expire time的设定，所以也不是说一旦执行过 <code>git gc</code>，这些commit就真的没有了。但是为了安全起见，对于重要的commit，还是需要注意不要丢了。</p>
+
+<p>就可以了。</p>
 </div>
 
 
@@ -153,7 +169,7 @@ to do so with:</p>
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2014/04/04/git-gossip-1/<br>
+原文链接: http://www.markzhang.cn/blog/2014/12/09/ros-rdp-wol/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -176,12 +192,12 @@ to do so with:</p>
   
 
 
-<time datetime="2014-04-04T14:28:00+08:00" pubdate data-updated="true">Apr 4<span>th</span>, 2014</time>
+<time datetime="2014-12-09T17:35:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/git/'>git</a>
+    <a class='category' href='/blog/categories/network/'>network</a>
   
 </span>
 
@@ -197,10 +213,8 @@ to do so with:</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2014/03/25/mac-chrome-add-ssl-certification/" title="Previous Post: 给Mac OS X上的Chrome添加SSL证书">&laquo; 给Mac OS X上的Chrome添加SSL证书</a>
+        <a class="basic-alignment left articlenav" href="/blog/2014/11/27/czech-world-war-ii/" title="Previous Post: 捷克武器那么好，二战面对德国为什么没一点抵抗？">&laquo; 捷克武器那么好，二战面对德国为什么没一点抵抗？</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/04/08/lastpass/" title="Next Post: 一站式密码管理器 - LastPass">一站式密码管理器 - LastPass &raquo;</a>
       
     </p>
   </footer>
