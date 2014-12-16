@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux-kernel | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/linux-kernel/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2014-12-09T18:10:09+08:00</updated>
+  <updated>2014-12-16T15:21:31+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,40 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[32/64的问题：32bit指针转换成64bit - Sign Extension]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit/"/>
+    <updated>2014-12-16T15:09:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit</id>
+    <content type="html"><![CDATA[<p>32/64有很多问题，指针转换是其中一个，比如这个例子：</p>
+
+<!-- more -->
+
+
+<p><code>cpp
+void *p = 0xc8f68000;
+unsigned long long v = (unsigned long long)p;
+</code></p>
+
+<p>这个时候得到的 <code>v</code> 是： <code>0xffffffffc8f68000</code> 而不是 <code>0x00000000c8f68000</code></p>
+
+<p>以上例子来自：</p>
+
+<p><a href="http://stackoverflow.com/questions/22239752/convert-32-bit-pointer-to-64-bit-integer">http://stackoverflow.com/questions/22239752/convert-32-bit-pointer-to-64-bit-integer</a></p>
+
+<p>最近就碰到了好几次类似的问题。原因非常简单，就是编译器看到我们要把一个指针转换成 <code>unsigned long long</code>，而 <code>p</code> 的最高位是1，编译器认为这是负数，所以编译器就启动了 <code>Sign Extension</code>，将高32bit全部设置成1，这样最终你看到的高32bit就是全F了。</p>
+
+<p>所以当做32bit &ndash;> 64bit指针转换的时候，要使用 <code>intptr_t</code> 和 <code>uintptr_t</code>。这样编译器就知道这是指针的转换，高32bit就会是全0了。同样，这也就说明了，为什么 <code>stdint.h</code> 里面要定义这么些个typedef了:</p>
+
+<p><code>cpp
+void *p = 0xc8f68000;
+uint64_t v = (uintptr_t)p;
+</code></p>
+
+<p>事实上，无论何时都尽量要避免指针和Integer之间的转换，因为Integer是有正负的。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Thunderbird 80(72) column - 邮件在80(72)列处line break]]></title>

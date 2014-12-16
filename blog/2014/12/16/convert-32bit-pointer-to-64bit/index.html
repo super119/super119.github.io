@@ -5,11 +5,14 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>KGDB使用简介 - Make Things Cool</title>
+  <title>32/64的问题：32bit指针转换成64bit - Sign Extension - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="KGDB是调试linux kernel的一个工具，虽然没有userspace的gdb那么好用，但有些时候还是能派上一些用处。比如kernel启动的时候自动重启，用kgdb连上之后就可以在kernel重启之前被KGDB截获，从而打印出调用栈来。 具体步骤是这样： Kernel配置 make &hellip;">
+  <meta name="description" content="32/64有很多问题，指针转换是其中一个，比如这个例子： 1
+2
+void *p = 0xc8f68000;
+unsigned long long v = (unsigned long long)p; 这个时候得到的 v 是： 0xffffffffc8f68000 而不是 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +21,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/03/10/kgdb-howto/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +80,7 @@
   <header>
     
       
-        <h1 class="entry-title">KGDB使用简介</h1>
+        <h1 class="entry-title">32/64的问题：32bit指针转换成64bit - Sign Extension</h1>
       
     
     
@@ -94,82 +97,45 @@
   
 
 
-<time datetime="2014-03-10T13:57:00+08:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
+<time datetime="2014-12-16T15:09:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>KGDB是调试linux kernel的一个工具，虽然没有userspace的gdb那么好用，但有些时候还是能派上一些用处。比如kernel启动的时候自动重启，用kgdb连上之后就可以在kernel重启之前被KGDB截获，从而打印出调用栈来。</p>
+<div class="entry-content"><p>32/64有很多问题，指针转换是其中一个，比如这个例子：</p>
 
 <!-- more -->
 
 
-<p>具体步骤是这样：</p>
-
-<h2>Kernel配置</h2>
-
-<ul>
-<li><code>make menuconfig</code>, under &ldquo;Kernel Hacking&rdquo;, enable &ldquo;KGDB&rdquo; &amp; &ldquo;KGDB over serial line&rdquo;. Enable &ldquo;compile kernel with debug info&rdquo;(CONFIG_DEBUG_INFO) &amp; &ldquo;enable frame pointer&rdquo;(CONFIG_FRAME_POINTER) options(both are under &ldquo;Kernel Hacking&rdquo;).</li>
-</ul>
-
-
-<p>有关CONFIG_FRAME_POINTER这个option，需要在enable了ARCH_CONFIG_FRAME_POINTERS这个option之后才会出现在Kernel hacking下面。</p>
-
-<p>这ARCH_CONFIG_FRAME_POINTERS在make menuconfig里面是找不到的。这个option是专门给其他人select用的。一般都是在ARCH config的时候会去select这个option</p>
-
-<p>比如x86下，一般会enable这个option。而ARM则不会（可能是考虑到生成的kernel文件尺寸和性能）。</p>
-
-<p>所以，在ARM下，可以编辑arch/arm/Kconfig，在CONFIG_ARM下面的一堆select的最后，添加上一句select CONFIG_ARCH_FRAME_POINTERS就可以了。</p>
-
-<p>从实验结果来看，只要enable了CONFIG_DEBUG_INFO，基本上就差不多了，能看到代码了。</p>
-
-<ul>
-<li>Add kernel option: <code>kgdboc=ttyS0,38400 kgdbwait</code> into kernel command line.</li>
-</ul>
-
-
-<p>根据我的实验，这里115200不行。在后面gdb设置<code>target remote /dev/ttyS0</code>的时候，会被告知最高支持到38400.</p>
-
-<p>所以，这里如果115200不行，就改成38400。</p>
-
-<p>注意这里将<code>/dev/ttyS0</code>修改成你的串口设备文件。</p>
-
-<ul>
-<li>Start kernel, kernel will wait for connection from remote PC&rsquo;s gdb.</li>
-</ul>
-
-
-<h2>PC端（remote machine）设置</h2>
-
-<ul>
-<li>On remote machine, <code>&lt;gdb path&gt; ./vmlinux</code> &mdash; this &ldquo;vmlinux&rdquo; mostly is under the root directory of kernel(a big kernel image with debug infos, not the one under arch/arm/boot, that is stripped version).</li>
-</ul>
-
-
-<p>需要注意的是，这里的GDB必须使用host是x86-64，target是ARM的那种GDB。我们PC上的gdb一般host和target都是x86-64。</p>
-
-<p>这样的GDB可以在一些常见的toolchain网站找到，比如linaro。</p>
-
-<ul>
-<li>Enter gdb commands:</li>
-</ul>
 
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">set </span>remotebaud 38400
-</span><span class='line'>target remote /dev/ttyS0
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">void</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mh">0xc8f68000</span><span class="p">;</span>
+</span><span class='line'><span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span><span class="p">)</span><span class="n">p</span><span class="p">;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<ul>
-<li>Done. You can list source codes, set breakpoints now. Continue the debugging after finished.</li>
-</ul>
+<p>这个时候得到的 <code>v</code> 是： <code>0xffffffffc8f68000</code> 而不是 <code>0x00000000c8f68000</code></p>
+
+<p>以上例子来自：</p>
+
+<p><a href="http://stackoverflow.com/questions/22239752/convert-32-bit-pointer-to-64-bit-integer">http://stackoverflow.com/questions/22239752/convert-32-bit-pointer-to-64-bit-integer</a></p>
+
+<p>最近就碰到了好几次类似的问题。原因非常简单，就是编译器看到我们要把一个指针转换成 <code>unsigned long long</code>，而 <code>p</code> 的最高位是1，编译器认为这是负数，所以编译器就启动了 <code>Sign Extension</code>，将高32bit全部设置成1，这样最终你看到的高32bit就是全F了。</p>
+
+<p>所以当做32bit &ndash;> 64bit指针转换的时候，要使用 <code>intptr_t</code> 和 <code>uintptr_t</code>。这样编译器就知道这是指针的转换，高32bit就会是全0了。同样，这也就说明了，为什么 <code>stdint.h</code> 里面要定义这么些个typedef了:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">void</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mh">0xc8f68000</span><span class="p">;</span>
+</span><span class='line'><span class="n">uint64_t</span> <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="n">uintptr_t</span><span class="p">)</span><span class="n">p</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p><em>CAUTION</em>: Close any other programs(normally it&rsquo;s minicom which we use to monitor serial outputs) which may occupy &ldquo;/dev/ttyS0&rdquo; before running gdb on remote machine. Otherwise gdb can&rsquo;t connect with target board.</p>
+<p>事实上，无论何时都尽量要避免指针和Integer之间的转换，因为Integer是有正负的。</p>
 </div>
 
 
@@ -177,7 +143,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2014 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2014/03/10/kgdb-howto/<br>
+原文链接: http://www.markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -200,7 +166,7 @@
   
 
 
-<time datetime="2014-03-10T13:57:00+08:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
+<time datetime="2014-12-16T15:09:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2014</time>
       
 
 <span class="categories">
@@ -221,10 +187,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2014/02/08/virtualbox-ubuntu-dns-issue/" title="Previous Post: VirtualBox中安装Ubuntu，在有VPN的情况下会有DNS的问题">&laquo; VirtualBox中安装Ubuntu，在有VPN的情况下会有DNS的问题</a>
+        <a class="basic-alignment left articlenav" href="/blog/2014/12/09/ros-rdp-wol/" title="Previous Post: RouterOS/远程启动/控制家里的PC">&laquo; RouterOS/远程启动/控制家里的PC</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/03/20/juniper-vpn-on-ubuntu/" title="Next Post: 在Ubuntu上连接Juniper SSL VPN">在Ubuntu上连接Juniper SSL VPN &raquo;</a>
       
     </p>
   </footer>
