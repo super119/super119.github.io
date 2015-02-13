@@ -3,7 +3,7 @@ layout: post
 title: "Linux netfilter概述，mangle/nat/filter, prerouting/input/forward...到底是啥"
 date: 2014-07-23 18:30
 comments: true
-categories: network reprints
+categories: network repost
 ---
 
 本文转载自：

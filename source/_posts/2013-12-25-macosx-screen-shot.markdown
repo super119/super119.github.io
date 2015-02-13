@@ -3,7 +3,7 @@ layout: post
 title: "MacOS X 如何截屏"
 date: 2013-12-25 21:54
 comments: true
-categories: MacOSX reprints
+categories: MacOSX repost
 ---
 
 *文章是从网上找来的，但是忘记当初的网址了，所以没写上转载的地址。如果您发现这是您的原创，请告知，我会加上转载信息，谢谢。*

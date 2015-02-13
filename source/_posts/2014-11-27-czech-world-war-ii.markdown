@@ -3,7 +3,7 @@ layout: post
 title: "捷克武器那么好，二战面对德国为什么没一点抵抗？"
 date: 2014-11-27 17:39
 comments: true
-categories: History-Science reprints
+categories: History-Science repost
 ---
 
 转载自铁血社区：[http://bbs.tiexue.net/post_5621844_1.html](http://bbs.tiexue.net/post_5621844_1.html)

@@ -22,7 +22,7 @@ index 5d83b4d201f6..12d6466734ec 100644
  <article class="hentry" role="article">
    {% include article.html %}
    <footer>
-+    {% if page.categories contains "reprints" %}
++    {% if page.categories contains "repost" %}
 +    {% else %}
      <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
        <strong>版权所有 &copy;{{ site.time | date: '%Y' }} 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
@@ -38,6 +38,6 @@ index 5d83b4d201f6..12d6466734ec 100644
 
 所以，大体上是这样：
 
-1. 代码检查当前的文章是否属于 `reprints` 这个category，如果是的话，就不会加入转载声明那一段文字。
-2. 由于Octopress中一篇文章可以属于多个category，所以，新增 `reprints` 这么一个category不会带来什么影响，反而还可以让我们通过这个category快速的浏览所有我们转载的文章。
+1. 代码检查当前的文章是否属于 `repost` 这个category，如果是的话，就不会加入转载声明那一段文字。
+2. 由于Octopress中一篇文章可以属于多个category，所以，新增 `repost` 这么一个category不会带来什么影响，反而还可以让我们通过这个category快速的浏览所有我们转载的文章。
 3. 有意思的就是，正如前面所说，`liquid` 语法中没有 `逻辑非`，所以我在StackOverflow上找到了大家一般是这么做的：if后面直接接else. 相当的ugly，但是it works!

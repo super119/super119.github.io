@@ -3,7 +3,7 @@ layout: post
 title: "需要齐次坐标的原因"
 date: 2014-04-23 13:40
 comments: true
-categories: OpenGL reprints
+categories: OpenGL repost
 ---
 
 原文链接：[http://www.songho.ca/math/homogeneous/homogeneous.html](http://www.songho.ca/math/homogeneous/homogeneous.html)

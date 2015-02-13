@@ -3,7 +3,7 @@ layout: post
 title: "需要齐次坐标的原因之二 - 所有的变换运算（平移、旋转、缩放）都可以用矩阵乘法来搞定"
 date: 2014-04-23 13:55
 comments: true
-categories: OpenGL reprints
+categories: OpenGL repost
 ---
 
 本文中的三张图片来自网络，但是我不记得当初的来源了，所以没有能给出出处。确定来源后将给出图片出处。
