@@ -135,7 +135,7 @@
 </span><span class='line'> &lt;article class=&quot;hentry&quot; role=&quot;article&quot;&gt;
 </span><span class='line'>   {% include article.html %}
 </span><span class='line'>   &lt;footer&gt;
-</span><span class='line'><span class="gi">+    {% if page.categories contains &quot;reprints&quot; %}</span>
+</span><span class='line'><span class="gi">+    {% if page.categories contains &quot;repost&quot; %}</span>
 </span><span class='line'><span class="gi">+    {% else %}</span>
 </span><span class='line'>     &lt;section style=&quot;margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em&quot;&gt;
 </span><span class='line'>       &lt;strong&gt;版权所有 &amp;copy;{{ site.time | date: &#39;%Y&#39; }} 转载本站文章请注明： &lt;/strong&gt;转载自 http://markzhang.cn&lt;br&gt;
@@ -152,8 +152,8 @@
 <p>所以，大体上是这样：</p>
 
 <ol>
-<li>代码检查当前的文章是否属于 <code>reprints</code> 这个category，如果是的话，就不会加入转载声明那一段文字。</li>
-<li>由于Octopress中一篇文章可以属于多个category，所以，新增 <code>reprints</code> 这么一个category不会带来什么影响，反而还可以让我们通过这个category快速的浏览所有我们转载的文章。</li>
+<li>代码检查当前的文章是否属于 <code>repost</code> 这个category，如果是的话，就不会加入转载声明那一段文字。</li>
+<li>由于Octopress中一篇文章可以属于多个category，所以，新增 <code>repost</code> 这么一个category不会带来什么影响，反而还可以让我们通过这个category快速的浏览所有我们转载的文章。</li>
 <li>有意思的就是，正如前面所说，<code>liquid</code> 语法中没有 <code>逻辑非</code>，所以我在StackOverflow上找到了大家一般是这么做的：if后面直接接else. 相当的ugly，但是it works!</li>
 </ol>
 
@@ -251,11 +251,15 @@ var jiathis_config = {data_track_clickback:'true'};
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (1)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (5)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (2)</a></li><li><a href='/blog/categories/linux'>linux (5)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (5)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (12)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (4)</a></li><li><a href='/blog/categories/reprints'>reprints (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (1)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (5)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (2)</a></li><li><a href='/blog/categories/life'>Life (1)</a></li><li><a href='/blog/categories/linux'>linux (5)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (5)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (12)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (4)</a></li><li><a href='/blog/categories/repost'>repost (6)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/02/13/iphone6-refund/">转载：我的iphone6退货之路</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/12/16/convert-32bit-pointer-to-64bit/">32/64的问题：32bit指针转换成64bit - Sign Extension</a>
@@ -271,10 +275,6 @@ var jiathis_config = {data_track_clickback:'true'};
     
       <li class="post">
         <a href="/blog/2014/11/25/thunderbird-72-column/">Thunderbird 80(72) Column - 邮件在80(72)列处line Break</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/10/17/chromeos-enable-ssh-server/">ChromeOS配置SSH Server</a>
       </li>
     
   </ul>
