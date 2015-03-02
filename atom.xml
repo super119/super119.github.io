@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-02-13T11:07:46+08:00</updated>
+  <updated>2015-03-02T11:24:36+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,588 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[GEM - Graphics Execution Manager 介绍]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/03/02/gem-introduction/"/>
+    <updated>2015-03-02T11:15:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/03/02/gem-introduction</id>
+    <content type="html"><![CDATA[<p>本文来自：<a href="http://lwn.net/Articles/283798/">http://lwn.net/Articles/283798/</a></p>
+
+<p>NOTE: Currently the buffer creation/read/write are implemented by driver specified ioctls. So right now you can&rsquo;t find functions like &ldquo;drm_gem_create&rdquo; in kernel sources.
+And that&rsquo;s also why we need &ldquo;dumb buffer&rdquo; in drm&rsquo;s ioctls(dumb_create, dumb_destroy&hellip;)</p>
+
+<!-- more -->
+
+
+<p>原文请看：<a href="http://lwn.net/Articles/283798/">http://lwn.net/Articles/283798/</a></p>
+
+<p>GEM是Intel建议提出并实现的，所以这篇文章是GEM maintainer写的introduction，非常详尽，只是对照现在的kernel来说，内容已经有一点outdate（所以我写了上面的NOTE），但是大部分内容都是OK的。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[转载：GEM vs TTM]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/03/02/gem-vs-ttm/"/>
+    <updated>2015-03-02T11:09:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/03/02/gem-vs-ttm</id>
+    <content type="html"><![CDATA[<p>本文来自: <a href="http://lwn.net/Articles/283793/">http://lwn.net/Articles/283793/</a></p>
+
+<p>Getting high-performance, three-dimensional graphics working under Linux is quite a challenge even when the fundamental hardware programming information is available.  One component of this problem is memory management: a graphics processor (GPU) is, essentially, a computer of its own with a distinct view of memory.  Managing the GPU&rsquo;s memory &ndash; and its view of system RAM &ndash; must be done carefully if the resulting system is intended to work at all, much less with acceptable performance.</p>
+
+<p>Not that long ago, it appeared that this problem had been solved with thetranslation table maps (TTM) subsystem.  TTM remains outside of the mainline kernel, though, as do all drivers which use it.  A recent queryabout what would be required to get TTM merged led to an interesting discussion where it turned out that, in fact, TTM may not be the future of graphics memory management after all.</p>
+
+<!-- more -->
+
+
+<p></p>
+
+<p>A number of complaints about TTM have been raised.  Its API is far larger than is needed for any free Linux driver; it has, in other words, a certain amount of code dedicated to the needs of binary-only drivers.  The fencing mechanism (which manages concurrency between the host CPUs and the GPU) is seen as being complex, difficult to work with, and not always yielding the best performance.  Heavy use of memory-mapped buffers can create performance problems of its own.  The TTM API is an exercise in trying to provide for everything in all situations;  as a result it is, according to some driver developers, hard to match to any specific hardware, hard to get started with, and still insufficiently flexible.  And, importantly, there is a distinct shortage of working free drivers which use TTM.  So Dave Airlie worries:</p>
+
+<blockquote><p>I was hoping that by now, one of the radeon or nouveau drivers would have adopted TTM, or at least demoed something working using it, this hasn&rsquo;t happened which worries me&hellip;  The real question is whether TTM suits the driver writers for use in Linux desktop and embedded environments, and I think so far I&rsquo;m not seeing enough positive feedback from the desktop side
+All of these worries would seem to be moot, since TTM is available and there is nothing else out there.  Except, as it turns out, there issomething out there: it&rsquo;s called the Graphics Execution Manager, or GEM. The Intel-sponsored GEM project is all of one month old, as of this writing. The GEM developers had not really intended to announce their work quite yet, but the TTM discussion brought the issue to the fore.</p></blockquote>
+
+<p>Keith Packard&rsquo;s introduction to GEM includes a document describing the API as it exists so far.  There are a number of significant differences in how GEM does things.  To begin with, GEM allocates graphical buffer objects using normal, anonymous, user-space memory.  That means that these buffers can be forced out to swap when memory gets tight.  There are clear advantages to this approach, and not just in memory flexibility: it also makes the implementation of suspend and resume easier by automatically providing backing store for all buffer objects.</p>
+
+<p>The GEM API tries to do away with the mapping of buffers into user space. That mapping is expensive to do and brings all sorts of interesting issues with cache coherency between the CPU and GPU.  So, instead, buffer objects are accessed with simple read() and write() calls.  Or, at least, that&rsquo;s the way it would be if the GEM developers could attach a file descriptor to each buffer object.  The kernel, however, does not make the management of that many file descriptors easy (yet), so the real API uses separate handles for buffer objects and a series of ioctl()calls.</p>
+
+<p>That said, it is possible to map a buffer object into user space.  But then the user-space driver must take explicit responsibility for the management of cache coherency.  To that end there is a set of ioctl()calls for managing the &ldquo;domain&rdquo; of a buffer; the domain, essentially, describes which component of the system owns the buffer and is entitled to operate on it.  Changing the domains (there are two, one for read access and one for writes) of a buffer will perform the necessary cache flushes.  In a sense, this mechanism resembles the streaming DMA API, where the ownership of DMA buffers can be switched between the CPU and the peripheral controller. That is not entirely surprising, as a very similar problem is being solved.</p>
+
+<p>This API also does away with the need for explicit fence operations. Instead, a CPU operation which requires access to a buffer will simply wait, if necessary, for the GPU to finish any outstanding operations involving that buffer.</p>
+
+<p>Finally, the GEM API does not try to solve the entire problem; a number of important operations (such as the execution of a set of GPU commands) are left for the hardware-specific driver to implement.  GEM is, thus, quite specific to the needs of Intel&rsquo;s driver at this time; it does not try for the same sort of generality that was a goal of TTM.  As describedby Eric Anholt:</p>
+
+<blockquote><p>The problem with TTM is that it&rsquo;s designed to expose one general API for all hardware, when that&rsquo;s not what our drivers want&hellip; We&rsquo;re trying to come at it from the other direction: Implement one driver well.  When someone else implements another driver and finds that there&rsquo;s code that should be common, make it into a support library and share it.</p></blockquote>
+
+<p>The advantage to this approach is that it makes it relatively easy to create something which works well with Intel drivers.  And that may well be a good start; one working set of drivers is better than none.  On the other hand, that means that a significant amount of work may be required to get GEM to the point where it can support drivers for other hardware.  There seem to be two points of view on how that might be done: (1) add capabilities to GEM when needed by other drivers, or (2) have each driver use its own memory manager.</p>
+
+<p>The first approach is, in many ways, more pleasing.  But it implies that the GEM API could change significantly over time.  And that, in turn, could delay the merging of the whole thing; the GEM API is exported to user space, and, as a result, must remain compatible as things change.  So there may be resistance to a quick merge of an API which looks like it may yet have to evolve for some time.</p>
+
+<p>The second approach, instead, is best describedby Dave Airlie:</p>
+
+<blockquote><p>Well the thing is I can&rsquo;t believe we don&rsquo;t know enough to do this in some way generically, but maybe the TTM vs GEM thing proves its not possible.  So we can then punt to having one memory manager per driver, but I suspect this will be a maintenance nightmare, so if people decide this is the way forward, I&rsquo;m happy to see it happen. However the person submitting the memory manager n+1 must damn well be willing to stand behind the interface until time ends, and explain why they couldn&rsquo;t re-use 1..n memory managers.</p></blockquote>
+
+<p>One other remaining issue is performance.  Keith Whitwell posted some benchmark results showing that the i915 driver performs significantly worse with either TTM or GEM than without.  Keith Packard gets different results, though; his tests show that the GEM-based driver is significantly faster.  Clearly there is a need for a set of consistent benchmarks; performance of graphics drivers is important, but performance cannot be optimized if it cannot be reliably measured.</p>
+
+<p>The use of anonymous memory also raises some performance concerns: a first-person shooter game will not provide the same experience if its blood-and-gore textures must be continually paged in.  Anonymous memory can also be high memory, and, thus, not necessarily accessible via a 32-bit pointer.  Some GPU hardware cannot address high memory; that will likely force the use of bounce buffers within the kernel.  In the end, GEM will have to prove that it can deliver good performance; GEM&rsquo;s developers are highly motivated to make their hardware look good, so there is a reasonable chance that things will work out on this front.</p>
+
+<p>The conclusion to draw from all of this is that the GPU memory management problem cannot yet be considered solved.  GEM might eventually become that solution, but it is a very new API which still needs a fair amount of work.  There is likely to be a lot of work yet to be done in this area.</p>
+
+<p>(Thanks to Timo Jyrinki for suggesting this topic.)</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[有关DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem/"/>
+    <updated>2015-03-02T11:06:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem</id>
+    <content type="html"><![CDATA[<ol>
+<li><p>DMABUF can be used as a wrapper to encapsulate other memory management frameworks. All these memory management framework(I mean mostly for graphics), buffer is the keypoint. DMABUF defines a standard buffer structure. So DMABUF can be used as a wrapper for TTM/GEM/Android ION&hellip; and etc. Notice DMABUF can&rsquo;t replace these things, cause it doesn&rsquo;t cover everything. E.g: DMABUF has no userspace interfaces, right now only kernel interfaces(can be used in device driver).</p></li>
+<li><p>Kernel has DMA mapping API from origin. ARM defines IOMMU which can be used to connect scattered physical memory as a continuous region for devices which needs continue address to work(e.g: DMA). So IOMMU implementations &amp; CMA should work behind kernel DMA mapping API. E.g: dma_alloc_from_contiguous can be implemented by CMA; dma_alloc_coherent can be implemented by IOMMU or by the normal case(just call __get_free_pages). So for device drivers need dma buffers, we should use dma mapping APIs, not call iommu api directly.</p></li>
+<li><p>For tegra, GART &amp; SMMU can be used to implement IOMMU apis.</p></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Linux graphics stack 随便写写]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/03/02/linux-graphics-stack-notes/"/>
+    <updated>2015-03-02T11:03:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/03/02/linux-graphics-stack-notes</id>
+    <content type="html"><![CDATA[<ul>
+<li><p>Display and mode setting: DRM. DRM defines connector/encoder/crtc to support display(including multi-monitor). And KMS makes mode setting happens in kernel space.</p></li>
+<li><p>2D acceleration: X server EXA/UXA extension. Vendor should write a X server driver which implements EXA or UXA(should be upstreamed). UXA is an enhancement design of EXA, proposed by intel, so GEM is used in UXA. DRM has no direct 2D acceleration interface definitions(e.g: memory copy/move, blit, color space conversion&hellip;), this is defined in EXA/UXA extensions. But vendor&rsquo;s X server driver will use drm functions, mostly is buffer manipulations.</p></li>
+<li><p>3D acceleration: via Mesa. Mesa has 2 parts:</p></li>
+</ul>
+
+
+<!-- more -->
+
+
+<ol>
+<li>libGL.so &mdash; the implementation of OpenGL spec, the default OpenGL implementation library in Linux. This libGL.so translates OpenGL callings to Mesa-specified instructions.</li>
+<li>DRI driver &mdash; the driver accepts the Mesa-specified instructions generated by libGL.so and call drm functions to get them accelerated in GPU. Should be upstreamed.</li>
+</ol>
+
+
+<p>DRM: has userspace libdrm &amp; kernel space drm driver.</p>
+
+<p>libdrm: Implemented drm APIs. Vendor can hook it&rsquo;s implementations as well as add more APIs which used by EXA/UXA driver(2D) or DRI driver(3D). That&rsquo;s why the build result of libdrm normally has 2 libraries(e.g: libdrm.so &amp; libdrm_intel.so). Vendor codes of libdrm should be upstreamed.</p>
+
+<p>Kernel drm driver: Works under kernel drm framework, should be upstreamed. Cause vendor can add APIs in libdrm, so kernel drm driver can handle vendor specified ioctls.</p>
+
+<p>GLX: X server extension of OpenGL. X server has DRI/DRI2 extensions as well.</p>
+
+<p>They&rsquo;re working with libGL.so in Mesa. By these extensions, Mesa can do:</p>
+
+<ol>
+<li><p>Direct rendering: libGL.so in Mesa try to figure out whether DRI driver is ready in Mesa. If so, GLX returns some infos(such as window size, position&hellip;) or create off-screen buffers(via DRI/DRI2 X extension) for Mesa. The rendering is handled in Mesa&rsquo;s DRI driver &mdash; no relations with X server.</p></li>
+<li><p>Indirect rendering: libGL.so in Mesa can&rsquo;t find out Mesa&rsquo;s DRI driver. So it queries whether DRI is available in X server. If so, it pass the Mesa-specified instructions which generated by libGL.so to X server. And GLX/DRI/DRI2 extensions of X server handles the rest things. Normally it&rsquo;s software rendering which implemented by Mesa as well. AIGLX(Accelerated Indirect GLX) seems has some solutions to accelerate this.</p></li>
+</ol>
+
+
+<p>So Mesa handles a lot of works in linux 3D graphics stack. And it has lots of relations with X server as well(GLX and DRI X extensions).</p>
+
+<p>An important reason that why we involve so many components is, decouple the dependencies of all of these guys. According to this design, DRM is not related with X server so it works with other programs as well(e.g: Wayland). Mesa is the same.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[DRM memory management - 最好的GEM/TTM/PRIME解释]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/03/02/drm-memory-management/"/>
+    <updated>2015-03-02T10:37:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/03/02/drm-memory-management</id>
+    <content type="html"><![CDATA[<p>本文转载自：<a href="https://www.kernel.org/doc/htmldocs/drm/drm-memory-management.html">https://www.kernel.org/doc/htmldocs/drm/drm-memory-management.html</a></p>
+
+<p><strong>Memory management</strong></p>
+
+<ul>
+<li>The Translation Table Manager (TTM)</li>
+<li>The Graphics Execution Manager (GEM)</li>
+<li>VMA Offset Manager</li>
+<li>PRIME Buffer Sharing</li>
+<li>PRIME Function References</li>
+<li>DRM MM Range Allocator</li>
+<li>DRM MM Range Allocator Function References</li>
+<li>CMA Helper Functions Reference</li>
+</ul>
+
+
+<!-- more -->
+
+
+<p>Modern Linux systems require large amount of graphics memory to store frame buffers, textures, vertices and other graphics-related data. Given the very dynamic nature of many of that data, managing graphics memory efficiently is thus crucial for the graphics stack and plays a central role in the DRM infrastructure.</p>
+
+<p>The DRM core includes two memory managers, namely Translation Table Maps (TTM) and Graphics Execution Manager (GEM). TTM was the first DRM memory manager to be developed and tried to be a one-size-fits-them all solution. It provides a single userspace API to accommodate the need of all hardware, supporting both Unified Memory Architecture (UMA) devices and devices with dedicated video RAM (i.e. most discrete video cards). This resulted in a large, complex piece of code that turned out to be hard to use for driver development.</p>
+
+<p>GEM started as an Intel-sponsored project in reaction to TTM&rsquo;s complexity. Its design philosophy is completely different: instead of providing a solution to every graphics memory-related problems, GEM identified common code between drivers and created a support library to share it. GEM has simpler initialization and execution requirements than TTM, but has no video RAM management capabilities and is thus limited to UMA devices.</p>
+
+<p><strong>The Translation Table Manager (TTM)</strong></p>
+
+<p>TTM initialization</p>
+
+<p>Drivers wishing to support TTM must fill out a drm_bo_driver structure. The structure contains several fields with function pointers for initializing the TTM, allocating and freeing memory, waiting for command completion and fence synchronization, and memory migration. See the radeon_ttm.c file for an example of usage.</p>
+
+<p>The ttm_global_reference structure is made up of several fields:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">struct</span> <span class="n">ttm_global_reference</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">enum</span> <span class="n">ttm_global_types</span> <span class="n">global_type</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">size_t</span> <span class="n">size</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">void</span> <span class="o">*</span><span class="n">object</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">init</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">ttm_global_reference</span> <span class="o">*</span><span class="p">);</span>
+</span><span class='line'>  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">release</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">ttm_global_reference</span> <span class="o">*</span><span class="p">);</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There should be one global reference structure for your memory manager as a whole, and there will be others for each object created by the memory manager at runtime. Your global TTM should have a type of TTM_GLOBAL_TTM_MEM. The size field for the global object should be sizeof(struct ttm_mem_global), and the init and release hooks should point at your driver-specific init and release routines, which probably eventually call ttm_mem_global_init and ttm_mem_global_release, respectively.</p>
+
+<p>Once your global TTM accounting structure is set up and initialized by calling ttm_global_item_ref() on it, you need to create a buffer object TTM to provide a pool for buffer object allocation by clients and the kernel itself. The type of this object should be TTM_GLOBAL_TTM_BO, and its size should be sizeof(struct ttm_bo_global). Again, driver-specific init and release functions may be provided, likely eventually calling ttm_bo_global_init() and ttm_bo_global_release(), respectively. Also, like the previous object, ttm_global_item_ref() is used to create an initial reference count for the TTM, which will call your initialization function.</p>
+
+<p><strong>The Graphics Execution Manager (GEM)</strong></p>
+
+<p>GEM Initialization
+GEM Objects Creation
+GEM Objects Lifetime
+GEM Objects Naming
+GEM Objects Mapping
+Memory Coherency
+Command Execution
+GEM Function Reference</p>
+
+<p>The GEM design approach has resulted in a memory manager that doesn&rsquo;t provide full coverage of all (or even all common) use cases in its userspace or kernel API. GEM exposes a set of standard memory-related operations to userspace and a set of helper functions to drivers, and let drivers implement hardware-specific operations with their own private API.</p>
+
+<p>The GEM userspace API is described in the GEM &ndash; the Graphics Execution Manager article on LWN. While slightly outdated, the document provides a good overview of the GEM API principles. Buffer allocation and read and write operations, described as part of the common GEM API, are currently implemented using driver-specific ioctls.</p>
+
+<p>GEM is data-agnostic. It manages abstract buffer objects without knowing what individual buffers contain. APIs that require knowledge of buffer contents or purpose, such as buffer allocation or synchronization primitives, are thus outside of the scope of GEM and must be implemented using driver-specific ioctls.</p>
+
+<p>On a fundamental level, GEM involves several operations:</p>
+
+<ul>
+<li>Memory allocation and freeing</li>
+<li>Command execution</li>
+<li>Aperture management at command execution time</li>
+</ul>
+
+
+<p>Buffer object allocation is relatively straightforward and largely provided by Linux&rsquo;s shmem layer, which provides memory to back each object.</p>
+
+<p>Device-specific operations, such as command execution, pinning, buffer read &amp; write, mapping, and domain ownership transfers are left to driver-specific ioctls.</p>
+
+<p><strong>GEM Initialization</strong></p>
+
+<p>Drivers that use GEM must set the DRIVER_GEM bit in the struct drm_driver driver_features field. The DRM core will then automatically initialize the GEM core before calling the load operation. Behind the scene, this will create a DRM Memory Manager object which provides an address space pool for object allocation.</p>
+
+<p>In a KMS configuration, drivers need to allocate and initialize a command ring buffer following core GEM initialization if required by the hardware. UMA devices usually have what is called a &ldquo;stolen&rdquo; memory region, which provides space for the initial framebuffer and large, contiguous memory regions required by the device. This space is typically not managed by GEM, and must be initialized separately into its own DRM MM object.</p>
+
+<p><strong>GEM Objects Creation</strong></p>
+
+<p>GEM splits creation of GEM objects and allocation of the memory that backs them in two distinct operations.</p>
+
+<p>GEM objects are represented by an instance of struct drm_gem_object. Drivers usually need to extend GEM objects with private information and thus create a driver-specific GEM object structure type that embeds an instance of struct drm_gem_object.</p>
+
+<p>To create a GEM object, a driver allocates memory for an instance of its specific GEM object type and initializes the embedded struct drm_gem_object with a call to drm_gem_object_init. The function takes a pointer to the DRM device, a pointer to the GEM object and the buffer object size in bytes.</p>
+
+<p>GEM uses shmem to allocate anonymous pageable memory. drm_gem_object_init will create an shmfs file of the requested size and store it into the struct drm_gem_object filp field. The memory is used as either main storage for the object when the graphics hardware uses system memory directly or as a backing store otherwise.</p>
+
+<p>Drivers are responsible for the actual physical pages allocation by calling shmem_read_mapping_page_gfp for each page. Note that they can decide to allocate pages when initializing the GEM object, or to delay allocation until the memory is needed (for instance when a page fault occurs as a result of a userspace memory access or when the driver needs to start a DMA transfer involving the memory).</p>
+
+<p>Anonymous pageable memory allocation is not always desired, for instance when the hardware requires physically contiguous system memory as is often the case in embedded devices. Drivers can create GEM objects with no shmfs backing (called private GEM objects) by initializing them with a call to drm_gem_private_object_init instead of drm_gem_object_init. Storage for private GEM objects must be managed by drivers.</p>
+
+<p>Drivers that do not need to extend GEM objects with private information can call the drm_gem_object_alloc function to allocate and initialize a struct drm_gem_object instance. The GEM core will call the optional driver gem_init_object operation after initializing the GEM object with drm_gem_object_init.</p>
+
+<p>int (<em>gem_init_object) (struct drm_gem_object </em>obj);</p>
+
+<p>No alloc-and-init function exists for private GEM objects.</p>
+
+<p><strong>GEM Objects Lifetime</strong></p>
+
+<p>All GEM objects are reference-counted by the GEM core. References can be acquired and release by calling drm_gem_object_reference and drm_gem_object_unreference respectively. The caller must hold the drm_device struct_mutex lock. As a convenience, GEM provides the drm_gem_object_reference_unlocked and drm_gem_object_unreference_unlocked functions that can be called without holding the lock.</p>
+
+<p>When the last reference to a GEM object is released the GEM core calls the drm_driver gem_free_object operation. That operation is mandatory for GEM-enabled drivers and must free the GEM object and all associated resources.</p>
+
+<p>void (<em>gem_free_object) (struct drm_gem_object </em>obj);</p>
+
+<p>Drivers are responsible for freeing all GEM object resources, including the resources created by the GEM core. If an mmap offset has been created for the object (in which case drm_gem_object::map_list::map is not NULL) it must be freed by a call to drm_gem_free_mmap_offset. The shmfs backing store must be released by calling drm_gem_object_release (that function can safely be called if no shmfs backing store has been created).</p>
+
+<p><strong>GEM Objects Naming</strong></p>
+
+<p>Communication between userspace and the kernel refers to GEM objects using local handles, global names or, more recently, file descriptors. All of those are 32-bit integer values; the usual Linux kernel limits apply to the file descriptors.</p>
+
+<p>GEM handles are local to a DRM file. Applications get a handle to a GEM object through a driver-specific ioctl, and can use that handle to refer to the GEM object in other standard or driver-specific ioctls. Closing a DRM file handle frees all its GEM handles and dereferences the associated GEM objects.</p>
+
+<p>To create a handle for a GEM object drivers call drm_gem_handle_create. The function takes a pointer to the DRM file and the GEM object and returns a locally unique handle. When the handle is no longer needed drivers delete it with a call to drm_gem_handle_delete. Finally the GEM object associated with a handle can be retrieved by a call to drm_gem_object_lookup.</p>
+
+<p>Handles don&rsquo;t take ownership of GEM objects, they only take a reference to the object that will be dropped when the handle is destroyed. To avoid leaking GEM objects, drivers must make sure they drop the reference(s) they own (such as the initial reference taken at object creation time) as appropriate, without any special consideration for the handle. For example, in the particular case of combined GEM object and handle creation in the implementation of the dumb_create operation, drivers must drop the initial reference to the GEM object before returning the handle.</p>
+
+<p>GEM names are similar in purpose to handles but are not local to DRM files. They can be passed between processes to reference a GEM object globally. Names can&rsquo;t be used directly to refer to objects in the DRM API, applications must convert handles to names and names to handles using the DRM_IOCTL_GEM_FLINK and DRM_IOCTL_GEM_OPEN ioctls respectively. The conversion is handled by the DRM core without any driver-specific support.</p>
+
+<p>GEM also supports buffer sharing with dma-buf file descriptors through PRIME. GEM-based drivers must use the provided helpers functions to implement the exporting and importing correctly. See the section called “PRIME Buffer Sharing”. Since sharing file descriptors is inherently more secure than the easily guessable and global GEM names it is the preferred buffer sharing mechanism. Sharing buffers through GEM names is only supported for legacy userspace. Furthermore PRIME also allows cross-device buffer sharing since it is based on dma-bufs.</p>
+
+<p><strong>GEM Objects Mapping</strong></p>
+
+<p>Because mapping operations are fairly heavyweight GEM favours read/write-like access to buffers, implemented through driver-specific ioctls, over mapping buffers to userspace. However, when random access to the buffer is needed (to perform software rendering for instance), direct access to the object can be more efficient.</p>
+
+<p>The mmap system call can&rsquo;t be used directly to map GEM objects, as they don&rsquo;t have their own file handle. Two alternative methods currently co-exist to map GEM objects to userspace. The first method uses a driver-specific ioctl to perform the mapping operation, calling do_mmap under the hood. This is often considered dubious, seems to be discouraged for new GEM-enabled drivers, and will thus not be described here.</p>
+
+<p>The second method uses the mmap system call on the DRM file handle.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">void</span> <span class="o">*</span><span class="n">mmap</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">addr</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">length</span><span class="p">,</span> <span class="kt">int</span> <span class="n">prot</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span>
+</span><span class='line'>             <span class="n">off_t</span> <span class="n">offset</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>DRM identifies the GEM object to be mapped by a fake offset passed through the mmap offset argument. Prior to being mapped, a GEM object must thus be associated with a fake offset. To do so, drivers must call drm_gem_create_mmap_offset on the object. The function allocates a fake offset range from a pool and stores the offset divided by PAGE_SIZE in obj->map_list.hash.key. Care must be taken not to call drm_gem_create_mmap_offset if a fake offset has already been allocated for the object. This can be tested by obj->map_list.map being non-NULL.</p>
+
+<p>Once allocated, the fake offset value (obj->map_list.hash.key &lt;&lt; PAGE_SHIFT) must be passed to the application in a driver-specific way and can then be used as the mmap offset argument.</p>
+
+<p>The GEM core provides a helper method drm_gem_mmap to handle object mapping. The method can be set directly as the mmap file operation handler. It will look up the GEM object based on the offset value and set the VMA operations to the drm_driver gem_vm_ops field. Note that drm_gem_mmap doesn&rsquo;t map memory to userspace, but relies on the driver-provided fault handler to map pages individually.</p>
+
+<p>To use drm_gem_mmap, drivers must fill the struct drm_driver gem_vm_ops field with a pointer to VM operations.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">struct</span> <span class="n">vm_operations_struct</span> <span class="o">*</span><span class="n">gem_vm_ops</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">struct</span> <span class="n">vm_operations_struct</span> <span class="p">{</span>
+</span><span class='line'>          <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">open</span><span class="p">)(</span><span class="k">struct</span> <span class="n">vm_area_struct</span> <span class="o">*</span> <span class="n">area</span><span class="p">);</span>
+</span><span class='line'>          <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">close</span><span class="p">)(</span><span class="k">struct</span> <span class="n">vm_area_struct</span> <span class="o">*</span> <span class="n">area</span><span class="p">);</span>
+</span><span class='line'>          <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">fault</span><span class="p">)(</span><span class="k">struct</span> <span class="n">vm_area_struct</span> <span class="o">*</span><span class="n">vma</span><span class="p">,</span> <span class="k">struct</span> <span class="n">vm_fault</span> <span class="o">*</span><span class="n">vmf</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The open and close operations must update the GEM object reference count. Drivers can use the drm_gem_vm_open and drm_gem_vm_close helper functions directly as open and close handlers.</p>
+
+<p>The fault operation handler is responsible for mapping individual pages to userspace when a page fault occurs. Depending on the memory allocation scheme, drivers can allocate pages at fault time, or can decide to allocate memory for the GEM object at the time the object is created.</p>
+
+<p>Drivers that want to map the GEM object upfront instead of handling page faults can implement their own mmap file operation handler.</p>
+
+<p><strong>Memory Coherency</strong></p>
+
+<p>When mapped to the device or used in a command buffer, backing pages for an object are flushed to memory and marked write combined so as to be coherent with the GPU. Likewise, if the CPU accesses an object after the GPU has finished rendering to the object, then the object must be made coherent with the CPU&rsquo;s view of memory, usually involving GPU cache flushing of various kinds. This core CPU&lt;&ndash;>GPU coherency management is provided by a device-specific ioctl, which evaluates an object&rsquo;s current domain and performs any necessary flushing or synchronization to put the object into the desired coherency domain (note that the object may be busy, i.e. an active render target; in that case, setting the domain blocks the client and waits for rendering to complete before performing any necessary flushing operations).</p>
+
+<p><strong>Command Execution</strong></p>
+
+<p>Perhaps the most important GEM function for GPU devices is providing a command execution interface to clients. Client programs construct command buffers containing references to previously allocated memory objects, and then submit them to GEM. At that point, GEM takes care to bind all the objects into the GTT, execute the buffer, and provide necessary synchronization between clients accessing the same buffers. This often involves evicting some objects from the GTT and re-binding others (a fairly expensive operation), and providing relocation support which hides fixed GTT offsets from clients. Clients must take care not to submit command buffers that reference more objects than can fit in the GTT; otherwise, GEM will reject them and no rendering will occur. Similarly, if several objects in the buffer require fence registers to be allocated for correct rendering (e.g. 2D blits on pre-965 chips), care must be taken not to require more fence registers than are available to the client. Such resource management should be abstracted from the client in libdrm.</p>
+
+<p><strong>GEM Function Reference</strong></p>
+
+<p>VMA Offset Manager</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">drm_vma_offset_manager_init</span> <span class="err">—</span> <span class="n">Initialize</span> <span class="k">new</span> <span class="n">offset</span><span class="o">-</span><span class="n">manager</span>
+</span><span class='line'><span class="n">drm_vma_offset_manager_destroy</span> <span class="err">—</span> <span class="n">Destroy</span> <span class="n">offset</span> <span class="n">manager</span>
+</span><span class='line'><span class="n">drm_vma_offset_lookup</span> <span class="err">—</span> <span class="n">Find</span> <span class="n">node</span> <span class="n">in</span> <span class="n">offset</span> <span class="n">space</span>
+</span><span class='line'><span class="n">drm_vma_offset_lookup_locked</span> <span class="err">—</span> <span class="n">Find</span> <span class="n">node</span> <span class="n">in</span> <span class="n">offset</span> <span class="n">space</span>
+</span><span class='line'><span class="n">drm_vma_offset_add</span> <span class="err">—</span> <span class="n">Add</span> <span class="n">offset</span> <span class="n">node</span> <span class="n">to</span> <span class="n">manager</span>
+</span><span class='line'><span class="n">drm_vma_offset_remove</span> <span class="err">—</span> <span class="n">Remove</span> <span class="n">offset</span> <span class="n">node</span> <span class="n">from</span> <span class="n">manager</span>
+</span><span class='line'><span class="n">drm_vma_node_allow</span> <span class="err">—</span> <span class="n">Add</span> <span class="n">open</span><span class="o">-</span><span class="n">file</span> <span class="n">to</span> <span class="n">list</span> <span class="n">of</span> <span class="n">allowed</span> <span class="n">users</span>
+</span><span class='line'><span class="n">drm_vma_node_revoke</span> <span class="err">—</span> <span class="n">Remove</span> <span class="n">open</span><span class="o">-</span><span class="n">file</span> <span class="n">from</span> <span class="n">list</span> <span class="n">of</span> <span class="n">allowed</span> <span class="n">users</span>
+</span><span class='line'><span class="n">drm_vma_node_is_allowed</span> <span class="err">—</span> <span class="n">Check</span> <span class="n">whether</span> <span class="n">an</span> <span class="n">open</span><span class="o">-</span><span class="n">file</span> <span class="n">is</span> <span class="n">granted</span> <span class="n">access</span>
+</span><span class='line'><span class="n">drm_vma_offset_exact_lookup</span> <span class="err">—</span> <span class="n">Look</span> <span class="n">up</span> <span class="n">node</span> <span class="n">by</span> <span class="n">exact</span> <span class="n">address</span>
+</span><span class='line'><span class="n">drm_vma_offset_lock_lookup</span> <span class="err">—</span> <span class="n">Lock</span> <span class="n">lookup</span> <span class="k">for</span> <span class="n">extended</span> <span class="k">private</span> <span class="n">use</span>
+</span><span class='line'><span class="n">drm_vma_offset_unlock_lookup</span> <span class="err">—</span> <span class="n">Unlock</span> <span class="n">lookup</span> <span class="k">for</span> <span class="n">extended</span> <span class="k">private</span> <span class="n">use</span>
+</span><span class='line'><span class="n">drm_vma_node_reset</span> <span class="err">—</span> <span class="n">Initialize</span> <span class="n">or</span> <span class="n">reset</span> <span class="n">node</span> <span class="n">object</span>
+</span><span class='line'><span class="n">drm_vma_node_start</span> <span class="err">—</span> <span class="n">Return</span> <span class="n">start</span> <span class="n">address</span> <span class="k">for</span> <span class="n">page</span><span class="o">-</span><span class="n">based</span> <span class="n">addressing</span>
+</span><span class='line'><span class="n">drm_vma_node_size</span> <span class="err">—</span> <span class="n">Return</span> <span class="n">size</span> <span class="p">(</span><span class="n">page</span><span class="o">-</span><span class="n">based</span><span class="p">)</span>
+</span><span class='line'><span class="n">drm_vma_node_has_offset</span> <span class="err">—</span> <span class="n">Check</span> <span class="n">whether</span> <span class="n">node</span> <span class="n">is</span> <span class="n">added</span> <span class="n">to</span> <span class="n">offset</span> <span class="n">manager</span>
+</span><span class='line'><span class="n">drm_vma_node_offset_addr</span> <span class="err">—</span> <span class="n">Return</span> <span class="n">sanitized</span> <span class="n">offset</span> <span class="k">for</span> <span class="n">user</span><span class="o">-</span><span class="n">space</span> <span class="n">mmaps</span>
+</span><span class='line'><span class="n">drm_vma_node_unmap</span> <span class="err">—</span> <span class="n">Unmap</span> <span class="n">offset</span> <span class="n">node</span>
+</span><span class='line'><span class="n">drm_vma_node_verify_access</span> <span class="err">—</span> <span class="n">Access</span> <span class="n">verification</span> <span class="n">helper</span> <span class="k">for</span> <span class="n">TTM</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The vma-manager is responsible to map arbitrary driver-dependent memory regions into the linear user address-space. It provides offsets to the caller which can then be used on the address_space of the drm-device. It takes care to not overlap regions, size them appropriately and to not confuse mm-core by inconsistent fake vm_pgoff fields. Drivers shouldn&rsquo;t use this for object placement in VMEM. This manager should only be used to manage mappings into linear user-space VMs.</p>
+
+<p>We use drm_mm as backend to manage object allocations. But it is highly optimized for alloc/free calls, not lookups. Hence, we use an rb-tree to speed up offset lookups.</p>
+
+<p>You must not use multiple offset managers on a single address_space. Otherwise, mm-core will be unable to tear down memory mappings as the VM will no longer be linear.</p>
+
+<p>This offset manager works on page-based addresses. That is, every argument and return code (with the exception of drm_vma_node_offset_addr) is given in number of pages, not number of bytes. That means, object sizes and offsets must always be page-aligned (as usual). If you want to get a valid byte-based user-space address for a given offset, please see drm_vma_node_offset_addr.</p>
+
+<p>Additionally to offset management, the vma offset manager also handles access management. For every open-file context that is allowed to access a given node, you must call drm_vma_node_allow. Otherwise, an mmap call on this open-file with the offset of the node will fail with -EACCES. To revoke access again, use drm_vma_node_revoke. However, the caller is responsible for destroying already existing mappings, if required.</p>
+
+<p><strong>PRIME Buffer Sharing</strong></p>
+
+<p>Overview and Driver Interface
+PRIME Helper Functions
+PRIME is the cross device buffer sharing framework in drm, originally created for the OPTIMUS range of multi-gpu platforms. To userspace PRIME buffers are dma-buf based file descriptors.</p>
+
+<p><strong>Overview and Driver Interface</strong></p>
+
+<p>Similar to GEM global names, PRIME file descriptors are also used to share buffer objects across processes. They offer additional security: as file descriptors must be explicitly sent over UNIX domain sockets to be shared between applications, they can&rsquo;t be guessed like the globally unique GEM names.</p>
+
+<p>Drivers that support the PRIME API must set the DRIVER_PRIME bit in the struct drm_driver driver_features field, and implement the prime_handle_to_fd and prime_fd_to_handle operations.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">prime_handle_to_fd</span><span class="p">)(</span><span class="k">struct</span> <span class="n">drm_device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span>
+</span><span class='line'>                          <span class="k">struct</span> <span class="n">drm_file</span> <span class="o">*</span><span class="n">file_priv</span><span class="p">,</span> <span class="n">uint32_t</span> <span class="n">handle</span><span class="p">,</span>
+</span><span class='line'>                          <span class="n">uint32_t</span> <span class="n">flags</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">prime_fd</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">prime_fd_to_handle</span><span class="p">)(</span><span class="k">struct</span> <span class="n">drm_device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span>
+</span><span class='line'>                          <span class="k">struct</span> <span class="n">drm_file</span> <span class="o">*</span><span class="n">file_priv</span><span class="p">,</span> <span class="kt">int</span> <span class="n">prime_fd</span><span class="p">,</span>
+</span><span class='line'>                          <span class="n">uint32_t</span> <span class="o">*</span><span class="n">handle</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Those two operations convert a handle to a PRIME file descriptor and vice versa. Drivers must use the kernel dma-buf buffer sharing framework to manage the PRIME file descriptors. Similar to the mode setting API PRIME is agnostic to the underlying buffer object manager, as long as handles are 32bit unsigned integers.</p>
+
+<p>While non-GEM drivers must implement the operations themselves, GEM drivers must use the drm_gem_prime_handle_to_fd and drm_gem_prime_fd_to_handle helper functions. Those helpers rely on the driver gem_prime_export and gem_prime_import operations to create a dma-buf instance from a GEM object (dma-buf exporter role) and to create a GEM object from a dma-buf instance (dma-buf importer role).</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">struct</span> <span class="n">dma_buf</span> <span class="o">*</span> <span class="p">(</span><span class="o">*</span><span class="n">gem_prime_export</span><span class="p">)(</span><span class="k">struct</span> <span class="n">drm_device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span>
+</span><span class='line'>                             <span class="k">struct</span> <span class="n">drm_gem_object</span> <span class="o">*</span><span class="n">obj</span><span class="p">,</span>
+</span><span class='line'>                             <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">drm_gem_object</span> <span class="o">*</span> <span class="p">(</span><span class="o">*</span><span class="n">gem_prime_import</span><span class="p">)(</span><span class="k">struct</span> <span class="n">drm_device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span>
+</span><span class='line'>                                            <span class="k">struct</span> <span class="n">dma_buf</span> <span class="o">*</span><span class="n">dma_buf</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>These two operations are mandatory for GEM drivers that support PRIME.</p>
+
+<p><strong>PRIME Helper Functions</strong></p>
+
+<p>Drivers can implement gem_prime_export and gem_prime_import in terms of simpler APIs by using the helper functions drm_gem_prime_export and drm_gem_prime_import. These functions implement dma-buf support in terms of five lower-level driver callbacks:</p>
+
+<p>Export callbacks:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">gem_prime_pin</span> <span class="p">(</span><span class="n">optional</span><span class="p">)</span><span class="o">:</span> <span class="n">prepare</span> <span class="n">a</span> <span class="n">GEM</span> <span class="n">object</span> <span class="k">for</span> <span class="n">exporting</span>
+</span><span class='line'><span class="nl">gem_prime_get_sg_table:</span> <span class="n">provide</span> <span class="n">a</span> <span class="n">scatter</span><span class="o">/</span><span class="n">gather</span> <span class="n">table</span> <span class="n">of</span> <span class="n">pinned</span> <span class="n">pages</span>
+</span><span class='line'><span class="nl">gem_prime_vmap:</span> <span class="n">vmap</span> <span class="n">a</span> <span class="n">buffer</span> <span class="n">exported</span> <span class="n">by</span> <span class="n">your</span> <span class="n">driver</span>
+</span><span class='line'><span class="nl">gem_prime_vunmap:</span> <span class="n">vunmap</span> <span class="n">a</span> <span class="n">buffer</span> <span class="n">exported</span> <span class="n">by</span> <span class="n">your</span> <span class="n">driver</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Import callback:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">gem_prime_import_sg_table</span> <span class="p">(</span><span class="n">import</span><span class="p">)</span><span class="o">:</span> <span class="n">produce</span> <span class="n">a</span> <span class="n">GEM</span> <span class="n">object</span> <span class="n">from</span> <span class="n">another</span> <span class="n">driver</span><span class="err">&#39;</span><span class="n">s</span> <span class="n">scatter</span><span class="o">/</span><span class="n">gather</span> <span class="n">table</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>PRIME Function References</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">drm_gem_dmabuf_release</span> <span class="err">—</span> <span class="n">dma_buf</span> <span class="n">release</span> <span class="n">implementation</span> <span class="k">for</span> <span class="n">GEM</span>
+</span><span class='line'><span class="n">drm_gem_prime_export</span> <span class="err">—</span> <span class="n">helper</span> <span class="n">library</span> <span class="n">implementation</span> <span class="n">of</span> <span class="n">the</span> <span class="k">export</span> <span class="n">callback</span>
+</span><span class='line'><span class="n">drm_gem_prime_handle_to_fd</span> <span class="err">—</span> <span class="n">PRIME</span> <span class="k">export</span> <span class="n">function</span> <span class="k">for</span> <span class="n">GEM</span> <span class="n">drivers</span>
+</span><span class='line'><span class="n">drm_gem_prime_import</span> <span class="err">—</span> <span class="n">helper</span> <span class="n">library</span> <span class="n">implementation</span> <span class="n">of</span> <span class="n">the</span> <span class="n">import</span> <span class="n">callback</span>
+</span><span class='line'><span class="n">drm_gem_prime_fd_to_handle</span> <span class="err">—</span> <span class="n">PRIME</span> <span class="n">import</span> <span class="n">function</span> <span class="k">for</span> <span class="n">GEM</span> <span class="n">drivers</span>
+</span><span class='line'><span class="n">drm_prime_pages_to_sg</span> <span class="err">—</span> <span class="n">converts</span> <span class="n">a</span> <span class="n">page</span> <span class="n">array</span> <span class="n">into</span> <span class="n">an</span> <span class="n">sg</span> <span class="n">list</span>
+</span><span class='line'><span class="n">drm_prime_sg_to_page_addr_arrays</span> <span class="err">—</span> <span class="n">convert</span> <span class="n">an</span> <span class="n">sg</span> <span class="n">table</span> <span class="n">into</span> <span class="n">a</span> <span class="n">page</span> <span class="n">array</span>
+</span><span class='line'><span class="n">drm_prime_gem_destroy</span> <span class="err">—</span> <span class="n">helper</span> <span class="n">to</span> <span class="n">clean</span> <span class="n">up</span> <span class="n">a</span> <span class="n">PRIME</span><span class="o">-</span><span class="n">imported</span> <span class="n">GEM</span> <span class="n">object</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>DRM MM Range Allocator</strong></p>
+
+<p>Overview
+LRU Scan/Eviction Support
+Overview</p>
+
+<p>drm_mm provides a simple range allocator. The drivers are free to use the resource allocator from the linux core if it suits them, the upside of drm_mm is that it&rsquo;s in the DRM core. Which means that it&rsquo;s easier to extend for some of the crazier special purpose needs of gpus.</p>
+
+<p>The main data struct is drm_mm, allocations are tracked in drm_mm_node. Drivers are free to embed either of them into their own suitable datastructures. drm_mm itself will not do any allocations of its own, so if drivers choose not to embed nodes they need to still allocate them themselves.</p>
+
+<p>The range allocator also supports reservation of preallocated blocks. This is useful for taking over initial mode setting configurations from the firmware, where an object needs to be created which exactly matches the firmware&rsquo;s scanout target. As long as the range is still free it can be inserted anytime after the allocator is initialized, which helps with avoiding looped depencies in the driver load sequence.</p>
+
+<p>drm_mm maintains a stack of most recently freed holes, which of all simplistic datastructures seems to be a fairly decent approach to clustering allocations and avoiding too much fragmentation. This means free space searches are O(num_holes). Given that all the fancy features drm_mm supports something better would be fairly complex and since gfx thrashing is a fairly steep cliff not a real concern. Removing a node again is O(1).</p>
+
+<p>drm_mm supports a few features: Alignment and range restrictions can be supplied. Further more every drm_mm_node has a color value (which is just an opaqua unsigned long) which in conjunction with a driver callback can be used to implement sophisticated placement restrictions. The i915 DRM driver uses this to implement guard pages between incompatible caching domains in the graphics TT.</p>
+
+<p>Two behaviors are supported for searching and allocating: bottom-up and top-down. The default is bottom-up. Top-down allocation can be used if the memory area has different restrictions, or just to reduce fragmentation.</p>
+
+<p>Finally iteration helpers to walk all nodes and all holes are provided as are some basic allocator dumpers for debugging.</p>
+
+<p><strong>LRU Scan/Eviction Support</strong></p>
+
+<p>Very often GPUs need to have continuous allocations for a given object. When evicting objects to make space for a new one it is therefore not most efficient when we simply start to select all objects from the tail of an LRU until there&rsquo;s a suitable hole: Especially for big objects or nodes that otherwise have special allocation constraints there&rsquo;s a good chance we evict lots of (smaller) objects unecessarily.</p>
+
+<p>The DRM range allocator supports this use-case through the scanning interfaces. First a scan operation needs to be initialized with drm_mm_init_scan or drm_mm_init_scan_with_range. The the driver adds objects to the roaster (probably by walking an LRU list, but this can be freely implemented) until a suitable hole is found or there&rsquo;s no further evitable object.</p>
+
+<p>The the driver must walk through all objects again in exactly the reverse order to restore the allocator state. Note that while the allocator is used in the scan mode no other operation is allowed.</p>
+
+<p>Finally the driver evicts all objects selected in the scan. Adding and removing an object is O(1), and since freeing a node is also O(1) the overall complexity is O(scanned_objects). So like the free stack which needs to be walked before a scan operation even begins this is linear in the number of objects. It doesn&rsquo;t seem to hurt badly.</p>
+
+<p><strong>DRM MM Range Allocator Function References</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">drm_mm_reserve_node</span> <span class="err">—</span> <span class="n">insert</span> <span class="n">an</span> <span class="n">pre</span><span class="o">-</span><span class="n">initialized</span> <span class="n">node</span>
+</span><span class='line'><span class="n">drm_mm_insert_node_generic</span> <span class="err">—</span> <span class="n">search</span> <span class="k">for</span> <span class="n">space</span> <span class="n">and</span> <span class="n">insert</span> <span class="n">node</span>
+</span><span class='line'><span class="n">drm_mm_insert_node_in_range_generic</span> <span class="err">—</span> <span class="n">ranged</span> <span class="n">search</span> <span class="k">for</span> <span class="n">space</span> <span class="n">and</span> <span class="n">insert</span> <span class="n">node</span>
+</span><span class='line'><span class="n">drm_mm_remove_node</span> <span class="err">—</span> <span class="n">Remove</span> <span class="n">a</span> <span class="n">memory</span> <span class="n">node</span> <span class="n">from</span> <span class="n">the</span> <span class="n">allocator</span><span class="p">.</span>
+</span><span class='line'><span class="n">drm_mm_replace_node</span> <span class="err">—</span> <span class="n">move</span> <span class="n">an</span> <span class="n">allocation</span> <span class="n">from</span> <span class="n">old</span> <span class="n">to</span> <span class="k">new</span>
+</span><span class='line'><span class="n">drm_mm_init_scan</span> <span class="err">—</span> <span class="n">initialize</span> <span class="n">lru</span> <span class="n">scanning</span>
+</span><span class='line'><span class="n">drm_mm_init_scan_with_range</span> <span class="err">—</span> <span class="n">initialize</span> <span class="n">range</span><span class="o">-</span><span class="n">restricted</span> <span class="n">lru</span> <span class="n">scanning</span>
+</span><span class='line'><span class="n">drm_mm_scan_add_block</span> <span class="err">—</span> <span class="n">add</span> <span class="n">a</span> <span class="n">node</span> <span class="n">to</span> <span class="n">the</span> <span class="n">scan</span> <span class="n">list</span>
+</span><span class='line'><span class="n">drm_mm_scan_remove_block</span> <span class="err">—</span> <span class="n">remove</span> <span class="n">a</span> <span class="n">node</span> <span class="n">from</span> <span class="n">the</span> <span class="n">scan</span> <span class="n">list</span>
+</span><span class='line'><span class="n">drm_mm_clean</span> <span class="err">—</span> <span class="n">checks</span> <span class="n">whether</span> <span class="n">an</span> <span class="n">allocator</span> <span class="n">is</span> <span class="n">clean</span>
+</span><span class='line'><span class="n">drm_mm_init</span> <span class="err">—</span> <span class="n">initialize</span> <span class="n">a</span> <span class="n">drm</span><span class="o">-</span><span class="n">mm</span> <span class="n">allocator</span>
+</span><span class='line'><span class="n">drm_mm_takedown</span> <span class="err">—</span> <span class="n">clean</span> <span class="n">up</span> <span class="n">a</span> <span class="n">drm_mm</span> <span class="n">allocator</span>
+</span><span class='line'><span class="n">drm_mm_debug_table</span> <span class="err">—</span> <span class="n">dump</span> <span class="n">allocator</span> <span class="n">state</span> <span class="n">to</span> <span class="n">dmesg</span>
+</span><span class='line'><span class="n">drm_mm_dump_table</span> <span class="err">—</span> <span class="n">dump</span> <span class="n">allocator</span> <span class="n">state</span> <span class="n">to</span> <span class="n">a</span> <span class="n">seq_file</span>
+</span><span class='line'><span class="n">drm_mm_node_allocated</span> <span class="err">—</span> <span class="n">checks</span> <span class="n">whether</span> <span class="n">a</span> <span class="n">node</span> <span class="n">is</span> <span class="n">allocated</span>
+</span><span class='line'><span class="n">drm_mm_initialized</span> <span class="err">—</span> <span class="n">checks</span> <span class="n">whether</span> <span class="n">an</span> <span class="n">allocator</span> <span class="n">is</span> <span class="n">initialized</span>
+</span><span class='line'><span class="n">drm_mm_hole_node_start</span> <span class="err">—</span> <span class="n">computes</span> <span class="n">the</span> <span class="n">start</span> <span class="n">of</span> <span class="n">the</span> <span class="n">hole</span> <span class="n">following</span> <span class="n">node</span>
+</span><span class='line'><span class="n">drm_mm_hole_node_end</span> <span class="err">—</span> <span class="n">computes</span> <span class="n">the</span> <span class="n">end</span> <span class="n">of</span> <span class="n">the</span> <span class="n">hole</span> <span class="n">following</span> <span class="n">node</span>
+</span><span class='line'><span class="n">drm_mm_for_each_node</span> <span class="err">—</span> <span class="n">iterator</span> <span class="n">to</span> <span class="n">walk</span> <span class="n">over</span> <span class="n">all</span> <span class="n">allocated</span> <span class="n">nodes</span>
+</span><span class='line'><span class="n">drm_mm_for_each_hole</span> <span class="err">—</span> <span class="n">iterator</span> <span class="n">to</span> <span class="n">walk</span> <span class="n">over</span> <span class="n">all</span> <span class="n">holes</span>
+</span><span class='line'><span class="n">drm_mm_insert_node</span> <span class="err">—</span> <span class="n">search</span> <span class="k">for</span> <span class="n">space</span> <span class="n">and</span> <span class="n">insert</span> <span class="n">node</span>
+</span><span class='line'><span class="n">drm_mm_insert_node_in_range</span> <span class="err">—</span> <span class="n">ranged</span> <span class="n">search</span> <span class="k">for</span> <span class="n">space</span> <span class="n">and</span> <span class="n">insert</span> <span class="n">node</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>CMA Helper Functions Reference</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">drm_gem_cma_create</span> <span class="err">—</span> <span class="n">allocate</span> <span class="n">an</span> <span class="n">object</span> <span class="n">with</span> <span class="n">the</span> <span class="n">given</span> <span class="n">size</span>
+</span><span class='line'><span class="n">drm_gem_cma_free_object</span> <span class="err">—</span> <span class="n">free</span> <span class="n">resources</span> <span class="n">associated</span> <span class="n">with</span> <span class="n">a</span> <span class="n">CMA</span> <span class="n">GEM</span> <span class="n">object</span>
+</span><span class='line'><span class="n">drm_gem_cma_dumb_create_internal</span> <span class="err">—</span> <span class="n">create</span> <span class="n">a</span> <span class="n">dumb</span> <span class="n">buffer</span> <span class="n">object</span>
+</span><span class='line'><span class="n">drm_gem_cma_dumb_create</span> <span class="err">—</span> <span class="n">create</span> <span class="n">a</span> <span class="n">dumb</span> <span class="n">buffer</span> <span class="n">object</span>
+</span><span class='line'><span class="n">drm_gem_cma_dumb_map_offset</span> <span class="err">—</span> <span class="k">return</span> <span class="n">the</span> <span class="n">fake</span> <span class="n">mmap</span> <span class="n">offset</span> <span class="k">for</span> <span class="n">a</span> <span class="n">CMA</span> <span class="n">GEM</span> <span class="n">object</span>
+</span><span class='line'><span class="n">drm_gem_cma_mmap</span> <span class="err">—</span> <span class="n">memory</span><span class="o">-</span><span class="n">map</span> <span class="n">a</span> <span class="n">CMA</span> <span class="n">GEM</span> <span class="n">object</span>
+</span><span class='line'><span class="n">drm_gem_cma_describe</span> <span class="err">—</span> <span class="n">describe</span> <span class="n">a</span> <span class="n">CMA</span> <span class="n">GEM</span> <span class="n">object</span> <span class="k">for</span> <span class="n">debugfs</span>
+</span><span class='line'><span class="n">drm_gem_cma_prime_get_sg_table</span> <span class="err">—</span> <span class="n">provide</span> <span class="n">a</span> <span class="n">scatter</span><span class="o">/</span><span class="n">gather</span> <span class="n">table</span> <span class="n">of</span> <span class="n">pinned</span> <span class="n">pages</span> <span class="k">for</span> <span class="n">a</span> <span class="n">CMA</span> <span class="n">GEM</span> <span class="n">object</span>
+</span><span class='line'><span class="n">drm_gem_cma_prime_import_sg_table</span> <span class="err">—</span> <span class="n">produce</span> <span class="n">a</span> <span class="n">CMA</span> <span class="n">GEM</span> <span class="n">object</span> <span class="n">from</span> <span class="n">another</span> <span class="n">driver</span><span class="err">&#39;</span><span class="n">s</span> <span class="n">scatter</span><span class="o">/</span><span class="n">gather</span> <span class="n">table</span> <span class="n">of</span> <span class="n">pinned</span> <span class="n">pages</span>
+</span><span class='line'><span class="n">drm_gem_cma_prime_mmap</span> <span class="err">—</span> <span class="n">memory</span><span class="o">-</span><span class="n">map</span> <span class="n">an</span> <span class="n">exported</span> <span class="n">CMA</span> <span class="n">GEM</span> <span class="n">object</span>
+</span><span class='line'><span class="n">drm_gem_cma_prime_vmap</span> <span class="err">—</span> <span class="n">map</span> <span class="n">a</span> <span class="n">CMA</span> <span class="n">GEM</span> <span class="n">object</span> <span class="n">into</span> <span class="n">the</span> <span class="n">kernel</span><span class="err">&#39;</span><span class="n">s</span> <span class="k">virtual</span> <span class="n">address</span> <span class="n">space</span>
+</span><span class='line'><span class="n">drm_gem_cma_prime_vunmap</span> <span class="err">—</span> <span class="n">unmap</span> <span class="n">a</span> <span class="n">CMA</span> <span class="n">GEM</span> <span class="n">object</span> <span class="n">from</span> <span class="n">the</span> <span class="n">kernel</span><span class="err">&#39;</span><span class="n">s</span> <span class="k">virtual</span> <span class="n">address</span> <span class="n">space</span>
+</span><span class='line'><span class="k">struct</span> <span class="n">drm_gem_cma_object</span> <span class="err">—</span> <span class="n">GEM</span> <span class="n">object</span> <span class="n">backed</span> <span class="n">by</span> <span class="n">CMA</span> <span class="n">memory</span> <span class="n">allocations</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The Contiguous Memory Allocator reserves a pool of memory at early boot that is used to service requests for large blocks of contiguous memory.</p>
+
+<p>The DRM GEM/CMA helpers use this allocator as a means to provide buffer objects that are physically contiguous in memory. This is useful for display drivers that are unable to map scattered buffers via an IOMMU.Memory management</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[转载：我的iphone6退货之路]]></title>
@@ -1244,781 +1826,6 @@ Used for stateless SNAT.</p>
 <p>所以到此简单来说，现在由于苹果提供了官方的CLI，所以其实 <code>osx-gcc-installer</code> 这个东西已经不再需要了。除非有一些你需要的其他东西依赖它。貌似现在新版的 HomeBrew 也是需要苹果的CLI而不是osx-gcc-installer了。<code>osx-gcc-installer</code> 的TroubleShooting是这样说的：</p>
 
 <blockquote><p>Do not install this if you already have Xcode installed! Mixing Xcode and osx-gcc-installer is known to cause various difficult-to-diagnose problems and is not recommended.</p></blockquote>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[450 FBL 相位臂不顺滑？缺少一个小垫片]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/06/17/fbl-phase-arm-pad/"/>
-    <updated>2014-06-17T15:37:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/06/17/fbl-phase-arm-pad</id>
-    <content type="html"><![CDATA[<p>450 FBL有一个相位臂，没有这个相位臂那旋翼一旋转，十字盘拉杆就转成麻花了。但是由于十字盘是需要上下移动的（改变集体螺距），所以这个相位臂也是需要能运动的。基本上，当十字盘上下运动时，相位臂有两个地方也会发生运动：一个是中间部位，能改变角度；另外一个地方不起眼容易被忽略，就是相位臂固定在中联的那个位置，会发生转动。</p>
-
-<p>所以最近在拆装相位臂的时候，突然发现相位臂的转动不顺畅了，非常的生涩，结果发现丢了一个小垫片。</p>
-
-<!-- more -->
-
-
-<p>相位臂是长这个样子的：</p>
-
-<p><img src="http://www.markzhang.cn/downloads/image/fbl-phase-arm.png" alt="450 FBL相位臂" /></p>
-
-<p><strong> 注：以上图片来自淘宝冰人工作室。 </strong></p>
-
-<p>有了图片就非常的容易理解了，很明显中间部分是可以转动的，这样十字盘上下的时候，这部分可以活动。另外一个可以活动的，如上所说，就是相位臂固定到中联的那个部分，也就是图片上穿过螺丝的那个部分。这部分看起来很简单，但其实里面有一个轴承。</p>
-
-<p>需要轴承也很容易想到，因为当十字盘上下运动的时候，相位臂中间部分被带动，从而也会最终带动相位臂固定在中联的这个头部，而头部被螺丝穿过固定在了中联上，那还怎么能转动呢？所以就需要一个轴承了。</p>
-
-<p>现在的问题是，光有一个轴承还不够，还缺少一个垫片。之前我就丢了这个垫片，导致相位臂安装在了中联上面之后，相位臂的运动非常的涩，此时如果把固定螺丝松一些，立马会感觉顺滑很多，但是很显然这个固定螺丝不能拧的太松，所以最终发现缺少了这么一个垫片：</p>
-
-<p><img src="http://www.markzhang.cn/downloads/image/fbl-phase-arm-pad.png" alt="450 FBL相位臂垫片" /></p>
-
-<p><strong> 注：以上图片来自淘宝光明五金城。 </strong></p>
-
-<p>这个垫片的尺寸是：2.1x3.8x0.5，如果你用尺量一下相位臂头部的尺寸的话，会发现这个垫片正好嵌在相位臂上，覆盖住了头部轴承但是没有覆盖到外部的垫圈。这样一来就能说通了，加了这个垫片之后，相位臂头部的外部垫圈部分就不会接触到中联，从而就没有了巨大的摩擦阻力，而当相位臂头部要转动的时候，这个小垫片就会转动（因为垫片是最终贴合在中联上的），而这个垫片又是覆盖在相位臂头部轴承上的，所以轴承就被带动可以转动了。</p>
-
-<p>虽然说无副翼的直升机不一定需要FBL相位臂（比如亚拓的DFC），但是有FBL相位臂的，基本上都会需要这么一个垫片。之前没有研究这个问题，还以为是轴承坏了，差点买了一组新的相位臂（一百多块），其实就是缺了一个垫片，淘宝上五块钱一百个的东西。。。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[机械盲科普：推力轴承和单向轴承]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/06/08/thrust-bearing-and-one-way-bearing/"/>
-    <updated>2014-06-08T21:08:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/06/08/thrust-bearing-and-one-way-bearing</id>
-    <content type="html"><![CDATA[<p>航模直升机中有两个重要的轴承。一个是位于旋翼桨夹内的推力轴承，另外一个是位于大齿盘中间的单向轴承。由于自己对机械不怎么懂，所以就去琢磨了一下这两个玩意，也在5imx上发了帖子询问，最终整理成了此文。</p>
-
-<p>本文中所有内容都来自<a href="http://bbs.5imx.com">http://bbs.5imx.com</a>。</p>
-
-<!-- more -->
-
-
-<h2>推力轴承</h2>
-
-<p>这个轴承指的是直升机旋翼头部分，装在桨夹里面的一个轴承：</p>
-
-<p><img src="http://www.markzhang.cn/downloads/image/thrust-bearing.png" alt="推力轴承" /></p>
-
-<p>论坛上，网络上也有叫这个轴承为 <code>止推轴承</code> 的，但是这个名字我感觉不准确，因为这个轴承的主要作用不是 <code>止推</code>，也无法防止 <code>射桨</code>，所以我这里还是叫它 <code>推力轴承</code>。当今世界通过网络获取信息的确方便了很多，但是也带来了很多误解，就是因为信息源、信息量太大了，需要自己琢磨理解才行。</p>
-
-<p>需要这个轴承的原因是：我们都知道直升机的桨夹是可以绕横轴方向小幅度旋转的，也正是通过桨夹的这种旋转，来改变旋翼螺距的。注意这里我说的是旋翼头里面那根横轴，不是竖直的穿过十字盘的那根轴，那根叫主轴。横轴和主轴是垂直的。</p>
-
-<p>所以，为了让桨夹能够做这样的旋转运动，在桨夹内部，就必须要有一个套在横轴上的轴承，这样桨夹就可以顺着轴承做翻转，而横轴不需要运动。这样问题就出现了，当桨夹随着旋翼高速旋转时，桨夹会产生巨大的离心力，这个向外的离心力会导致轴承紧紧贴在固定横轴、桨夹的末尾的螺母上，从而使得轴承的转动变的费力，生涩。于是，推力轴承就被加入到了旋翼头的机械部件中来。</p>
-
-<p>推力轴承和普通轴承不同的是，它承受的是横轴轴向的力，也就是和桨夹高速旋转时产生的离心力方向一样的力。这样有了推力轴承专门承受离心力之后，使桨夹旋转的轴承就变的灵活、顺滑起来，从而可以轻松的实现螺距的变化。</p>
-
-<p>这里附上一张450 FBL直升机旋翼头的图，清晰的描述了上述的桨夹、横轴、轴承、推力轴承的安装方式和关系：</p>
-
-<p><img src="http://www.markzhang.cn/downloads/image/thrust-bearing-install.jpg" alt="旋翼头桨夹安装图" /></p>
-
-<p>最后再说一次，推力轴承和防射桨没有关系，防止射桨主要还是靠安装在横轴两端的圆头内六角螺母。也就是上图中最末尾的那个方块。这也是为什么论坛上很多人都建议经常检查并更换这个螺母的原因。</p>
-
-<p>5imx的这个帖子有有关推力轴承的很多讨论，很有帮助：</p>
-
-<p><a href="http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=930379">http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=930379</a></p>
-
-<h2>单向轴承</h2>
-
-<p>这里指的是大齿盘里面那个单向轴承：</p>
-
-<p><img src="http://www.markzhang.cn/downloads/image/one-way-bearing.png" alt="单向轴承" /></p>
-
-<p>提到单向轴承，论坛上网上一般说它的作用是：在熄火降落（auto-rotation）的时候，由于此时电机停转，所以如果没有这个轴承，那么旋翼转动将带动电机旋转，而电机在不工作的时候，由于内部巨大的磁场阻力，会迅速消耗掉旋翼的旋转惯性，从而使熄火降落无法实现。</p>
-
-<p>但是这么说很容易就会产生误解：如果单向轴承的目的就是因为这个，那大齿盘中放一个普通的轴承不就可以了么？反正你不就是要求旋翼转，电机不转嘛？</p>
-
-<p>但是再仔细想一想，的确必须要单向轴承。因为如果是一个普通轴承的话，那电机旋转，大齿盘虽然跟着转，但旋翼和主轴就不会旋转了。论坛上举的很多的一个例子就是自行车的脚踏板，脚踏板和轮子中间就有一个单向轴承，这样我们踩脚踏板，轮子会转，而轮子转的时候，脚踏板并不会运动，一样的道理。</p>
-
-<p>所以再反过来解释一遍就是，当电机旋转，带动大齿盘转动，此时需要再带动主轴和旋翼旋转的话，就只有两个选择，第一就是大齿盘中没有轴承，大齿盘和主轴是固定连接在一起的；第二就是大齿盘中是一个单向轴承。而显然第一种情况下，就无法实现熄火降落了（如上所说），所以这个单向轴承是必须的。</p>
-
-<p>单向轴承也需要经常检查，如果单向轴承磨损的厉害，就会导致电机旋转时，旋翼 <code>打滑</code>，此时飞机上天后就会出现事故。最简单的检查单向轴承的方法是，把大齿盘捏住，然后转动旋翼头，应该是只可以朝一个方向旋转，朝另外一个方向旋转会有较大的阻力。如果两个方向上都可以旋转，那单向轴承就需要更换了。事实上，如果两个方向都可以非常顺利的旋转，那电机转旋翼就不会跟着转了。</p>
-
-<p>5imx上这个帖子很好的解释了单向轴承：</p>
-
-<p><a href="http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=938911">http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=938911</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[卓普大黑（Zopo C7/zp990）刷原生ROM，root，升级触控屏，修改GPS]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/06/08/zopo-c7-flash/"/>
-    <updated>2014-06-08T15:00:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/06/08/zopo-c7-flash</id>
-    <content type="html"><![CDATA[<p>卓普（Zopo）大黑（C7）手机在国内的行货默认安装的是阿里的云OS，而向国外销售的版本称为zp990，装的是原生的安卓（当然有一些针对这款手机的改动，比如FOTA部分，双卡设置部分等）。</p>
-
-<p>如果你用云OS用腻了的话，肯定会想刷机，而要刷机，刷zp990的原生安卓版本成为一个好的选择。我的使用感受是，这个版本相比其他的民间ROM（比如民间做的MIUI的ROM）要稳定一些，所以你不想经常折腾的话，刷这个版本会安逸很多。</p>
-
-<p>本文中所有内容都是来自：</p>
-
-<ul>
-<li>移动叔叔论坛（bbs.ydss.cn），卓普大黑版块</li>
-<li><a href="http://forum.xda-developers.com/showthread.php?t=2403825">http://forum.xda-developers.com/showthread.php?t=2403825</a></li>
-</ul>
-
-
-<!-- more -->
-
-
-<h2>准备工作</h2>
-
-<p>刷机需要以下一些东西：</p>
-
-<ul>
-<li>ROM，这里我使用的是移动叔叔论坛上arboby提供的线刷包：</li>
-</ul>
-
-
-<p><a href="http://bbs.ydss.cn/thread-355478-1-1.html">http://bbs.ydss.cn/thread-355478-1-1.html</a></p>
-
-<p>这里说明两点：</p>
-
-<ol>
-<li><p>之所以采用线刷包，是因为相比在Recovery下刷机，你不需要首先去root手机，然后安装第三方的recovery，最后再刷入zip格式的ROM包。线刷包只需要你安装手机的线刷驱动（对于卓普这款MTK的手机来说，就是安装MTK Preloader驱动），然后运行MTK的Flash工具即可，非常的简单快速。</p></li>
-<li><p>arboby提供的这个线刷包，相比原生的我上面提到的，卓普在海外销售的zp990的ROM，只修改了一个image，就是recovery image。这样我们线刷一次，就得到了ROM和第三方的recovery，非常的方便。其实我下载过原生的zp990的ROM，跟arbody的ROM做过diff，只有一个recovery image是不同的。</p></li>
-<li><p>MTK的线刷软件：SP Flash tool。</p></li>
-<li><p>MTK线刷的驱动，也就是上面提到的MTK Preloader的驱动。</p></li>
-</ol>
-
-
-<p>所有上述的东西在我的百度盘上都可以下载到：<a href="http://pan.baidu.com/s/1hq5klU0">http://pan.baidu.com/s/1hq5klU0</a>。</p>
-
-<h2>开始刷机</h2>
-
-<ul>
-<li>首先是安装线刷驱动，这里移动叔叔论坛上有了很不错的教程：</li>
-</ul>
-
-
-<p><a href="http://bbs.ydss.cn/thread-343673-1-1.html">http://bbs.ydss.cn/thread-343673-1-1.html</a></p>
-
-<p>我是在Windows 7 64bit上安装的。论坛上很多人说推荐使用XP的系统，因为win7，尤其是64bit的win7很难安装。其实我的感觉不是这样，我感觉很多人安装不上这个驱动是因为他们使用的是Ghost win7。只要是正常安装的win7，无论是否64bit，安装这个驱动都是没有问题的。</p>
-
-<p>其次就是注意要安装这个驱动，是手机关机、拔下电池，然后连接USB到电脑上。此时电脑上的设备管理器中就会出现一个未知设备，然后按照移动叔叔上那个教程一步一步做就可以了。安装好了之后，这个设备就叫MTK Preloader &hellip;，而且这个设备会不停的消失、出现，这是正常现象。只要一旦开始刷机，这个设备就不会再不停的消失出现了。</p>
-
-<p>我之前有在虚拟机的win7上尝试安装过这个驱动，感觉要困难一些（也不是完全不可能）。因为对于虚拟机来说，所有设备是先到Host system上，然后你需要去手动选择将该设备切换到虚拟机中来。考虑到这个坑爹的MTK的设备会不停的出现消失，这就增加了安装的难度。所以简单来说，不想找麻烦就别在虚拟机的windows上安装了吧。</p>
-
-<ul>
-<li>然后就是运行MTK的Flash tool刷机了。过程超级简单，就是把刷机包中的bootloader, kernel, system.img, recovery.img等等全部刷到手机的EMMC中的不同的分区上即可（当然bootloader一般是刷到SPI ROM上，我没研究过MTK的这个逻辑）。移动叔叔上也有教程：</li>
-</ul>
-
-
-<p><a href="http://bbs.ydss.cn/thread-344988-1-1.html">http://bbs.ydss.cn/thread-344988-1-1.html</a></p>
-
-<p>最后刷完就会看到一个对话框，里面是一个绿色的圆。使用一张移动叔叔论坛上的图装饰一下：</p>
-
-<p><img src="http://www.markzhang.cn/downloads/image/mtk-flash-tool.jpg" alt="MTK SP Flash Tool" /></p>
-
-<p>刷完之后开机就可以看到原生的安卓了。这里有一个小插曲，在我上面给出的arboby线刷包的link上也提到了，就是刷完之后，你会发现你的EMMC只有3G。我的卓普大黑是32G的版本，我没有额外再安装SD卡了，所以应该是一个3G的data分区（用来安装APK），剩下来会有一个25G多的分区作为/sdcard分区。</p>
-
-<p>对于这个问题，arboby在帖子中说，只需要进入到系统设置中，做一次 <code>恢复出厂设置</code> 就可以。这个方法在我的手机上不行，在我的大黑上，做了一次 <code>恢复出厂设置</code> 后，系统重启后会卡死，无法进入Android。我试验过两次都是这样。所以我后来使用了另外一种方法，就是进入Recovery去做一次 <code>双清</code> ，也就是format data和cache两个分区。</p>
-
-<p>说到这里，又要提到一个该手机和其他手机不一样的地方了。该手机不是按住音量的上或者下，然后按power键开机就进入了 <code>recovery</code> 模式。该手机进入 <code>recovery</code> 的方法是：</p>
-
-<p><strong> 手机在关机状态下，按住音量+，然后将USB线连接到手机上并插入电脑 </strong></p>
-
-<p>所以并不是按power开机，而是按住 音量+ 然后连接USB线，就会自动进入recovery了。</p>
-
-<p>在xda-developers上，采用的方法是在PC端运行一个叫做 <code>MTKDroidTools</code> 的软件从而进入recovery，我没有试验过因为我觉得这种方法太麻烦。</p>
-
-<h2>后续</h2>
-
-<p>刷机完成了，貌似结束了，其实还有一些东西是可以做的（当然不做也可以，看个人需要）：</p>
-
-<ul>
-<li><p>Root手机。其实root手机会带来安全隐患，但是为了升级触控屏的firmware（下面会提到），必须要先root。root就使用arboby提供的一键root的那个程序即可。前提条件是，PC上要安装好Android adb驱动并且手机上要打开USB调试（老生常谈了）。ADB的驱动我是直接在PC上安装了91助手，然后连接手机，91助手自动帮我安装的ADB驱动，你也可以去网上搜索找一下这个驱动，就是MTK的ADB驱动。</p></li>
-<li><p>升级触控屏（touch screen）的firmware。我的手机上，这个firmware的版本是0x14，根据arboby的描述，升级到0x17版本就可以完美支持 <code>小皮套</code>。这个皮套我也有一个，就是可以合上休眠，打开唤醒，同时还有一个透明窗口可以在不开皮套的情况下接电话。虽然我平常不使用这个，但是我认为升级一下还是有必要的。</p></li>
-<li><p>修改GPS的一个设置。这个来自xda-developers，据称不修改这个GPS的定位将会非常的慢。具体的做法倒是特别简单（但是也需要先root手机），就是编辑文件：<code>/system/build.prop</code>，在最后面加入一行：<code>Dalvik.vm.execution-mode=int:fast</code> ，然后重启手机即可。</p></li>
-<li><p>最后是调手机通话音量的，这款手机几乎所有人都知道有个问题就是通话音量太小，不是你听对方的声音小，是对方听你的声音小。据说原因是手机麦克风外面的防尘网做的太密？也据说论坛上有人暴力将这个防尘网的缝隙扩大了一些，立马声音变的很洪亮？但是如果不想做硬件上的HACK，那有一个设置是可以做的，就是增加手机麦克风的灵敏度（航模上我们叫感度）：</p></li>
-</ul>
-
-
-<p><a href="http://bbs.ydss.cn/thread-367161-1-1.html">http://bbs.ydss.cn/thread-367161-1-1.html</a></p>
-
-<h2>结束</h2>
-
-<p>整个Android手机就意味着折腾的开始，不喜欢的折腾的，还是买iPhone吧。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[CloneZilla磁盘克隆，超快的更换硬盘]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/06/03/ubuntu-disk-clone/"/>
-    <updated>2014-06-03T12:49:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/06/03/ubuntu-disk-clone</id>
-    <content type="html"><![CDATA[<p>开发用的PC机用的是一块128G的SSD，安装的Ubuntu 12.04，速度明显比机械硬盘快了好多，唯一的不足就是容量太小。于是最近购入了一块新的240G的SSD，需要将原来128G的SSD上的东西全部克隆过来。</p>
-
-<p>对于Linux ext4文件分区系统的磁盘来说，<code>ghost</code>工作的并不好，工作的比较好的是<code>CloneZilla</code>，因为它能识别ext4的文件系统，从而使克隆变的无比快速，之前我写过一篇类似的文章：</p>
-
-<p><a href="http://www.cnblogs.com/super119/archive/2012/09/26/2703479.html">http://www.cnblogs.com/super119/archive/2012/09/26/2703479.html</a></p>
-
-<p>但是那一次的克隆是两块容量一样的磁盘，而这一次两块SSD的容量并不相同，所以我做了一些改变。</p>
-
-<!-- more -->
-
-
-<p>两块磁盘的容量不一样，我能想到的问题是，如果是克隆整块硬盘的话，那MBR部分也会被克隆过去，也就是说，源磁盘的分区信息也会被克隆到目的盘上，这样，会不会240G的SSD就会变成120G？我没有试验，有可能 <code>CloneZilla</code> 能帮我们解决这个问题，但是为了避免麻烦，我还是手动的克隆了。</p>
-
-<p>所以我的做法是，不是克隆整个硬盘，而是只克隆源磁盘上的分区。完成之后，在目的盘上重建MBR信息，也就是在目的盘上恢复grub。具体我是这么做的：</p>
-
-<ul>
-<li><p>使用Ubuntu 12.04安装盘，进入Ubuntu Live（不是安装Ubuntu那个选项），然后使用Ubuntu的Disk Utility给目的盘分区</p></li>
-<li><p>使用CloneZilla的启动ISO启动系统，可以把这个ISO刻成光盘，也可以使用UltraISO这种工具将ISO烧录到U盘上，然后从USB启动电脑。启动起来之后，按照 <code>CloneZilla</code> 提供的向导，一步一步进行即可，超级简单。将源磁盘每个分区都克隆到目的盘对应的分区上即可。100G的数据五分钟搞定。</p></li>
-</ul>
-
-
-<p><img src="http://www.markzhang.cn/downloads/image/clonezilla.jpg" alt="CloneZilla Cloning" /></p>
-
-<ul>
-<li>接下来就可以将源磁盘从机器中拿出来了，我们只需要再把目的磁盘的MBR恢复就可以成功启动系统了。其实就是恢复grub的标准做法：首先还是使用Ubuntu的安装盘进入Ubuntu Live，然后打开终端，输入以下命令：</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Mount root partition to /mnt</span>
-</span><span class='line'>sudo mount /dev/sda1 /mnt
-</span><span class='line'>sudo mount --bind /dev /mnt/dev
-</span><span class='line'>sudo mount --bind /dev/pts /mnt/dev/pts
-</span><span class='line'>sudo mount --bind /proc /mnt/proc
-</span><span class='line'>sudo mount --bind /sys /mnt/sys
-</span><span class='line'>
-</span><span class='line'><span class="c"># Chroot into it and update grub</span>
-</span><span class='line'>sudo chroot /mnt
-</span><span class='line'>grub-install /dev/sda
-</span><span class='line'>grub-install --recheck /dev/sda
-</span><span class='line'>update-grub
-</span><span class='line'><span class="nb">exit</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># Quit chroot environment and umount all stuffs</span>
-</span><span class='line'>sudo umount /mnt/dev <span class="o">&amp;&amp;</span>
-</span><span class='line'>sudo umount /mnt/dev/pts <span class="o">&amp;&amp;</span>
-</span><span class='line'>sudo umount /mnt/proc <span class="o">&amp;&amp;</span>
-</span><span class='line'>sudo umount /mnt/sys <span class="o">&amp;&amp;</span>
-</span><span class='line'>sudo umount /mnt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样就完成了，在我的机器上，/dev/sda就是我新更换的240G的SSD，你需要根据你的机器上的磁盘配置来决定使用哪个磁盘。</p>
-
-<p>上述操作来自文章：</p>
-
-<p><a href="http://howtoubuntu.org/how-to-repair-restore-reinstall-grub-2-with-a-ubuntu-live-cd">http://howtoubuntu.org/how-to-repair-restore-reinstall-grub-2-with-a-ubuntu-live-cd</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[在Mavericks上使用Makefile编写wxWidgets程序]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/04/23/wxwidget-on-mavericks/"/>
-    <updated>2014-04-23T23:31:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/04/23/wxwidget-on-mavericks</id>
-    <content type="html"><![CDATA[<p>OpenGL的设计与操作系统无关，与窗口系统也无关，所以，要编写一个可以运行（能看到界面）的程序，还需要一些额外的GUI的框架，比如glut。</p>
-
-<p>glut基本上是所有OpenGL教科书上的唯一推荐了，因为它的API简单，跨平台。所以读者不需要花额外的时间去了解并使用glut。但是glut比较老了，有点跟不上时代了。而且编译出来的东西是一个可执行文件，不是Mac OS X上的 <code>.app</code> 的那种Applicaiton。所以在StackOverflow上也有很多人推荐使用 <code>glfw</code>。我也去试用了一下，感觉还是太单薄了。</p>
-
-<p>既然要编写一个像样的OpenGL程序，就选择一个像样的GUI framework library吧，于是我决定使用wxWidgets。</p>
-
-<!-- more -->
-
-
-<h2>wxWidgets的编译安装</h2>
-
-<p>wxWidgets在Mac OS X Mavericks上的安装很简单，就是标准的configure/make/make install。只是configure需要指定一些option，否则wxWidgets无法找到一些必须的库。</p>
-
-<p>结合了wxWidgets wiki上的一些内容，我的编译过程是这样的：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> &lt;root directory of wxWidgets <span class="nb">source</span>&gt;
-</span><span class='line'>mkdir build-release
-</span><span class='line'><span class="nb">cd </span>build-release
-</span><span class='line'>../configure --with-osx_cocoa --with-macosx-version-min<span class="o">=</span>10.7 --with-macosx-sdk<span class="o">=</span>/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk --prefix<span class="o">=</span><span class="s2">&quot;$(pwd)&quot;</span> --with-opengl
-</span><span class='line'>make
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我安装的还是较老版本的Xcode，所以可以看到上面的命令行中，SDK用的还是10.8的，不过不妨碍了。</p>
-
-<p>此外我没有执行make install，因为我也没打算给其他用户来使用。反正make过了之后，该有的东西（wx-config、wxWidgets的libraries）都有了。</p>
-
-<p>还有一点：执行完configure之后，你会发现这样的一行：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>OpenGL support:   no
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>但其实我们已经加了 <code>--with-opengl</code> 了，难道是configure没有找到Xcode中的OpenGL framework？经过一番Google，以及最后使用 <code>wx-config --libs</code> 来确认，其实OpenGL的支持已经有了，这个信息是一个错误信息。所以这应该算是一个bug了。</p>
-
-<h2>第一个使用Makefile的程序</h2>
-
-<p>接下来就是重头戏了，因为我不想使用Xcode来编写运行程序，太笨重了，而且写一个HelloWorld也需要在Xcode中建立一个Project，并且设置一堆东西。更何况使用Xcode，也无法详细了解整个编译过程。Linux程序员都懂的。</p>
-
-<p>所以我想要的是一个Makefile，我执行make就可以编译，而且要生成Mac OS X上的applicaiton（.app），而不是像使用glut的时候，只是生成了一个可执行文件。执行这个文件是能看到一个界面，但是无法拖动，某些功能还不正常。</p>
-
-<p>我看到wxWidgets自带的samples，就是可以通过make生成Mac OS X的 <code>.app</code> 应用的，所以这一定是可行的。于是Google了一下，果然发现wxWidgets的论坛上有答案：</p>
-
-<p><a href="http://forums.wxwidgets.org/viewtopic.php?f=23&amp;t=3768">http://forums.wxwidgets.org/viewtopic.php?f=23&amp;t=3768</a></p>
-
-<p>这个帖子中，帖子的作者Mark最后就给出了一个Makefile的template，使用这个Makefile就可以编译并最终生成一个 <code>.app</code>。</p>
-
-<p>于是立刻把这个Makefile拿过来试验了一下，需要做两处小改动：</p>
-
-<ul>
-<li><p>OUTPUTPATH必须要设置，而不是像注释中说的那样可以留空。否则后续的 <code>mkdir -p</code> 这个命令会失败。</p></li>
-<li><p>这个Makefile中所有的 <code>@echo</code> 命令要换成 <code>@/bin/echo</code>。因为这个Makefile中有三行这样的代码：<code>@echo -n xxxx</code>，<code>-n</code> 的意思是输出末尾不要加换行，但是Mavericks上，这个bash built-in的echo是没有 <code>-n</code> 这个option的，所以会导致最终生成的 <code>PkgInfo</code> 和 <code>Info.plist</code> 中有 <code>-n</code> 这样的字符串，从而导致最终的 <code>.app</code> 没法运行。在 <code>man echo</code> 中也提到了这个事情：</p></li>
-</ul>
-
-
-<blockquote><p>Some shells may provide a builtin echo command which is similar or identical to this utility. Most notably, the builtin echo in sh(1) does not accept the -n option. Consult the builtin(1) manual page.</p></blockquote>
-
-<p>做完这两处小改动之后，输入make就可以生成 <code>.app</code> 了，Cool！</p>
-
-<p>最后附上我的Makefile的模板：</p>
-
-<figure class='code'><figcaption><span>Makefile模板 bash (wxwidgets-makefile-template)</span> <a href='http://www.markzhang.cn/downloads/code/wxwidgets-makefile-template'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-<span class='line-number'>141</span>
-<span class='line-number'>142</span>
-<span class='line-number'>143</span>
-<span class='line-number'>144</span>
-<span class='line-number'>145</span>
-<span class='line-number'>146</span>
-<span class='line-number'>147</span>
-<span class='line-number'>148</span>
-<span class='line-number'>149</span>
-<span class='line-number'>150</span>
-<span class='line-number'>151</span>
-<span class='line-number'>152</span>
-<span class='line-number'>153</span>
-<span class='line-number'>154</span>
-<span class='line-number'>155</span>
-<span class='line-number'>156</span>
-<span class='line-number'>157</span>
-<span class='line-number'>158</span>
-<span class='line-number'>159</span>
-<span class='line-number'>160</span>
-<span class='line-number'>161</span>
-<span class='line-number'>162</span>
-<span class='line-number'>163</span>
-<span class='line-number'>164</span>
-<span class='line-number'>165</span>
-<span class='line-number'>166</span>
-<span class='line-number'>167</span>
-<span class='line-number'>168</span>
-<span class='line-number'>169</span>
-<span class='line-number'>170</span>
-<span class='line-number'>171</span>
-<span class='line-number'>172</span>
-<span class='line-number'>173</span>
-<span class='line-number'>174</span>
-<span class='line-number'>175</span>
-<span class='line-number'>176</span>
-<span class='line-number'>177</span>
-<span class='line-number'>178</span>
-<span class='line-number'>179</span>
-<span class='line-number'>180</span>
-<span class='line-number'>181</span>
-<span class='line-number'>182</span>
-<span class='line-number'>183</span>
-<span class='line-number'>184</span>
-<span class='line-number'>185</span>
-<span class='line-number'>186</span>
-<span class='line-number'>187</span>
-<span class='line-number'>188</span>
-<span class='line-number'>189</span>
-<span class='line-number'>190</span>
-<span class='line-number'>191</span>
-<span class='line-number'>192</span>
-<span class='line-number'>193</span>
-<span class='line-number'>194</span>
-<span class='line-number'>195</span>
-<span class='line-number'>196</span>
-<span class='line-number'>197</span>
-<span class='line-number'>198</span>
-<span class='line-number'>199</span>
-<span class='line-number'>200</span>
-<span class='line-number'>201</span>
-<span class='line-number'>202</span>
-<span class='line-number'>203</span>
-<span class='line-number'>204</span>
-<span class='line-number'>205</span>
-<span class='line-number'>206</span>
-<span class='line-number'>207</span>
-<span class='line-number'>208</span>
-<span class='line-number'>209</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'><span class="c">##############################################################</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#  Makefile Template for wxMac Applications</span>
-</span><span class='line'><span class="c">#  Mark Wilkinson</span>
-</span><span class='line'><span class="c">#  August 2005</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#  This makefile is designed for experienced UNIX </span>
-</span><span class='line'><span class="c">#  developers who wish to learn how to build Mac OS X </span>
-</span><span class='line'><span class="c">#  packages (.app) using Makefiles rather than Apple&#39;s </span>
-</span><span class='line'><span class="c">#  Xcode IDE.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#  Developed with the assistance of Kevin Hock, CHB, </span>
-</span><span class='line'><span class="c">#    and DialogBlocks examples.</span>
-</span><span class='line'><span class="c">#  Distribution of this file is subject to the terms of </span>
-</span><span class='line'><span class="c">#    the wxWindows License, see www.wxwidgets.org</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">##############################################################</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">##############################################################</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#  A Brief Tutorial on Packages</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#  Rather than use resource forks on application</span>
-</span><span class='line'><span class="c">#    files, as Apple did in their Classic operating</span>
-</span><span class='line'><span class="c">#    system, Mac OS X uses application packages.</span>
-</span><span class='line'><span class="c">#  Application packages have a .app extension and</span>
-</span><span class='line'><span class="c">#    are actually directories which contain the</span>
-</span><span class='line'><span class="c">#    true executable as well as several resource </span>
-</span><span class='line'><span class="c">#    files.  The structure of an application</span>
-</span><span class='line'><span class="c">#    package is:</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#    (program).app</span>
-</span><span class='line'><span class="c">#     |</span>
-</span><span class='line'><span class="c">#     +-- Contents</span>
-</span><span class='line'><span class="c">#          |</span>
-</span><span class='line'><span class="c">#          +--  Info.plist</span>
-</span><span class='line'><span class="c">#          |</span>
-</span><span class='line'><span class="c">#          +--  MacOS</span>
-</span><span class='line'><span class="c">#          |     |</span>
-</span><span class='line'><span class="c">#          |     +--  (program)</span>
-</span><span class='line'><span class="c">#          |</span>
-</span><span class='line'><span class="c">#          +--  PkgInfo</span>
-</span><span class='line'><span class="c">#          |</span>
-</span><span class='line'><span class="c">#          +--  Resources</span>
-</span><span class='line'><span class="c">#                |</span>
-</span><span class='line'><span class="c">#                +-- (icon file)</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#    In this diagram &quot;(program)&quot; is the name of </span>
-</span><span class='line'><span class="c">#    the executable program.  &quot;Contents,&quot; &quot;MacOS,&quot; </span>
-</span><span class='line'><span class="c">#    and &quot;Resouces,&quot; are directories.  &quot;Info.plist&quot;</span>
-</span><span class='line'><span class="c">#    is an XML DTD file.  And &quot;PkgInfo&quot; is a text</span>
-</span><span class='line'><span class="c">#    file containing data.</span>
-</span><span class='line'><span class="c">#  This makefile generates the package directory</span>
-</span><span class='line'><span class="c">#    structure, and it compiles and places the </span>
-</span><span class='line'><span class="c">#    executabel in the MacOS directory.  This </span>
-</span><span class='line'><span class="c">#    makefile also creates the &quot;PkgInfo&quot; and </span>
-</span><span class='line'><span class="c">#    &quot;Info.plist&quot; files.  The PkgInfo file is very</span>
-</span><span class='line'><span class="c">#    simple.  Info.plist is an XML DTD and contains</span>
-</span><span class='line'><span class="c">#    several variables, which can be examined in</span>
-</span><span class='line'><span class="c">#    this makefile.</span>
-</span><span class='line'><span class="c">#  You need to supply the source code and the icon</span>
-</span><span class='line'><span class="c">#    file.  The icon file is copied into the </span>
-</span><span class='line'><span class="c">#    Resources directory of the package.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">##############################################################</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">##############################################################</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#  These variables are used to compile the program.  You </span>
-</span><span class='line'><span class="c">#    will need to provide this information.  You may need</span>
-</span><span class='line'><span class="c">#    to specify the full path to the wx-config executable.</span>
-</span><span class='line'><span class="c">#    The output path can&#39;t be blank.  The program name</span>
-</span><span class='line'><span class="c">#    and object names are essential.  You may use the icon</span>
-</span><span class='line'><span class="c">#    file included with the wxMac distribution </span>
-</span><span class='line'><span class="c">#    (wxMac-2.6.1/src/mac/wxmac.icns) or create your own</span>
-</span><span class='line'><span class="c">#    icon using the Apple Developer Tools </span>
-</span><span class='line'><span class="c">#    (/Developer/Applications/Utilities/Icon Composer).</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">##############################################################</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">WXCONFIG</span><span class="p">=</span><span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">mark</span><span class="o">/</span><span class="n">Graphics</span><span class="o">/</span><span class="n">wxWidgets</span><span class="o">-</span><span class="mf">3.0</span><span class="p">.</span><span class="mi">0</span><span class="o">/</span><span class="n">build</span><span class="o">-</span><span class="n">release</span><span class="o">/</span><span class="n">wx</span><span class="o">-</span><span class="n">config</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># can&#39;t be blank, otherwise &quot;mkdir -p&quot; fails</span>
-</span><span class='line'><span class="n">OUTPUTPATH</span><span class="p">=</span><span class="n">out</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">PROGRAM</span><span class="p">=</span><span class="n">HelloWxGL</span>
-</span><span class='line'><span class="n">PROGVER</span><span class="p">=</span><span class="mf">1.0</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">OBJECTS</span><span class="p">=</span><span class="n">HelloWxGL</span><span class="p">.</span><span class="n">o</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">ICONFILE</span><span class="p">=</span><span class="n">wxmac</span><span class="p">.</span><span class="n">icns</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">##############################################################</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#  These variables are used in the Info.plist and PkgInfo</span>
-</span><span class='line'><span class="c">#    files.  Aside from the company name (which should have</span>
-</span><span class='line'><span class="c">#    no spaces, like a domain name), you should not have</span>
-</span><span class='line'><span class="c">#    to modify these variables.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">##############################################################</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">COMPANY</span><span class="p">=</span><span class="n">markzhang</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">BUNDLEPACKAGE</span><span class="p">=</span><span class="n">APPL</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">BUNDLESIGNATURE</span><span class="p">=</span>????
-</span><span class='line'>
-</span><span class='line'><span class="c">##############################################################</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">#  It should not be necessary to modify the Makefile</span>
-</span><span class='line'><span class="c">#    below this line; although, you may have to make</span>
-</span><span class='line'><span class="c">#    changes depending on your system configuration.</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'><span class="c">##############################################################</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">CXX</span><span class="p">=</span><span class="n">g</span><span class="o">++</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">BUNDLE</span><span class="p">=</span>$<span class="p">(</span><span class="n">OUTPUTPATH</span><span class="p">)</span><span class="o">/</span>$<span class="p">(</span><span class="n">PROGRAM</span><span class="p">).</span><span class="n">app</span>
-</span><span class='line'><span class="n">MACICON</span><span class="p">=</span>$<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span>$<span class="p">(</span><span class="n">ICONFILE</span><span class="p">)</span>
-</span><span class='line'><span class="n">MACPKGINFO</span><span class="p">=</span>$<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span><span class="n">PkgInfo</span>
-</span><span class='line'><span class="n">MACINFOPLIST</span><span class="p">=</span>$<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span><span class="n">Info</span><span class="p">.</span><span class="n">plist</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">LIBS</span><span class="p">=</span>`$<span class="p">(</span><span class="n">WXCONFIG</span><span class="p">)</span> <span class="o">--</span><span class="n">libs</span>`
-</span><span class='line'><span class="n">LINKERFLAGS</span><span class="p">=</span> <span class="o">-</span><span class="n">lstdc</span><span class="o">++</span>
-</span><span class='line'><span class="n">WARNINGFLAGS</span><span class="p">=</span>
-</span><span class='line'><span class="n">OPTFLAGS</span><span class="p">=</span>
-</span><span class='line'><span class="n">DEBUGFLAGS</span><span class="p">=</span><span class="o">-</span><span class="n">g</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">CPPINC</span><span class="p">=</span>`$<span class="p">(</span><span class="n">WXCONFIG</span><span class="p">)</span> <span class="o">--</span><span class="n">inplace</span> <span class="o">--</span><span class="n">cxxflags</span>`
-</span><span class='line'><span class="n">LDFLAGS</span><span class="p">=</span>$<span class="p">(</span><span class="n">LIBS</span><span class="p">)</span> $<span class="p">(</span><span class="n">LINKERFLAGS</span><span class="p">)</span>
-</span><span class='line'><span class="n">CPPFLAGS</span><span class="p">=</span>$<span class="p">(</span><span class="n">CPPINC</span><span class="p">)</span> $<span class="p">(</span><span class="n">GCCFLAGS</span><span class="p">)</span> $<span class="p">(</span><span class="n">DEBUGFLAGS</span><span class="p">)</span> $<span class="p">(</span><span class="n">OPTFLAGS</span><span class="p">)</span> $<span class="p">(</span><span class="n">WARNINGFLAGS</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">all</span><span class="p">:</span> $<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span> $<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span><span class="n">MacOS</span><span class="o">/</span>$<span class="p">(</span><span class="n">PROGRAM</span><span class="p">)</span> $<span class="p">(</span><span class="n">MACICON</span><span class="p">)</span> $<span class="p">(</span><span class="n">MACPKGINFO</span><span class="p">)</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">clean</span><span class="p">:</span>
-</span><span class='line'>  <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> $<span class="p">(</span><span class="n">OBJECTS</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">rm</span> <span class="o">-</span><span class="n">fr</span> $<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">help</span><span class="p">:</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;Usage: make -f Makefile [all|clean|help]&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#  This builds the bundle&#39;s directory structure.</span>
-</span><span class='line'>$<span class="p">(</span><span class="n">BUNDLE</span><span class="p">):</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;==== Building bundle directory structure ====&quot;</span>
-</span><span class='line'>  <span class="nb">mkdir</span> <span class="o">-</span><span class="n">p</span> $<span class="p">(</span><span class="n">OUTPUTPATH</span><span class="p">)</span>
-</span><span class='line'>  <span class="nb">mkdir</span> <span class="o">-</span><span class="n">p</span> $<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span>
-</span><span class='line'>  <span class="nb">mkdir</span> <span class="o">-</span><span class="n">p</span> $<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span><span class="n">MacOS</span>
-</span><span class='line'>  <span class="nb">mkdir</span> <span class="o">-</span><span class="n">p</span> $<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span><span class="n">Resources</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#  This builds the executable right inside the bundle.</span>
-</span><span class='line'>$<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span><span class="n">MacOS</span><span class="o">/</span>$<span class="p">(</span><span class="n">PROGRAM</span><span class="p">):</span> $<span class="p">(</span><span class="n">OBJECTS</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;==== Building executable ====&quot;</span>
-</span><span class='line'>  $<span class="p">(</span><span class="n">CXX</span><span class="p">)</span> <span class="o">-</span><span class="n">o</span> $<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span><span class="n">MacOS</span><span class="o">/</span>$<span class="p">(</span><span class="n">PROGRAM</span><span class="p">)</span> $<span class="p">(</span><span class="n">OBJECTS</span><span class="p">)</span> $<span class="p">(</span><span class="n">LDFLAGS</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#  This copies the icon file into the bundle.</span>
-</span><span class='line'>$<span class="p">(</span><span class="n">MACICON</span><span class="p">):</span> $<span class="p">(</span><span class="n">ICONFILE</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;==== Copying icon file into bundle ====&quot;</span>
-</span><span class='line'>  <span class="n">cp</span> <span class="o">-</span><span class="n">f</span> $<span class="p">(</span><span class="n">ICONFILE</span><span class="p">)</span> $<span class="p">(</span><span class="n">BUNDLE</span><span class="p">)</span><span class="o">/</span><span class="n">Contents</span><span class="o">/</span><span class="n">Resources</span><span class="o">/</span>$<span class="p">(</span><span class="n">ICONFILE</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#  NOTICE</span>
-</span><span class='line'><span class="c">#  We need to use &quot;/bin/echo&quot;, since the &quot;echo&quot; is the builtin program</span>
-</span><span class='line'><span class="c">#  which doesn&#39;t have &quot;-n&quot; option.</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#  This creates the Contents/PkgInfo file.</span>
-</span><span class='line'>$<span class="p">(</span><span class="n">MACPKGINFO</span><span class="p">):</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;==== Creating PkgInfo ====&quot;</span>
-</span><span class='line'>  <span class="n">touch</span> $<span class="p">(</span><span class="n">MACPKGINFO</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="o">-</span><span class="n">n</span> <span class="s">&quot;$(BUNDLEPACKAGE)$(BUNDLESIGNATURE)&quot;</span> <span class="o">&gt;</span> $<span class="p">(</span><span class="n">MACPKGINFO</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#  This creates the Contents/Info.plist file.</span>
-</span><span class='line'>$<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">):</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;==== Creating Info.plist ====&quot;</span>
-</span><span class='line'>  <span class="n">touch</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;&lt;?xml version=\&quot;</span><span class="mf">1.0</span><span class="o">\</span><span class="s">&quot; encoding=\&quot;</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span><span class="o">\</span><span class="s">&quot;?&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="o">-</span><span class="n">n</span> <span class="s">&quot;&lt;!DOCTYPE plist PUBLIC &quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="o">-</span><span class="n">n</span> <span class="s">&quot;\&quot;</span><span class="o">-//</span><span class="n">Apple</span> <span class="n">Computer</span><span class="o">//</span><span class="n">DTD</span> <span class="n">PLIST</span> <span class="mf">1.0</span><span class="o">//</span><span class="n">EN</span><span class="o">\</span><span class="s">&quot; &quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;\&quot;</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="p">.</span><span class="n">apple</span><span class="p">.</span><span class="n">com</span><span class="o">/</span><span class="n">DTDs</span><span class="o">/</span><span class="n">PropertyList</span><span class="o">-</span><span class="mf">1.0</span><span class="p">.</span><span class="n">dtd</span><span class="o">\</span><span class="s">&quot;&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;&lt;plist version=\&quot;</span><span class="mf">1.0</span><span class="o">\</span><span class="s">&quot;&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;&lt;dict&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleDevelopmentRegion&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;English&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleExecutable&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;$(PROGRAM)&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleIconFile&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;$(ICONFILE)&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleName&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;$(PROGRAM)&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleIdentifier&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;com.$(COMPANY).$(PROGRAM)&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleInfoDictionaryVersion&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;6.0&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundlePackageType&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;$(BUNDLEPACKAGE)&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleSignature&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;$(BUNDLESIGNATURE)&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleVersion&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;$(PROGVER)&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleShortVersionString&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;$(PROGVER)&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;key&gt;CFBundleGetInfoString&lt;/key&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;   &lt;string&gt;$(PROGRAM), Version $(PROGVER), $(COMPANY)&lt;/string&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;&lt;/dict&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">@</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">echo</span> <span class="s">&quot;&lt;/plist&gt;&quot;</span> <span class="o">&gt;&gt;</span> $<span class="p">(</span><span class="n">MACINFOPLIST</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>$<span class="p">(</span><span class="n">OBJECTS</span><span class="p">):</span> <span class="c">%.o: %.cpp</span>
-</span><span class='line'>  $<span class="p">(</span><span class="n">CXX</span><span class="p">)</span> <span class="o">-</span><span class="n">c</span> <span class="o">-</span><span class="n">o</span> $<span class="p">@</span> $<span class="p">(</span><span class="n">CPPFLAGS</span><span class="p">)</span> $<span class="o">&lt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">.</span><span class="n">PHONY</span><span class="p">:</span>    <span class="nb">all</span> <span class="n">clean</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://www.markzhang.cn/downloads/image/hellowxgl.png" alt="wxWidgets HelloWorld" /></p>
 ]]></content>
   </entry>
   

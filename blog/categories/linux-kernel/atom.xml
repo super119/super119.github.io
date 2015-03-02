@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux-kernel | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/linux-kernel/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-02-13T11:07:46+08:00</updated>
+  <updated>2015-03-02T11:24:36+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -14,325 +14,511 @@
 
   
   <entry>
-    <title type="html"><![CDATA[32/64的问题：32bit指针转换成64bit - Sign Extension]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit/"/>
-    <updated>2014-12-16T15:09:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit</id>
-    <content type="html"><![CDATA[<p>32/64有很多问题，指针转换是其中一个，比如这个例子：</p>
+    <title type="html"><![CDATA[GEM - Graphics Execution Manager 介绍]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/03/02/gem-introduction/"/>
+    <updated>2015-03-02T11:15:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/03/02/gem-introduction</id>
+    <content type="html"><![CDATA[<p>本文来自：<a href="http://lwn.net/Articles/283798/">http://lwn.net/Articles/283798/</a></p>
+
+<p>NOTE: Currently the buffer creation/read/write are implemented by driver specified ioctls. So right now you can&rsquo;t find functions like &ldquo;drm_gem_create&rdquo; in kernel sources.
+And that&rsquo;s also why we need &ldquo;dumb buffer&rdquo; in drm&rsquo;s ioctls(dumb_create, dumb_destroy&hellip;)</p>
 
 <!-- more -->
 
 
-<p><code>cpp
-void *p = 0xc8f68000;
-unsigned long long v = (unsigned long long)p;
-</code></p>
+<p>原文请看：<a href="http://lwn.net/Articles/283798/">http://lwn.net/Articles/283798/</a></p>
 
-<p>这个时候得到的 <code>v</code> 是： <code>0xffffffffc8f68000</code> 而不是 <code>0x00000000c8f68000</code></p>
-
-<p>以上例子来自：</p>
-
-<p><a href="http://stackoverflow.com/questions/22239752/convert-32-bit-pointer-to-64-bit-integer">http://stackoverflow.com/questions/22239752/convert-32-bit-pointer-to-64-bit-integer</a></p>
-
-<p>最近就碰到了好几次类似的问题。原因非常简单，就是编译器看到我们要把一个指针转换成 <code>unsigned long long</code>，而 <code>p</code> 的最高位是1，编译器认为这是负数，所以编译器就启动了 <code>Sign Extension</code>，将高32bit全部设置成1，这样最终你看到的高32bit就是全F了。</p>
-
-<p>所以当做32bit &ndash;> 64bit指针转换的时候，要使用 <code>intptr_t</code> 和 <code>uintptr_t</code>。这样编译器就知道这是指针的转换，高32bit就会是全0了。同样，这也就说明了，为什么 <code>stdint.h</code> 里面要定义这么些个typedef了:</p>
-
-<p><code>cpp
-void *p = 0xc8f68000;
-uint64_t v = (uintptr_t)p;
-</code></p>
-
-<p>事实上，无论何时都尽量要避免指针和Integer之间的转换，因为Integer是有正负的。</p>
+<p>GEM是Intel建议提出并实现的，所以这篇文章是GEM maintainer写的introduction，非常详尽，只是对照现在的kernel来说，内容已经有一点outdate（所以我写了上面的NOTE），但是大部分内容都是OK的。</p>
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Thunderbird 80(72) column - 邮件在80(72)列处line break]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/11/25/thunderbird-72-column/"/>
-    <updated>2014-11-25T11:13:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/11/25/thunderbird-72-column</id>
-    <content type="html"><![CDATA[<p>这个需求做linux kernel upstream的人都懂的&hellip;&hellip;要设置Thunderbird在80列正确换行，只需要这样：</p>
+    <title type="html"><![CDATA[转载：GEM vs TTM]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/03/02/gem-vs-ttm/"/>
+    <updated>2015-03-02T11:09:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/03/02/gem-vs-ttm</id>
+    <content type="html"><![CDATA[<p>本文来自: <a href="http://lwn.net/Articles/283793/">http://lwn.net/Articles/283793/</a></p>
+
+<p>Getting high-performance, three-dimensional graphics working under Linux is quite a challenge even when the fundamental hardware programming information is available.  One component of this problem is memory management: a graphics processor (GPU) is, essentially, a computer of its own with a distinct view of memory.  Managing the GPU&rsquo;s memory &ndash; and its view of system RAM &ndash; must be done carefully if the resulting system is intended to work at all, much less with acceptable performance.</p>
+
+<p>Not that long ago, it appeared that this problem had been solved with thetranslation table maps (TTM) subsystem.  TTM remains outside of the mainline kernel, though, as do all drivers which use it.  A recent queryabout what would be required to get TTM merged led to an interesting discussion where it turned out that, in fact, TTM may not be the future of graphics memory management after all.</p>
 
 <!-- more -->
 
 
-<ul>
-<li><p>Thunderbird如果撰写的邮件是plain text格式（在这里设置：Edit &ndash;> Account Settings &ndash;> Composition &amp; Addressing, you should uncheck Compose in HTML format for all accounts），那么自动就会在72列处做line wrap。但是需要注意的是，这里的line wrap只是在display邮件内容和撰写邮件时，你可以看到。当你发出邮件的时候，这个line wrap就没有了，换句话说，别人看到的你的邮件内容，还是很长的一行行的文字。所以需要下面一步。</p></li>
-<li><p>以下内容来自：</p></li>
-</ul>
+<p></p>
 
+<p>A number of complaints about TTM have been raised.  Its API is far larger than is needed for any free Linux driver; it has, in other words, a certain amount of code dedicated to the needs of binary-only drivers.  The fencing mechanism (which manages concurrency between the host CPUs and the GPU) is seen as being complex, difficult to work with, and not always yielding the best performance.  Heavy use of memory-mapped buffers can create performance problems of its own.  The TTM API is an exercise in trying to provide for everything in all situations;  as a result it is, according to some driver developers, hard to match to any specific hardware, hard to get started with, and still insufficiently flexible.  And, importantly, there is a distinct shortage of working free drivers which use TTM.  So Dave Airlie worries:</p>
 
-<p><a href="http://arapulido.com/2009/12/01/enabling-line-wrapping-in-thunderbird/#comment-807">http://arapulido.com/2009/12/01/enabling-line-wrapping-in-thunderbird/#comment-807</a></p>
+<blockquote><p>I was hoping that by now, one of the radeon or nouveau drivers would have adopted TTM, or at least demoed something working using it, this hasn&rsquo;t happened which worries me&hellip;  The real question is whether TTM suits the driver writers for use in Linux desktop and embedded environments, and I think so far I&rsquo;m not seeing enough positive feedback from the desktop side
+All of these worries would seem to be moot, since TTM is available and there is nothing else out there.  Except, as it turns out, there issomething out there: it&rsquo;s called the Graphics Execution Manager, or GEM. The Intel-sponsored GEM project is all of one month old, as of this writing. The GEM developers had not really intended to announce their work quite yet, but the TTM discussion brought the issue to the fore.</p></blockquote>
 
-<p>下文中提到的option设置在：Edit &ndash;> Preferences &ndash;> Advanced (General tab) &ndash;> Configure Editor：</p>
+<p>Keith Packard&rsquo;s introduction to GEM includes a document describing the API as it exists so far.  There are a number of significant differences in how GEM does things.  To begin with, GEM allocates graphical buffer objects using normal, anonymous, user-space memory.  That means that these buffers can be forced out to swap when memory gets tight.  There are clear advantages to this approach, and not just in memory flexibility: it also makes the implementation of suspend and resume easier by automatically providing backing store for all buffer objects.</p>
 
-<blockquote><p>I am a happy user of the daily build of Thunderbird 3. Although it is still under development, is the best email client for Linux I’ve tried so far, at least, the one that better works for me. Email search &amp; filtering is fast and reliable.</p>
+<p>The GEM API tries to do away with the mapping of buffers into user space. That mapping is expensive to do and brings all sorts of interesting issues with cache coherency between the CPU and GPU.  So, instead, buffer objects are accessed with simple read() and write() calls.  Or, at least, that&rsquo;s the way it would be if the GEM developers could attach a file descriptor to each buffer object.  The kernel, however, does not make the management of that many file descriptors easy (yet), so the real API uses separate handles for buffer objects and a series of ioctl()calls.</p>
 
-<p>The only thing I don’t like is that wrapping your emails to 72 characters when sending plain text is not straightforward. Once you have selected to send your emails as plain text and have set the line wrap option to 72, there is still one more option to tweak.</p>
+<p>That said, it is possible to map a buffer object into user space.  But then the user-space driver must take explicit responsibility for the management of cache coherency.  To that end there is a set of ioctl()calls for managing the &ldquo;domain&rdquo; of a buffer; the domain, essentially, describes which component of the system owns the buffer and is entitled to operate on it.  Changing the domains (there are two, one for read access and one for writes) of a buffer will perform the necessary cache flushes.  In a sense, this mechanism resembles the streaming DMA API, where the ownership of DMA buffers can be switched between the CPU and the peripheral controller. That is not entirely surprising, as a very similar problem is being solved.</p>
 
-<p>Thunderbird has a “feature” that sends by default all plain text with the option format=flowed, which unwraps the email in the client receiver. To turn this feature off, you have to toggle one of the options in the chrome editor:</p>
+<p>This API also does away with the need for explicit fence operations. Instead, a CPU operation which requires access to a buffer will simply wait, if necessary, for the GPU to finish any outstanding operations involving that buffer.</p>
 
-<p>To disable flowed paragraphs, enforcing line breaks as formatted in the message, set the preference:</p>
+<p>Finally, the GEM API does not try to solve the entire problem; a number of important operations (such as the execution of a set of GPU commands) are left for the hardware-specific driver to implement.  GEM is, thus, quite specific to the needs of Intel&rsquo;s driver at this time; it does not try for the same sort of generality that was a goal of TTM.  As describedby Eric Anholt:</p>
 
-<p>mailnews.display.disable_format_flowed_support true
-(<a href="http://kb.mozillazine.org/Mail_content_types#Plain_text">http://kb.mozillazine.org/Mail_content_types#Plain_text</a>)</p>
+<blockquote><p>The problem with TTM is that it&rsquo;s designed to expose one general API for all hardware, when that&rsquo;s not what our drivers want&hellip; We&rsquo;re trying to come at it from the other direction: Implement one driver well.  When someone else implements another driver and finds that there&rsquo;s code that should be common, make it into a support library and share it.</p></blockquote>
 
-<p>To disable paragraph flow when you send plain text messages, and in the plain text part of multipart messages, set the preference:</p>
+<p>The advantage to this approach is that it makes it relatively easy to create something which works well with Intel drivers.  And that may well be a good start; one working set of drivers is better than none.  On the other hand, that means that a significant amount of work may be required to get GEM to the point where it can support drivers for other hardware.  There seem to be two points of view on how that might be done: (1) add capabilities to GEM when needed by other drivers, or (2) have each driver use its own memory manager.</p>
 
-<p>mailnews.send_plaintext_flowed false
-(<a href="http://kb.mozillazine.org/Mail_content_types#Disabling_paragraph_flow">http://kb.mozillazine.org/Mail_content_types#Disabling_paragraph_flow</a>)</p></blockquote>
+<p>The first approach is, in many ways, more pleasing.  But it implies that the GEM API could change significantly over time.  And that, in turn, could delay the merging of the whole thing; the GEM API is exported to user space, and, as a result, must remain compatible as things change.  So there may be resistance to a quick merge of an API which looks like it may yet have to evolve for some time.</p>
+
+<p>The second approach, instead, is best describedby Dave Airlie:</p>
+
+<blockquote><p>Well the thing is I can&rsquo;t believe we don&rsquo;t know enough to do this in some way generically, but maybe the TTM vs GEM thing proves its not possible.  So we can then punt to having one memory manager per driver, but I suspect this will be a maintenance nightmare, so if people decide this is the way forward, I&rsquo;m happy to see it happen. However the person submitting the memory manager n+1 must damn well be willing to stand behind the interface until time ends, and explain why they couldn&rsquo;t re-use 1..n memory managers.</p></blockquote>
+
+<p>One other remaining issue is performance.  Keith Whitwell posted some benchmark results showing that the i915 driver performs significantly worse with either TTM or GEM than without.  Keith Packard gets different results, though; his tests show that the GEM-based driver is significantly faster.  Clearly there is a need for a set of consistent benchmarks; performance of graphics drivers is important, but performance cannot be optimized if it cannot be reliably measured.</p>
+
+<p>The use of anonymous memory also raises some performance concerns: a first-person shooter game will not provide the same experience if its blood-and-gore textures must be continually paged in.  Anonymous memory can also be high memory, and, thus, not necessarily accessible via a 32-bit pointer.  Some GPU hardware cannot address high memory; that will likely force the use of bounce buffers within the kernel.  In the end, GEM will have to prove that it can deliver good performance; GEM&rsquo;s developers are highly motivated to make their hardware look good, so there is a reasonable chance that things will work out on this front.</p>
+
+<p>The conclusion to draw from all of this is that the GPU memory management problem cannot yet be considered solved.  GEM might eventually become that solution, but it is a very new API which still needs a fair amount of work.  There is likely to be a lot of work yet to be done in this area.</p>
+
+<p>(Thanks to Timo Jyrinki for suggesting this topic.)</p>
 ]]></content>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Linux设备驱动suspend/resume的顺序]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/04/09/linux-driver-suspend-orders/"/>
-    <updated>2014-04-09T16:07:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/04/09/linux-driver-suspend-orders</id>
-    <content type="html"><![CDATA[<p>Linux在进入suspend的时候，会首先freeze userspace，然后挨个去调用设备驱动程序的suspend，最后调用architecture dependent的callback（非常奔放的描述了，其实有大量的细节问题存在）。Resume就是反过来执行一遍，最后重新enable userspace。那么作为设备驱动程序的编写者来说，主要就是要实现本驱动的suspend/resume逻辑。但是事实上，很多设备之间是有依赖性的，比如在ARM上，很多设备在resume之前，要求 <code>IOMMU</code> 要已经被enable，否则硬件上就会出现问题，因为访问的地址不对了。</p>
+    <title type="html"><![CDATA[有关DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem/"/>
+    <updated>2015-03-02T11:06:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem</id>
+    <content type="html"><![CDATA[<ol>
+<li><p>DMABUF can be used as a wrapper to encapsulate other memory management frameworks. All these memory management framework(I mean mostly for graphics), buffer is the keypoint. DMABUF defines a standard buffer structure. So DMABUF can be used as a wrapper for TTM/GEM/Android ION&hellip; and etc. Notice DMABUF can&rsquo;t replace these things, cause it doesn&rsquo;t cover everything. E.g: DMABUF has no userspace interfaces, right now only kernel interfaces(can be used in device driver).</p></li>
+<li><p>Kernel has DMA mapping API from origin. ARM defines IOMMU which can be used to connect scattered physical memory as a continuous region for devices which needs continue address to work(e.g: DMA). So IOMMU implementations &amp; CMA should work behind kernel DMA mapping API. E.g: dma_alloc_from_contiguous can be implemented by CMA; dma_alloc_coherent can be implemented by IOMMU or by the normal case(just call __get_free_pages). So for device drivers need dma buffers, we should use dma mapping APIs, not call iommu api directly.</p></li>
+<li><p>For tegra, GART &amp; SMMU can be used to implement IOMMU apis.</p></li>
+</ol>
 
-<p>那么Linux是如何设计/定义各个设备驱动之间的suspend/resume的顺序的呢？</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Linux graphics stack 随便写写]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/03/02/linux-graphics-stack-notes/"/>
+    <updated>2015-03-02T11:03:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/03/02/linux-graphics-stack-notes</id>
+    <content type="html"><![CDATA[<ul>
+<li><p>Display and mode setting: DRM. DRM defines connector/encoder/crtc to support display(including multi-monitor). And KMS makes mode setting happens in kernel space.</p></li>
+<li><p>2D acceleration: X server EXA/UXA extension. Vendor should write a X server driver which implements EXA or UXA(should be upstreamed). UXA is an enhancement design of EXA, proposed by intel, so GEM is used in UXA. DRM has no direct 2D acceleration interface definitions(e.g: memory copy/move, blit, color space conversion&hellip;), this is defined in EXA/UXA extensions. But vendor&rsquo;s X server driver will use drm functions, mostly is buffer manipulations.</p></li>
+<li><p>3D acceleration: via Mesa. Mesa has 2 parts:</p></li>
+</ul>
+
 
 <!-- more -->
 
 
-<p>简单来说，就是以下几条逻辑：</p>
+<ol>
+<li>libGL.so &mdash; the implementation of OpenGL spec, the default OpenGL implementation library in Linux. This libGL.so translates OpenGL callings to Mesa-specified instructions.</li>
+<li>DRI driver &mdash; the driver accepts the Mesa-specified instructions generated by libGL.so and call drm functions to get them accelerated in GPU. Should be upstreamed.</li>
+</ol>
+
+
+<p>DRM: has userspace libdrm &amp; kernel space drm driver.</p>
+
+<p>libdrm: Implemented drm APIs. Vendor can hook it&rsquo;s implementations as well as add more APIs which used by EXA/UXA driver(2D) or DRI driver(3D). That&rsquo;s why the build result of libdrm normally has 2 libraries(e.g: libdrm.so &amp; libdrm_intel.so). Vendor codes of libdrm should be upstreamed.</p>
+
+<p>Kernel drm driver: Works under kernel drm framework, should be upstreamed. Cause vendor can add APIs in libdrm, so kernel drm driver can handle vendor specified ioctls.</p>
+
+<p>GLX: X server extension of OpenGL. X server has DRI/DRI2 extensions as well.</p>
+
+<p>They&rsquo;re working with libGL.so in Mesa. By these extensions, Mesa can do:</p>
+
+<ol>
+<li><p>Direct rendering: libGL.so in Mesa try to figure out whether DRI driver is ready in Mesa. If so, GLX returns some infos(such as window size, position&hellip;) or create off-screen buffers(via DRI/DRI2 X extension) for Mesa. The rendering is handled in Mesa&rsquo;s DRI driver &mdash; no relations with X server.</p></li>
+<li><p>Indirect rendering: libGL.so in Mesa can&rsquo;t find out Mesa&rsquo;s DRI driver. So it queries whether DRI is available in X server. If so, it pass the Mesa-specified instructions which generated by libGL.so to X server. And GLX/DRI/DRI2 extensions of X server handles the rest things. Normally it&rsquo;s software rendering which implemented by Mesa as well. AIGLX(Accelerated Indirect GLX) seems has some solutions to accelerate this.</p></li>
+</ol>
+
+
+<p>So Mesa handles a lot of works in linux 3D graphics stack. And it has lots of relations with X server as well(GLX and DRI X extensions).</p>
+
+<p>An important reason that why we involve so many components is, decouple the dependencies of all of these guys. According to this design, DRM is not related with X server so it works with other programs as well(e.g: Wayland). Mesa is the same.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[DRM memory management - 最好的GEM/TTM/PRIME解释]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/03/02/drm-memory-management/"/>
+    <updated>2015-03-02T10:37:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/03/02/drm-memory-management</id>
+    <content type="html"><![CDATA[<p>本文转载自：<a href="https://www.kernel.org/doc/htmldocs/drm/drm-memory-management.html">https://www.kernel.org/doc/htmldocs/drm/drm-memory-management.html</a></p>
+
+<p><strong>Memory management</strong></p>
 
 <ul>
-<li><p>各设备驱动程序按照其对应的设备（device）注册的先后次序，来决定其suspend/resume的顺序。注意是该驱动对应的设备的注册顺序，不是驱动注册的顺序，所以和驱动的注册优先级无关（也就是和module_init, rootfs_init, subsys_initcall这些无关）。越早被注册的设备，其对应的驱动的suspend越晚被调用，其对应驱动的resume越早被调用；越晚被注册的设备，其对应的驱动的suspend越早被调用，其对应的驱动的resume越晚被调用。</p></li>
-<li><p>上面所说的逻辑往往不能满足我们的要求，因为现在的设备（device）都通过DT（Device Tree）的方式进行注册。那么，在DTS文件中，出现的越早的设备就越早被注册（可以参考函数 <code>of_platform_populate</code>）。而按照现在upstream linux kernel的约定，设备在DTS文件中，是按照其寄存器的地址，从低到高排序的，所以自然不可能满足我们的需求。</p></li>
+<li>The Translation Table Manager (TTM)</li>
+<li>The Graphics Execution Manager (GEM)</li>
+<li>VMA Offset Manager</li>
+<li>PRIME Buffer Sharing</li>
+<li>PRIME Function References</li>
+<li>DRM MM Range Allocator</li>
+<li>DRM MM Range Allocator Function References</li>
+<li>CMA Helper Functions Reference</li>
 </ul>
 
 
-<p>那要怎么办？答案是驱动程序执行probe的时候返回 <code>-EPROBE_DEFER</code> 。</p>
-
-<p>对于现在ARM SoC上的设备和其驱动程序来说，Linux kernel都使用Platform device/Platform driver来描述他们。而Platform driver的probe函数就相当于是驱动的初始化函数，一般用来映射寄存器，分配必需的内存等等，看一个驱动程序的代码，一般也可以从Probe开始看起。</p>
-
-<p>Probe函数返回 <code>-EPROBE_DEFER</code>，指的是当一个设备驱动程序检测到其依赖的设备的驱动程序还没有ready的时候，返回这个出错码告诉kernel driver framework，我需要延缓自身的probe。还是举上面那个IOMMU的例子，如果一个设备依赖IOMMU，那么该设备的驱动在probe的时候，就应该检测iommu的驱动是否已经ready，如果没有那就要defer自己的probe。在Linux kernel driver framework中，收到驱动probe返回 <code>-EPROBE_DEFER</code>，就会将该驱动放入一个list中，一个workqueue来负责遍历这个list，从而再次执行这些驱动的probe函数（事实上，由于kernel driver framework不知道驱动互相之间的依赖关系，所以一旦有一个驱动成功probe了，kernel都会触发这个workqueue，让其去遍历一遍list）。</p>
-
-<p>上面说的是 <code>-EPROBE_DEFER</code> 的背景故事了，而事实上，当一个驱动的probe返回过 <code>-EPROBE_DEFER</code> ，而最终成功probe之后，kernel就会修改该驱动的suspend/resume的顺序了。这就是为什么驱动probe的时候返回 <code>-EPROBE_DEFER</code> 能影响其suspend/resume的次序的原因了：</p>
-
-<p><code>c
-/*
- * Force the device to the end of the dpm_list since
- * the PM code assumes that the order we add things to
- * the list is a good order for suspend but deferred
- * probe makes that very unsafe.
- */
-device_pm_lock();
-device_pm_move_last(dev);
-device_pm_unlock();
-</code></p>
-
-<p>上面的代码来自函数：<code>deferred_probe_work_func</code>，也就是上面所说的defer probe的workqueue的工作函数。所以这里可以看到，当一个驱动最终在probe defer的work函数中probe成功之后，kernel会修改该驱动对应的设备（device）在 <code>dpm_list</code> 中的位置，而 <code>dpm_list</code> 正是kernel suspend/resume 驱动时候遍历的链表。看到调用了函数：<code>device_pm_move_last(dev);</code> 没？这个设备被移到了 <code>dpm_list</code> 的末尾。</p>
-
-<ul>
-<li>事情到此为止，可以说已经有了解决方案：我们可以使用 DEFER PROBE 的方式来调整驱动 suspend/resume 的顺序。不过这里要提一下，还有一条路也是可行的，那就是利用 <code>syscore suspend/resume</code>。</li>
-</ul>
+<!-- more -->
 
 
-<p>syscore是Linux kernel定义的一个framework，我们可以将我们的驱动注册到syscore中去。syscore比较关键的就是 <code>syscore_ops</code> 这个结构：</p>
+<p>Modern Linux systems require large amount of graphics memory to store frame buffers, textures, vertices and other graphics-related data. Given the very dynamic nature of many of that data, managing graphics memory efficiently is thus crucial for the graphics stack and plays a central role in the DRM infrastructure.</p>
 
-<p>``` c
-struct syscore_ops {</p>
+<p>The DRM core includes two memory managers, namely Translation Table Maps (TTM) and Graphics Execution Manager (GEM). TTM was the first DRM memory manager to be developed and tried to be a one-size-fits-them all solution. It provides a single userspace API to accommodate the need of all hardware, supporting both Unified Memory Architecture (UMA) devices and devices with dedicated video RAM (i.e. most discrete video cards). This resulted in a large, complex piece of code that turned out to be hard to use for driver development.</p>
 
-<pre><code>struct list_head node;
-int (*suspend)(void);
-void (*resume)(void);
-void (*shutdown)(void);
+<p>GEM started as an Intel-sponsored project in reaction to TTM&rsquo;s complexity. Its design philosophy is completely different: instead of providing a solution to every graphics memory-related problems, GEM identified common code between drivers and created a support library to share it. GEM has simpler initialization and execution requirements than TTM, but has no video RAM management capabilities and is thus limited to UMA devices.</p>
+
+<p><strong>The Translation Table Manager (TTM)</strong></p>
+
+<p>TTM initialization</p>
+
+<p>Drivers wishing to support TTM must fill out a drm_bo_driver structure. The structure contains several fields with function pointers for initializing the TTM, allocating and freeing memory, waiting for command completion and fence synchronization, and memory migration. See the radeon_ttm.c file for an example of usage.</p>
+
+<p>The ttm_global_reference structure is made up of several fields:</p>
+
+<p>``` cpp
+struct ttm_global_reference {</p>
+
+<pre><code>enum ttm_global_types global_type;
+size_t size;
+void *object;
+int (*init) (struct ttm_global_reference *);
+void (*release) (struct ttm_global_reference *);
 </code></pre>
 
 <p>};
 ```</p>
 
-<p>可以看到只有 suspend/resume/shutdown 这三个ops，所以看到这里大概也可以猜到了，注册到syscore中的驱动，其suspend函数是在所有其他驱动的suspend都调用过之后调用的，而其resume函数是在所有其他驱动的resume调用之前调用的。简单来说，syscore的驱动，suspend被晚调用保证其他驱动suspend的时候，syscore的驱动还活着；syscore的驱动，resume被很早调用，从而保证其他驱动resume的时候，syscore的驱动已经活着了。好绕。。。</p>
+<p>There should be one global reference structure for your memory manager as a whole, and there will be others for each object created by the memory manager at runtime. Your global TTM should have a type of TTM_GLOBAL_TTM_MEM. The size field for the global object should be sizeof(struct ttm_mem_global), and the init and release hooks should point at your driver-specific init and release routines, which probably eventually call ttm_mem_global_init and ttm_mem_global_release, respectively.</p>
 
-<p>要将驱动注册到syscore中很简单，调用函数：<code>register_syscore_ops(&amp;your_driver_syscore_ops);</code> 就可以了。至于上面说到的syscore的suspend/resume的顺序，实现代码在这里：</p>
+<p>Once your global TTM accounting structure is set up and initialized by calling ttm_global_item_ref() on it, you need to create a buffer object TTM to provide a pool for buffer object allocation by clients and the kernel itself. The type of this object should be TTM_GLOBAL_TTM_BO, and its size should be sizeof(struct ttm_bo_global). Again, driver-specific init and release functions may be provided, likely eventually calling ttm_bo_global_init() and ttm_bo_global_release(), respectively. Also, like the previous object, ttm_global_item_ref() is used to create an initial reference count for the TTM, which will call your initialization function.</p>
 
-<p>``` c
-error = syscore_suspend();
-if (!error) {</p>
+<p><strong>The Graphics Execution Manager (GEM)</strong></p>
 
-<pre><code>*wakeup = pm_wakeup_pending();
-if (!(suspend_test(TEST_CORE) || *wakeup)) {
-    error = suspend_ops-&gt;enter(state);
-    events_check_enabled = false;
-}
-syscore_resume();
-</code></pre>
+<p>GEM Initialization
+GEM Objects Creation
+GEM Objects Lifetime
+GEM Objects Naming
+GEM Objects Mapping
+Memory Coherency
+Command Execution
+GEM Function Reference</p>
 
-<p>}
-```</p>
+<p>The GEM design approach has resulted in a memory manager that doesn&rsquo;t provide full coverage of all (or even all common) use cases in its userspace or kernel API. GEM exposes a set of standard memory-related operations to userspace and a set of helper functions to drivers, and let drivers implement hardware-specific operations with their own private API.</p>
 
-<p>以上代码来自函数：<code>suspend_enter</code>。可以看到当syscore_suspend被调用之后，就调用architecture dependent的 <code>suspend_ops-&gt;enter</code> 了，到这里整个系统就已经停下来了，进入suspend状态了。而当resume开始，<code>suspend_ops-&gt;enter</code> 返回之后，第一个被调用的就是 <code>syscore_resume</code>，所以上面那一段听起来好绕的逻辑就这么区区几行代码解释了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[KGDB使用简介]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/03/10/kgdb-howto/"/>
-    <updated>2014-03-10T13:57:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/03/10/kgdb-howto</id>
-    <content type="html"><![CDATA[<p>KGDB是调试linux kernel的一个工具，虽然没有userspace的gdb那么好用，但有些时候还是能派上一些用处。比如kernel启动的时候自动重启，用kgdb连上之后就可以在kernel重启之前被KGDB截获，从而打印出调用栈来。</p>
+<p>The GEM userspace API is described in the GEM &ndash; the Graphics Execution Manager article on LWN. While slightly outdated, the document provides a good overview of the GEM API principles. Buffer allocation and read and write operations, described as part of the common GEM API, are currently implemented using driver-specific ioctls.</p>
 
-<!-- more -->
+<p>GEM is data-agnostic. It manages abstract buffer objects without knowing what individual buffers contain. APIs that require knowledge of buffer contents or purpose, such as buffer allocation or synchronization primitives, are thus outside of the scope of GEM and must be implemented using driver-specific ioctls.</p>
 
-
-<p>具体步骤是这样：</p>
-
-<h2>Kernel配置</h2>
+<p>On a fundamental level, GEM involves several operations:</p>
 
 <ul>
-<li><code>make menuconfig</code>, under &ldquo;Kernel Hacking&rdquo;, enable &ldquo;KGDB&rdquo; &amp; &ldquo;KGDB over serial line&rdquo;. Enable &ldquo;compile kernel with debug info&rdquo;(CONFIG_DEBUG_INFO) &amp; &ldquo;enable frame pointer&rdquo;(CONFIG_FRAME_POINTER) options(both are under &ldquo;Kernel Hacking&rdquo;).</li>
+<li>Memory allocation and freeing</li>
+<li>Command execution</li>
+<li>Aperture management at command execution time</li>
 </ul>
 
 
-<p>有关CONFIG_FRAME_POINTER这个option，需要在enable了ARCH_CONFIG_FRAME_POINTERS这个option之后才会出现在Kernel hacking下面。</p>
+<p>Buffer object allocation is relatively straightforward and largely provided by Linux&rsquo;s shmem layer, which provides memory to back each object.</p>
 
-<p>这ARCH_CONFIG_FRAME_POINTERS在make menuconfig里面是找不到的。这个option是专门给其他人select用的。一般都是在ARCH config的时候会去select这个option</p>
+<p>Device-specific operations, such as command execution, pinning, buffer read &amp; write, mapping, and domain ownership transfers are left to driver-specific ioctls.</p>
 
-<p>比如x86下，一般会enable这个option。而ARM则不会（可能是考虑到生成的kernel文件尺寸和性能）。</p>
+<p><strong>GEM Initialization</strong></p>
 
-<p>所以，在ARM下，可以编辑arch/arm/Kconfig，在CONFIG_ARM下面的一堆select的最后，添加上一句select CONFIG_ARCH_FRAME_POINTERS就可以了。</p>
+<p>Drivers that use GEM must set the DRIVER_GEM bit in the struct drm_driver driver_features field. The DRM core will then automatically initialize the GEM core before calling the load operation. Behind the scene, this will create a DRM Memory Manager object which provides an address space pool for object allocation.</p>
 
-<p>从实验结果来看，只要enable了CONFIG_DEBUG_INFO，基本上就差不多了，能看到代码了。</p>
+<p>In a KMS configuration, drivers need to allocate and initialize a command ring buffer following core GEM initialization if required by the hardware. UMA devices usually have what is called a &ldquo;stolen&rdquo; memory region, which provides space for the initial framebuffer and large, contiguous memory regions required by the device. This space is typically not managed by GEM, and must be initialized separately into its own DRM MM object.</p>
 
-<ul>
-<li>Add kernel option: <code>kgdboc=ttyS0,38400 kgdbwait</code> into kernel command line.</li>
-</ul>
+<p><strong>GEM Objects Creation</strong></p>
 
+<p>GEM splits creation of GEM objects and allocation of the memory that backs them in two distinct operations.</p>
 
-<p>根据我的实验，这里115200不行。在后面gdb设置<code>target remote /dev/ttyS0</code>的时候，会被告知最高支持到38400.</p>
+<p>GEM objects are represented by an instance of struct drm_gem_object. Drivers usually need to extend GEM objects with private information and thus create a driver-specific GEM object structure type that embeds an instance of struct drm_gem_object.</p>
 
-<p>所以，这里如果115200不行，就改成38400。</p>
+<p>To create a GEM object, a driver allocates memory for an instance of its specific GEM object type and initializes the embedded struct drm_gem_object with a call to drm_gem_object_init. The function takes a pointer to the DRM device, a pointer to the GEM object and the buffer object size in bytes.</p>
 
-<p>注意这里将<code>/dev/ttyS0</code>修改成你的串口设备文件。</p>
+<p>GEM uses shmem to allocate anonymous pageable memory. drm_gem_object_init will create an shmfs file of the requested size and store it into the struct drm_gem_object filp field. The memory is used as either main storage for the object when the graphics hardware uses system memory directly or as a backing store otherwise.</p>
 
-<ul>
-<li>Start kernel, kernel will wait for connection from remote PC&rsquo;s gdb.</li>
-</ul>
+<p>Drivers are responsible for the actual physical pages allocation by calling shmem_read_mapping_page_gfp for each page. Note that they can decide to allocate pages when initializing the GEM object, or to delay allocation until the memory is needed (for instance when a page fault occurs as a result of a userspace memory access or when the driver needs to start a DMA transfer involving the memory).</p>
 
+<p>Anonymous pageable memory allocation is not always desired, for instance when the hardware requires physically contiguous system memory as is often the case in embedded devices. Drivers can create GEM objects with no shmfs backing (called private GEM objects) by initializing them with a call to drm_gem_private_object_init instead of drm_gem_object_init. Storage for private GEM objects must be managed by drivers.</p>
 
-<h2>PC端（remote machine）设置</h2>
+<p>Drivers that do not need to extend GEM objects with private information can call the drm_gem_object_alloc function to allocate and initialize a struct drm_gem_object instance. The GEM core will call the optional driver gem_init_object operation after initializing the GEM object with drm_gem_object_init.</p>
 
-<ul>
-<li>On remote machine, <code>&lt;gdb path&gt; ./vmlinux</code> &mdash; this &ldquo;vmlinux&rdquo; mostly is under the root directory of kernel(a big kernel image with debug infos, not the one under arch/arm/boot, that is stripped version).</li>
-</ul>
+<p>int (<em>gem_init_object) (struct drm_gem_object </em>obj);</p>
 
+<p>No alloc-and-init function exists for private GEM objects.</p>
 
-<p>需要注意的是，这里的GDB必须使用host是x86-64，target是ARM的那种GDB。我们PC上的gdb一般host和target都是x86-64。</p>
+<p><strong>GEM Objects Lifetime</strong></p>
 
-<p>这样的GDB可以在一些常见的toolchain网站找到，比如linaro。</p>
+<p>All GEM objects are reference-counted by the GEM core. References can be acquired and release by calling drm_gem_object_reference and drm_gem_object_unreference respectively. The caller must hold the drm_device struct_mutex lock. As a convenience, GEM provides the drm_gem_object_reference_unlocked and drm_gem_object_unreference_unlocked functions that can be called without holding the lock.</p>
 
-<ul>
-<li>Enter gdb commands:</li>
-</ul>
+<p>When the last reference to a GEM object is released the GEM core calls the drm_driver gem_free_object operation. That operation is mandatory for GEM-enabled drivers and must free the GEM object and all associated resources.</p>
 
+<p>void (<em>gem_free_object) (struct drm_gem_object </em>obj);</p>
 
-<p><code>bash
-set remotebaud 38400
-target remote /dev/ttyS0
-</code></p>
+<p>Drivers are responsible for freeing all GEM object resources, including the resources created by the GEM core. If an mmap offset has been created for the object (in which case drm_gem_object::map_list::map is not NULL) it must be freed by a call to drm_gem_free_mmap_offset. The shmfs backing store must be released by calling drm_gem_object_release (that function can safely be called if no shmfs backing store has been created).</p>
 
-<ul>
-<li>Done. You can list source codes, set breakpoints now. Continue the debugging after finished.</li>
-</ul>
+<p><strong>GEM Objects Naming</strong></p>
 
+<p>Communication between userspace and the kernel refers to GEM objects using local handles, global names or, more recently, file descriptors. All of those are 32-bit integer values; the usual Linux kernel limits apply to the file descriptors.</p>
 
-<p><em>CAUTION</em>: Close any other programs(normally it&rsquo;s minicom which we use to monitor serial outputs) which may occupy &ldquo;/dev/ttyS0&rdquo; before running gdb on remote machine. Otherwise gdb can&rsquo;t connect with target board.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Device tree: interrupts的解释]]></title>
-    <link href="http://www.markzhang.cn/blog/2013/11/27/dt-interrupts/"/>
-    <updated>2013-11-27T20:41:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2013/11/27/dt-interrupts</id>
-    <content type="html"><![CDATA[<p>Linux kernel现在使用Device tree（DT）来描述硬件设备。既然是描述硬件设备，那自然就需要对硬件充分了解才能理解DT。Interrupts就是一个例子。</p>
+<p>GEM handles are local to a DRM file. Applications get a handle to a GEM object through a driver-specific ioctl, and can use that handle to refer to the GEM object in other standard or driver-specific ioctls. Closing a DRM file handle frees all its GEM handles and dereferences the associated GEM objects.</p>
 
-<p>一般来说，DT中的 <code>interrupts</code> （本文不描述interrupt controller）看起来是这样的：</p>
+<p>To create a handle for a GEM object drivers call drm_gem_handle_create. The function takes a pointer to the DRM file and the GEM object and returns a locally unique handle. When the handle is no longer needed drivers delete it with a call to drm_gem_handle_delete. Finally the GEM object associated with a handle can be retrieved by a call to drm_gem_object_lookup.</p>
 
-<p>``` c
-pmu {</p>
+<p>Handles don&rsquo;t take ownership of GEM objects, they only take a reference to the object that will be dropped when the handle is destroyed. To avoid leaking GEM objects, drivers must make sure they drop the reference(s) they own (such as the initial reference taken at object creation time) as appropriate, without any special consideration for the handle. For example, in the particular case of combined GEM object and handle creation in the implementation of the dumb_create operation, drivers must drop the initial reference to the GEM object before returning the handle.</p>
 
-<pre><code>compatible = "arm,cortex-a9-pmu";
-interrupts = &lt;0 144 0x04
-          0 145 0x04
-          0 146 0x04
-          0 147 0x04&gt;;
-</code></pre>
+<p>GEM names are similar in purpose to handles but are not local to DRM files. They can be passed between processes to reference a GEM object globally. Names can&rsquo;t be used directly to refer to objects in the DRM API, applications must convert handles to names and names to handles using the DRM_IOCTL_GEM_FLINK and DRM_IOCTL_GEM_OPEN ioctls respectively. The conversion is handled by the DRM core without any driver-specific support.</p>
 
-<p>};
-```</p>
+<p>GEM also supports buffer sharing with dma-buf file descriptors through PRIME. GEM-based drivers must use the provided helpers functions to implement the exporting and importing correctly. See the section called “PRIME Buffer Sharing”. Since sharing file descriptors is inherently more secure than the easily guessable and global GEM names it is the preferred buffer sharing mechanism. Sharing buffers through GEM names is only supported for legacy userspace. Furthermore PRIME also allows cross-device buffer sharing since it is based on dma-bufs.</p>
 
-<!-- more -->
+<p><strong>GEM Objects Mapping</strong></p>
 
+<p>Because mapping operations are fairly heavyweight GEM favours read/write-like access to buffers, implemented through driver-specific ioctls, over mapping buffers to userspace. However, when random access to the buffer is needed (to perform software rendering for instance), direct access to the object can be more efficient.</p>
 
-<p>可以看到 <code>interrupts</code> 有三个member，对于这三个member，Linux kernel的文档是这样说的：</p>
+<p>The mmap system call can&rsquo;t be used directly to map GEM objects, as they don&rsquo;t have their own file handle. Two alternative methods currently co-exist to map GEM objects to userspace. The first method uses a driver-specific ioctl to perform the mapping operation, calling do_mmap under the hood. This is often considered dubious, seems to be discouraged for new GEM-enabled drivers, and will thus not be described here.</p>
 
-<p>```
-The 1st cell is the interrupt type; 0 for SPI interrupts, 1 for PPI
-interrupts.</p>
+<p>The second method uses the mmap system call on the DRM file handle.</p>
 
-<p>The 2nd cell contains the interrupt number for the interrupt type.
-SPI interrupts are in the range [0-987].  PPI interrupts are in the
-range [0-15].</p>
+<p>``` cpp
+void <em>mmap(void </em>addr, size_t length, int prot, int flags, int fd,</p>
 
-<p>The 3rd cell is the flags, encoded as follows:</p>
-
-<pre><code>bits[3:0] trigger type and level flags.
-    1 = low-to-high edge triggered
-    2 = high-to-low edge triggered
-    4 = active high level-sensitive
-    8 = active low level-sensitive
-bits[15:8] PPI interrupt cpu mask.  Each bit corresponds to each of
-the 8 possible cpus attached to the GIC.  A bit set to '1' indicated
-the interrupt is wired to that CPU.  Only valid for PPI interrupts.
+<pre><code>         off_t offset);
 </code></pre>
 
 <p>```</p>
 
-<p><em>来自：<code>Documentation/devicetree/bindings/arm/gic.txt</code></em></p>
+<p>DRM identifies the GEM object to be mapped by a fake offset passed through the mmap offset argument. Prior to being mapped, a GEM object must thus be associated with a fake offset. To do so, drivers must call drm_gem_create_mmap_offset on the object. The function allocates a fake offset range from a pool and stores the offset divided by PAGE_SIZE in obj->map_list.hash.key. Care must be taken not to call drm_gem_create_mmap_offset if a fake offset has already been allocated for the object. This can be tested by obj->map_list.map being non-NULL.</p>
 
-<p>如果不了解ARM GIC的话，其实也看不懂上面的描述，所以这里解释一下：</p>
+<p>Once allocated, the fake offset value (obj->map_list.hash.key &lt;&lt; PAGE_SHIFT) must be passed to the application in a driver-specific way and can then be used as the mmap offset argument.</p>
 
-<ol>
-<li>第一个member表示该 <code>interrupt</code> 是 <code>SPI</code> 还是 <code>PPI</code>。<code>SPI</code> 和 <code>PPI</code> 的解释如下，来自ARM的文档：</li>
-</ol>
+<p>The GEM core provides a helper method drm_gem_mmap to handle object mapping. The method can be set directly as the mmap file operation handler. It will look up the GEM object based on the offset value and set the VMA operations to the drm_driver gem_vm_ops field. Note that drm_gem_mmap doesn&rsquo;t map memory to userspace, but relies on the driver-provided fault handler to map pages individually.</p>
 
+<p>To use drm_gem_mmap, drivers must fill the struct drm_driver gem_vm_ops field with a pointer to VM operations.</p>
 
-<blockquote><p>Private Peripheral Interrupts</p>
+<p>``` cpp
+struct vm_operations_struct *gem_vm_ops</p>
 
-<p>A PPI is an interrupt generated by a peripheral that is specific to a single processor. There are seven PPIs for each CPU interface.</p></blockquote>
+<p>  struct vm_operations_struct {</p>
 
-<p>这是ARM A15的 <code>PPI</code> 的描述，如果是A9的话，每个CPU interface是5个 <code>PPI</code>。</p>
+<pre><code>      void (*open)(struct vm_area_struct * area);
+      void (*close)(struct vm_area_struct * area);
+      int (*fault)(struct vm_area_struct *vma, struct vm_fault *vmf);
+</code></pre>
 
-<blockquote><p>Shared Peripheral Interrupts</p>
+<p>  };
+```</p>
 
-<p>An interrupt generated by a peripheral that the Interrupt Controller can route to any, or all, processor interfaces.</p>
+<p>The open and close operations must update the GEM object reference count. Drivers can use the drm_gem_vm_open and drm_gem_vm_close helper functions directly as open and close handlers.</p>
 
-<p>SPIs are triggered by events generated on associated interrupt input lines. The GIC can support up to 224 SPIs corresponding to the external IRQS[223:0] signal. The number of SPIs available depends on the implemented configuration of the Cortex-A15 MPCore processor. The permitted values are 0, 32, 64, 96, 128, 160, 192, or 224. SPIs start at ID32. The SPIs can be configured to be edge-triggered or active-HIGH level-sensitive.</p></blockquote>
+<p>The fault operation handler is responsible for mapping individual pages to userspace when a page fault occurs. Depending on the memory allocation scheme, drivers can allocate pages at fault time, or can decide to allocate memory for the GEM object at the time the object is created.</p>
 
-<p>第一句话就可以看出和 <code>PPI</code> 的区别。<code>SPI</code> 的数量可以配置，如32，64&hellip;最大支持224，而且SPI的编号从32开始。至于最后提到的 <code>edge-triggered</code>，<code>active-HIGH level-sensitive</code> 正好就是 <code>interrupts</code> 第三个member。</p>
+<p>Drivers that want to map the GEM object upfront instead of handling page faults can implement their own mmap file operation handler.</p>
 
-<p>所以，在一颗SoC中，绝大部分的中断都是 <code>SPI</code>。</p>
+<p><strong>Memory Coherency</strong></p>
 
-<p>事实上，ARM还有一种中断：<code>SGI</code>，也就是软中断：</p>
+<p>When mapped to the device or used in a command buffer, backing pages for an object are flushed to memory and marked write combined so as to be coherent with the GPU. Likewise, if the CPU accesses an object after the GPU has finished rendering to the object, then the object must be made coherent with the CPU&rsquo;s view of memory, usually involving GPU cache flushing of various kinds. This core CPU&lt;&ndash;>GPU coherency management is provided by a device-specific ioctl, which evaluates an object&rsquo;s current domain and performs any necessary flushing or synchronization to put the object into the desired coherency domain (note that the object may be busy, i.e. an active render target; in that case, setting the domain blocks the client and waits for rendering to complete before performing any necessary flushing operations).</p>
 
-<blockquote><p>Software Generated Interrupt (SGI)</p>
+<p><strong>Command Execution</strong></p>
 
-<p>Generated by writing to the Software Generated Interrupt Register (ICDSGIR).</p>
+<p>Perhaps the most important GEM function for GPU devices is providing a command execution interface to clients. Client programs construct command buffers containing references to previously allocated memory objects, and then submit them to GEM. At that point, GEM takes care to bind all the objects into the GTT, execute the buffer, and provide necessary synchronization between clients accessing the same buffers. This often involves evicting some objects from the GTT and re-binding others (a fairly expensive operation), and providing relocation support which hides fixed GTT offsets from clients. Clients must take care not to submit command buffers that reference more objects than can fit in the GTT; otherwise, GEM will reject them and no rendering will occur. Similarly, if several objects in the buffer require fence registers to be allocated for correct rendering (e.g. 2D blits on pre-965 chips), care must be taken not to require more fence registers than are available to the client. Such resource management should be abstracted from the client in libdrm.</p>
 
-<p>A maximum of 16 SGIs can be generated for each Cortex-A9 processor interface.</p></blockquote>
+<p><strong>GEM Function Reference</strong></p>
 
-<p>但是Device tree是用来描述硬件设备的，所以Linux kernel中 <code>interrupts</code> 的类型没有定义 <code>SGI</code>。</p>
+<p>VMA Offset Manager</p>
 
-<ol>
-<li><p>第二个member就是具体的中断号了。查阅SoC的手册就可以得到。</p></li>
-<li><p>第三个member指的是中断的触发方式，每个SoC是不同的，查阅SoC的手册就可以知道了。这里kernel的文档解释的还是比较清楚的，就是一个16bit的数，0-3, 8-15 bit分别做了定义。</p></li>
-</ol>
+<p><code>cpp
+drm_vma_offset_manager_init — Initialize new offset-manager
+drm_vma_offset_manager_destroy — Destroy offset manager
+drm_vma_offset_lookup — Find node in offset space
+drm_vma_offset_lookup_locked — Find node in offset space
+drm_vma_offset_add — Add offset node to manager
+drm_vma_offset_remove — Remove offset node from manager
+drm_vma_node_allow — Add open-file to list of allowed users
+drm_vma_node_revoke — Remove open-file from list of allowed users
+drm_vma_node_is_allowed — Check whether an open-file is granted access
+drm_vma_offset_exact_lookup — Look up node by exact address
+drm_vma_offset_lock_lookup — Lock lookup for extended private use
+drm_vma_offset_unlock_lookup — Unlock lookup for extended private use
+drm_vma_node_reset — Initialize or reset node object
+drm_vma_node_start — Return start address for page-based addressing
+drm_vma_node_size — Return size (page-based)
+drm_vma_node_has_offset — Check whether node is added to offset manager
+drm_vma_node_offset_addr — Return sanitized offset for user-space mmaps
+drm_vma_node_unmap — Unmap offset node
+drm_vma_node_verify_access — Access verification helper for TTM
+</code></p>
 
+<p>The vma-manager is responsible to map arbitrary driver-dependent memory regions into the linear user address-space. It provides offsets to the caller which can then be used on the address_space of the drm-device. It takes care to not overlap regions, size them appropriately and to not confuse mm-core by inconsistent fake vm_pgoff fields. Drivers shouldn&rsquo;t use this for object placement in VMEM. This manager should only be used to manage mappings into linear user-space VMs.</p>
+
+<p>We use drm_mm as backend to manage object allocations. But it is highly optimized for alloc/free calls, not lookups. Hence, we use an rb-tree to speed up offset lookups.</p>
+
+<p>You must not use multiple offset managers on a single address_space. Otherwise, mm-core will be unable to tear down memory mappings as the VM will no longer be linear.</p>
+
+<p>This offset manager works on page-based addresses. That is, every argument and return code (with the exception of drm_vma_node_offset_addr) is given in number of pages, not number of bytes. That means, object sizes and offsets must always be page-aligned (as usual). If you want to get a valid byte-based user-space address for a given offset, please see drm_vma_node_offset_addr.</p>
+
+<p>Additionally to offset management, the vma offset manager also handles access management. For every open-file context that is allowed to access a given node, you must call drm_vma_node_allow. Otherwise, an mmap call on this open-file with the offset of the node will fail with -EACCES. To revoke access again, use drm_vma_node_revoke. However, the caller is responsible for destroying already existing mappings, if required.</p>
+
+<p><strong>PRIME Buffer Sharing</strong></p>
+
+<p>Overview and Driver Interface
+PRIME Helper Functions
+PRIME is the cross device buffer sharing framework in drm, originally created for the OPTIMUS range of multi-gpu platforms. To userspace PRIME buffers are dma-buf based file descriptors.</p>
+
+<p><strong>Overview and Driver Interface</strong></p>
+
+<p>Similar to GEM global names, PRIME file descriptors are also used to share buffer objects across processes. They offer additional security: as file descriptors must be explicitly sent over UNIX domain sockets to be shared between applications, they can&rsquo;t be guessed like the globally unique GEM names.</p>
+
+<p>Drivers that support the PRIME API must set the DRIVER_PRIME bit in the struct drm_driver driver_features field, and implement the prime_handle_to_fd and prime_fd_to_handle operations.</p>
+
+<p>``` cpp
+int (<em>prime_handle_to_fd)(struct drm_device </em>dev,</p>
+
+<pre><code>                      struct drm_file *file_priv, uint32_t handle,
+                      uint32_t flags, int *prime_fd);
+</code></pre>
+
+<p>int (<em>prime_fd_to_handle)(struct drm_device </em>dev,</p>
+
+<pre><code>                      struct drm_file *file_priv, int prime_fd,
+                      uint32_t *handle);
+</code></pre>
+
+<p>```</p>
+
+<p>Those two operations convert a handle to a PRIME file descriptor and vice versa. Drivers must use the kernel dma-buf buffer sharing framework to manage the PRIME file descriptors. Similar to the mode setting API PRIME is agnostic to the underlying buffer object manager, as long as handles are 32bit unsigned integers.</p>
+
+<p>While non-GEM drivers must implement the operations themselves, GEM drivers must use the drm_gem_prime_handle_to_fd and drm_gem_prime_fd_to_handle helper functions. Those helpers rely on the driver gem_prime_export and gem_prime_import operations to create a dma-buf instance from a GEM object (dma-buf exporter role) and to create a GEM object from a dma-buf instance (dma-buf importer role).</p>
+
+<p>``` cpp
+struct dma_buf * (<em>gem_prime_export)(struct drm_device </em>dev,</p>
+
+<pre><code>                         struct drm_gem_object *obj,
+                         int flags);
+</code></pre>
+
+<p>struct drm_gem_object * (<em>gem_prime_import)(struct drm_device </em>dev,</p>
+
+<pre><code>                                        struct dma_buf *dma_buf);
+</code></pre>
+
+<p>```</p>
+
+<p>These two operations are mandatory for GEM drivers that support PRIME.</p>
+
+<p><strong>PRIME Helper Functions</strong></p>
+
+<p>Drivers can implement gem_prime_export and gem_prime_import in terms of simpler APIs by using the helper functions drm_gem_prime_export and drm_gem_prime_import. These functions implement dma-buf support in terms of five lower-level driver callbacks:</p>
+
+<p>Export callbacks:</p>
+
+<p><code>cpp
+gem_prime_pin (optional): prepare a GEM object for exporting
+gem_prime_get_sg_table: provide a scatter/gather table of pinned pages
+gem_prime_vmap: vmap a buffer exported by your driver
+gem_prime_vunmap: vunmap a buffer exported by your driver
+</code></p>
+
+<p>Import callback:</p>
+
+<p><code>cpp
+gem_prime_import_sg_table (import): produce a GEM object from another driver's scatter/gather table
+</code></p>
+
+<p><strong>PRIME Function References</strong></p>
+
+<p><code>cpp
+drm_gem_dmabuf_release — dma_buf release implementation for GEM
+drm_gem_prime_export — helper library implementation of the export callback
+drm_gem_prime_handle_to_fd — PRIME export function for GEM drivers
+drm_gem_prime_import — helper library implementation of the import callback
+drm_gem_prime_fd_to_handle — PRIME import function for GEM drivers
+drm_prime_pages_to_sg — converts a page array into an sg list
+drm_prime_sg_to_page_addr_arrays — convert an sg table into a page array
+drm_prime_gem_destroy — helper to clean up a PRIME-imported GEM object
+</code></p>
+
+<p><strong>DRM MM Range Allocator</strong></p>
+
+<p>Overview
+LRU Scan/Eviction Support
+Overview</p>
+
+<p>drm_mm provides a simple range allocator. The drivers are free to use the resource allocator from the linux core if it suits them, the upside of drm_mm is that it&rsquo;s in the DRM core. Which means that it&rsquo;s easier to extend for some of the crazier special purpose needs of gpus.</p>
+
+<p>The main data struct is drm_mm, allocations are tracked in drm_mm_node. Drivers are free to embed either of them into their own suitable datastructures. drm_mm itself will not do any allocations of its own, so if drivers choose not to embed nodes they need to still allocate them themselves.</p>
+
+<p>The range allocator also supports reservation of preallocated blocks. This is useful for taking over initial mode setting configurations from the firmware, where an object needs to be created which exactly matches the firmware&rsquo;s scanout target. As long as the range is still free it can be inserted anytime after the allocator is initialized, which helps with avoiding looped depencies in the driver load sequence.</p>
+
+<p>drm_mm maintains a stack of most recently freed holes, which of all simplistic datastructures seems to be a fairly decent approach to clustering allocations and avoiding too much fragmentation. This means free space searches are O(num_holes). Given that all the fancy features drm_mm supports something better would be fairly complex and since gfx thrashing is a fairly steep cliff not a real concern. Removing a node again is O(1).</p>
+
+<p>drm_mm supports a few features: Alignment and range restrictions can be supplied. Further more every drm_mm_node has a color value (which is just an opaqua unsigned long) which in conjunction with a driver callback can be used to implement sophisticated placement restrictions. The i915 DRM driver uses this to implement guard pages between incompatible caching domains in the graphics TT.</p>
+
+<p>Two behaviors are supported for searching and allocating: bottom-up and top-down. The default is bottom-up. Top-down allocation can be used if the memory area has different restrictions, or just to reduce fragmentation.</p>
+
+<p>Finally iteration helpers to walk all nodes and all holes are provided as are some basic allocator dumpers for debugging.</p>
+
+<p><strong>LRU Scan/Eviction Support</strong></p>
+
+<p>Very often GPUs need to have continuous allocations for a given object. When evicting objects to make space for a new one it is therefore not most efficient when we simply start to select all objects from the tail of an LRU until there&rsquo;s a suitable hole: Especially for big objects or nodes that otherwise have special allocation constraints there&rsquo;s a good chance we evict lots of (smaller) objects unecessarily.</p>
+
+<p>The DRM range allocator supports this use-case through the scanning interfaces. First a scan operation needs to be initialized with drm_mm_init_scan or drm_mm_init_scan_with_range. The the driver adds objects to the roaster (probably by walking an LRU list, but this can be freely implemented) until a suitable hole is found or there&rsquo;s no further evitable object.</p>
+
+<p>The the driver must walk through all objects again in exactly the reverse order to restore the allocator state. Note that while the allocator is used in the scan mode no other operation is allowed.</p>
+
+<p>Finally the driver evicts all objects selected in the scan. Adding and removing an object is O(1), and since freeing a node is also O(1) the overall complexity is O(scanned_objects). So like the free stack which needs to be walked before a scan operation even begins this is linear in the number of objects. It doesn&rsquo;t seem to hurt badly.</p>
+
+<p><strong>DRM MM Range Allocator Function References</strong></p>
+
+<p><code>cpp
+drm_mm_reserve_node — insert an pre-initialized node
+drm_mm_insert_node_generic — search for space and insert node
+drm_mm_insert_node_in_range_generic — ranged search for space and insert node
+drm_mm_remove_node — Remove a memory node from the allocator.
+drm_mm_replace_node — move an allocation from old to new
+drm_mm_init_scan — initialize lru scanning
+drm_mm_init_scan_with_range — initialize range-restricted lru scanning
+drm_mm_scan_add_block — add a node to the scan list
+drm_mm_scan_remove_block — remove a node from the scan list
+drm_mm_clean — checks whether an allocator is clean
+drm_mm_init — initialize a drm-mm allocator
+drm_mm_takedown — clean up a drm_mm allocator
+drm_mm_debug_table — dump allocator state to dmesg
+drm_mm_dump_table — dump allocator state to a seq_file
+drm_mm_node_allocated — checks whether a node is allocated
+drm_mm_initialized — checks whether an allocator is initialized
+drm_mm_hole_node_start — computes the start of the hole following node
+drm_mm_hole_node_end — computes the end of the hole following node
+drm_mm_for_each_node — iterator to walk over all allocated nodes
+drm_mm_for_each_hole — iterator to walk over all holes
+drm_mm_insert_node — search for space and insert node
+drm_mm_insert_node_in_range — ranged search for space and insert node
+</code></p>
+
+<p><strong>CMA Helper Functions Reference</strong></p>
+
+<p><code>cpp
+drm_gem_cma_create — allocate an object with the given size
+drm_gem_cma_free_object — free resources associated with a CMA GEM object
+drm_gem_cma_dumb_create_internal — create a dumb buffer object
+drm_gem_cma_dumb_create — create a dumb buffer object
+drm_gem_cma_dumb_map_offset — return the fake mmap offset for a CMA GEM object
+drm_gem_cma_mmap — memory-map a CMA GEM object
+drm_gem_cma_describe — describe a CMA GEM object for debugfs
+drm_gem_cma_prime_get_sg_table — provide a scatter/gather table of pinned pages for a CMA GEM object
+drm_gem_cma_prime_import_sg_table — produce a CMA GEM object from another driver's scatter/gather table of pinned pages
+drm_gem_cma_prime_mmap — memory-map an exported CMA GEM object
+drm_gem_cma_prime_vmap — map a CMA GEM object into the kernel's virtual address space
+drm_gem_cma_prime_vunmap — unmap a CMA GEM object from the kernel's virtual address space
+struct drm_gem_cma_object — GEM object backed by CMA memory allocations
+</code></p>
+
+<p>The Contiguous Memory Allocator reserves a pool of memory at early boot that is used to service requests for large blocks of contiguous memory.</p>
+
+<p>The DRM GEM/CMA helpers use this allocator as a means to provide buffer objects that are physically contiguous in memory. This is useful for display drivers that are unable to map scattered buffers via an IOMMU.Memory management</p>
 ]]></content>
   </entry>
   

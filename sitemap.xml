@@ -191,12 +191,32 @@
         <lastmod>2015-02-13T11:02:58+08:00</lastmod>
     </url>
     <url>
+        <loc>http://www.markzhang.cn/blog/2015/03/02/drm-memory-management/</loc>
+        <lastmod>2015-03-02T10:56:07+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.markzhang.cn/blog/2015/03/02/linux-graphics-stack-notes/</loc>
+        <lastmod>2015-03-02T11:04:36+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.markzhang.cn/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem/</loc>
+        <lastmod>2015-03-02T11:07:13+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.markzhang.cn/blog/2015/03/02/gem-vs-ttm/</loc>
+        <lastmod>2015-03-02T11:13:53+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.markzhang.cn/blog/2015/03/02/gem-introduction/</loc>
+        <lastmod>2015-03-02T11:23:45+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://www.markzhang.cn/blog/archives/</loc>
-        <lastmod>2015-02-13T11:04:46+08:00</lastmod>
+        <lastmod>2015-03-02T11:23:45+08:00</lastmod>
     </url>
     <url>
         <loc>http://www.markzhang.cn/</loc>
-        <lastmod>2015-02-13T11:04:46+08:00</lastmod>
+        <lastmod>2015-03-02T11:23:45+08:00</lastmod>
     </url>
     <url>
         <loc>http://www.markzhang.cn/about/</loc>
