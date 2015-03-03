@@ -1,0 +1,56 @@
+---
+layout: post
+title: "Linux定时任务 - Cron"
+date: 2015-03-03 17:09
+comments: true
+categories: linux
+---
+
+- crontab -e编辑定时任务，crontab -l查看。最后的cron任务文件保存在/var/spool/cron/crontab目录下
+
+- cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户，然后执行定义的定时任务。
+
+<!-- more -->
+
+- 但是cron切换用户的时候，任何环境变量，包括.bashrc都不会被执行到。所以诸如$HOME这样的变量也是没有定义的。所以，一般在定时任务的脚本中，我们会这样处理：
+
+``` bash
+#!/bin/bash
+HOME=/home/markz
+source ${HOME}/.bashrc
+export PATH=/usr/local/bin:$PATH
+```
+
+然后才是具体的要执行的任务。
+
+有一点注意，~/.bashrc往往都含有大量的定义和脚本执行，这有可能会影响到source的成功执行。我们之所以在需要cron的脚本中加入这句source，大多数情况下是为了定义一些环境变量。所以为了让source能保证成功，一般我们都会把需要的环境变量单独存放到一个文件中，然后去source那个文件即可。直接source ~/.bashrc不是一个好的做法。
+
+- /var/log/syslog保存了cron的log，查看该log可以方便的知道定时任务执行的一些情况。
+
+- 不要assume cron会在你想要的目录下执行脚本/程序，所以，奔放但是有效的做法是，在你的定时脚本和程序中，请全部使用绝对路径。
+
+- 貌似crontab -e的时候，命令行中不能使用>&，否则会导致命令不会被定时触发。可以使用这个来代替：
+
+``` bash
+<cmd...> >> /home/super/cmd.log 2>&1 
+```
+
+- 定义定时任务（crontab -e）的几个例子：
+
+``` bash
+# 每小时执行一次
+0 * * * * /script/path
+
+# 每五分钟执行一次
+0,5,10,15,20,25,30,35,40,45,50,55 * * * * /script/path
+
+# 每五分钟执行一次
+# 这种写法不保证在所有Linux distribution上都能work
+0-59/5 * * * * /script/path
+
+# 每分钟执行一次
+0-59 * * * * /script/path
+
+# 每天执行一次
+* 0 * * * /script/path
+```
