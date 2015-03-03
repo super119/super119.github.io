@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Octopress - 有条件的为文章添加转载声明 - Make Things Cool</title>
+  <title>Linux定时任务 - Cron - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="对于原创的文章，我在Octopress的post模板文件中，加入了一段转载声明。但对于一些好的文章，经常也会忍不住想要转载。所以，对于转载的文章，还出现这么一个转载声明就是打自己耳光了。很显然，要做个小手脚，对于转载的文章，去掉这个转载声明。有意思的是，在这个过程中，我居然发现 liquid &hellip;">
+  <meta name="description" content="crontab -e编辑定时任务，crontab -l查看。最后的cron任务文件保存在/var/spool/cron/crontab目录下
+cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户，然后执行定义的定时任务。 但是cron切换用户的时候 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2013/12/27/add-origin-statement-conditionally/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2015/03/03/cron/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +78,7 @@
   <header>
     
       
-        <h1 class="entry-title">Octopress - 有条件的为文章添加转载声明</h1>
+        <h1 class="entry-title">Linux定时任务 - Cron</h1>
       
     
     
@@ -94,19 +95,58 @@
   
 
 
-<time datetime="2013-12-27T15:33:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
+<time datetime="2015-03-03T17:09:00+08:00" pubdate data-updated="true">Mar 3<span>rd</span>, 2015</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>对于原创的文章，我在Octopress的post模板文件中，加入了一段转载声明。但对于一些好的文章，经常也会忍不住想要转载。所以，对于转载的文章，还出现这么一个转载声明就是打自己耳光了。很显然，要做个小手脚，对于转载的文章，去掉这个转载声明。有意思的是，在这个过程中，我居然发现 <code>liquid</code> 语法中没有 <code>逻辑非</code> ?!</p>
+<div class="entry-content"><ul>
+<li><p>crontab -e编辑定时任务，crontab -l查看。最后的cron任务文件保存在/var/spool/cron/crontab目录下</p></li>
+<li><p>cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户，然后执行定义的定时任务。</p></li>
+</ul>
+
 
 <!-- more -->
 
 
-<p>模板文件的改动非常简单：</p>
+<ul>
+<li>但是cron切换用户的时候，任何环境变量，包括.bashrc都不会被执行到。所以诸如$HOME这样的变量也是没有定义的。所以，一般在定时任务的脚本中，我们会这样处理：</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="nv">HOME</span><span class="o">=</span>/home/markz
+</span><span class='line'><span class="nb">source</span> <span class="k">${</span><span class="nv">HOME</span><span class="k">}</span>/.bashrc
+</span><span class='line'><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>/usr/local/bin:<span class="nv">$PATH</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后才是具体的要执行的任务。</p>
+
+<p>有一点注意，~/.bashrc往往都含有大量的定义和脚本执行，这有可能会影响到source的成功执行。我们之所以在需要cron的脚本中加入这句source，大多数情况下是为了定义一些环境变量。所以为了让source能保证成功，一般我们都会把需要的环境变量单独存放到一个文件中，然后去source那个文件即可。直接source ~/.bashrc不是一个好的做法。</p>
+
+<ul>
+<li><p>/var/log/syslog保存了cron的log，查看该log可以方便的知道定时任务执行的一些情况。</p></li>
+<li><p>不要assume cron会在你想要的目录下执行脚本/程序，所以，奔放但是有效的做法是，在你的定时脚本和程序中，请全部使用绝对路径。</p></li>
+<li><p>貌似crontab -e的时候，命令行中不能使用>&amp;，否则会导致命令不会被定时触发。可以使用这个来代替：</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>&lt;cmd...&gt; &gt;&gt; /home/super/cmd.log 2&gt;&amp;1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>定义定时任务（crontab -e）的几个例子：</li>
+</ul>
+
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -123,39 +163,22 @@
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='diff'><span class='line'><span class="gh">diff --git a/source/_layouts/post.html b/source/_layouts/post.html</span>
-</span><span class='line'><span class="gh">index 5d83b4d201f6..12d6466734ec 100644</span>
-</span><span class='line'><span class="gd">--- a/source/_layouts/post.html</span>
-</span><span class='line'><span class="gi">+++ b/source/_layouts/post.html</span>
-</span><span class='line'><span class="gu">@@ -7,11 +7,14 @@ single: true</span>
-</span><span class='line'> &lt;article class=&quot;hentry&quot; role=&quot;article&quot;&gt;
-</span><span class='line'>   {% include article.html %}
-</span><span class='line'>   &lt;footer&gt;
-</span><span class='line'><span class="gi">+    {% if page.categories contains &quot;repost&quot; %}</span>
-</span><span class='line'><span class="gi">+    {% else %}</span>
-</span><span class='line'>     &lt;section style=&quot;margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em&quot;&gt;
-</span><span class='line'>       &lt;strong&gt;版权所有 &amp;copy;{{ site.time | date: &#39;%Y&#39; }} 转载本站文章请注明： &lt;/strong&gt;转载自 http://markzhang.cn&lt;br&gt;
-</span><span class='line'> 原文链接: http://www.markzhang.cn{{ page.url }}&lt;br&gt;
-</span><span class='line'> 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
-</span><span class='line'>     &lt;/section&gt;
-</span><span class='line'><span class="gi">+    {% endif %}</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># 每小时执行一次</span>
+</span><span class='line'>0 * * * * /script/path
 </span><span class='line'>
-</span><span class='line'>     &lt;p class=&quot;meta&quot;&gt;
-</span><span class='line'>       {% include post/author.html %}
+</span><span class='line'><span class="c"># 每五分钟执行一次</span>
+</span><span class='line'>0,5,10,15,20,25,30,35,40,45,50,55 * * * * /script/path
+</span><span class='line'>
+</span><span class='line'><span class="c"># 每五分钟执行一次</span>
+</span><span class='line'><span class="c"># 这种写法不保证在所有Linux distribution上都能work</span>
+</span><span class='line'>0-59/5 * * * * /script/path
+</span><span class='line'>
+</span><span class='line'><span class="c"># 每分钟执行一次</span>
+</span><span class='line'>0-59 * * * * /script/path
+</span><span class='line'>
+</span><span class='line'><span class="c"># 每天执行一次</span>
+</span><span class='line'>* 0 * * * /script/path
 </span></code></pre></td></tr></table></div></figure>
-
-
-<p>所以，大体上是这样：</p>
-
-<ol>
-<li>代码检查当前的文章是否属于 <code>repost</code> 这个category，如果是的话，就不会加入转载声明那一段文字。</li>
-<li>由于Octopress中一篇文章可以属于多个category，所以，新增 <code>repost</code> 这么一个category不会带来什么影响，反而还可以让我们通过这个category快速的浏览所有我们转载的文章。</li>
-<li>有意思的就是，正如前面所说，<code>liquid</code> 语法中没有 <code>逻辑非</code>，所以我在StackOverflow上找到了大家一般是这么做的：if后面直接接else. 相当的ugly，但是it works!</li>
-</ol>
 
 </div>
 
@@ -164,7 +187,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2015 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2013/12/27/add-origin-statement-conditionally/<br>
+原文链接: http://www.markzhang.cn/blog/2015/03/03/cron/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -187,12 +210,12 @@
   
 
 
-<time datetime="2013-12-27T15:33:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
+<time datetime="2015-03-03T17:09:00+08:00" pubdate data-updated="true">Mar 3<span>rd</span>, 2015</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/blog/'>Blog</a>
+    <a class='category' href='/blog/categories/linux/'>linux</a>
   
 </span>
 
@@ -208,10 +231,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/12/25/macosx-screen-shot/" title="Previous Post: MacOS X 如何截屏">&laquo; MacOS X 如何截屏</a>
+        <a class="basic-alignment left articlenav" href="/blog/2015/03/02/gem-introduction/" title="Previous Post: GEM - Graphics Execution Manager 介绍">&laquo; GEM - Graphics Execution Manager 介绍</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/01/02/v911-2-tips/" title="Next Post: 伟力v911-2 心得体会">伟力v911-2 心得体会 &raquo;</a>
       
     </p>
   </footer>
