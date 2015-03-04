@@ -4,7 +4,7 @@
   <title><![CDATA[Category: network | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/network/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-03-04T15:46:42+08:00</updated>
+  <updated>2015-03-04T16:21:29+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -169,6 +169,11 @@ chmod 644 /Public/pub/vpn-hosts-ips
 
 <p>/ip dns cache flush
 ```</p>
+
+<ul>
+<li>在客户端的机器上刷新DNS缓存。如果是windows，那么打开 <code>CMD</code>，输入：<code>ipconfig /flushdns</code> 即可。</li>
+</ul>
+
 
 <p>这样一来结果基本上满意了，测试访问google都一切正常。而且在ROS上，我也不再需要使用任何其他DNS了，使用ISP提供的DNS就可以了。</p>
 
