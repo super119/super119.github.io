@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-03-03T17:29:12+08:00</updated>
+  <updated>2015-03-04T15:46:42+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,223 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[RouterOS：为什么我不用chnroutes]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/03/04/why-i-leave-chnroutes/"/>
+    <updated>2015-03-04T09:28:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/03/04/why-i-leave-chnroutes</id>
+    <content type="html"><![CDATA[<p>之前有一篇文章说了在RouterOS下配置chnroutes：</p>
+
+<p><a href="http://markzhang.cn/blog/2014/08/20/ros-chnroutes/">RouterOS配置记录（二）：chnroutes</a></p>
+
+<p>配置了chnroutes之后，国内IP不走VPN，国外的走VPN，一切看起来都很好。但是随着使用时间的增长，发现了一些问题：</p>
+
+<!-- more -->
+
+
+<ul>
+<li><p>CDN的问题。由于翻墙的需要，所以我们不会使用ISP给我们提供的DNS server。一般来说，我们都会使用诸如 <code>8.8.8.8</code> 或者OpenDNS来作为我们的DNS server。但是由于这些地址本身就是国外地址，所以当访问这些DNS server的时候，根据chnroutes配置的策略，就会走VPN走。这样一来，对于你要访问的网站来说，它会认为你是一个国外的IP，从而无法给你正确的你想要的一个CDN IP。这就是为什么有的时候访问国内的一些在线直播的网站，挂上VPN和chnroutes就会卡，拿掉立马就好了的原因。</p></li>
+<li><p>VPN的主要作用是用来访问被墙的网站，一般来说VPN本身的带宽都不会特别大（除非你很有钱买高档VPN），所以其实对于一些没有被墙的国外网站，不使用VPN其实更加快捷。</p></li>
+<li><p>PSN（PlayStation Network，现在叫Sony Entertainment Network）无法登录，一些游戏在线搜索不到房间。具体原因我还不清楚，我的感觉可能是PSN的服务器和认证服务器不是同一个IP，而且一个是国内IP一个是国外IP。可能认证服务器需要验证客户端的IP地址，而认证服务器拿到的客户端的IP并不是之前我们连接PSN服务器的那个IP，这样导致了混乱。当然这是纯YY，很可能是其他原因。总之就是PSN无法登录，有一些游戏的在线联机也没法工作。</p></li>
+</ul>
+
+
+<p>基于此，我在想我是否真的需要chnroutes。现在想来其实我并不需要，因为我的需求基本上就只有一条：访问Google，包括gmail, google gerrit, plus, drive&hellip;</p>
+
+<p>所以我开始构思不使用chnroutes的另外一条道路。</p>
+
+<p>最一开始没想彻底抛弃chnroutes，就想先解决第一个问题，对于我来说，这个问题是最关键的。所以对于这个问题，很自然的就想到了 &mdash; 把DNS server的IP也加到chnroutes的地址表里面，假装成国内的IP不就OK了嘛&hellip; 试验了一下发现无效，因为这样一来，DNS的请求就会经过墙，DNS劫持就发生了，现象就是你访问google/youtube，出来的是另外一个网站，或者干脆就是连接不上。</p>
+
+<p>有朋友建议我用TCP DNS，这样可以解决墙的DNS劫持的问题。但是这也不好做，因为我是配置ROS作为整个家里局域网的DNS server的，ROS本身是不支持TCP DNS的，为此有人（也是中国小伙）还在Mikrotik的论坛上发过类似的帖子：</p>
+
+<p><a href="http://forum.mikrotik.com/viewtopic.php?t=68248">How to force DNS requests using tcp protocol!</a></p>
+
+<p>其次，如果不使用ROS作为DNS server，也就是说让局域网内每台设备手动配置DNS（比如配置成OpenDNS的IP），这样貌似可行但其实也非常麻烦。因为TCP DNS毕竟是非常规需求，而且现在的设备早已不局限于电脑，还包括了手机、pad甚至各种嵌入式设备（比如树莓派、存储服务器等）。这些东西能否支持TCP DNS也是一个问题。</p>
+
+<p>接下来我想到了autoproxy gfwlist：</p>
+
+<p><a href="https://code.google.com/p/autoproxy-gfwlist/">https://code.google.com/p/autoproxy-gfwlist/</a></p>
+
+<p>这张列表包含了天朝人民发现的被墙的网址和IP。我的想法很简单，既然chnroutes的IP列表太宽泛，那就找一张精准的表好了。结果把autoproxy这张表拿出来一看，傻了。因为这张表中包含了诸如：<code>*.google.com</code> 这样的网址，这样的东西在ROS里面如何处理？因为ROS作为路由设备，是只认识IP地址的，对域名它可是没有办法的。</p>
+
+<p>虽然ROS的确是有一个叫做 <code>WebProxy</code> 的功能，但是通读了这个功能的manual之后，你会发现你只能针对域名设置 <code>Allow</code> 和 <code>Deny</code>，没有更多的动作可以做了。</p>
+
+<p>如果你Google <code>routeros autoproxy gfwlist</code>，你会发现github上有一个项目叫 <code>gfwlist2routeros</code>：</p>
+
+<p><a href="https://github.com/layerssss/gfwlist2routeos">https://github.com/layerssss/gfwlist2routeos</a></p>
+
+<p>显然这也是国内某位大神的作品。但是就在项目的README中，也写到了：</p>
+
+<blockquote><p>gfwlist 中包含一些通配符规则，如 <em>.google.com.</em> 之类的，该项目无法识别</p></blockquote>
+
+<p>再次受挫感觉心灰意冷。在决定要放弃之前想到了最后一个笨办法。因为我的需求相对简单，主要就是要使用Google，所以我想我就自己建一个网站list，然后在路由器上写一个脚本，定时去解析这些网站然后将IP地址储存下来。这样当脚本运行了一定次数之后，我想可能绝大部分Google的这些IP就都能采集到，然后设置这些IP地址走VPN即可。</p>
+
+<p>花了几个小时写完了脚本，然后设置了定时执行，睡了一觉之后起来之后测试发现还是不行。现象还是一样，要不就是网站被劫持了要不就是连不上。</p>
+
+<p>分析了一下大致是这么几个原因：</p>
+
+<ul>
+<li><p>脚本在ROS上run，做DNS解析的时候也必须要从VPN走，否则就会被墙劫持。虽然我对OpenDNS的IP做了处理，但是我发现那些规则是在Firewall里面做的，对于ROS来说，它是不通过Firewall的&hellip;</p></li>
+<li><p>修改了脚本，脚本一开始，将OpenDNS的IP加入到了静态路由中，解析完成后删除，发现还是不行。后来一想，局域网中有很多设备都是开着的，只要这些设备一访问Google，就会在ROS的DNS server中产生cache，这样我的脚本取到的IP地址就不正确了，因为这些地址都是墙参与产生的&hellip;</p></li>
+</ul>
+
+
+<p>到此彻底没了脾气。休息了一天之后发现ROS的DNS有静态DNS的功能（<code>/ip dns static</code>），于是又想到了可能可以对上面的方案做一点改进来达到目的。最终目的达成测试OK，具体来说我的做法是这样的：</p>
+
+<ul>
+<li>首先我写了一个脚本，在我的VPS上定时运行。这个脚本非常简单，就是去解析我给定的一个网站list，解析出每个网站的IP地址然后存成文件。将脚本放在VPS上执行而不是在ROS上执行的好处就是：彻底回避了墙。而且最后这些IP地址要从VPS走，所以在VPS上做DNS解析是最正确的做法了。脚本是这样的：</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="nv">HOSTS</span><span class="o">=(</span>
+</span><span class='line'>  <span class="s1">&#39;www.google.com&#39;</span>
+</span><span class='line'>  <span class="s1">&#39;www.googleapis.com&#39;</span>
+</span><span class='line'>  <span class="s1">&#39;www.gstatic.com&#39;</span>
+</span><span class='line'>  <span class="s1">&#39;mail.google.com&#39;</span>
+</span><span class='line'>  <span class="s1">&#39;accounts.google.com&#39;</span>
+</span><span class='line'>  <span class="s1">&#39;plus.google.com&#39;</span>
+</span><span class='line'>  <span class="s1">&#39;play.google.com&#39;</span>
+</span><span class='line'>  <span class="s1">&#39;www.gmail.com&#39;</span>
+</span><span class='line'>  <span class="s1">&#39;drive.google.com&#39;</span>
+</span><span class='line'><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">echo</span> -n <span class="s2">&quot;&quot;</span> &gt; /home/mark/vpn-hosts-ips
+</span><span class='line'>
+</span><span class='line'><span class="k">for </span>i in <span class="k">${</span><span class="nv">HOSTS</span><span class="p">[@]</span><span class="k">}</span>; <span class="k">do</span>
+</span><span class='line'><span class="k">  </span><span class="nv">ip</span><span class="o">=</span><span class="sb">`</span>ping -c 1 <span class="k">${</span><span class="nv">i</span><span class="k">}</span> |grep PING|cut -d <span class="s2">&quot; &quot;</span> -f3|tail -c +2|head -c -2<span class="sb">`</span>
+</span><span class='line'>  <span class="nb">echo</span> <span class="k">${</span><span class="nv">ip</span><span class="k">}</span> &gt;&gt; /home/mark/vpn-hosts-ips
+</span><span class='line'><span class="k">done</span>
+</span><span class='line'>
+</span><span class='line'>cp /home/mark/vpn-hosts-ips /Public/pub
+</span><span class='line'>chmod 644 /Public/pub/vpn-hosts-ips
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用Cron将这个脚本定时执行。脚本的最后将生成的文件放到了 <code>/Public/pub</code> 目录下，这是一个FTP的目录，作用就是接下来ROS可以下载到这个文件。</p>
+
+<ul>
+<li>在ROS上写一个脚本，这个脚本也是定时执行。脚本会通过FTP，去download上面步骤中生成的IP地址列表文件，然后将这些IP地址添加到静态DNS中，同时也将这些IP添加到一个address list中。这样通过 <code>/ip firewall mangle</code> 和路由表的设定，设置好这些IP地址从VPN走。ROS上的脚本是这个样子的：</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>:global hosts <span class="o">{</span><span class="se">\</span>
+</span><span class='line'><span class="s2">&quot;www.google.com&quot;</span>;<span class="se">\</span>
+</span><span class='line'><span class="s2">&quot;www.googleapis.com&quot;</span>;<span class="se">\</span>
+</span><span class='line'><span class="s2">&quot;www.gstatic.com&quot;</span>;<span class="se">\</span>
+</span><span class='line'><span class="s2">&quot;mail.google.com&quot;</span>;<span class="se">\</span>
+</span><span class='line'><span class="s2">&quot;accounts.google.com&quot;</span>;<span class="se">\</span>
+</span><span class='line'><span class="s2">&quot;plus.google.com&quot;</span>;<span class="se">\</span>
+</span><span class='line'><span class="s2">&quot;play.google.com&quot;</span>;<span class="se">\</span>
+</span><span class='line'><span class="s2">&quot;www.gmail.com&quot;</span>;<span class="se">\</span>
+</span><span class='line'><span class="s2">&quot;drive.google.com&quot;</span>;<span class="o">}</span>;
+</span><span class='line'>
+</span><span class='line'>/tool fetch <span class="nv">mode</span><span class="o">=</span>ftp <span class="nv">url</span><span class="o">=</span><span class="s2">&quot;ftp://&lt;vps ip&gt;/pub/vpn-hosts-ips&quot;</span>
+</span><span class='line'>
+</span><span class='line'>:global content <span class="o">[</span>/file get <span class="o">[</span>/file find <span class="nv">name</span><span class="o">=</span>vpn-hosts-ips<span class="o">]</span> contents<span class="o">]</span>
+</span><span class='line'>:global contentLen <span class="o">[</span> :len <span class="nv">$content</span> <span class="o">]</span>
+</span><span class='line'>:global lineEnd 0
+</span><span class='line'>:global line <span class="s2">&quot;&quot;</span>
+</span><span class='line'>:global lastEnd 0
+</span><span class='line'>:global index 0
+</span><span class='line'>
+</span><span class='line'>/ip dns static remove <span class="o">[</span>/ip dns static find<span class="o">]</span>
+</span><span class='line'>/ip firewall address-list remove <span class="o">[</span>/ip firewall address-list find<span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>:do <span class="o">{</span>
+</span><span class='line'>    :set lineEnd <span class="o">[</span>:find <span class="nv">$content</span> <span class="s2">&quot;\n&quot;</span> <span class="nv">$lastEnd</span><span class="o">]</span>
+</span><span class='line'>    :set line <span class="o">[</span>:pick <span class="nv">$content</span> <span class="nv">$lastEnd</span> <span class="nv">$lineEnd</span><span class="o">]</span>
+</span><span class='line'>    :set lastEnd <span class="o">(</span> <span class="nv">$lineEnd</span> + 1 <span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>    /ip dns static add <span class="nv">address</span><span class="o">=</span><span class="nv">$line</span> <span class="nv">name</span><span class="o">=[</span>:pick <span class="nv">$hosts</span> <span class="nv">$index</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>    :local found <span class="nb">false</span>
+</span><span class='line'>    :foreach j <span class="nv">in</span><span class="o">=[</span>/ip firewall address-list find <span class="nv">address</span><span class="o">=</span><span class="nv">$line</span><span class="o">]</span> <span class="k">do</span><span class="o">={</span>
+</span><span class='line'>        :set found <span class="nb">true</span>;
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    :if <span class="o">(</span><span class="nv">$found</span> <span class="o">=</span> <span class="nb">false</span><span class="o">)</span> <span class="k">do</span><span class="o">={</span>
+</span><span class='line'>        /ip firewall address-list add <span class="nv">list</span><span class="o">=</span><span class="s2">&quot;vpn-list&quot;</span> <span class="nv">address</span><span class="o">=</span><span class="nv">$line</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    :set index <span class="o">(</span> <span class="nv">$index</span> + 1 <span class="o">)</span>
+</span><span class='line'><span class="o">}</span> <span class="k">while</span> <span class="o">(</span><span class="nv">$lineEnd</span> &lt; <span class="nv">$contentLen</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>/ip dns cache flush
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样一来结果基本上满意了，测试访问google都一切正常。而且在ROS上，我也不再需要使用任何其他DNS了，使用ISP提供的DNS就可以了。</p>
+
+<p>唯一的缺点就是，我们需要手动维护一张网站list，所以如果要翻墙的网站很多的话，这个方法是不适合的。我想如果谁有一个比较全的常用的Google的site list的话，不妨共享一下。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux定时任务 - Cron]]></title>
@@ -1734,83 +1951,6 @@ Used for stateless SNAT.</p>
 <p>The above box gives the name of the built-in chain (INPUT) along with the names of the tables (Mangle and Filter) that the chain exists in and in the order that the chains are traversed. The above sample indicates that packets go first through the INPUT chain of the Mangle table then through the INPUT chain of the Filter table. When a chain is enclosed in parentheses, Shorewall does not use the named chain (INPUT) in that table (Mangle).</p>
 
 <p><strong> Keep in mind that chains in the Nat table are only traversed for new connection requests (including those related to existing connections) while the chains in the other tables are traversed on every packet. </strong></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Mac OS X（Mavericks）共享VPN给其他设备]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/07/17/mac-share-vpn-connection/"/>
-    <updated>2014-07-17T11:22:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/07/17/mac-share-vpn-connection</id>
-    <content type="html"><![CDATA[<p>之前写过一篇文章叫“Chnroutes的使用“，主要说的是如何通过使用 <code>chnroutes</code> 从而将国内和国外的路由分开，国内走正常路由，国外则走VPN。现在的问题是，如果在一台电脑上有了VPN之后，如何将这个VPN share给其他设备，比如PS3？</p>
-
-<!-- more -->
-
-
-<p>首先很自然想到的是Mac OS X（Mavericks）自带的 <code>Internet Sharing</code> 功能：</p>
-
-<p><img src="http://www.markzhang.cn/downloads/image/mac-internet-sharing.png" alt="Mac OS X Internet Sharing" /></p>
-
-<p>但是通过使用后发现有如下的问题：</p>
-
-<ol>
-<li><p>你需要有两个网络设备，才能开始share。上面的截图也可以看到，你要选择一个 <code>From</code> 的设备，再选择 <code>To</code> 的网络设备（也就是说其他设备是通过本机的这个网络设备连接的）。</p></li>
-<li><p>当然你可以说，VPN在Mac OS X里面也是一个单独的网络设备啊。是，但是通过试验，如果你只有一个网络设备，比如WIFI，那么就意味着我们既需要通过这个WIFI去连接VPN，还要通过这个WIFI让其他的设备能够连到本机，这是没法做到的。试验的结果就是，当你开了 <code>Internet Sharing</code> 之后，你的VPN就拨不上去（一拨就掉）；当你开了VPN之后，<code>Inetnet Sharing</code> 一开你的VPN就掉。事实上，如果通过WIFI来share的话，你会发现Mac OS X会将WIFI配置成一个AP，所以自然一旦被enable，你的VPN就掉了。</p></li>
-<li><p>就算以上两点对你来说都没问题，这第三点就是绝望的来源：Mac OS X不会forward VPN的数据。也就是说，你想要通过Mac OS X的这个 <code>Internet Sharing</code> 功能来share你的VPN的话，是不可行的。</p></li>
-</ol>
-
-
-<p>所以没办法还是通过万能的Google来寻找答案，答案在这里：</p>
-
-<p><a href="http://rodrigo.sharpcube.com/2010/06/20/using-and-sharing-a-vpn-connection-on-your-mac/">http://rodrigo.sharpcube.com/2010/06/20/using-and-sharing-a-vpn-connection-on-your-mac/</a></p>
-
-<p>基本上就是需要我们写脚本来实现，上面这篇文章中，VPN使用的是OpenVPN，我测试的时候，使用的是PPTP的VPN，所以根据上文中 <code>Troubleshooting</code> 一节的描述，我做了这么两个脚本：</p>
-
-<figure class='code'><figcaption><span>开启VPN共享 bash (share-pptp-vpn.sh)</span> <a href='http://www.markzhang.cn/downloads/code/share-pptp-vpn.sh'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/sh</span>
-</span><span class='line'>
-</span><span class='line'>natd -same_ports -use_sockets -unregistered_only -dynamic -interface ppp0 -clamp_mss
-</span><span class='line'>ipfw -f flush
-</span><span class='line'>ipfw add divert natd ip from any to any via ppp0
-</span><span class='line'>ipfw add pass all from any to any
-</span><span class='line'>sysctl -w net.inet.ip.forwarding<span class="o">=</span>1
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span>关闭VPN共享 bash (off-share-pptp-vpn.sh)</span> <a href='http://www.markzhang.cn/downloads/code/off-share-pptp-vpn.sh'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='sh'><span class='line'><span class="c">#!/bin/sh</span>
-</span><span class='line'>
-</span><span class='line'>killall natd
-</span><span class='line'>ipfw -f flush
-</span><span class='line'>sysctl -w net.inet.ip.forwarding<span class="o">=</span>0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>所以当拨上了VPN之后，运行开启VPN共享那个脚本就OK了。在PS3上将网关指到Macbook的IP地址就可以了。</p>
-
-<p>最后一个遗留问题。Mac OS X的VPN高级设定中有这么一个checkbox：</p>
-
-<p><img src="http://www.markzhang.cn/downloads/image/mac-send-traffic-over-vpn.png" alt="Send all traffic over VPN" /></p>
-
-<p>这个 <code>Send all traffic over VPN</code> 我不太理解是什么意思，是指本地NAT网络的地址不走VPN么？还是Mac OS X内置了类似 <code>chnroutes</code> 这样的功能？</p>
-
-<p>有意思的是，有的时候如果enable了这个选项，我发现PS3连接网络就会出现问题。而如果VPN已经拨上去了，再去enable这个选项貌似就没有影响。</p>
-
-<p>没有深究这个，所以这是目前的一个遗留问题。</p>
 ]]></content>
   </entry>
   

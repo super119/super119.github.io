@@ -9,9 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="
-crontab -e编辑定时任务，crontab -l查看。最后的cron任务文件保存在/var/spool/cron/crontab目录下
-cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户，然后执行定义的定时任务。 ">
+  <meta name="description" content="之前有一篇文章说了在RouterOS下配置chnroutes： RouterOS配置记录（二）：chnroutes 配置了chnroutes之后，国内IP不走VPN，国外的走VPN，一切看起来都很好。但是随着使用时间的增长，发现了一些问题： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -75,6 +73,53 @@ cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户�
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/03/04/why-i-leave-chnroutes/">RouterOS：为什么我不用chnroutes</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-04T09:28:00+08:00" pubdate data-updated="true">Mar 4<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>之前有一篇文章说了在RouterOS下配置chnroutes：</p>
+
+<p><a href="http://markzhang.cn/blog/2014/08/20/ros-chnroutes/">RouterOS配置记录（二）：chnroutes</a></p>
+
+<p>配置了chnroutes之后，国内IP不走VPN，国外的走VPN，一切看起来都很好。但是随着使用时间的增长，发现了一些问题：</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/03/04/why-i-leave-chnroutes/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -505,51 +550,6 @@ And that&rsquo;s also why we need &ldquo;dumb buffer&rdquo; in drm&rsquo;s ioctl
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/11/27/czech-world-war-ii/">捷克武器那么好，二战面对德国为什么没一点抵抗？</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-27T17:39:00+08:00" pubdate data-updated="true">Nov 27<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>转载自铁血社区：<a href="http://bbs.tiexue.net/post_5621844_1.html">http://bbs.tiexue.net/post_5621844_1.html</a></p>
-
-<p>捷克斯洛伐克虽然有很好的军事工业基础，但是其人口和军队都和纳粹德国没得比，并且之前并没有为战争做好准备，不过这是次要原因。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/27/czech-world-war-ii/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -562,11 +562,15 @@ And that&rsquo;s also why we need &ldquo;dumb buffer&rdquo; in drm&rsquo;s ioctl
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (1)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (5)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (2)</a></li><li><a href='/blog/categories/life'>Life (1)</a></li><li><a href='/blog/categories/linux'>linux (6)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (10)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (12)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (4)</a></li><li><a href='/blog/categories/repost'>repost (9)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (1)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (5)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (2)</a></li><li><a href='/blog/categories/life'>Life (1)</a></li><li><a href='/blog/categories/linux'>linux (6)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (10)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (4)</a></li><li><a href='/blog/categories/repost'>repost (9)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/04/why-i-leave-chnroutes/">RouterOS：为什么我不用chnroutes</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/03/03/cron/">Linux定时任务 - Cron</a>
@@ -582,10 +586,6 @@ And that&rsquo;s also why we need &ldquo;dumb buffer&rdquo; in drm&rsquo;s ioctl
     
       <li class="post">
         <a href="/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem/">有关DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/03/02/linux-graphics-stack-notes/">Linux Graphics Stack 随便写写</a>
       </li>
     
   </ul>
