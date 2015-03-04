@@ -137,6 +137,8 @@ chmod 644 /Public/pub/vpn-hosts-ips
 /ip dns cache flush
 ```
 
+- 在客户端的机器上刷新DNS缓存。如果是windows，那么打开 `CMD`，输入：`ipconfig /flushdns` 即可。
+
 这样一来结果基本上满意了，测试访问google都一切正常。而且在ROS上，我也不再需要使用任何其他DNS了，使用ISP提供的DNS就可以了。
 
 唯一的缺点就是，我们需要手动维护一张网站list，所以如果要翻墙的网站很多的话，这个方法是不适合的。我想如果谁有一个比较全的常用的Google的site list的话，不妨共享一下。
