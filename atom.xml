@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-03-04T16:21:29+08:00</updated>
+  <updated>2015-04-05T19:18:12+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,42 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[卓普大黑（C7、zp990）增大data分区]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/04/05/zopo-c7-increase-primary-partition/"/>
+    <updated>2015-04-05T18:18:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/04/05/zopo-c7-increase-primary-partition</id>
+    <content type="html"><![CDATA[<p>现在的Android APP对空间的使用是越来越大，APP本身一般都有几十M，再加上使用过程中也会消耗大量存储，比如微信就经常会使用到上百M空间。</p>
+
+<p>卓普大黑的默认data分区大小是3G，随着安装的APP越来越多，data分区就经常会被耗尽。所以，增大data分区就顺理成章的成为一个需求。</p>
+
+<!-- more -->
+
+
+<p>卓普大黑使用的是MTK的方案，所以以下描述的方法对MTK 6589（6589T）的机器都适用。本文主要参考了：</p>
+
+<p><a href="http://forum.xda-developers.com/showthread.php?t=2455850&amp;nocache=1">http://forum.xda-developers.com/showthread.php?t=2455850&amp;nocache=1</a></p>
+
+<p>方法很简单，就是修改线刷包中的 <code>EBR1</code> 和 <code>EBR2</code> 这两个文件，因为这两个文件定义了System, cache, data等诸多分区的大小。所以，在上面给出的帖子中就有下载对应的 <code>EBR1</code> 和 <code>EBR2</code> 这两个文件的。我的大黑是32G的版本，选择的是将data分区扩大到7GB。</p>
+
+<p>由于上述的帖子中将 <code>EBR1</code> 和 <code>EBR2</code> 这两个文件是放在了4share上，这个网站是被墙的，所以这里将我使用的 <code>EBR1</code> 和 <code>EBR2</code> 文件放在这里：</p>
+
+<p><a href="http://www.markzhang.cn/downloads/ebr-mtk-6589-partizione-7gb.zip">ebr-mtk-6589-partizione-7gb.zip</a></p>
+
+<p>再次重申这两个文件我是在我的大黑上测试OK的，虽然上面给出的帖子中说MTK的 6577/ 6582/ 6589 /6592 /8382 都可以，但是我只测试过6589。</p>
+
+<p>使用这两个文件替换掉线刷包里面原来的同名文件，然后刷机即可。</p>
+
+<p>没有使用过线刷的，可以看我之前的一篇文章：</p>
+
+<p><a href="http://markzhang.cn/blog/2014/06/08/zopo-c7-flash/">卓普大黑（Zopo C7/zp990）刷原生ROM，root，升级触控屏，修改GPS</a></p>
+
+<p>刷完之后就可以看到data分区变成了7GB：</p>
+
+<p><img src="http://www.markzhang.cn/image/zopo-c7-7gb-data-partition.jpg" alt="Zopo C7 7GB data partition" /></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[RouterOS：为什么我不用chnroutes]]></title>
@@ -1907,55 +1943,6 @@ Overview</p>
 <p>这样就OK了，再次打开Winbox，终于看到舒服的界面了：</p>
 
 <p><img src="http://www.markzhang.cn/downloads/image/mac-winbox-change-font.png" alt="Mac Winbox changed font" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux netfilter概述，mangle/nat/filter, prerouting/input/forward...到底是啥]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/07/23/netfilter-overview/"/>
-    <updated>2014-07-23T18:30:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/07/23/netfilter-overview</id>
-    <content type="html"><![CDATA[<p>本文转载自：</p>
-
-<p><a href="http://shorewall.net/NetfilterOverview.html">http://shorewall.net/NetfilterOverview.html</a></p>
-
-<!-- more -->
-
-
-<p>Netfilter consists of three tables: Filter, Nat and Mangle. Each table has a number of build-in chains: PREROUTING, INPUT, FORWARD, OUTPUT and POSTROUTING.</p>
-
-<p>Rules in the various tables are used as follows:</p>
-
-<p>Filter
-Packet filtering (rejecting, dropping or accepting packets)</p>
-
-<p>Nat
-Network Address Translation including DNAT, SNAT and Masquerading</p>
-
-<p>Mangle
-General packet header modification such as setting the TOS value or marking packets for policy routing and traffic shaping.</p>
-
-<p>Raw
-Used primarily for creating exemptions from connection tracking with the NOTRACK target. Also used for stateless DNAT.</p>
-
-<p>Rawpost
-Used for stateless SNAT.</p>
-
-<p>The following diagram shows how packets traverse the various builtin chains within Netfilter. Note that not all table/chain combinations are used.</p>
-
-<p><img src="http://www.markzhang.cn/downloads/image/netfilter-overview.png" alt="Netfilter Overview" /></p>
-
-<p>&ldquo;Local Process” means a process running on the Shorewall system itself.</p>
-
-<p>A more elaborate version of this flow is available here and this one contrasts the Netfilter flow with that of ipchains.</p>
-
-<p>In the above diagram are boxes similar to this:</p>
-
-<p><img src="http://www.markzhang.cn/downloads/image/netfilter-input-chain.png" alt="Input chain" /></p>
-
-<p>The above box gives the name of the built-in chain (INPUT) along with the names of the tables (Mangle and Filter) that the chain exists in and in the order that the chains are traversed. The above sample indicates that packets go first through the INPUT chain of the Mangle table then through the INPUT chain of the Filter table. When a chain is enclosed in parentheses, Shorewall does not use the named chain (INPUT) in that table (Mangle).</p>
-
-<p><strong> Keep in mind that chains in the Nat table are only traversed for new connection requests (including those related to existing connections) while the chains in the other tables are traversed on every packet. </strong></p>
 ]]></content>
   </entry>
   
