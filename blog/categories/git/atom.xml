@@ -4,7 +4,7 @@
   <title><![CDATA[Category: git | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/git/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-05-11T10:28:55+08:00</updated>
+  <updated>2015-05-11T10:32:05+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -31,17 +31,22 @@
 
 <p>引用上面文章中的内容，当 <code>git am</code> 失败的时候，可以这么做：</p>
 
-<blockquote><p>$ git apply PATCH &mdash;reject
+<p><code>bash
+$ git apply PATCH --reject
 $ edit edit edit
 $ git add FIXED_FILES
-$ git am &mdash;resolved</p></blockquote>
+$ git am --resolved
+</code></p>
 
 <p>当 <code>git am</code> 失败的时候，它会告诉你patch文件被它放在了一个路径下面，所有，你只需要直接去 <code>git apply --reject</code> 这个patch就好了：</p>
 
-<blockquote><p>The copy of the patch that failed is found in&hellip;</p>
+<p>``` bash
+The copy of the patch that failed is found in&hellip;</p>
 
-<pre><code>   xxxxxx
-</code></pre></blockquote>
+<pre><code>    xxxxxx
+</code></pre>
+
+<p>```</p>
 ]]></content>
   </entry>
   

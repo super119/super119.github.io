@@ -114,17 +114,25 @@
 
 <p>引用上面文章中的内容，当 <code>git am</code> 失败的时候，可以这么做：</p>
 
-<blockquote><p>$ git apply PATCH &mdash;reject
-$ edit edit edit
-$ git add FIXED_FILES
-$ git am &mdash;resolved</p></blockquote>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git apply PATCH --reject
+</span><span class='line'><span class="nv">$ </span>edit edit edit
+</span><span class='line'><span class="nv">$ </span>git add FIXED_FILES
+</span><span class='line'><span class="nv">$ </span>git am --resolved
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>当 <code>git am</code> 失败的时候，它会告诉你patch文件被它放在了一个路径下面，所有，你只需要直接去 <code>git apply --reject</code> 这个patch就好了：</p>
 
-<blockquote><p>The copy of the patch that failed is found in&hellip;</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>The copy of the patch that failed is found in...
+</span><span class='line'>        xxxxxx
+</span></code></pre></td></tr></table></div></figure>
 
-<pre><code>   xxxxxx
-</code></pre></blockquote>
 </div>
 
 
