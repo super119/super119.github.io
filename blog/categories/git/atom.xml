@@ -4,7 +4,7 @@
   <title><![CDATA[Category: git | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/git/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-04-05T19:21:34+08:00</updated>
+  <updated>2015-05-11T10:28:55+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,38 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[git am失败的时候怎么办]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/05/11/deal-with-git-am-failures/"/>
+    <updated>2015-05-11T10:15:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/05/11/deal-with-git-am-failures</id>
+    <content type="html"><![CDATA[<p>本文主要参考了以下文章:</p>
+
+<p><a href="http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/">http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/</a></p>
+
+<p><code>git am</code> 或 <code>git am -3</code> 打patch的时候经常会遇到fail，就是因为patch不apply。但是 <code>git am</code> 不像 <code>git cherry-pick</code> 一样会显示冲突的地方从而让我们可以修改，很多时候 <code>git am</code> 并不显示冲突，只是让我们修正冲突，这就产生了麻烦。</p>
+
+<!-- more -->
+
+
+<p>于是上面的文章就很好的解决了这个问题，因为一般产生冲突的时候，并不是所有的改动都有冲突，往往冲突是比较少的（<code>patch</code> 本身是可以智能的自动解决一些冲突的），所以我们就可以先用 <code>git apply</code> 来打patch，并将冲突存为一个单独的文件，最后查看冲突文件再手动将冲突修正就可以了。</p>
+
+<p>引用上面文章中的内容，当 <code>git am</code> 失败的时候，可以这么做：</p>
+
+<blockquote><p>$ git apply PATCH &mdash;reject
+$ edit edit edit
+$ git add FIXED_FILES
+$ git am &mdash;resolved</p></blockquote>
+
+<p>当 <code>git am</code> 失败的时候，它会告诉你patch文件被它放在了一个路径下面，所有，你只需要直接去 <code>git apply --reject</code> 这个patch就好了：</p>
+
+<blockquote><p>The copy of the patch that failed is found in&hellip;</p>
+
+<pre><code>   xxxxxx
+</code></pre></blockquote>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Git都在说些啥（三）]]></title>
@@ -339,28 +371,6 @@ to do so with:</p>
 
 
 <p>这个命令可以用来比较两个branch上的不同，以diff的方式打印出来。而且可以通过加入 <code>--</code> 来比较指定的文件或者目录。我们都知道一般代码都有开发branch和release branch，那么当release branch上测试出现有问题，想看看开发branch上是否已经有fix的话，就可以用这个命令来看到release branch上到底都缺了一些什么改动。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linus说，请将这个配置加到你的.gitconfig]]></title>
-    <link href="http://www.markzhang.cn/blog/2013/11/07/linus-git-config/"/>
-    <updated>2013-11-07T18:18:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2013/11/07/linus-git-config</id>
-    <content type="html"><![CDATA[<p>近日Linus说，请将 <code>git config core.abbrev 12</code> 加到你的git repository中。事实上，这个config很有意义，可以加到你的全局git config中：</p>
-
-<!-- more -->
-
-
-<p><code>git config --global core.abbrev 12</code>。</p>
-
-<p>原因简单来说就是，git默认的7个字符的短HASH表示方法经常导致冲突，所以Linus建议改成12个字符。原文引用如下：</p>
-
-<blockquote><p>Linus jumped in to say that he would like everybody to run this command in their repositories:</p>
-
-<p>   git config core.abbrev 12</p>
-
-<p>That causes git to abbreviate commit hashes to 12 characters. The default of seven characters is too small to prevent occasional hash collisions in the kernel; it was, he said, a big mistake made early in git&rsquo;s history. He also noted that he spends a lot of time fixing up hashes in patch, many of which are &ldquo;clearly bogus.&rdquo; Most of the problems, most likely, are caused by the rebasing of trees.</p></blockquote>
 ]]></content>
   </entry>
   

@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>给Mac OS X上的Chrome添加SSL证书 - Make Things Cool</title>
+  <title>git am失败的时候怎么办 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="Chrome在访问自签名SSL证书的网站时，会给出一个warning的页面，每次都要去点一下那个 Proceed 按钮特烦。每天点一次，日积月累下来每年也要花不少时间来点这个破玩意。Chrome就不能聪明一点来个诸如”记住我的选择“这样的按钮么？ 折腾总是发生在忍无可忍的时候， &hellip;">
+  <meta name="description" content="本文主要参考了以下文章: http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/ git am 或 git am -3 打patch的时候经常会遇到fail，就是因为patch不apply。但是 git am 不像 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/03/25/mac-chrome-add-ssl-certification/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2015/05/11/deal-with-git-am-failures/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">给Mac OS X上的Chrome添加SSL证书</h1>
+        <h1 class="entry-title">Git Am失败的时候怎么办</h1>
       
     
     
@@ -94,40 +94,37 @@
   
 
 
-<time datetime="2014-03-25T21:49:00+08:00" pubdate data-updated="true">Mar 25<span>th</span>, 2014</time>
+<time datetime="2015-05-11T10:15:00+08:00" pubdate data-updated="true">May 11<span>th</span>, 2015</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Chrome在访问自签名SSL证书的网站时，会给出一个warning的页面，每次都要去点一下那个 <code>Proceed</code> 按钮特烦。每天点一次，日积月累下来每年也要花不少时间来点这个破玩意。Chrome就不能聪明一点来个诸如”记住我的选择“这样的按钮么？</p>
+<div class="entry-content"><p>本文主要参考了以下文章:</p>
 
-<p>折腾总是发生在忍无可忍的时候，幸好要解决这个问题不麻烦。</p>
+<p><a href="http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/">http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/</a></p>
+
+<p><code>git am</code> 或 <code>git am -3</code> 打patch的时候经常会遇到fail，就是因为patch不apply。但是 <code>git am</code> 不像 <code>git cherry-pick</code> 一样会显示冲突的地方从而让我们可以修改，很多时候 <code>git am</code> 并不显示冲突，只是让我们修正冲突，这就产生了麻烦。</p>
 
 <!-- more -->
 
 
-<ul>
-<li><p>首先就是把SSL证书导出了。这个非常容易，访问一下有SSL warning的那个网站，在Chrome给出的warning页面，地址栏的开头有一个被划了斜线的https，点那里就可以看到证书的信息，从而可以将证书导出出来。</p></li>
-<li><p>然后就是导入这个证书了。直接在Mac OS X的应用列表中启动 <code>Keychain Access</code>，当然你也可以在Chrome里面选择Settings &ndash;> Advanced settings &ndash;> Manage Certification，这样出来的就是Mac OS X的 <code>Keychain Access</code> 这个应用程序。</p></li>
-</ul>
+<p>于是上面的文章就很好的解决了这个问题，因为一般产生冲突的时候，并不是所有的改动都有冲突，往往冲突是比较少的（<code>patch</code> 本身是可以智能的自动解决一些冲突的），所以我们就可以先用 <code>git apply</code> 来打patch，并将冲突存为一个单独的文件，最后查看冲突文件再手动将冲突修正就可以了。</p>
 
+<p>引用上面文章中的内容，当 <code>git am</code> 失败的时候，可以这么做：</p>
 
-<p><img src="/downloads/image/keychain-access.png" alt="Keychain Access" /></p>
+<blockquote><p>$ git apply PATCH &mdash;reject
+$ edit edit edit
+$ git add FIXED_FILES
+$ git am &mdash;resolved</p></blockquote>
 
-<ul>
-<li><p>在 <code>Keychain Access</code> 的界面中，点击左下的 + 按钮，选择刚才得到的SSL证书，就将该证书导入了。</p></li>
-<li><p>最后我们要选择 <code>Always Trust</code> 这个证书，否则SSL warning还是会有。在 <code>Keychain Access</code> 中，双击刚才导入的证书，在出现的对话框中，展开 <code>Trust</code> 那个部分，然后选择 <code>Always Trust</code> 就可以了。比如下图就是12306网站的SSL证书：</p></li>
-</ul>
+<p>当 <code>git am</code> 失败的时候，它会告诉你patch文件被它放在了一个路径下面，所有，你只需要直接去 <code>git apply --reject</code> 这个patch就好了：</p>
 
+<blockquote><p>The copy of the patch that failed is found in&hellip;</p>
 
-<p><img src="/downloads/image/keychain-always-trust.png" alt="Always trust SSL certification" /></p>
-
-<ul>
-<li>重启Chrome，再访问那个网站，就没有SSL warning了。</li>
-</ul>
-
+<pre><code>   xxxxxx
+</code></pre></blockquote>
 </div>
 
 
@@ -135,7 +132,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2015 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2014/03/25/mac-chrome-add-ssl-certification/<br>
+原文链接: http://www.markzhang.cn/blog/2015/05/11/deal-with-git-am-failures/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -158,12 +155,12 @@
   
 
 
-<time datetime="2014-03-25T21:49:00+08:00" pubdate data-updated="true">Mar 25<span>th</span>, 2014</time>
+<time datetime="2015-05-11T10:15:00+08:00" pubdate data-updated="true">May 11<span>th</span>, 2015</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/macosx/'>MacOSX</a>
+    <a class='category' href='/blog/categories/git/'>git</a>
   
 </span>
 
@@ -179,10 +176,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2014/03/22/setup-wireless-wds/" title="Previous Post: 架设无线桥接网络（WDS）">&laquo; 架设无线桥接网络（WDS）</a>
+        <a class="basic-alignment left articlenav" href="/blog/2015/04/05/zopo-c7-increase-primary-partition/" title="Previous Post: 卓普大黑（C7、zp990）增大data分区">&laquo; 卓普大黑（C7、zp990）增大data分区</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/04/04/git-gossip-1/" title="Next Post: Git都在说些啥（一）">Git都在说些啥（一） &raquo;</a>
       
     </p>
   </footer>
