@@ -18,12 +18,16 @@ categories: git
 
 引用上面文章中的内容，当 `git am` 失败的时候，可以这么做：
 
-> $ git apply PATCH --reject
-> $ edit edit edit
-> $ git add FIXED_FILES
-> $ git am --resolved
+``` bash
+$ git apply PATCH --reject
+$ edit edit edit
+$ git add FIXED_FILES
+$ git am --resolved
+```
 
 当 `git am` 失败的时候，它会告诉你patch文件被它放在了一个路径下面，所有，你只需要直接去 `git apply --reject` 这个patch就好了：
 
-> The copy of the patch that failed is found in...
->        xxxxxx
+``` bash
+The copy of the patch that failed is found in...
+        xxxxxx
+```
