@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux-kernel | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/linux-kernel/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-05-14T03:39:05+08:00</updated>
+  <updated>2015-05-14T03:41:57+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -36,11 +36,15 @@ make ARCH=arm64 CROSS_COMPILE=&lt;your toolchain&gt; INSTALL_MOD_PATH=&lt;kernel
 make ARCH=arm64 CROSS_COMPILE=&lt;your toolchain&gt; INSTALL_MOD_PATH=&lt;kernel module install path&gt; M=~/nouveau/drm/nouveau/ -C &lt;the kernel root directory&gt; modules_install
 </code></p>
 
-<p>一些注意点：
-&ndash; 所谓 <code>kernel root directory</code> 就是能找到.config文件的那个目录
-&ndash; 使用 <code>M=</code> 来指定nouveau在哪里，注意这里要指到 <code>KBuild</code> 所在的那个目录
-&ndash; kernel本身也有nouveau driver（位与drivers/gpu/drm/nouveau），所以在编译我们的nouveau之前，要先在kernel config中设置编译nouveau为module，然后编译kernel，这样就会出现一个nouveau.ko（来自drivers/gpu/drm/nouveau），这个时候才可以开始用上面的命令行来编译我们自己的nouveau。而我们的nouveau编译完成，module_install的时候，会被安装到 <code>extra</code> 目录下，所以不会和原来的nouveau.ko冲突。但是为了避免困扰，我们可以将原来的nouveau.ko删掉。
-&ndash; 如果你曾经使用 <code>O=&lt;dir&gt;</code> 设置了kernel编译的output dir，那么上面的命令行有可能会不work</p>
+<p>一些注意点：</p>
+
+<ul>
+<li><p>所谓 <code>kernel root directory</code> 就是能找到.config文件的那个目录</p></li>
+<li><p>使用 <code>M=</code> 来指定nouveau在哪里，注意这里要指到 <code>KBuild</code> 所在的那个目录</p></li>
+<li><p>kernel本身也有nouveau driver（位与drivers/gpu/drm/nouveau），所以在编译我们的nouveau之前，要先在kernel config中设置编译nouveau为module，然后编译kernel，这样就会出现一个nouveau.ko（来自drivers/gpu/drm/nouveau），这个时候才可以开始用上面的命令行来编译我们自己的nouveau。而我们的nouveau编译完成，module_install的时候，会被安装到 <code>extra</code> 目录下，所以不会和原来的nouveau.ko冲突。但是为了避免困扰，我们可以将原来的nouveau.ko删掉。</p></li>
+<li><p>如果你曾经使用 <code>O=&lt;dir&gt;</code> 设置了kernel编译的output dir，那么上面的命令行有可能会不work</p></li>
+</ul>
+
 ]]></content>
   </entry>
   
