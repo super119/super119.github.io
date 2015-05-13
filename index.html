@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="本文主要参考了以下文章: http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/ git am 或 git am -3 打patch的时候经常会遇到fail，就是因为patch不apply。但是 git am 不像 &hellip;">
+  <meta name="description" content="所谓 out-of-tree 的内核模块，指的是源代码不在kernel tree里面的模块，比如 nouveau 的tree。 熟悉nouveau的都知道，nouveau的maintainer是单独维护nouveau tree的，所以，一般来说，我们会把nouveau的代码直接放在一个目录下， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/05/12/build-out-of-tree-kernel-module/">编译out-of-tree的kernel模块</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-12T10:51:00+08:00" pubdate data-updated="true">May 12<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>所谓 <code>out-of-tree</code> 的内核模块，指的是源代码不在kernel tree里面的模块，比如 <code>nouveau</code> 的tree。</p>
+
+<p>熟悉nouveau的都知道，nouveau的maintainer是单独维护nouveau tree的，所以，一般来说，我们会把nouveau的代码直接放在一个目录下，然后将nouveau编译成一个模块（.ko），这样来编译运行测试就都比较简单。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/05/12/build-out-of-tree-kernel-module/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -501,51 +546,6 @@ And that&rsquo;s also why we need &ldquo;dumb buffer&rdquo; in drm&rsquo;s ioctl
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2015/02/13/iphone6-refund/">转载：我的iphone6退货之路</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-02-13T10:41:00+08:00" pubdate data-updated="true">Feb 13<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>本文转载自：<a href="http://www.cnblogs.com/Romantic/p/4289363.html">http://www.cnblogs.com/Romantic/p/4289363.html</a></p>
-
-<p>匆匆这一年又快结束了，眼看年关将近，老婆的生日也快到了，正打算给老婆买个礼物，由于现在老婆用的手机是公司的工程机，而且还是低端产品，所以一直想给老婆改善改善，也算是对老婆这一年来辛苦的默默的支持的一种肯定吧，于是我就开始网上找，哎……最近听说iphone6不错啊，火的不得了, 好吧就肾6了。没有多想打开京东，搜索产品，下单，支付一气呵成，比写代码的感觉还流畅还爽。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/02/13/iphone6-refund/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -558,11 +558,15 @@ And that&rsquo;s also why we need &ldquo;dumb buffer&rdquo; in drm&rsquo;s ioctl
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (2)</a></li><li><a href='/blog/categories/life'>Life (1)</a></li><li><a href='/blog/categories/linux'>linux (6)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (10)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (4)</a></li><li><a href='/blog/categories/repost'>repost (9)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (2)</a></li><li><a href='/blog/categories/life'>Life (1)</a></li><li><a href='/blog/categories/linux'>linux (6)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (11)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (4)</a></li><li><a href='/blog/categories/repost'>repost (9)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/05/12/build-out-of-tree-kernel-module/">编译out-of-tree的kernel模块</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/05/11/deal-with-git-am-failures/">Git Am失败的时候怎么办</a>
@@ -578,10 +582,6 @@ And that&rsquo;s also why we need &ldquo;dumb buffer&rdquo; in drm&rsquo;s ioctl
     
       <li class="post">
         <a href="/blog/2015/03/03/cron/">Linux定时任务 - Cron</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/03/02/gem-introduction/">GEM - Graphics Execution Manager 介绍</a>
       </li>
     
   </ul>
