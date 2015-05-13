@@ -24,9 +24,11 @@ make ARCH=arm64 CROSS_COMPILE=<your toolchain> INSTALL_MOD_PATH=<kernel module i
 ```
 
 一些注意点：
+
 - 所谓 `kernel root directory` 就是能找到.config文件的那个目录
+
 - 使用 `M=` 来指定nouveau在哪里，注意这里要指到 `KBuild` 所在的那个目录
+
 - kernel本身也有nouveau driver（位与drivers/gpu/drm/nouveau），所以在编译我们的nouveau之前，要先在kernel config中设置编译nouveau为module，然后编译kernel，这样就会出现一个nouveau.ko（来自drivers/gpu/drm/nouveau），这个时候才可以开始用上面的命令行来编译我们自己的nouveau。而我们的nouveau编译完成，module_install的时候，会被安装到 `extra` 目录下，所以不会和原来的nouveau.ko冲突。但是为了避免困扰，我们可以将原来的nouveau.ko删掉。
+
 - 如果你曾经使用 `O=<dir>` 设置了kernel编译的output dir，那么上面的命令行有可能会不work
-
-
