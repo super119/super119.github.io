@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-05-14T03:41:57+08:00</updated>
+  <updated>2015-06-03T22:04:39+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,122 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[NVIDIA Linux驱动在Ubuntu 12.04上的安装]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/06/03/nvidia-linux-driver-on-ubuntu/"/>
+    <updated>2015-06-03T21:35:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/06/03/nvidia-linux-driver-on-ubuntu</id>
+    <content type="html"><![CDATA[<p>在Ubuntu上安装显卡驱动不是一件容易的事情，安装不是Ubuntu官方认证过的NVIDIA自家的驱动就更是困难，而我选择在一个老的Ubuntu版本上安装显卡驱动，事情就变的更加麻烦起来。</p>
+
+<p>其实一开始我也不想安装NVIDIA自家的驱动，首先想尝试用 <code>nouveau</code>，但是悲剧的发现Ubuntu 12.04上的nouveau无法驱动我的GTX970，可能需要新版本的Ubuntu才可以。所以，被迫选择安装NVIDIA自家的驱动。</p>
+
+<!-- more -->
+
+
+<p>安装和使用N卡驱动中途遇到了很多的问题，这里来个总结。</p>
+
+<h2>第一次安装</h2>
+
+<p>现在总结起来，可以按照如下步骤来：</p>
+
+<ul>
+<li>禁用nouveau和其他相关的module：</li>
+</ul>
+
+
+<p>``` bash
+sudo vi /etc/modprobe.d/blacklist.conf</p>
+
+<p>添加：</p>
+
+<p>blacklist vga16fb
+blacklist nouveau
+blacklist rivafb
+blacklist nvidiafb
+blacklist rivatv
+```</p>
+
+<ul>
+<li>卸载nvidia相关的package，否则NVIDIA驱动安装的时候会报错：</li>
+</ul>
+
+
+<p><code>bash
+dpkg -l|grep nvidia
+sudo apt-get remove &lt;nvidia packages&gt;
+</code></p>
+
+<ul>
+<li>安装一些常用的package，比如：</li>
+</ul>
+
+
+<p><code>bash
+sudo apt-get install build-essential
+sudo apt-get install ia32-libs
+</code></p>
+
+<p>这是因为NVIDIA驱动安装的时候，会编译kernel module（nvidia.ko），所以需要一些常用的开发用的package。</p>
+
+<ul>
+<li><p>NVIDIA驱动安装的时候，X server不能运行，所以我是这么做的：</p></li>
+<li><p>重启系统，在grub界面选择进入 <code>Recovery</code> 模式</p></li>
+<li>进入Recovery之后，选择 <code>Enable Network</code></li>
+<li>重新返回到Recovery界面，选择 <code>Drop to root console</code></li>
+<li>运行NVIDIA驱动安装包，按照提示操作即可</li>
+</ul>
+
+
+<p>之所以要做一次 <code>Enable Network</code> 是因为，这个选项会mount一些必要的文件系统，比如 <code>/tmp</code>，NVIDIA驱动安装的时候是需要 <code>/tmp</code> 的。</p>
+
+<h2>Ubuntu更新kernel之后</h2>
+
+<p>如果你使用了Ubuntu的 <code>Update Manager</code> 更新了package之后，一定要注意是否有升级kernel，如果升级了kernel，那么很可能你需要重新安装一次NVIDIA的驱动。</p>
+
+<p>这是因为上面也提到了，<code>nvidia.ko</code> 需要重新编译。所以，如果你更新了kernel，发现X server起不来了，那么就可以尝试这么来：</p>
+
+<ol>
+<li>重启系统，在grub界面选择进入 <code>Recovery</code> 模式</li>
+<li>进入Recovery之后，选择 <code>Enable Network</code></li>
+<li>重新返回到Recovery界面，选择 <code>Drop to root console</code></li>
+<li>运行 <code>nvidia-uninstall</code> 卸载当前的NVIDIA驱动</li>
+<li>重新运行NVIDIA驱动安装包，再安装一遍驱动</li>
+</ol>
+
+
+<p>之前我尝试过不运行 <code>nvidia-uninstall</code>，直接再次安装一遍驱动，发现这样做的话，安装包也会提醒你说发现当前已经安装了驱动，说是否需要卸载再重新安装。然后我就选择OK，但是发现这样操作下来之后有的时候还是不行，所以还是自己手动uninstall，然后再安装吧。</p>
+
+<h2>如何看出错日志</h2>
+
+<p>主要就是要看两个东西：</p>
+
+<ul>
+<li>dmesg：这是kernel的log，看nvidia的内核驱动是否有什么错误，crash，如果有，就Google一下错误信息看是否有帮助</li>
+</ul>
+
+
+<p>这里提一下，看到这个信息是正常的：</p>
+
+<p><code>bash
+[    1.222765] nvidia: module license 'NVIDIA' taints kernel.
+[    1.225367] nvidia: module verification failed: signature and/or  required key missing - tainting kernel
+</code></p>
+
+<ul>
+<li>/var/log/Xorg.0.log：这里主要是看NVIDIA的X server driver（nvidia_drv.so）是否有错误，crash</li>
+</ul>
+
+
+<h2>万般无奈怎么办</h2>
+
+<ul>
+<li><p>去 <a href="http://www.geforce.com/drivers">http://www.geforce.com/drivers</a> 看看有没有BETA版本的驱动下载，有的话下载下来试试。再说一次，记得先uninstall当前的驱动再安装新的。</p></li>
+<li><p>去NVIDIA的论坛报bug，我没这么干，因为本身我用的Ubuntu就是老版本了，估计NVIDIA也不会理我，如果去报告Ubuntu 14.04上的bug，可能NVIDIA会创建bug并派人fix。</p></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux定时任务 - Cron]]></title>
@@ -269,62 +385,6 @@ sudo umount /mnt
 <p>上述操作来自文章：</p>
 
 <p><a href="http://howtoubuntu.org/how-to-repair-restore-reinstall-grub-2-with-a-ubuntu-live-cd">http://howtoubuntu.org/how-to-repair-restore-reinstall-grub-2-with-a-ubuntu-live-cd</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[在Ubuntu上连接Juniper SSL VPN]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/03/20/juniper-vpn-on-ubuntu/"/>
-    <updated>2014-03-20T22:26:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/03/20/juniper-vpn-on-ubuntu</id>
-    <content type="html"><![CDATA[<p>现在国内很多外企都使用Juniper SSL VPN，来让员工可以在家连入到公司的网络。但是我发现，Juniper的SSL VPN在windows和Mac OS X上都可以很好的工作，但是在Ubuntu上貌似就有问题。就算你正确安装了Java Runtime，打开浏览器，<code>Host Checker</code> 和 <code>Network Connect</code> 也无法正常运行。有人说这是因为现在我们大多使用64位的Ubuntu，而 <code>Host Checker</code> 和 <code>Network Connect</code> 需要32位的浏览器和32位的JRE才能工作。</p>
-
-<p>我没有去深究32位的Ubuntu下是否Juniper VPN就真的可以正常工作了，因为我找到了一个更简单的办法。</p>
-
-<!-- more -->
-
-
-<p>这个方法来自这位大神，他自己分析了Juniper SSL VPN的工作过程，然后写了一个perl脚本解决了这个问题：</p>
-
-<p><a href="http://smallhacks.wordpress.com/2012/07/15/jvpn-perl-script-to-connect-to-the-juniper-vpn-with-host-checker-enabled/">http://smallhacks.wordpress.com/2012/07/15/jvpn-perl-script-to-connect-to-the-juniper-vpn-with-host-checker-enabled/</a></p>
-
-<p>对原理感兴趣的可以自己去看这篇文章（可能需要翻墙），这里简述一下步骤：</p>
-
-<ul>
-<li><p>从上面的文章提供的地址，下载 <code>jvpn-0.7.0.tar.bz2</code>。</p></li>
-<li><p>解开，将配置文件 <code>jvpn.ini</code> 拷贝一份以便输入自己的配置，比如：<code>cp jvpn.ini mark.ini</code>，然后编辑这些配置项：</p></li>
-</ul>
-
-
-<p><code>bash
-host: 你的VPN server的地址
-username: 用户名
-realm: 区域，一般的外企应该是 `Employee` 或者 `Contractor`
-verifycert: 是否验证SSL证书，如果你本地没有导入你的VPN server的SSL的证书的，可以写0，否则写1
-dnsprotect: 这可以防止Ubuntu的NetworkManager修改 `/etc/resolv.conf` 。我们需要修改这个文件从而修改DNS server的配置。
-mode: `ncsvc/ncui` 都可以
-</code></p>
-
-<ul>
-<li>然后就可以执行：<code>sudo perl ./jvpn.pl --conf mark.ini</code>。成功了就可以看到连到了VPN，按 <code>Ctrl+C</code> 可以中断连接。</li>
-</ul>
-
-
-<p><strong> Troubleshooting </strong></p>
-
-<ul>
-<li><code>sudo apt-get install libterm-readkey-perl</code>，如果jvpn.pl说 <code>Term::ReadKey module</code> 找不到的话</li>
-<li><code>sudo apt-get install lib32z1</code>，如果出现这样的错误： <code>libz.so.1: cannot open shared object file: No such file or directory</code></li>
-<li><code>sudo apt-get install gcc-multilib</code>，如果看到这样的错误： <code>bits/predefs.h: No such file or directory</code></li>
-<li><code>sudo apt-get install libhttp-request-ascgi-perl</code>，如果jvpn.pl说 <code>HTTP::Request module</code> 找不到的话</li>
-</ul>
-
-
-<p>这样在Ubuntu下，就可以使用Juniper SSL VPN了。很多外企的网络，自带翻墙，所以拨上VPN之后，除了工作之外，还可以实现自动翻墙。配合上chnroute，就完美了。不清楚chnroute有啥作用的，可以看我之前写的一篇文章：</p>
-
-<p><a href="http://markzhang.cn/blog/2013/12/04/chnroutes-on-mac/">Chnroutes的使用（Mac OS X Mavericks）</a></p>
-
-<p>最后附上目前最新版本的jvpn 0.7.0：<a href="/downloads/soft/jvpn-0.7.0.tar.bz2">jvpn-0.7.0.tar.bz2</a></p>
 ]]></content>
   </entry>
   
