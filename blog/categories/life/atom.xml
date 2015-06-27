@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Life | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/life/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-06-03T22:04:39+08:00</updated>
+  <updated>2015-06-27T18:16:56+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,24 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[高压输电：为什么高压输电压升高了，电流会变小呢]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/06/27/power-transfer/"/>
+    <updated>2015-06-27T18:13:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/06/27/power-transfer</id>
+    <content type="html"><![CDATA[<p>转载自：<a href="http://iask.sina.com.cn/b/11686110.html">http://iask.sina.com.cn/b/11686110.html</a></p>
+
+<p>为什么高压输电线路上电压升高了，电流会变小呢，不是I=U/R么，照理说电压升高了，电流也大了，损耗也就多了啊？</p>
+
+<!-- more -->
+
+
+<p>因为输出功率是固定的。而功率等于电流乘以电压，即P=IU。这样，乘积固定，一个因数（电压U）变大，另一个因数（电流I）就要变小。</p>
+
+<p>你引用的那个公式（I=U/R），隐含的前提是功率是可变的，所以在此不适用。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[转载：我的iphone6退货之路]]></title>

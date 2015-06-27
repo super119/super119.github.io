@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-06-03T22:04:39+08:00</updated>
+  <updated>2015-06-27T18:16:56+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,24 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[高压输电：为什么高压输电压升高了，电流会变小呢]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/06/27/power-transfer/"/>
+    <updated>2015-06-27T18:13:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/06/27/power-transfer</id>
+    <content type="html"><![CDATA[<p>转载自：<a href="http://iask.sina.com.cn/b/11686110.html">http://iask.sina.com.cn/b/11686110.html</a></p>
+
+<p>为什么高压输电线路上电压升高了，电流会变小呢，不是I=U/R么，照理说电压升高了，电流也大了，损耗也就多了啊？</p>
+
+<!-- more -->
+
+
+<p>因为输出功率是固定的。而功率等于电流乘以电压，即P=IU。这样，乘积固定，一个因数（电压U）变大，另一个因数（电流I）就要变小。</p>
+
+<p>你引用的那个公式（I=U/R），隐含的前提是功率是可变的，所以在此不适用。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[NVIDIA Linux驱动在Ubuntu 12.04上的安装]]></title>
@@ -1668,89 +1686,6 @@ Overview</p>
 <h2>结束</h2>
 
 <p>所以总的来说，OpenVPN的配置并不复杂，只是ROS不支持UDP的OpenVPN，所以用来翻墙看看网页还是可以的，玩游戏啥的就要差不少。不过OpenVPN作为一个free的，性能优良的VPN solution，在国内网络中使用也是相当不错的。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[RouterOS配置记录（三）：DDNS]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/08/21/ros-ddns/"/>
-    <updated>2014-08-21T15:26:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/08/21/ros-ddns</id>
-    <content type="html"><![CDATA[<p>配置动态DNS主要是为了能让你的RouterBoard在Internet上被访问到，这样我就可以远程控制我的RouterBoard，同时也可以开始做端口映射，在内网做server&hellip;等。</p>
-
-<p>在ROS上配置DDNS非常简单，就是写一个script然后放到ROS的 <code>System</code> &ndash;> <code>Scheduler</code> 中就好了。不过在此之前，先去申请一个DDNS，我用的是3322的。</p>
-
-<p>不过在开始之前，你要先确保你的宽带连接拨号之后，得到的是一个真实的IP地址。现在电信/联通/移动宽带有的时候拨号会得到一个假IP地址，比如 <code>192.168.x.x</code>，<code>10.x.x.x</code>，甚至之前我得到过 <code>100.x.x.x</code>，这个也不是真实的IP地址（RFC编号为6598。RFC 6598 &ndash; IANA-Reserved IPv4 Prefix for Shared Address Space）。判断自己拨号得到的IP是否是真实IP很简单，打开 www.ipaddress.com，网站会告诉你你目前的IP地址，把这个IP跟你在ROS里面看到的你拨号得到的IP比较是不是一样就知道了。</p>
-
-<p>如果你得到的不是真实的IP地址，那就说明在运营商那边还有一层NAT，那么你做DDNS就没有用了，除非你用花生壳客户端这种专门的软件，但是花生壳客户端软件是没法装在ROS上的。可以打电话给宽带运营商投诉，让它给你分配真实的IP地址，如果它不从你可以打工信部电话投诉（我没试过，网友们说可以）。</p>
-
-<!-- more -->
-
-
-<p>所以先来看一下这个script是长什么模样：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>:global ednsuser <span class="s2">&quot;xxxxxxxx&quot;</span>
-</span><span class='line'>:global ednspass <span class="s2">&quot;xxxxxxxx&quot;</span>
-</span><span class='line'>:global ednshost <span class="s2">&quot;xxxxxxxx.3322.org&quot;</span>
-</span><span class='line'>:global ednsinterface <span class="s2">&quot;SHUnicom&quot;</span>
-</span><span class='line'>:global members <span class="s2">&quot;http://members.3322.net/dyndns/update\?system=dyndns&quot;</span>
-</span><span class='line'>:global status
-</span><span class='line'>:global status <span class="o">[</span>/interface get <span class="o">[</span>/interface find <span class="nv">name</span><span class="o">=</span><span class="nv">$ednsinterface</span><span class="o">]</span> running<span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'>:if <span class="o">(</span><span class="nv">$status</span>!<span class="o">=</span><span class="nb">false</span><span class="o">)</span> <span class="k">do</span><span class="o">={</span>
-</span><span class='line'>:global ednslastip <span class="o">[</span>:resolve <span class="nv">$ednshost</span><span class="o">]</span>
-</span><span class='line'>:if <span class="o">([</span> :typeof <span class="nv">$ednslastip</span> <span class="o">]</span> <span class="o">=</span> nil <span class="o">)</span> <span class="k">do</span><span class="o">={</span> :global ednslastip <span class="s2">&quot;0&quot;</span> <span class="o">}</span>
-</span><span class='line'>:global ednsiph <span class="o">[</span> /ip address get <span class="o">[</span>/ip address find <span class="nv">interface</span><span class="o">=</span><span class="nv">$ednsinterface</span> <span class="o">]</span> address <span class="o">]</span>
-</span><span class='line'>:global ednsip <span class="o">[</span>:pick <span class="nv">$ednsiph</span> 0 <span class="o">[</span>:find <span class="nv">$ednsiph</span> <span class="s2">&quot;/&quot;</span><span class="o">]]</span>
-</span><span class='line'>:global ednsstr <span class="s2">&quot;&amp;hostname=$ednshost&amp;myip=$ednsip&quot;</span>
-</span><span class='line'>:if <span class="o">(</span><span class="nv">$ednslastip</span> !<span class="o">=</span> <span class="nv">$ednsip</span><span class="o">)</span> <span class="k">do</span><span class="o">={</span>
-</span><span class='line'>/tool fetch <span class="nv">url</span><span class="o">=</span><span class="s2">&quot;$members$ednsstr&quot;</span> <span class="nv">mode</span><span class="o">=</span>http <span class="nv">user</span><span class="o">=</span><span class="nv">$ednsuser</span> <span class="nv">password</span><span class="o">=</span><span class="nv">$ednspass</span> dst-path<span class="o">=</span><span class="nv">$ednshost</span>
-</span><span class='line'>:delay 4
-</span><span class='line'>:global result <span class="o">[</span>/file get <span class="nv">$ednshost</span> contents<span class="o">]</span>
-</span><span class='line'>:log info <span class="o">(</span><span class="nv">$ednshost</span> . <span class="s2">&quot; &quot;</span> .<span class="nv">$result</span><span class="o">)</span>
-</span><span class='line'>/file remove <span class="nv">$ednshost</span> ;
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>以上script来自：<a href="http://h2appy.blog.51cto.com/609721/776837">ROS DDNS update script</a></p>
-
-<p>修改一下 <code>ednsuser</code>/<code>ednspass</code>/<code>ednshost</code>就可以使用了。</p>
-
-<p>简单来说这个script就是利用ROS的 <code>/tool fetch</code> 来访问一个网页：</p>
-
-<p><a href="http://members.3322.net/dyndns/update?system=dyndns&amp;hostname=xxx&amp;myip=xxx">http://members.3322.net/dyndns/update?system=dyndns&amp;hostname=xxx&amp;myip=xxx</a></p>
-
-<p>这个方法也是3322官方提供的，3322的server就可以从这个http请求中得到你的真实IP地址了。</p>
-
-<p>然后就是来到ROS的 <code>System</code> &ndash;> <code>Scheduler</code>，点击加号按钮：</p>
-
-<p><img src="http://www.markzhang.cn/downloads/image/ros-system-scheduler.png" alt="ROS Add scheduler" /></p>
-
-<p>把上面的你修改好的script贴到 <code>OnEvent</code> 那个编辑框里面，设定好名字和Interval就OK了。</p>
 ]]></content>
   </entry>
   
