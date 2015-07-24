@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="DMABUF can be used as a wrapper to encapsulate other memory management frameworks. All these memory management framework(I mean mostly for graphics &hellip;">
+  <meta name="description" content="本文来自: http://lwn.net/Articles/283793/ Getting high-performance, three-dimensional graphics working under Linux is quite a challenge even when the &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/03/02/gem-vs-ttm/">转载：GEM vs TTM</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-02T11:09:00+08:00" pubdate data-updated="true">Mar 2<span>nd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>本文来自: <a href="http://lwn.net/Articles/283793/">http://lwn.net/Articles/283793/</a></p>
+
+<p>Getting high-performance, three-dimensional graphics working under Linux is quite a challenge even when the fundamental hardware programming information is available.  One component of this problem is memory management: a graphics processor (GPU) is, essentially, a computer of its own with a distinct view of memory.  Managing the GPU&rsquo;s memory &ndash; and its view of system RAM &ndash; must be done carefully if the resulting system is intended to work at all, much less with acceptable performance.</p>
+
+<p>Not that long ago, it appeared that this problem had been solved with thetranslation table maps (TTM) subsystem.  TTM remains outside of the mainline kernel, though, as do all drivers which use it.  A recent queryabout what would be required to get TTM merged led to an interesting discussion where it turned out that, in fact, TTM may not be the future of graphics memory management after all.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/03/02/gem-vs-ttm/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -498,51 +545,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/09/17/killzone-3-freezing-issue/">PS3 KillZone 3（杀戮地带3）黑屏死机问题</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-17T10:34:00+08:00" pubdate data-updated="true">Sep 17<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>PS3上的杀戮地带3，当升级了1.14（最新版本）之后，有一个黑屏死机的问题：</p>
-
-<p><a href="http://community.killzone.com/t5/Killzone-3-PS3/Patch-1-14-freezing-issues/td-p/1351164">http://community.killzone.com/t5/Killzone-3-PS3/Patch-1-14-freezing-issues/td-p/1351164</a></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/17/killzone-3-freezing-issue/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -557,11 +559,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (2)</a></li><li><a href='/blog/categories/life'>Life (3)</a></li><li><a href='/blog/categories/linux'>linux (7)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (11)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (4)</a></li><li><a href='/blog/categories/repost'>repost (11)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (2)</a></li><li><a href='/blog/categories/life'>Life (3)</a></li><li><a href='/blog/categories/linux'>linux (7)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (11)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li><li><a href='/blog/categories/repost'>repost (11)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/07/24/throttle-hold-and-throttle-cut/">电动直升机的油门锁定（THRU HOLD）和油门熄火（THRU CUT）</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/06/27/live-naught-earth-wires/">一篇文章学会电工：火线 零线 地线 中线</a>
@@ -577,10 +583,6 @@
     
       <li class="post">
         <a href="/blog/2015/05/12/build-out-of-tree-kernel-module/">编译out-of-tree的kernel模块</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/05/11/deal-with-git-am-failures/">Git Am失败的时候怎么办</a>
       </li>
     
   </ul>

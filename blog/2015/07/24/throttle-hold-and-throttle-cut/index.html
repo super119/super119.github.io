@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>CloneZilla磁盘克隆，超快的更换硬盘 - Make Things Cool</title>
+  <title>电动直升机的油门锁定（THRU HOLD）和油门熄火（THRU CUT） - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="开发用的PC机用的是一块128G的SSD，安装的Ubuntu 12.04，速度明显比机械硬盘快了好多，唯一的不足就是容量太小。于是最近购入了一块新的240G的SSD，需要将原来128G的SSD上的东西全部克隆过来。 对于Linux ext4文件分区系统的磁盘来说，ghost工作的并不好， &hellip;">
+  <meta name="description" content="油门锁定 和 油门熄火 是不太容易理解的两个东西，关键是他们俩有什么区别。5IMX上有一篇帖子挺精彩的： http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=544614&amp;page=1 看了上面的帖子，又看了看14SG的说明书， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/06/03/ubuntu-disk-clone/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2015/07/24/throttle-hold-and-throttle-cut/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">CloneZilla磁盘克隆，超快的更换硬盘</h1>
+        <h1 class="entry-title">电动直升机的油门锁定（THRU HOLD）和油门熄火（THRU CUT）</h1>
       
     
     
@@ -94,89 +94,45 @@
   
 
 
-<time datetime="2014-06-03T12:49:00+08:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2014</time>
+<time datetime="2015-07-24T11:43:00+08:00" pubdate data-updated="true">Jul 24<span>th</span>, 2015</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>开发用的PC机用的是一块128G的SSD，安装的Ubuntu 12.04，速度明显比机械硬盘快了好多，唯一的不足就是容量太小。于是最近购入了一块新的240G的SSD，需要将原来128G的SSD上的东西全部克隆过来。</p>
+<div class="entry-content"><p><code>油门锁定</code> 和 <code>油门熄火</code> 是不太容易理解的两个东西，关键是他们俩有什么区别。5IMX上有一篇帖子挺精彩的：</p>
 
-<p>对于Linux ext4文件分区系统的磁盘来说，<code>ghost</code>工作的并不好，工作的比较好的是<code>CloneZilla</code>，因为它能识别ext4的文件系统，从而使克隆变的无比快速，之前我写过一篇类似的文章：</p>
-
-<p><a href="http://www.cnblogs.com/super119/archive/2012/09/26/2703479.html">http://www.cnblogs.com/super119/archive/2012/09/26/2703479.html</a></p>
-
-<p>但是那一次的克隆是两块容量一样的磁盘，而这一次两块SSD的容量并不相同，所以我做了一些改变。</p>
+<p><a href="http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=544614&amp;page=1">http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=544614&amp;page=1</a></p>
 
 <!-- more -->
 
 
-<p>两块磁盘的容量不一样，我能想到的问题是，如果是克隆整块硬盘的话，那MBR部分也会被克隆过去，也就是说，源磁盘的分区信息也会被克隆到目的盘上，这样，会不会240G的SSD就会变成120G？我没有试验，有可能 <code>CloneZilla</code> 能帮我们解决这个问题，但是为了避免麻烦，我还是手动的克隆了。</p>
+<p>看了上面的帖子，又看了看14SG的说明书，其实这两个功能涉及到的东西都是油门和桨距（pitch）这两个东西。我是这么理解的：</p>
 
-<p>所以我的做法是，不是克隆整个硬盘，而是只克隆源磁盘上的分区。完成之后，在目的盘上重建MBR信息，也就是在目的盘上恢复grub。具体我是这么做的：</p>
+<p>有关油门锁定：</p>
 
 <ul>
-<li><p>使用Ubuntu 12.04安装盘，进入Ubuntu Live（不是安装Ubuntu那个选项），然后使用Ubuntu的Disk Utility给目的盘分区</p></li>
-<li><p>使用CloneZilla的启动ISO启动系统，可以把这个ISO刻成光盘，也可以使用UltraISO这种工具将ISO烧录到U盘上，然后从USB启动电脑。启动起来之后，按照 <code>CloneZilla</code> 提供的向导，一步一步进行即可，超级简单。将源磁盘每个分区都克隆到目的盘对应的分区上即可。100G的数据五分钟搞定。</p></li>
+<li>在14SG中，油门锁定是一个 <code>condition</code>，跟 <code>normal</code>, <code>idle up1</code>, <code>idle up2</code>一样，可以用开关来切换</li>
+<li>顾名思义，油门锁定启动后，油门（THROTTLE）的值将会被锁定在设定值上，但是桨距曲线依然管用，这就是为什么油门锁定被设计成一个 <code>condition</code></li>
+<li>所以我的理解，油门锁定可以用于一些固定油门通道，只控制桨距的场景。比如自旋，降落</li>
 </ul>
 
 
-<p><img src="/downloads/image/clonezilla.jpg" alt="CloneZilla Cloning" /></p>
+<p>有关油门熄火：</p>
+
+<p>貌似这个概念是从油机过来的。由于现在大家都在玩电直，没有油直的背景，所以对这个东西的理解就很费劲。我也不太理解这个东西，我只是看了下14SG上这个功能的设置，有这么几个理解：</p>
 
 <ul>
-<li>接下来就可以将源磁盘从机器中拿出来了，我们只需要再把目的磁盘的MBR恢复就可以成功启动系统了。其实就是恢复grub的标准做法：首先还是使用Ubuntu的安装盘进入Ubuntu Live，然后打开终端，输入以下命令：</li>
+<li>油门熄火不是一种 <code>condition</code>，所以和油门锁定不同，你无法针对油门熄火这种情况设定桨距曲线，也就是说，当油门熄火启动时，桨距曲线将遵循油门熄火启动之前的设定</li>
+<li>14SG中的油门熄火设置中，有一项 <code>THRO</code> 的百分比设置，这个设置跟油门熄火中的 <code>THRO</code> 设定不同，这里的 <code>THRO</code> 不是指当油门熄火启动时，要将油门设定到什么值。这个设定指的是，当当前油门值小于该设定值时，油门熄火功能启动 &mdash; 当然，有一个前提就是对应的油门熄火开关拨到了启动位置</li>
+<li>所以14SG上，要启动油门熄火有两个条件：开关打开、当前油门值低于设定的 <code>THRO</code> 值</li>
+<li>当油门熄火功能启动后（满足上述两个条件），14SG会把油门设成0</li>
+<li>针对电直，我没想到特别适合油门熄火这个功能的场景。我现在是把这个当调试机器的一个功能来用。比如起飞前，我启动油门熄火功能，然后就可以用控来测试桨距、副翼、升降、方向等所有通道，而电机是不会转动的（因为油门是0）。当然你可以把电机线拔掉做同样的测试。</li>
 </ul>
 
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Mount root partition to /mnt</span>
-</span><span class='line'>sudo mount /dev/sda1 /mnt
-</span><span class='line'>sudo mount --bind /dev /mnt/dev
-</span><span class='line'>sudo mount --bind /dev/pts /mnt/dev/pts
-</span><span class='line'>sudo mount --bind /proc /mnt/proc
-</span><span class='line'>sudo mount --bind /sys /mnt/sys
-</span><span class='line'>
-</span><span class='line'><span class="c"># Chroot into it and update grub</span>
-</span><span class='line'>sudo chroot /mnt
-</span><span class='line'>grub-install /dev/sda
-</span><span class='line'>grub-install --recheck /dev/sda
-</span><span class='line'>update-grub
-</span><span class='line'><span class="nb">exit</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># Quit chroot environment and umount all stuffs</span>
-</span><span class='line'>sudo umount /mnt/dev <span class="o">&amp;&amp;</span>
-</span><span class='line'>sudo umount /mnt/dev/pts <span class="o">&amp;&amp;</span>
-</span><span class='line'>sudo umount /mnt/proc <span class="o">&amp;&amp;</span>
-</span><span class='line'>sudo umount /mnt/sys <span class="o">&amp;&amp;</span>
-</span><span class='line'>sudo umount /mnt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样就完成了，在我的机器上，/dev/sda就是我新更换的240G的SSD，你需要根据你的机器上的磁盘配置来决定使用哪个磁盘。</p>
-
-<p>上述操作来自文章：</p>
-
-<p><a href="http://howtoubuntu.org/how-to-repair-restore-reinstall-grub-2-with-a-ubuntu-live-cd">http://howtoubuntu.org/how-to-repair-restore-reinstall-grub-2-with-a-ubuntu-live-cd</a></p>
+<p>其实可以自己在控上琢磨琢磨大概就能搞清楚这两个功能的区别，控上的 <code>Servo</code> 这个功能很实用，你做了任何设置都可以在这里看到各个通道的变化。所以当你设置油门锁定和油门熄火之后，在 <code>Servo</code> 这里就可以很方便的观察油门和桨距两个通道的变化了。</p>
 </div>
 
 
@@ -184,7 +140,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2015 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2014/06/03/ubuntu-disk-clone/<br>
+原文链接: http://www.markzhang.cn/blog/2015/07/24/throttle-hold-and-throttle-cut/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -207,12 +163,12 @@
   
 
 
-<time datetime="2014-06-03T12:49:00+08:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2014</time>
+<time datetime="2015-07-24T11:43:00+08:00" pubdate data-updated="true">Jul 24<span>th</span>, 2015</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/linux/'>linux</a>
+    <a class='category' href='/blog/categories/rchelicopter/'>RCHelicopter</a>
   
 </span>
 
@@ -228,10 +184,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2014/04/23/wxwidget-on-mavericks/" title="Previous Post: 在Mavericks上使用Makefile编写wxWidgets程序">&laquo; 在Mavericks上使用Makefile编写wxWidgets程序</a>
+        <a class="basic-alignment left articlenav" href="/blog/2015/06/27/live-naught-earth-wires/" title="Previous Post: 一篇文章学会电工：火线 零线 地线 中线">&laquo; 一篇文章学会电工：火线 零线 地线 中线</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/06/08/zopo-c7-flash/" title="Next Post: 卓普大黑（Zopo C7/zp990）刷原生ROM，root，升级触控屏，修改GPS">卓普大黑（Zopo C7/zp990）刷原生ROM，root，升级触控屏，修改GPS &raquo;</a>
       
     </p>
   </footer>
