@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="油门锁定 和 油门熄火 是不太容易理解的两个东西，关键是他们俩有什么区别。5IMX上有一篇帖子挺精彩的： http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=544614&amp;page=1 ">
+  <meta name="description" content="转载自：https://lkml.org/lkml/2011/7/6/249 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,49 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/07/28/zone-dma/">Kernel的ZONE_DMA</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-07-28T10:54:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>转载自：<a href="https://lkml.org/lkml/2011/7/6/249">https://lkml.org/lkml/2011/7/6/249</a></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/07/28/zone-dma/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -485,52 +528,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2015/03/02/gem-introduction/">GEM - Graphics Execution Manager 介绍</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-03-02T11:15:00+08:00" pubdate data-updated="true">Mar 2<span>nd</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>本文来自：<a href="http://lwn.net/Articles/283798/">http://lwn.net/Articles/283798/</a></p>
-
-<p>NOTE: Currently the buffer creation/read/write are implemented by driver specified ioctls. So right now you can&rsquo;t find functions like &ldquo;drm_gem_create&rdquo; in kernel sources.
-And that&rsquo;s also why we need &ldquo;dumb buffer&rdquo; in drm&rsquo;s ioctls(dumb_create, dumb_destroy&hellip;)</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/03/02/gem-introduction/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -543,11 +540,15 @@ And that&rsquo;s also why we need &ldquo;dumb buffer&rdquo; in drm&rsquo;s ioctl
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (2)</a></li><li><a href='/blog/categories/life'>Life (3)</a></li><li><a href='/blog/categories/linux'>linux (7)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (11)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li><li><a href='/blog/categories/repost'>repost (11)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (2)</a></li><li><a href='/blog/categories/kernel'>kernel (1)</a></li><li><a href='/blog/categories/life'>Life (3)</a></li><li><a href='/blog/categories/linux'>linux (7)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (11)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li><li><a href='/blog/categories/repost'>repost (12)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/07/28/zone-dma/">Kernel的ZONE_DMA</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/07/24/throttle-hold-and-throttle-cut/">电动直升机的油门锁定（THRU HOLD）和油门熄火（THRU CUT）</a>
@@ -563,10 +564,6 @@ And that&rsquo;s also why we need &ldquo;dumb buffer&rdquo; in drm&rsquo;s ioctl
     
       <li class="post">
         <a href="/blog/2015/06/03/nvidia-linux-driver-on-ubuntu/">NVIDIA Linux驱动在Ubuntu 12.04上的安装</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/05/12/build-out-of-tree-kernel-module/">编译out-of-tree的kernel模块</a>
       </li>
     
   </ul>

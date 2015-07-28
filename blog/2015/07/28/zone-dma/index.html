@@ -5,14 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>32/64的问题：32bit指针转换成64bit - Sign Extension - Make Things Cool</title>
+  <title>Kernel的ZONE_DMA - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="32/64有很多问题，指针转换是其中一个，比如这个例子： 1
-2
-void *p = 0xc8f68000;
-unsigned long long v = (unsigned long long)p; 这个时候得到的 v 是： 0xffffffffc8f68000 而不是 &hellip;">
+  <meta name="description" content="转载自：https://lkml.org/lkml/2011/7/6/249 On Wed, Jul 06, 2011 at 11:19:00AM -0500, Christoph Lameter wrote: What I described is the basic memory &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -21,7 +18,7 @@ unsigned long long v = (unsigned long long)p; 这个时候得到的 v 是： 0xf
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2015/07/28/zone-dma/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -80,7 +77,7 @@ unsigned long long v = (unsigned long long)p; 这个时候得到的 v 是： 0xf
   <header>
     
       
-        <h1 class="entry-title">32/64的问题：32bit指针转换成64bit - Sign Extension</h1>
+        <h1 class="entry-title">Kernel的ZONE_DMA</h1>
       
     
     
@@ -97,55 +94,69 @@ unsigned long long v = (unsigned long long)p; 这个时候得到的 v 是： 0xf
   
 
 
-<time datetime="2014-12-16T15:09:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2014</time>
+<time datetime="2015-07-28T10:54:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2015</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>32/64有很多问题，指针转换是其中一个，比如这个例子：</p>
+<div class="entry-content"><p>转载自：<a href="https://lkml.org/lkml/2011/7/6/249">https://lkml.org/lkml/2011/7/6/249</a></p>
 
 <!-- more -->
 
 
+<p>On Wed, Jul 06, 2011 at 11:19:00AM -0500, Christoph Lameter wrote:</p>
+
+<blockquote><p>What I described is the basic memory architecture of Linux. I am not that
+familiar with ARM and the issue discussed here. Only got involved because
+ZONE_DMA was mentioned. The nature of ZONE_DMA is often misunderstood.</p>
+
+<p>The allocation of the memory banks for the Samsung devices has to fit
+somehow into one of these zones. Its probably best to put the memory banks
+into ZONE_NORMAL and not have any dependency on ZONE_DMA at all.</p></blockquote>
+
+<p>Let me teach you about the ARM memory management on Linux.</p>
+
+<p>Firstly, lets go over the structure of zones in Linux.  There are three
+zones &ndash; ZONE_DMA, ZONE_NORMAL and ZONE_HIGHMEM.  These zones are filled
+in that order.  So, ZONE_DMA starts at zero.  Following on from ZONE_DMA
+is ZONE_NORMAL memory, and lastly ZONE_HIGHMEM.</p>
+
+<p>At boot, we pass all memory over to the kernel as follows:</p>
+
+<ol>
+<li><p>If there is no DMA zone, then we pass all low memory over as ZONE_NORMAL.</p></li>
+<li><p>If there is a DMA zone, by default we pass all low memory as ZONE_DMA.
+This is required so drivers which use GFP_DMA can work.</p>
+
+<p>Platforms with restricted DMA requirements can modify that layout to
+move memory from ZONE_DMA into ZONE_NORMAL, thereby restricting the
+upper address which the kernel allocators will give for GFP_DMA
+allocations.</p></li>
+<li><p>In either case, any high memory as ZONE_HIGHMEM if configured (or memory
+is truncated if not.)</p></li>
+</ol>
 
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">void</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mh">0xc8f68000</span><span class="p">;</span>
-</span><span class='line'><span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span><span class="p">)</span><span class="n">p</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>So, when we have (eg) a platform where only the <em>even</em> MBs of memory are
+DMA-able, we have a 1MB DMA zone at the beginning of system memory, and
+everything else in ZONE_NORMAL.  This means GFP_DMA will return either
+memory from the first 1MB or fail if it can&rsquo;t.  This is the behaviour we
+desire.</p>
 
+<p>Normal allocations will come from ZONE_NORMAL <em>first</em> and then try ZONE_DMA
+if there&rsquo;s no other alternative.  This is the same desired behaviour as
+x86.</p>
 
-<p>这个时候得到的 <code>v</code> 是： <code>0xffffffffc8f68000</code> 而不是 <code>0x00000000c8f68000</code></p>
-
-<p>以上例子来自：</p>
-
-<p><a href="http://stackoverflow.com/questions/22239752/convert-32-bit-pointer-to-64-bit-integer">http://stackoverflow.com/questions/22239752/convert-32-bit-pointer-to-64-bit-integer</a></p>
-
-<p>最近就碰到了好几次类似的问题。原因非常简单，就是编译器看到我们要把一个指针转换成 <code>unsigned long long</code>，而 <code>p</code> 的最高位是1，编译器认为这是负数，所以编译器就启动了 <code>Sign Extension</code>，将高32bit全部设置成1，这样最终你看到的高32bit就是全F了。</p>
-
-<p>所以当做32bit &ndash;> 64bit指针转换的时候，要使用 <code>intptr_t</code> 和 <code>uintptr_t</code>。这样编译器就知道这是指针的转换，高32bit就会是全0了。同样，这也就说明了，为什么 <code>stdint.h</code> 里面要定义这么些个typedef了:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">void</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mh">0xc8f68000</span><span class="p">;</span>
-</span><span class='line'><span class="n">uint64_t</span> <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="n">uintptr_t</span><span class="p">)</span><span class="n">p</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>事实上，无论何时都尽量要避免指针和Integer之间的转换，因为Integer是有正负的。</p>
+<p>So, ARM is no different from x86, with the exception that the 16MB DMA
+zone due to ISA ends up being different sizes on ARM depending on our
+restrictions.</p>
 </div>
 
 
   <footer>
     
-    <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
-      <strong>版权所有 &copy;2015 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit/<br>
-您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
-    </section>
     
 
     <p class="meta">
@@ -166,12 +177,12 @@ unsigned long long v = (unsigned long long)p; 这个时候得到的 v 是： 0xf
   
 
 
-<time datetime="2014-12-16T15:09:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2014</time>
+<time datetime="2015-07-28T10:54:00+08:00" pubdate data-updated="true">Jul 28<span>th</span>, 2015</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/linux-kernel/'>linux-kernel</a>
+    <a class='category' href='/blog/categories/kernel/'>kernel</a>, <a class='category' href='/blog/categories/repost/'>repost</a>
   
 </span>
 
@@ -187,10 +198,8 @@ unsigned long long v = (unsigned long long)p; 这个时候得到的 v 是： 0xf
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2014/12/09/ros-rdp-wol/" title="Previous Post: RouterOS/远程启动/控制家里的PC">&laquo; RouterOS/远程启动/控制家里的PC</a>
+        <a class="basic-alignment left articlenav" href="/blog/2015/07/24/throttle-hold-and-throttle-cut/" title="Previous Post: 电动直升机的油门锁定（THRU HOLD）和油门熄火（THRU CUT）">&laquo; 电动直升机的油门锁定（THRU HOLD）和油门熄火（THRU CUT）</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2015/02/13/iphone6-refund/" title="Next Post: 转载：我的iphone6退货之路">转载：我的iphone6退货之路 &raquo;</a>
       
     </p>
   </footer>
