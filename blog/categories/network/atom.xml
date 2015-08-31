@@ -4,7 +4,7 @@
   <title><![CDATA[Category: network | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/network/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-07-28T11:08:08+08:00</updated>
+  <updated>2015-08-31T09:07:37+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,128 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[How to HACK CISCO anyconnect secure mobile client]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/08/31/hack-cisco-anyconnect/"/>
+    <updated>2015-08-31T08:31:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/08/31/hack-cisco-anyconnect</id>
+    <content type="html"><![CDATA[<p>本文参考了以下两篇文章：</p>
+
+<p><a href="http://superuser.com/questions/284709/how-to-allow-local-lan-access-while-connected-to-cisco-vpn">http://superuser.com/questions/284709/how-to-allow-local-lan-access-while-connected-to-cisco-vpn</a></p>
+
+<p><a href="https://github.com/jbalint/dnsmasq/blob/master/run.sh">https://github.com/jbalint/dnsmasq/blob/master/run.sh</a></p>
+
+<!-- more -->
+
+
+<p>CISCO anyconnect secure mobile client（以下简称anyconnect）是CISCO的一个VPN客户端，很多公司都在采用。但是如果你尝试在一台机器上运行anyconnect，其他机器想通过这台机器也能访问公司内网的话，你就发现这是不行的。这是因为anyconnect做了三件令人恶心的事情：</p>
+
+<h2>监控路由表</h2>
+
+<p>Anyconnect客户端启动并连接VPN成功之后，是会监控系统的路由表的。此时，你可以添加路由（但是不好意思这不管用，因为Anyconnect已经添加了一条默认路由），但是无法删除路由。你可以运行 <code>route del default</code>，命令也不会出错，但是之后你用 <code>route -n</code> 看一下，发现没有效果 &mdash; 这是因为Anyconnect把路由又添加回来了。</p>
+
+<p>事实上，是Anyconnect的 <code>vpnagentd</code> 这个守护进程在监控系统路由表。为此，网上有这么一个解决方案，我测试了一下是OK的：</p>
+
+<p>编写这样一个程序：</p>
+
+<p>``` cpp hack.c</p>
+
+<h1>include &lt;sys/socket.h></h1>
+
+<h1>include &lt;linux/netlink.h></h1>
+
+<p>int _ZN27CInterfaceRouteMonitorLinux20routeCallbackHandlerEv()
+{</p>
+
+<pre><code>int fd=50;          // max fd to try
+char buf[8192];
+struct sockaddr_nl sa;
+socklen_t len = sizeof(sa);
+
+while (fd) {
+   if (!getsockname(fd, (struct sockaddr *)&amp;sa, &amp;len)) {
+      if (sa.nl_family == AF_NETLINK) {
+         ssize_t n = recv(fd, buf, sizeof(buf), MSG_DONTWAIT);
+      }
+   }
+   fd--;
+}
+return 0;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>然后编译：<code>gcc -o libhack.so -shared -fPIC hack.c</code>，最后利用 <code>LD_PRELOAD</code> 将其装载：</p>
+
+<p><code>bash
+LD_PRELOAD=/opt/cisco/anyconnect/lib/libhack.so /opt/cisco/anyconnect/bin/vpnagentd
+</code></p>
+
+<p>你可以通过修改 <code>/etc/init.d/vpnagentd</code> 这个脚本，添加上面的 <code>LD_PRELOAD</code> 部分。</p>
+
+<p>所以原理其实很简单，就是要修改anyconnect监控路由表的那个函数。在上面的代码中，这个函数是：<code>_ZN27CInterfaceRouteMonitorLinux20routeCallbackHandlerEv</code>，在anyconnect 3.1版本测试是OK的。</p>
+
+<p>那如果找出这个函数呢？毕竟anyconnect还有MACOS版，windows版等各种不同版本。对于这个，原作者也有一个办法：</p>
+
+<p><code>bash
+sudo gdb --pid &lt;vpnagentd pid&gt;
+break socket
+continue
+bt
+</code></p>
+
+<p>也就是说attach上 <code>vpnagentd</code> 进程，然后在 <code>socket</code> 这个函数上设置断点，当你设置了断点之后，输入 <code>continue</code> 让 <code>vpnagentd</code> 继续运行，然后你就可以在命令行下去执行：<code>sudo route del default</code>，这样 <code>vpnagentd</code> 就会撞上我们设置的断点了，此时用bt就可以看到调用栈了。</p>
+
+<p>得到调用栈之后，你能看到的是类似这样的东西：<code>CInterfaceRouteMonitorLinux::routeCallbackHandle</code>，这并不是真正的symbol，这是GDB帮我们解析过的函数名，所以，可以用 <code>nm</code>, <code>objdump</code> 这样的工具去dump这个函数所在的文件（在我的anyconnect 3.1上，这个文件是：<code>/opt/cisco/anyconnect/lib/libvpnagentutilities.so</code>），在dump出来的symbol中去grep这个函数，就可以得到真正的symbol名字了。</p>
+
+<p>如果 <code>nm</code> / <code>objdump</code> 无法显示出symbol的话，那就是这个库或者可执行文件是strip过的，那这个时候我们就只能用 <code>hexedit</code> 这样的工具打开二进制文件，在其中搜索GDB中我们得到的函数名字了。</p>
+
+<h2>监控 /etc/resolv.conf</h2>
+
+<p>这是为了防止我们修改DNS，对于此，解决方案要简单一些，毕竟这是针对文件的修改，而Linux kernel有一些对 <code>inotify</code> 的设置，所以可以这样做：</p>
+
+<p>``` bash</p>
+
+<h1>go to great lengths to rewrite resolv.conf</h1>
+
+<h1>the vpnagentd watches it with inotify and rewrites it immediately after I change it</h1>
+
+<h1>set inotify limit to 0, first rewrite, vpnagentd will fix it, but then wont be able to set the watch again&hellip;.</h1>
+
+<p>INOTIFYLIMIT=<code>cat /proc/sys/fs/inotify/max_user_watches</code>
+sudo bash -c &ldquo;echo 0 > /proc/sys/fs/inotify/max_user_watches&rdquo;
+sudo bash -c &ldquo;echo nameserver 127.0.0.1 > /etc/resolv.conf&rdquo;
+sleep 1
+sudo bash -c &ldquo;echo nameserver 127.0.0.1 > /etc/resolv.conf&rdquo;
+sudo bash -c &ldquo;echo $INOTIFYLIMIT > /proc/sys/fs/inotify/max_user_watches&rdquo;
+```</p>
+
+<p>这个方案我没有测试过，所以我不敢保证一定管用。列在这里只是想说明，对于一个进程监控某个文件这种事情，可以利用kernel的 <code>inotify</code> 的一些设置，从而来绕过进程的这种行为。</p>
+
+<h2>设置iptables</h2>
+
+<p>Anyconnect是有设置iptables rules的，运行：<code>sudo iptables -vnL</code>，就可以看到anyconnect设置的所有rules。</p>
+
+<p>这些rules中，有一个很讨厌的地方就是，它会约束anyconnect只服务于来自本地的请求，也就是说，如果局域网内其他机器想通过拨了anyconnect的机器共享访问VPN资源的话，这是不行的。</p>
+
+<p>解决方法倒是异常简单：<code>sudo iptables -F</code> 搞定，貌似anyconnect并没有监控iptables的修改。</p>
+
+<h2>最后</h2>
+
+<p>虽然anyconnect有上述三条类似木马病毒的行为，但是实事求是的说，它本身工作的还是很好的，而且它有适应不同操作系统的各种版本也很不错。</p>
+
+<p>回到开头的话题，在我们搞定了上述三条之后，如果想让其他机器通过拨了anyconnect的机器共享访问VPN资源的话，只需要在拨了anyconnect的机器上再运行两条命令即可：</p>
+
+<p><code>bash
+echo 1 &gt; /proc/sys/net/ipv4/ip_forward
+iptables -t nat -A POSTROUTING -o cscotun0 -j MASQUERADE
+</code></p>
+
+<p>你可以将上面两条命令添加到：<code>/etc/rc.local</code> 即可在开机时自动执行了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[RouterOS：为什么我不用chnroutes]]></title>
@@ -434,98 +556,6 @@ verb 3
 <p><img src="/downloads/image/ros-system-scheduler.png" alt="ROS Add scheduler" /></p>
 
 <p>把上面的你修改好的script贴到 <code>OnEvent</code> 那个编辑框里面，设定好名字和Interval就OK了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[RouterOS配置记录（二）：chnroutes]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/08/20/ros-chnroutes/"/>
-    <updated>2014-08-20T16:52:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/08/20/ros-chnroutes</id>
-    <content type="html"><![CDATA[<p>之前写过一篇博客：Chnroutes的使用（Mac OS X Mavericks），讲述了在我的macbook pro上安装chnroutes，从而可以在上网的时候区分国内国外的IP，最终让国外的IP访问走VPN，国内的不走VPN。</p>
-
-<p><a href="http://markzhang.cn/blog/2013/12/04/chnroutes-on-mac/">Chnroutes的使用（Mac OS X Mavericks）</a></p>
-
-<p>现在有了ROS，事情就变的更加棒了，把chnroutes做在ROS上，那所有的网络设备就自动具备了chnroutes的功能。所以在刚配置好了ROS之后，我就尝试配置了chnroutes。</p>
-
-<!-- more -->
-
-
-<p>首先我的配置参考了这篇文章：</p>
-
-<p><a href="http://autorosvpn.blogspot.jp/2013/05/ros-vpn.html">ros智能vpn自动翻墙</a></p>
-
-<p>总的说来，在ROS上配置chnroutes，就是几个步骤：</p>
-
-<ol>
-<li>导入国内IP地址表</li>
-<li>对每个请求中的IP进行查找，如果不在国内IP地址列表中的，就标记一下</li>
-<li>在路由表中，根据标记，让数据走正常网关或是VPN</li>
-</ol>
-
-
-<h2>导入国内IP地址表</h2>
-
-<p>这个其实非常简单，用VI就搞定了。首先根据我之前的文章：Chnroutes的使用（Mac OS X Mavericks），在我的MBP上运行 <code>./chnroutes.py -p mac</code>，就会生成ip-up/ip-down这两个文件。</p>
-
-<p>ip-up文件里面就包含了所有的国内IP地址，所以接下来我们只需要将这个文件修改成ROS能认识的格式就行了，用VI就可以轻松搞定了。这里给出一个我目前在使用的（2014/7/22的数据）：</p>
-
-<p><a href="/downloads/file/chinasites.rsc">2014/7/22 国内IP地址列表</a></p>
-
-<p>一般来说，这个列表不需要经常更新，在IPv4地址已经差不多消耗殆尽的今天，你能经常访问到新的属于国内的IP地址也不是件容易的事情。</p>
-
-<p>接下来就是把这个 <code>chinasites.rsc</code> 上传到RouterBoard上就OK了，可以用Filezilla，使用FTP的方式。或者你如果是windows平台，使用WinBox的话，也可以用拖拽的方式将文件拖到ROS的 <code>Files</code> 对话框中即可。</p>
-
-<p>上传了之后，点击ROS的 <code>New Terminal</code>，在命令行下输入：<code>import chinasites.rsc</code>，所有的国内IP地址列表就导入了，在ROS的 <code>IP</code> &ndash;> <code>Firewall</code> &ndash;> <code>Address Lists</code> 中就可以看到：</p>
-
-<p><img src="/downloads/image/ros-ip-firewall-address-lists.png" alt="China IP address list" /></p>
-
-<p>在上图中可以看到，我们给这些IP地址都设了一个名字叫做 <code>novpn</code>，表示路由这些地址的时候，不需要走VPN，后面会看到如何使用的。</p>
-
-<h2>标记Packets</h2>
-
-<p>这是Linux netfilter/iptables非常强大的功能体现了，首先来看在ROS里面是怎么配置的：</p>
-
-<p>``` bash
-Flags: X &ndash; disabled, I &ndash; invalid, D &ndash; dynamic
- 0   chain=prerouting action=mark-routing new-routing-mark=vpn passthrough=yes</p>
-
-<pre><code> dst-address=!192.168.88.0/24 dst-address-list=!novpn 
-</code></pre>
-
-<p>```</p>
-
-<p>这个配置项位于：<code>IP</code> &ndash;> <code>Firewall</code> &ndash;> <code>Mangle</code>。首先这个配置针对的是 <code>prerouting</code> 表，对Mangle/Prerouting还不清楚的，看我的这篇文章：</p>
-
-<p><a href="http://markzhang.cn/blog/2014/07/23/netfilter-overview/">Linux Netfilter overview</a></p>
-
-<p>然后，<code>dst-address-list=!novpn</code> 其实意思就是，如果目的地址不在 <code>novpn</code> 这个address list中的；最后 <code>action=mark-routing new-routing-mark=vpn</code> 就表示如果目的地址不在 <code>novpn</code> 中的，就给这些packet打上一个名为 <code>vpn</code> 的routing标记。</p>
-
-<p>当然，上述命令中的：<code>dst-address=!192.168.88.0/24</code>，这表示本地局域网的地址不受该条规则影响，这也是非常好理解的。</p>
-
-<p>所以总结来说，我们通过Linux netfilter的Mangle功能，成功的给不属于国内IP地址列表中的packet，打上了一个名为 <code>vpn</code> 的路由标记。</p>
-
-<p>这里需要提一下 <code>passthrough=yes</code> 这个东西的作用。<code>passthrough=yes</code> 表示packet经过了本规则的处理之后，还会继续往下传递，给下面的rules继续处理。相反的例子是 <code>IP</code> &ndash;> <code>Firewall</code> &ndash;> <code>Fliter</code> 中的规则，比如 <code>accept</code> 或者 <code>drop</code> ，一旦匹配到了这些规则，就不会再继续往下处理了（下面的规则就不会再去执行了），所以这就是为什么我在上篇文章中提到说有一条 <code>drop</code> 的规则一定要放在最后。</p>
-
-<p>所以这里我们设置了 <code>passthrough=yes</code> ，表示位于我们本条规则之后的规则还有机会继续被得到执行，所以你可以继续添加标记类的规则，或者其他任何Mangle的规则。所以再次重申，在Filter/Mangle这些表里，规则的顺序是很有影响的。</p>
-
-<h2>添加路由</h2>
-
-<p>点击 <code>IP</code> &ndash;> <code>Routes</code>，在 <code>Routes</code> 标签页，点击加号按钮添加一条路由规则：</p>
-
-<p><img src="/downloads/image/ros-ip-routes.png" alt="ROS add routing" /></p>
-
-<ul>
-<li><p>Dst. Address，这表示哪些目的IP地址受这条路由影响，这里填写 <code>0.0.0.0/0</code> 表示所有IP地址。</p></li>
-<li><p>Gateway，这表示这条路由走哪个Interface，一般来说，这就是你的VPN的PPP连接了。</p></li>
-<li><p>Distance，这表示这条路由的权重。在之前的一篇介绍ROS的基础设置的文章中，有说到我们添加了一个PPPoE client来实现宽带拨号，在创建那个PPPoE Client的时候，有一个选项叫做：<code>Default Route Distance</code>，我的这项设置是10，而如上图所示，现在我们添加的这条路由，我的设置是1。其实很好理解，我们在添加PPPoE Client的时候，有选择 <code>Add Default Route</code>，所谓Default route就是路由所有IP地址：<code>0.0.0.0/0</code>的，那么现在我们又添加了一条路由，也是路由所有IP地址的，那应该选哪条路由呢？这就是根据路由的Distance来决定的。Distance值越小的，权重越高。</p></li>
-<li><p>Routing Mark，这里填写的是 <code>vpn</code>。</p></li>
-</ul>
-
-
-<p>所以总结来说，这条路由的作用就是，对于 <code>Routing Mark</code> 是 <code>vpn</code> 的packet，走我们指定的 <code>Gateway</code>。而且由于这条路由的权重高于默认路由，所以就实现了非国内的IP地址，走我们指定的Gateway，而国内的IP地址还是走默认路由（宽带连接的那条路由）。</p>
-
-<p>写了一堆字，其实做一下就是两分钟的事。ROS的确是非常Power的东西。</p>
 ]]></content>
   </entry>
   

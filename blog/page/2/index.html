@@ -9,7 +9,9 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="本文来自：http://lwn.net/Articles/283798/ NOTE: Currently the buffer creation/read/write are implemented by driver specified ioctls. So right now you can& &hellip;">
+  <meta name="description" content="
+crontab -e编辑定时任务，crontab -l查看。最后的cron任务文件保存在/var/spool/cron/crontab目录下
+cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户，然后执行定义的定时任务。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +75,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/03/03/cron/">Linux定时任务 - Cron</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-03T17:09:00+08:00" pubdate data-updated="true">Mar 3<span>rd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ul>
+<li><p>crontab -e编辑定时任务，crontab -l查看。最后的cron任务文件保存在/var/spool/cron/crontab目录下</p></li>
+<li><p>cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户，然后执行定义的定时任务。</p></li>
+</ul>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/03/03/cron/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -501,49 +550,6 @@ And that&rsquo;s also why we need &ldquo;dumb buffer&rdquo; in drm&rsquo;s ioctl
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/11/25/thunderbird-72-column/">Thunderbird 80(72) Column - 邮件在80(72)列处line Break</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-25T11:13:00+08:00" pubdate data-updated="true">Nov 25<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>这个需求做linux kernel upstream的人都懂的&hellip;&hellip;要设置Thunderbird在80列正确换行，只需要这样：</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/25/thunderbird-72-column/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -558,11 +564,15 @@ And that&rsquo;s also why we need &ldquo;dumb buffer&rdquo; in drm&rsquo;s ioctl
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (2)</a></li><li><a href='/blog/categories/life'>Life (3)</a></li><li><a href='/blog/categories/linux'>linux (7)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (12)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li><li><a href='/blog/categories/repost'>repost (12)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (2)</a></li><li><a href='/blog/categories/life'>Life (3)</a></li><li><a href='/blog/categories/linux'>linux (7)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (12)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (14)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li><li><a href='/blog/categories/repost'>repost (12)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/08/31/hack-cisco-anyconnect/">How to HACK CISCO Anyconnect Secure Mobile Client</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/07/28/zone-dma/">Kernel的ZONE_DMA</a>
@@ -578,10 +588,6 @@ And that&rsquo;s also why we need &ldquo;dumb buffer&rdquo; in drm&rsquo;s ioctl
     
       <li class="post">
         <a href="/blog/2015/06/27/power-transfer/">高压输电：为什么高压输电压升高了，电流会变小呢</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/06/03/nvidia-linux-driver-on-ubuntu/">NVIDIA Linux驱动在Ubuntu 12.04上的安装</a>
       </li>
     
   </ul>
