@@ -4,7 +4,7 @@
   <title><![CDATA[Category: OpenGL | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/opengl/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-08-31T09:07:37+08:00</updated>
+  <updated>2015-12-11T15:21:40+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -501,71 +501,6 @@ OpenGL support:   no
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p><img src="/downloads/image/hellowxgl.png" alt="wxWidgets HelloWorld" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[需要齐次坐标的原因之二 - 所有的变换运算（平移、旋转、缩放）都可以用矩阵乘法来搞定]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/04/23/translation-rotation-scale-in-homogeneous-coordinate/"/>
-    <updated>2014-04-23T13:55:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/04/23/translation-rotation-scale-in-homogeneous-coordinate</id>
-    <content type="html"><![CDATA[<p>本文中的三张图片来自网络，但是我不记得当初的来源了，所以没有能给出出处。确定来源后将给出图片出处。</p>
-
-<p>看三个图就清楚了。分别是平移、旋转和缩放的矩阵计算。如果没有额外的第四个量w（也就是齐次坐标），那么这三种变换是无法都使用矩阵乘法来解决的。变换都统一成矩阵乘法之后，就给硬件设计和软件架构带来了巨大的好处。</p>
-
-<!-- more -->
-
-
-<p>下面的三组公式就分别对应使用矩阵来实现平移（Translation）、旋转（Rotation）、缩放（Scale）：</p>
-
-<p><img src="/downloads/image/matrix-translation.png" alt="Translation" /></p>
-
-<p><img src="/downloads/image/matrix-rotation.png" alt="Rotation" /></p>
-
-<p><img src="/downloads/image/matrix-scale.png" alt="Scale" /></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[需要齐次坐标的原因]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/04/23/homogeneous-coordinates/"/>
-    <updated>2014-04-23T13:40:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/04/23/homogeneous-coordinates</id>
-    <content type="html"><![CDATA[<p>原文链接：<a href="http://www.songho.ca/math/homogeneous/homogeneous.html">http://www.songho.ca/math/homogeneous/homogeneous.html</a></p>
-
-<p>翻译：罗朝辉 <a href="http://www.cnblogs.com/kesalin/">http://www.cnblogs.com/kesalin/</a></p>
-
-<!-- more -->
-
-
-<p>在欧几里得几何空间里，两条平行线永远都不会相交。但是在投影空间中，两条铁轨在地平线处却是会相交的，因为在无限远处它们看起来相交于一点。</p>
-
-<p>在欧几里得（或称笛卡尔）空间里描述2D/3D 几何物体是很理想的，但在投影空间里面却并不见得。我们用 (x, y) 表示笛卡尔空间中的一个 2D 点，而处于无限远处的点 (∞,∞) 在笛卡尔空间里是没有意义的。投影空间里的两条平行线会在无限远处相交于一点，但笛卡尔空间里面无法搞定这个问题（因为无限远处的点在笛卡尔空间里是没有意义的）。</p>
-
-<p>由 August Ferdinand Möbius 提出的齐次坐标（Homogeneous coordinates）让我们能够在投影空间里进行图像和几何处理，齐次坐标用N + 1个分量来描述 N 维坐标。比如，2D 齐次坐标是在笛卡尔坐标(X, Y)的基础上增加一个新分量 w，变成(x, y, w)，其中笛卡尔坐标系中的大X，Y 与齐次坐标中的小x，y有如下对应关系：</p>
-
-<p><code>bash
-X = x / w
-Y = y / w
-</code></p>
-
-<p>笛卡尔坐标中的点 (1, 2) 在齐次坐标中就是 (1, 2, 1) 。如果这点移动到无限远(∞,∞)处，在齐次坐标中就是 (1, 2, 0) ，这样我们就避免了用没意义的"∞" 来描述无限远处的点。</p>
-
-<p><strong> 证明: 两平行线可以相交 </strong></p>
-
-<p>笛卡尔坐标系中，对于如下两个直线方程：</p>
-
-<p><img src="/downloads/image/linear-formula.png" alt="直线方程" /></p>
-
-<p>如果 C ≠ D，以上方程组无解；如果 C = D，那这两条线就是同一条线了。</p>
-
-<p>下面我们用 x/w, y/w 代替 x, y 放到投影空间里来求解：</p>
-
-<p><img src="/downloads/image/linear-formula-homogeneous.png" alt="齐次坐标直线方程" /></p>
-
-<p>现在我们就可以在 C ≠ D 的情况得到一组解 (x, y, 0)，代入得 (C &ndash; D)w = 0，因为 C ≠ D，所以 w = 0。因而，两条平行线相交于投影空间中无限远处的一点 (x, y, 0)。</p>
-
-<p>齐次坐标在计算机图形学中是有用的，将 3D 场景投影到 2D 平面的过程中就用到它了。</p>
 ]]></content>
   </entry>
   

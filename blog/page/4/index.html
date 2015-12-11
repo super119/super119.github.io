@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="Mac OS X Command Line Tools是Mac开发人员经常会遇到的一个问题。Command Line Tools（以下简称CLI）其实就是一堆Unix/Linux上开发需要的基础东西，比如gcc, make, g++等。在Mac上开发，如果使用Xcode的话，是不需要这些东西的， &hellip;">
+  <meta name="description" content="Linux在进入suspend的时候，会首先freeze userspace，然后挨个去调用设备驱动程序的suspend，最后调用architecture dependent的callback（非常奔放的描述了，其实有大量的细节问题存在）。Resume就是反过来执行一遍，最后重新enable &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -80,7 +80,7 @@
   <header>
     
       <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/07/03/apple-cli-and-osx-gcc-installer/">Mac OS X(Mavericks) CommandLineTools 和 Osx-gcc-installer</a></h1>
+        <h1 class="entry-title"><a href="/blog/2014/04/09/linux-driver-suspend-orders/">Linux设备驱动suspend/resume的顺序</a></h1>
       
     
     
@@ -97,22 +97,22 @@
   
 
 
-<time datetime="2014-07-03T13:22:00+08:00" pubdate data-updated="true">Jul 3<span>rd</span>, 2014</time>
+<time datetime="2014-04-09T16:07:00+08:00" pubdate data-updated="true">Apr 9<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>Mac OS X Command Line Tools是Mac开发人员经常会遇到的一个问题。Command Line Tools（以下简称CLI）其实就是一堆Unix/Linux上开发需要的基础东西，比如gcc, make, g++等。在Mac上开发，如果使用Xcode的话，是不需要这些东西的，因为Xcode已经集成了这些东西，在Xcode的IDE中直接进行编译调试，所以用户不需要关心这些东西有没有，在哪。</p>
+  <div class="entry-content"><p>Linux在进入suspend的时候，会首先freeze userspace，然后挨个去调用设备驱动程序的suspend，最后调用architecture dependent的callback（非常奔放的描述了，其实有大量的细节问题存在）。Resume就是反过来执行一遍，最后重新enable userspace。那么作为设备驱动程序的编写者来说，主要就是要实现本驱动的suspend/resume逻辑。但是事实上，很多设备之间是有依赖性的，比如在ARM上，很多设备在resume之前，要求 <code>IOMMU</code> 要已经被enable，否则硬件上就会出现问题，因为访问的地址不对了。</p>
 
-<p>但是如果我们在开发自己的基于Makefile的程序时，或者是要porting UNIX/Linux上的一些程序时，这些东西就变成必须的了。</p>
+<p>那么Linux是如何设计/定义各个设备驱动之间的suspend/resume的顺序的呢？</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/07/03/apple-cli-and-osx-gcc-installer/">Read on &rarr;</a>
+      <a rel="full-article" href="/blog/2014/04/09/linux-driver-suspend-orders/">Read on &rarr;</a>
     </footer>
   
 
@@ -125,7 +125,7 @@
   <header>
     
       <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/06/17/fbl-phase-arm-pad/">450 FBL 相位臂不顺滑？缺少一个小垫片</a></h1>
+        <h1 class="entry-title"><a href="/blog/2014/04/08/lastpass/">一站式密码管理器 - LastPass</a></h1>
       
     
     
@@ -142,22 +142,20 @@
   
 
 
-<time datetime="2014-06-17T15:37:00+08:00" pubdate data-updated="true">Jun 17<span>th</span>, 2014</time>
+<time datetime="2014-04-08T19:56:00+08:00" pubdate data-updated="true">Apr 8<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>450 FBL有一个相位臂，没有这个相位臂那旋翼一旋转，十字盘拉杆就转成麻花了。但是由于十字盘是需要上下移动的（改变集体螺距），所以这个相位臂也是需要能运动的。基本上，当十字盘上下运动时，相位臂有两个地方也会发生运动：一个是中间部位，能改变角度；另外一个地方不起眼容易被忽略，就是相位臂固定在中联的那个位置，会发生转动。</p>
-
-<p>所以最近在拆装相位臂的时候，突然发现相位臂的转动不顺畅了，非常的生涩，结果发现丢了一个小垫片。</p>
+  <div class="entry-content"><p>我个人感觉，密码是相当反人类的设计。当你刚接触互联网的时候，可能感觉不到，甚至感觉理所当然，银行卡也需要设置密码呢。但是当访问的网站越来越多，各个站点论坛都需要注册用户、设置密码，多了之后密码就会变成非常痛苦的一种体验。</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/06/17/fbl-phase-arm-pad/">Read on &rarr;</a>
+      <a rel="full-article" href="/blog/2014/04/08/lastpass/">Read on &rarr;</a>
     </footer>
   
 
@@ -170,7 +168,7 @@
   <header>
     
       <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/06/08/thrust-bearing-and-one-way-bearing/">机械盲科普：推力轴承和单向轴承</a></h1>
+        <h1 class="entry-title"><a href="/blog/2014/04/04/git-gossip-1/">Git都在说些啥（一）</a></h1>
       
     
     
@@ -187,22 +185,22 @@
   
 
 
-<time datetime="2014-06-08T21:08:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2014</time>
+<time datetime="2014-04-04T14:28:00+08:00" pubdate data-updated="true">Apr 4<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>航模直升机中有两个重要的轴承。一个是位于旋翼桨夹内的推力轴承，另外一个是位于大齿盘中间的单向轴承。由于自己对机械不怎么懂，所以就去琢磨了一下这两个玩意，也在5imx上发了帖子询问，最终整理成了此文。</p>
+  <div class="entry-content"><p>当我们在做某些git操作的时候，git有的时候会给出一段一段的提示信息，而往往这些信息都是比较重要的。因为按照UNIX的设计哲学，执行成功或是无害操作，这些都是不会有任何提示信息的。做Linux的Hackers也奉行这种哲学，所以当git开始唠叨的时候，你真的需要关注一下它到底在罗嗦些啥。</p>
 
-<p>本文中所有内容都来自<a href="http://bbs.5imx.com">http://bbs.5imx.com</a>。</p>
+<p>这篇文章描述的就是某一个git的唠叨。</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/06/08/thrust-bearing-and-one-way-bearing/">Read on &rarr;</a>
+      <a rel="full-article" href="/blog/2014/04/04/git-gossip-1/">Read on &rarr;</a>
     </footer>
   
 
@@ -215,7 +213,7 @@
   <header>
     
       <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/06/08/zopo-c7-flash/">卓普大黑（Zopo C7/zp990）刷原生ROM，root，升级触控屏，修改GPS</a></h1>
+        <h1 class="entry-title"><a href="/blog/2014/03/25/mac-chrome-add-ssl-certification/">给Mac OS X上的Chrome添加SSL证书</a></h1>
       
     
     
@@ -232,30 +230,22 @@
   
 
 
-<time datetime="2014-06-08T15:00:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2014</time>
+<time datetime="2014-03-25T21:49:00+08:00" pubdate data-updated="true">Mar 25<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>卓普（Zopo）大黑（C7）手机在国内的行货默认安装的是阿里的云OS，而向国外销售的版本称为zp990，装的是原生的安卓（当然有一些针对这款手机的改动，比如FOTA部分，双卡设置部分等）。</p>
+  <div class="entry-content"><p>Chrome在访问自签名SSL证书的网站时，会给出一个warning的页面，每次都要去点一下那个 <code>Proceed</code> 按钮特烦。每天点一次，日积月累下来每年也要花不少时间来点这个破玩意。Chrome就不能聪明一点来个诸如”记住我的选择“这样的按钮么？</p>
 
-<p>如果你用云OS用腻了的话，肯定会想刷机，而要刷机，刷zp990的原生安卓版本成为一个好的选择。我的使用感受是，这个版本相比其他的民间ROM（比如民间做的MIUI的ROM）要稳定一些，所以你不想经常折腾的话，刷这个版本会安逸很多。</p>
-
-<p>本文中所有内容都是来自：</p>
-
-<ul>
-<li>移动叔叔论坛（bbs.ydss.cn），卓普大黑版块</li>
-<li><a href="http://forum.xda-developers.com/showthread.php?t=2403825">http://forum.xda-developers.com/showthread.php?t=2403825</a></li>
-</ul>
-
+<p>折腾总是发生在忍无可忍的时候，幸好要解决这个问题不麻烦。</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/06/08/zopo-c7-flash/">Read on &rarr;</a>
+      <a rel="full-article" href="/blog/2014/03/25/mac-chrome-add-ssl-certification/">Read on &rarr;</a>
     </footer>
   
 
@@ -268,7 +258,7 @@
   <header>
     
       <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/06/03/ubuntu-disk-clone/">CloneZilla磁盘克隆，超快的更换硬盘</a></h1>
+        <h1 class="entry-title"><a href="/blog/2014/03/22/setup-wireless-wds/">架设无线桥接网络（WDS）</a></h1>
       
     
     
@@ -285,26 +275,22 @@
   
 
 
-<time datetime="2014-06-03T12:49:00+08:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2014</time>
+<time datetime="2014-03-22T19:54:00+08:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>开发用的PC机用的是一块128G的SSD，安装的Ubuntu 12.04，速度明显比机械硬盘快了好多，唯一的不足就是容量太小。于是最近购入了一块新的240G的SSD，需要将原来128G的SSD上的东西全部克隆过来。</p>
+  <div class="entry-content"><p>现在的无线路由器动辄3根天线，号称穿墙能力如何如何，信号可以从一楼一直覆盖到三楼。但是根据我几年来使用了N款无线路由器之后，发现都是扯。我现在使用的是一台ASUS的，3根天线，128M内存的无线路由器，支持刷第三方固件（如DD-WRT, Tomato），但是穿墙效果还是无法让人满意。路由器放在房间，客厅的信号就是时有时无。当然，我指的是使用ipad或者手机时，信号较弱，如果使用笔记本电脑要好一些。</p>
 
-<p>对于Linux ext4文件分区系统的磁盘来说，<code>ghost</code>工作的并不好，工作的比较好的是<code>CloneZilla</code>，因为它能识别ext4的文件系统，从而使克隆变的无比快速，之前我写过一篇类似的文章：</p>
-
-<p><a href="http://www.cnblogs.com/super119/archive/2012/09/26/2703479.html">http://www.cnblogs.com/super119/archive/2012/09/26/2703479.html</a></p>
-
-<p>但是那一次的克隆是两块容量一样的磁盘，而这一次两块SSD的容量并不相同，所以我做了一些改变。</p>
+<p>忍受了2年之后，我决定在客厅再放一个无线路由器，做无线桥接（WDS）使用，彻底摆脱信号之苦。</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/06/03/ubuntu-disk-clone/">Read on &rarr;</a>
+      <a rel="full-article" href="/blog/2014/03/22/setup-wireless-wds/">Read on &rarr;</a>
     </footer>
   
 
@@ -317,7 +303,7 @@
   <header>
     
       <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/04/23/wxwidget-on-mavericks/">在Mavericks上使用Makefile编写wxWidgets程序</a></h1>
+        <h1 class="entry-title"><a href="/blog/2014/03/20/juniper-vpn-on-ubuntu/">在Ubuntu上连接Juniper SSL VPN</a></h1>
       
     
     
@@ -334,24 +320,22 @@
   
 
 
-<time datetime="2014-04-23T23:31:00+08:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2014</time>
+<time datetime="2014-03-20T22:26:00+08:00" pubdate data-updated="true">Mar 20<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>OpenGL的设计与操作系统无关，与窗口系统也无关，所以，要编写一个可以运行（能看到界面）的程序，还需要一些额外的GUI的框架，比如glut。</p>
+  <div class="entry-content"><p>现在国内很多外企都使用Juniper SSL VPN，来让员工可以在家连入到公司的网络。但是我发现，Juniper的SSL VPN在windows和Mac OS X上都可以很好的工作，但是在Ubuntu上貌似就有问题。就算你正确安装了Java Runtime，打开浏览器，<code>Host Checker</code> 和 <code>Network Connect</code> 也无法正常运行。有人说这是因为现在我们大多使用64位的Ubuntu，而 <code>Host Checker</code> 和 <code>Network Connect</code> 需要32位的浏览器和32位的JRE才能工作。</p>
 
-<p>glut基本上是所有OpenGL教科书上的唯一推荐了，因为它的API简单，跨平台。所以读者不需要花额外的时间去了解并使用glut。但是glut比较老了，有点跟不上时代了。而且编译出来的东西是一个可执行文件，不是Mac OS X上的 <code>.app</code> 的那种Applicaiton。所以在StackOverflow上也有很多人推荐使用 <code>glfw</code>。我也去试用了一下，感觉还是太单薄了。</p>
-
-<p>既然要编写一个像样的OpenGL程序，就选择一个像样的GUI framework library吧，于是我决定使用wxWidgets。</p>
+<p>我没有去深究32位的Ubuntu下是否Juniper VPN就真的可以正常工作了，因为我找到了一个更简单的办法。</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/04/23/wxwidget-on-mavericks/">Read on &rarr;</a>
+      <a rel="full-article" href="/blog/2014/03/20/juniper-vpn-on-ubuntu/">Read on &rarr;</a>
     </footer>
   
 
@@ -364,7 +348,7 @@
   <header>
     
       <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/04/23/translation-rotation-scale-in-homogeneous-coordinate/">需要齐次坐标的原因之二 - 所有的变换运算（平移、旋转、缩放）都可以用矩阵乘法来搞定</a></h1>
+        <h1 class="entry-title"><a href="/blog/2014/03/10/kgdb-howto/">KGDB使用简介</a></h1>
       
     
     
@@ -381,22 +365,20 @@
   
 
 
-<time datetime="2014-04-23T13:55:00+08:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2014</time>
+<time datetime="2014-03-10T13:57:00+08:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>本文中的三张图片来自网络，但是我不记得当初的来源了，所以没有能给出出处。确定来源后将给出图片出处。</p>
-
-<p>看三个图就清楚了。分别是平移、旋转和缩放的矩阵计算。如果没有额外的第四个量w（也就是齐次坐标），那么这三种变换是无法都使用矩阵乘法来解决的。变换都统一成矩阵乘法之后，就给硬件设计和软件架构带来了巨大的好处。</p>
+  <div class="entry-content"><p>KGDB是调试linux kernel的一个工具，虽然没有userspace的gdb那么好用，但有些时候还是能派上一些用处。比如kernel启动的时候自动重启，用kgdb连上之后就可以在kernel重启之前被KGDB截获，从而打印出调用栈来。</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/04/23/translation-rotation-scale-in-homogeneous-coordinate/">Read on &rarr;</a>
+      <a rel="full-article" href="/blog/2014/03/10/kgdb-howto/">Read on &rarr;</a>
     </footer>
   
 
@@ -409,7 +391,7 @@
   <header>
     
       <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/04/23/homogeneous-coordinates/">需要齐次坐标的原因</a></h1>
+        <h1 class="entry-title"><a href="/blog/2014/02/08/virtualbox-ubuntu-dns-issue/">VirtualBox中安装Ubuntu，在有VPN的情况下会有DNS的问题</a></h1>
       
     
     
@@ -426,22 +408,20 @@
   
 
 
-<time datetime="2014-04-23T13:40:00+08:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2014</time>
+<time datetime="2014-02-08T21:11:00+08:00" pubdate data-updated="true">Feb 8<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>原文链接：<a href="http://www.songho.ca/math/homogeneous/homogeneous.html">http://www.songho.ca/math/homogeneous/homogeneous.html</a></p>
-
-<p>翻译：罗朝辉 <a href="http://www.cnblogs.com/kesalin/">http://www.cnblogs.com/kesalin/</a></p>
+  <div class="entry-content"><p>标题表达的不是很清楚（否则标题就太长了。。。），意思是：如果我们在一台windows的机器上安装了VirtualBox，然后在里面安装Ubuntu，然后在windows中连上VPN，此时Ubuntu虚拟机中就会有DNS的问题。我测试的是最新版本的VirtualBox，Ubuntu是12.04的版本，不知道将来这个问题会不会解决。</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/04/23/homogeneous-coordinates/">Read on &rarr;</a>
+      <a rel="full-article" href="/blog/2014/02/08/virtualbox-ubuntu-dns-issue/">Read on &rarr;</a>
     </footer>
   
 
@@ -454,7 +434,7 @@
   <header>
     
       <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/04/22/git-gossip-3/">Git都在说些啥（三）</a></h1>
+        <h1 class="entry-title"><a href="/blog/2014/01/28/gyroscope-precession/">陀螺进动（Gyroscope Precession）和循环螺距（Cyclic Pitch）</a></h1>
       
     
     
@@ -471,22 +451,22 @@
   
 
 
-<time datetime="2014-04-22T07:58:00+08:00" pubdate data-updated="true">Apr 22<span>nd</span>, 2014</time>
+<time datetime="2014-01-28T16:10:00+08:00" pubdate data-updated="true">Jan 28<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>这次来说说有关 <code>no branch</code> 的那些事。</p>
+  <div class="entry-content"><p>循环螺距就是通过改变十字盘（Swashplate），使直升机双桨上的升力造成差异，从而使直升机可以向前、向后、向左、向右移动。之所以称为“循环”（Cyclic），是因为双桨在旋转的过程中，其螺距循环的，有规律的进行改变。</p>
 
-<p>其实之前在<a href="http://markzhang.cn/blog/2014/04/04/git-gossip-1/">Git都在说些啥（一）</a>中已经提过一些有关 <code>no branch</code> 的东西。这次再来看看其他两段git的提示信息，都是与 <code>no branch</code> 有关的。</p>
+<p>在这其中有一个有意思的现象：陀螺进动（Gyroscope Precession）。有关这个现象我首先是在这里看到的：</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/04/22/git-gossip-3/">Read on &rarr;</a>
+      <a rel="full-article" href="/blog/2014/01/28/gyroscope-precession/">Read on &rarr;</a>
     </footer>
   
 
@@ -499,7 +479,7 @@
   <header>
     
       <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/04/21/git-gossip-2/">Git都在说些啥（二）</a></h1>
+        <h1 class="entry-title"><a href="/blog/2014/01/20/internet-plugins-on-mavericks/">MacOS X Mavericks上的浏览器插件的问题</a></h1>
       
     
     
@@ -516,20 +496,22 @@
   
 
 
-<time datetime="2014-04-21T21:33:00+08:00" pubdate data-updated="true">Apr 21<span>st</span>, 2014</time>
+<time datetime="2014-01-20T21:30:00+08:00" pubdate data-updated="true">Jan 20<span>th</span>, 2014</time>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>这一次我们来说说 <code>git pull</code> 的时候经常会碰到的一段信息。</p>
+  <div class="entry-content"><p>升级了Mavericks之后，发现浏览器中的一些插件出问题了。最先遇到的就是在Safari中经常会蹦出来对话框说，是否要在该网站上运行迅雷（Thunder xxx）插件，有几个选项，yes/no/never for this site&hellip;. 后来又发现旺旺不工作了，也就是在浏览器中点击旺旺图标，旺旺出不来了&hellip;.</p>
+
+<p>所以花了点时间看了一下，原来现在在Safari中有专门的 <code>Internet plug-ins</code> 这样的设置了，而且该设置影响安装的所有浏览器（如Chrome, Firefox）。</p>
 
 </div>
   
   
     <footer>
-      <a rel="full-article" href="/blog/2014/04/21/git-gossip-2/">Read on &rarr;</a>
+      <a rel="full-article" href="/blog/2014/01/20/internet-plugins-on-mavericks/">Read on &rarr;</a>
     </footer>
   
 
@@ -550,7 +532,7 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (2)</a></li><li><a href='/blog/categories/life'>Life (3)</a></li><li><a href='/blog/categories/linux'>linux (7)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (12)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (14)</a></li><li><a href='/blog/categories/opengl'>OpenGL (4)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li><li><a href='/blog/categories/repost'>repost (12)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (7)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (8)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
@@ -561,19 +543,19 @@
       </li>
     
       <li class="post">
-        <a href="/blog/2015/07/28/zone-dma/">Kernel的ZONE_DMA</a>
-      </li>
-    
-      <li class="post">
         <a href="/blog/2015/07/24/throttle-hold-and-throttle-cut/">电动直升机的油门锁定（THRU HOLD）和油门熄火（THRU CUT）</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/06/27/live-naught-earth-wires/">一篇文章学会电工：火线 零线 地线 中线</a>
+        <a href="/blog/2015/06/03/nvidia-linux-driver-on-ubuntu/">NVIDIA Linux驱动在Ubuntu 12.04上的安装</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/06/27/power-transfer/">高压输电：为什么高压输电压升高了，电流会变小呢</a>
+        <a href="/blog/2015/05/12/build-out-of-tree-kernel-module/">编译out-of-tree的kernel模块</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/11/deal-with-git-am-failures/">Git Am失败的时候怎么办</a>
       </li>
     
   </ul>

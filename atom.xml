@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-08-31T09:07:37+08:00</updated>
+  <updated>2015-12-11T15:21:40+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -163,65 +163,6 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Kernel的ZONE_DMA]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/07/28/zone-dma/"/>
-    <updated>2015-07-28T10:54:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/07/28/zone-dma</id>
-    <content type="html"><![CDATA[<p>转载自：<a href="https://lkml.org/lkml/2011/7/6/249">https://lkml.org/lkml/2011/7/6/249</a></p>
-
-<!-- more -->
-
-
-<p>On Wed, Jul 06, 2011 at 11:19:00AM -0500, Christoph Lameter wrote:</p>
-
-<blockquote><p>What I described is the basic memory architecture of Linux. I am not that
-familiar with ARM and the issue discussed here. Only got involved because
-ZONE_DMA was mentioned. The nature of ZONE_DMA is often misunderstood.</p>
-
-<p>The allocation of the memory banks for the Samsung devices has to fit
-somehow into one of these zones. Its probably best to put the memory banks
-into ZONE_NORMAL and not have any dependency on ZONE_DMA at all.</p></blockquote>
-
-<p>Let me teach you about the ARM memory management on Linux.</p>
-
-<p>Firstly, lets go over the structure of zones in Linux.  There are three
-zones &ndash; ZONE_DMA, ZONE_NORMAL and ZONE_HIGHMEM.  These zones are filled
-in that order.  So, ZONE_DMA starts at zero.  Following on from ZONE_DMA
-is ZONE_NORMAL memory, and lastly ZONE_HIGHMEM.</p>
-
-<p>At boot, we pass all memory over to the kernel as follows:</p>
-
-<ol>
-<li><p>If there is no DMA zone, then we pass all low memory over as ZONE_NORMAL.</p></li>
-<li><p>If there is a DMA zone, by default we pass all low memory as ZONE_DMA.
-This is required so drivers which use GFP_DMA can work.</p>
-
-<p>Platforms with restricted DMA requirements can modify that layout to
-move memory from ZONE_DMA into ZONE_NORMAL, thereby restricting the
-upper address which the kernel allocators will give for GFP_DMA
-allocations.</p></li>
-<li><p>In either case, any high memory as ZONE_HIGHMEM if configured (or memory
-is truncated if not.)</p></li>
-</ol>
-
-
-<p>So, when we have (eg) a platform where only the <em>even</em> MBs of memory are
-DMA-able, we have a 1MB DMA zone at the beginning of system memory, and
-everything else in ZONE_NORMAL.  This means GFP_DMA will return either
-memory from the first 1MB or fail if it can&rsquo;t.  This is the behaviour we
-desire.</p>
-
-<p>Normal allocations will come from ZONE_NORMAL <em>first</em> and then try ZONE_DMA
-if there&rsquo;s no other alternative.  This is the same desired behaviour as
-x86.</p>
-
-<p>So, ARM is no different from x86, with the exception that the 16MB DMA
-zone due to ISA ends up being different sizes on ARM depending on our
-restrictions.</p>
-]]></content>
-  </entry>
-  
-  <entry>
     <title type="html"><![CDATA[电动直升机的油门锁定（THRU HOLD）和油门熄火（THRU CUT）]]></title>
     <link href="http://www.markzhang.cn/blog/2015/07/24/throttle-hold-and-throttle-cut/"/>
     <updated>2015-07-24T11:43:00+08:00</updated>
@@ -258,73 +199,6 @@ restrictions.</p>
 
 
 <p>其实可以自己在控上琢磨琢磨大概就能搞清楚这两个功能的区别，控上的 <code>Servo</code> 这个功能很实用，你做了任何设置都可以在这里看到各个通道的变化。所以当你设置油门锁定和油门熄火之后，在 <code>Servo</code> 这里就可以很方便的观察油门和桨距两个通道的变化了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[一篇文章学会电工：火线 零线 地线 中线]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/06/27/live-naught-earth-wires/"/>
-    <updated>2015-06-27T18:20:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/06/27/live-naught-earth-wires</id>
-    <content type="html"><![CDATA[<p>转载自：<a href="http://wenku.baidu.com/view/6aa265f57c1cfad6195fa74b.html">http://wenku.baidu.com/view/6aa265f57c1cfad6195fa74b.html</a></p>
-
-<p>首先你要知道电为什么分为火线.&lt;也叫相线>零线&lt;也叫中性线>和接地线.&lt;也叫保护线>是从那里来的.各起什么作用的.</p>
-
-<!-- more -->
-
-
-<p>电自然是从发电机出来的这个大家都知道.发电机分为单相发电机和三相发电机.现在在电厂基本都用三相发电机.单相基本已不用&lt;当然应急发电机除外>.</p>
-
-<p>因为三相发电机在发电机的定子上嵌放三个相同的线圈.当转子在原动机&lt;如汽轮机.水轮机>带动下切割磁感应线而在线圈中产生感生电动势.也就是电.有于三相发电机定子上有三个线圈所以会产生三相电.如果在三相发电机每个线圈各接上一个负载的话那么就会产生三个独立和单相电路.就构成了三相六线制了.如果是这样的话我要输电的话需要六根导线,很不经济,也没有实用价值.但是我们目前低压供电系统多数用三相四线制供电.三相四线是把发电机三个线圈的末端连接在一起（电流是在线圈中产生的，不清楚请复习电磁感应）,成为一个公共端点&lt;称为中性点这也就是为什么人们把零线称为中性线的原因>从中性线引出的输电线称为中性线,中性线通常与大地相接,并把接大地和中性点称为零点.始终保持与相线的零地位&lt;这也就是人们为什么把中性线称为零线的原因>.</p>
-
-<p>第一.从电厂的发电机出来后经变电站加压后通过输电网进入工厂或用电处到工厂或用电处后再经过变压器降压后进入负载&lt;用电器>一般为三相四线制即用线色表示为黄.绿.红和蓝&lt;黄.绿.红为相线蓝为中性线也就零线>用字幕表示为A.B.C和N.但是现在国家提倡新的工厂用三相五线制也就是在原来四根线上再加根接地线&lt;不是从电厂过来的是在要用电器的地方如居民住宅楼国家强制规定必须要有接地线自己加的.主要作用为当设备漏电时把电导入大地防止人体触电>也叫PE线色为黄绿双色线&lt;IEC标准全球通用></p>
-
-<p>第二.这五根线中中性线&lt;零线>和接地线<PE>没有电压其他三根线<ABC>电压一般为线与线之间任意二根线为400V&lt;即ABC三线中任意二根线实际为 390V左右用电时有压降被称为线电压>线与中性线之间为230V&lt;即ABC与N之间任意二根线实际为225V左右被称为相电压>.</p>
-
-<p>第三接地线也叫保护线.那为什么要叫它保护线.你想在家里的家用电器或工厂的设备很多都是用金属做外壳的吧.那么如果万一当我电器或设备发生漏电的话那么我的电器或是设备那不是要带电了吗?如果人碰一下的话是不是要触电啊?是不是很危险啊?那么有没有方法可以当我的电器或是设备漏电时避免发生触电的事故. 有!接地线就是一种很好的保护方法.人为什么会触电.首先人是导电体,第二因为有电流流过.为什么会有电流过.因为有电压.我想欧姆定律你应当知道吧?I=U/R也就是说在电压相同的情况下电阻越大电流就越小是吧!电流还有一个特征就是那边电阻小它向那边走.人体的电阻一般为1700欧姆.那么如果接地线电阻只有4欧姆的话你看那大部分的电流会向那里走啊.没有电流流过的话那人也就不会触电了吧?其实说白了就是一句话.那就是接地线的作用就是当用电器发生漏电时把电导入大地防止人体触电!这也就是人们为什么把接地线叫为保护线的原因!</p>
-
-<p>第四以三相电源为例如果有三条相线，一条零线和一条地线。&lt;在电路图中用字幕L1 L2 L3 表示为A B C三相.用N 表示零线或中性线.用PE表示接地线>
-那就是三相五线制也就是人们通常说的TN-S系统。就是中性线《零线N》和保护线《接地线PE》是分开的。
-如果三相线加一零线的那种是三相四线制也就是人们通常说的TN-C系统。就是中性线《零线N》和保护线《接地线PE》是合一的，称为PEN线。通常用保护接零的方法.共用PEN线.</p>
-
-<p>现在国家提倡新开的工厂使用TN-S系统。如果你用三相五线制的去接三相四线制的话那要看你设备上需要了。如果在你设备上要用220V电源的话那就接中性线《零线N》。用保护接零使用。禁止把接地线当中性线《零线N》使用。如果设备上没有用220V的电源那就接接地线就可以了。</p>
-
-<p>照明电路里的两根电线，一根叫火线，另一根则叫零线。火线和零线的区别在于它们对地的电压不同：火线的对地电压等于220V；零线的对地的电压等于零（它本身跟大地相连接在一起的）。所以当人的一部分碰上了火线，另一部分站在地上，人的这两个部分这间的电压等于220V，就有触电的危险了。反之人即使用手去抓零线，如果人是站在地上的话，由于零线的对地的电压等于零，所以人的身体各部分之间的电压等于零，人就没有触电的危险。</p>
-
-<p>如果火线和零线一旦碰起来，由于两者之间的电压等于220伏，而两接触点间的电阻几乎等于零，这时的电流非常大，在火线和零线的接触点处将产生巨大的热量，从而发出电火花，火花处的温度高到足以把金属导线烧得熔化。</p>
-
-<p>接地是电器设备安全技术中最重要的工作，应该认真对待。那种不加考虑随意接地的做法常常会给计算机设备造成不良的后果，严重时会烧毁整个设备应用系统，甚至造成人身伤害。正确接地可提高整个系统的抗干扰能力。</p>
-
-<p>要正确使用计算机的电源线。目前，我们使用的电源插座大多是单相三线插座或单相二线插座。单相三线插座中，中间为接地线，也作定位用，另外两端分别接火线和零线，接线顺序是左零右火，即左边为零线，右边为火线.凡外壳是金属的家用电器都采用的是单相三线制电源插头。三个插头呈正三解形排列，其中上面最长最粗的铜制插头就是地线。地线下面两个分别是火线（标志字母为&#8221;L&#8221;Live Wire）、零线（标志字母为&#8221;N&#8221;Naught wire），顺序是左零右火，（插头背面对着自己本人时）。</p>
-
-<p>使用中千万不要将零线端和定位用的地线端连在一起，因为有的设备采用二线插头，如果设备的电源火线、零线接反或使用中插错位置，必将造成火线、零线短路，烧坏设备，造成不可弥补的损失。因此，即使家里或单位的三线插座中没有接地，也最好使用三线电源插头和三线插座。</p>
-
-<p>区分：</p>
-
-<ul>
-<li><p>用颜色区分：在动力电缆中黄色绿色红色分别代表A相B相C相（三相火线）蓝色代表零线，黄绿双色代表接地线。</p></li>
-<li><p>用电笔区分：火线用电笔测试时会发光，而零线则不会。</p></li>
-<li><p>用电压表区分：不同相线（即火线）之间的电压为线电压380V，相线（火线）与零线（或良好的接地体）之间的电压为相电压220V，零线与良好的接地体的电压为0V。</p></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[高压输电：为什么高压输电压升高了，电流会变小呢]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/06/27/power-transfer/"/>
-    <updated>2015-06-27T18:13:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/06/27/power-transfer</id>
-    <content type="html"><![CDATA[<p>转载自：<a href="http://iask.sina.com.cn/b/11686110.html">http://iask.sina.com.cn/b/11686110.html</a></p>
-
-<p>为什么高压输电线路上电压升高了，电流会变小呢，不是I=U/R么，照理说电压升高了，电流也大了，损耗也就多了啊？</p>
-
-<!-- more -->
-
-
-<p>因为输出功率是固定的。而功率等于电流乘以电压，即P=IU。这样，乘积固定，一个因数（电压U）变大，另一个因数（电流I）就要变小。</p>
-
-<p>你引用的那个公式（I=U/R），隐含的前提是功率是可变的，所以在此不适用。</p>
 ]]></content>
   </entry>
   
@@ -881,76 +755,6 @@ restrictions.</p>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[GEM - Graphics Execution Manager 介绍]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/03/02/gem-introduction/"/>
-    <updated>2015-03-02T11:15:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/03/02/gem-introduction</id>
-    <content type="html"><![CDATA[<p>本文来自：<a href="http://lwn.net/Articles/283798/">http://lwn.net/Articles/283798/</a></p>
-
-<p>NOTE: Currently the buffer creation/read/write are implemented by driver specified ioctls. So right now you can&rsquo;t find functions like &ldquo;drm_gem_create&rdquo; in kernel sources.
-And that&rsquo;s also why we need &ldquo;dumb buffer&rdquo; in drm&rsquo;s ioctls(dumb_create, dumb_destroy&hellip;)</p>
-
-<!-- more -->
-
-
-<p>原文请看：<a href="http://lwn.net/Articles/283798/">http://lwn.net/Articles/283798/</a></p>
-
-<p>GEM是Intel建议提出并实现的，所以这篇文章是GEM maintainer写的introduction，非常详尽，只是对照现在的kernel来说，内容已经有一点outdate（所以我写了上面的NOTE），但是大部分内容都是OK的。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[转载：GEM vs TTM]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/03/02/gem-vs-ttm/"/>
-    <updated>2015-03-02T11:09:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/03/02/gem-vs-ttm</id>
-    <content type="html"><![CDATA[<p>本文来自: <a href="http://lwn.net/Articles/283793/">http://lwn.net/Articles/283793/</a></p>
-
-<p>Getting high-performance, three-dimensional graphics working under Linux is quite a challenge even when the fundamental hardware programming information is available.  One component of this problem is memory management: a graphics processor (GPU) is, essentially, a computer of its own with a distinct view of memory.  Managing the GPU&rsquo;s memory &ndash; and its view of system RAM &ndash; must be done carefully if the resulting system is intended to work at all, much less with acceptable performance.</p>
-
-<p>Not that long ago, it appeared that this problem had been solved with thetranslation table maps (TTM) subsystem.  TTM remains outside of the mainline kernel, though, as do all drivers which use it.  A recent queryabout what would be required to get TTM merged led to an interesting discussion where it turned out that, in fact, TTM may not be the future of graphics memory management after all.</p>
-
-<!-- more -->
-
-
-<p></p>
-
-<p>A number of complaints about TTM have been raised.  Its API is far larger than is needed for any free Linux driver; it has, in other words, a certain amount of code dedicated to the needs of binary-only drivers.  The fencing mechanism (which manages concurrency between the host CPUs and the GPU) is seen as being complex, difficult to work with, and not always yielding the best performance.  Heavy use of memory-mapped buffers can create performance problems of its own.  The TTM API is an exercise in trying to provide for everything in all situations;  as a result it is, according to some driver developers, hard to match to any specific hardware, hard to get started with, and still insufficiently flexible.  And, importantly, there is a distinct shortage of working free drivers which use TTM.  So Dave Airlie worries:</p>
-
-<blockquote><p>I was hoping that by now, one of the radeon or nouveau drivers would have adopted TTM, or at least demoed something working using it, this hasn&rsquo;t happened which worries me&hellip;  The real question is whether TTM suits the driver writers for use in Linux desktop and embedded environments, and I think so far I&rsquo;m not seeing enough positive feedback from the desktop side
-All of these worries would seem to be moot, since TTM is available and there is nothing else out there.  Except, as it turns out, there issomething out there: it&rsquo;s called the Graphics Execution Manager, or GEM. The Intel-sponsored GEM project is all of one month old, as of this writing. The GEM developers had not really intended to announce their work quite yet, but the TTM discussion brought the issue to the fore.</p></blockquote>
-
-<p>Keith Packard&rsquo;s introduction to GEM includes a document describing the API as it exists so far.  There are a number of significant differences in how GEM does things.  To begin with, GEM allocates graphical buffer objects using normal, anonymous, user-space memory.  That means that these buffers can be forced out to swap when memory gets tight.  There are clear advantages to this approach, and not just in memory flexibility: it also makes the implementation of suspend and resume easier by automatically providing backing store for all buffer objects.</p>
-
-<p>The GEM API tries to do away with the mapping of buffers into user space. That mapping is expensive to do and brings all sorts of interesting issues with cache coherency between the CPU and GPU.  So, instead, buffer objects are accessed with simple read() and write() calls.  Or, at least, that&rsquo;s the way it would be if the GEM developers could attach a file descriptor to each buffer object.  The kernel, however, does not make the management of that many file descriptors easy (yet), so the real API uses separate handles for buffer objects and a series of ioctl()calls.</p>
-
-<p>That said, it is possible to map a buffer object into user space.  But then the user-space driver must take explicit responsibility for the management of cache coherency.  To that end there is a set of ioctl()calls for managing the &ldquo;domain&rdquo; of a buffer; the domain, essentially, describes which component of the system owns the buffer and is entitled to operate on it.  Changing the domains (there are two, one for read access and one for writes) of a buffer will perform the necessary cache flushes.  In a sense, this mechanism resembles the streaming DMA API, where the ownership of DMA buffers can be switched between the CPU and the peripheral controller. That is not entirely surprising, as a very similar problem is being solved.</p>
-
-<p>This API also does away with the need for explicit fence operations. Instead, a CPU operation which requires access to a buffer will simply wait, if necessary, for the GPU to finish any outstanding operations involving that buffer.</p>
-
-<p>Finally, the GEM API does not try to solve the entire problem; a number of important operations (such as the execution of a set of GPU commands) are left for the hardware-specific driver to implement.  GEM is, thus, quite specific to the needs of Intel&rsquo;s driver at this time; it does not try for the same sort of generality that was a goal of TTM.  As describedby Eric Anholt:</p>
-
-<blockquote><p>The problem with TTM is that it&rsquo;s designed to expose one general API for all hardware, when that&rsquo;s not what our drivers want&hellip; We&rsquo;re trying to come at it from the other direction: Implement one driver well.  When someone else implements another driver and finds that there&rsquo;s code that should be common, make it into a support library and share it.</p></blockquote>
-
-<p>The advantage to this approach is that it makes it relatively easy to create something which works well with Intel drivers.  And that may well be a good start; one working set of drivers is better than none.  On the other hand, that means that a significant amount of work may be required to get GEM to the point where it can support drivers for other hardware.  There seem to be two points of view on how that might be done: (1) add capabilities to GEM when needed by other drivers, or (2) have each driver use its own memory manager.</p>
-
-<p>The first approach is, in many ways, more pleasing.  But it implies that the GEM API could change significantly over time.  And that, in turn, could delay the merging of the whole thing; the GEM API is exported to user space, and, as a result, must remain compatible as things change.  So there may be resistance to a quick merge of an API which looks like it may yet have to evolve for some time.</p>
-
-<p>The second approach, instead, is best describedby Dave Airlie:</p>
-
-<blockquote><p>Well the thing is I can&rsquo;t believe we don&rsquo;t know enough to do this in some way generically, but maybe the TTM vs GEM thing proves its not possible.  So we can then punt to having one memory manager per driver, but I suspect this will be a maintenance nightmare, so if people decide this is the way forward, I&rsquo;m happy to see it happen. However the person submitting the memory manager n+1 must damn well be willing to stand behind the interface until time ends, and explain why they couldn&rsquo;t re-use 1..n memory managers.</p></blockquote>
-
-<p>One other remaining issue is performance.  Keith Whitwell posted some benchmark results showing that the i915 driver performs significantly worse with either TTM or GEM than without.  Keith Packard gets different results, though; his tests show that the GEM-based driver is significantly faster.  Clearly there is a need for a set of consistent benchmarks; performance of graphics drivers is important, but performance cannot be optimized if it cannot be reliably measured.</p>
-
-<p>The use of anonymous memory also raises some performance concerns: a first-person shooter game will not provide the same experience if its blood-and-gore textures must be continually paged in.  Anonymous memory can also be high memory, and, thus, not necessarily accessible via a 32-bit pointer.  Some GPU hardware cannot address high memory; that will likely force the use of bounce buffers within the kernel.  In the end, GEM will have to prove that it can deliver good performance; GEM&rsquo;s developers are highly motivated to make their hardware look good, so there is a reasonable chance that things will work out on this front.</p>
-
-<p>The conclusion to draw from all of this is that the GPU memory management problem cannot yet be considered solved.  GEM might eventually become that solution, but it is a very new API which still needs a fair amount of work.  There is likely to be a lot of work yet to be done in this area.</p>
-
-<p>(Thanks to Timo Jyrinki for suggesting this topic.)</p>
-]]></content>
-  </entry>
-  
-  <entry>
     <title type="html"><![CDATA[有关DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU]]></title>
     <link href="http://www.markzhang.cn/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem/"/>
     <updated>2015-03-02T11:06:00+08:00</updated>
@@ -1004,541 +808,6 @@ All of these worries would seem to be moot, since TTM is available and there is 
 <p>So Mesa handles a lot of works in linux 3D graphics stack. And it has lots of relations with X server as well(GLX and DRI X extensions).</p>
 
 <p>An important reason that why we involve so many components is, decouple the dependencies of all of these guys. According to this design, DRM is not related with X server so it works with other programs as well(e.g: Wayland). Mesa is the same.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[DRM memory management - 最好的GEM/TTM/PRIME解释]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/03/02/drm-memory-management/"/>
-    <updated>2015-03-02T10:37:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/03/02/drm-memory-management</id>
-    <content type="html"><![CDATA[<p>本文转载自：<a href="https://www.kernel.org/doc/htmldocs/drm/drm-memory-management.html">https://www.kernel.org/doc/htmldocs/drm/drm-memory-management.html</a></p>
-
-<p><strong>Memory management</strong></p>
-
-<ul>
-<li>The Translation Table Manager (TTM)</li>
-<li>The Graphics Execution Manager (GEM)</li>
-<li>VMA Offset Manager</li>
-<li>PRIME Buffer Sharing</li>
-<li>PRIME Function References</li>
-<li>DRM MM Range Allocator</li>
-<li>DRM MM Range Allocator Function References</li>
-<li>CMA Helper Functions Reference</li>
-</ul>
-
-
-<!-- more -->
-
-
-<p>Modern Linux systems require large amount of graphics memory to store frame buffers, textures, vertices and other graphics-related data. Given the very dynamic nature of many of that data, managing graphics memory efficiently is thus crucial for the graphics stack and plays a central role in the DRM infrastructure.</p>
-
-<p>The DRM core includes two memory managers, namely Translation Table Maps (TTM) and Graphics Execution Manager (GEM). TTM was the first DRM memory manager to be developed and tried to be a one-size-fits-them all solution. It provides a single userspace API to accommodate the need of all hardware, supporting both Unified Memory Architecture (UMA) devices and devices with dedicated video RAM (i.e. most discrete video cards). This resulted in a large, complex piece of code that turned out to be hard to use for driver development.</p>
-
-<p>GEM started as an Intel-sponsored project in reaction to TTM&rsquo;s complexity. Its design philosophy is completely different: instead of providing a solution to every graphics memory-related problems, GEM identified common code between drivers and created a support library to share it. GEM has simpler initialization and execution requirements than TTM, but has no video RAM management capabilities and is thus limited to UMA devices.</p>
-
-<p><strong>The Translation Table Manager (TTM)</strong></p>
-
-<p>TTM initialization</p>
-
-<p>Drivers wishing to support TTM must fill out a drm_bo_driver structure. The structure contains several fields with function pointers for initializing the TTM, allocating and freeing memory, waiting for command completion and fence synchronization, and memory migration. See the radeon_ttm.c file for an example of usage.</p>
-
-<p>The ttm_global_reference structure is made up of several fields:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">struct</span> <span class="n">ttm_global_reference</span> <span class="p">{</span>
-</span><span class='line'>  <span class="k">enum</span> <span class="n">ttm_global_types</span> <span class="n">global_type</span><span class="p">;</span>
-</span><span class='line'>  <span class="n">size_t</span> <span class="n">size</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">void</span> <span class="o">*</span><span class="n">object</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">init</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">ttm_global_reference</span> <span class="o">*</span><span class="p">);</span>
-</span><span class='line'>  <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">release</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="n">ttm_global_reference</span> <span class="o">*</span><span class="p">);</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>There should be one global reference structure for your memory manager as a whole, and there will be others for each object created by the memory manager at runtime. Your global TTM should have a type of TTM_GLOBAL_TTM_MEM. The size field for the global object should be sizeof(struct ttm_mem_global), and the init and release hooks should point at your driver-specific init and release routines, which probably eventually call ttm_mem_global_init and ttm_mem_global_release, respectively.</p>
-
-<p>Once your global TTM accounting structure is set up and initialized by calling ttm_global_item_ref() on it, you need to create a buffer object TTM to provide a pool for buffer object allocation by clients and the kernel itself. The type of this object should be TTM_GLOBAL_TTM_BO, and its size should be sizeof(struct ttm_bo_global). Again, driver-specific init and release functions may be provided, likely eventually calling ttm_bo_global_init() and ttm_bo_global_release(), respectively. Also, like the previous object, ttm_global_item_ref() is used to create an initial reference count for the TTM, which will call your initialization function.</p>
-
-<p><strong>The Graphics Execution Manager (GEM)</strong></p>
-
-<p>GEM Initialization
-GEM Objects Creation
-GEM Objects Lifetime
-GEM Objects Naming
-GEM Objects Mapping
-Memory Coherency
-Command Execution
-GEM Function Reference</p>
-
-<p>The GEM design approach has resulted in a memory manager that doesn&rsquo;t provide full coverage of all (or even all common) use cases in its userspace or kernel API. GEM exposes a set of standard memory-related operations to userspace and a set of helper functions to drivers, and let drivers implement hardware-specific operations with their own private API.</p>
-
-<p>The GEM userspace API is described in the GEM &ndash; the Graphics Execution Manager article on LWN. While slightly outdated, the document provides a good overview of the GEM API principles. Buffer allocation and read and write operations, described as part of the common GEM API, are currently implemented using driver-specific ioctls.</p>
-
-<p>GEM is data-agnostic. It manages abstract buffer objects without knowing what individual buffers contain. APIs that require knowledge of buffer contents or purpose, such as buffer allocation or synchronization primitives, are thus outside of the scope of GEM and must be implemented using driver-specific ioctls.</p>
-
-<p>On a fundamental level, GEM involves several operations:</p>
-
-<ul>
-<li>Memory allocation and freeing</li>
-<li>Command execution</li>
-<li>Aperture management at command execution time</li>
-</ul>
-
-
-<p>Buffer object allocation is relatively straightforward and largely provided by Linux&rsquo;s shmem layer, which provides memory to back each object.</p>
-
-<p>Device-specific operations, such as command execution, pinning, buffer read &amp; write, mapping, and domain ownership transfers are left to driver-specific ioctls.</p>
-
-<p><strong>GEM Initialization</strong></p>
-
-<p>Drivers that use GEM must set the DRIVER_GEM bit in the struct drm_driver driver_features field. The DRM core will then automatically initialize the GEM core before calling the load operation. Behind the scene, this will create a DRM Memory Manager object which provides an address space pool for object allocation.</p>
-
-<p>In a KMS configuration, drivers need to allocate and initialize a command ring buffer following core GEM initialization if required by the hardware. UMA devices usually have what is called a &ldquo;stolen&rdquo; memory region, which provides space for the initial framebuffer and large, contiguous memory regions required by the device. This space is typically not managed by GEM, and must be initialized separately into its own DRM MM object.</p>
-
-<p><strong>GEM Objects Creation</strong></p>
-
-<p>GEM splits creation of GEM objects and allocation of the memory that backs them in two distinct operations.</p>
-
-<p>GEM objects are represented by an instance of struct drm_gem_object. Drivers usually need to extend GEM objects with private information and thus create a driver-specific GEM object structure type that embeds an instance of struct drm_gem_object.</p>
-
-<p>To create a GEM object, a driver allocates memory for an instance of its specific GEM object type and initializes the embedded struct drm_gem_object with a call to drm_gem_object_init. The function takes a pointer to the DRM device, a pointer to the GEM object and the buffer object size in bytes.</p>
-
-<p>GEM uses shmem to allocate anonymous pageable memory. drm_gem_object_init will create an shmfs file of the requested size and store it into the struct drm_gem_object filp field. The memory is used as either main storage for the object when the graphics hardware uses system memory directly or as a backing store otherwise.</p>
-
-<p>Drivers are responsible for the actual physical pages allocation by calling shmem_read_mapping_page_gfp for each page. Note that they can decide to allocate pages when initializing the GEM object, or to delay allocation until the memory is needed (for instance when a page fault occurs as a result of a userspace memory access or when the driver needs to start a DMA transfer involving the memory).</p>
-
-<p>Anonymous pageable memory allocation is not always desired, for instance when the hardware requires physically contiguous system memory as is often the case in embedded devices. Drivers can create GEM objects with no shmfs backing (called private GEM objects) by initializing them with a call to drm_gem_private_object_init instead of drm_gem_object_init. Storage for private GEM objects must be managed by drivers.</p>
-
-<p>Drivers that do not need to extend GEM objects with private information can call the drm_gem_object_alloc function to allocate and initialize a struct drm_gem_object instance. The GEM core will call the optional driver gem_init_object operation after initializing the GEM object with drm_gem_object_init.</p>
-
-<p>int (<em>gem_init_object) (struct drm_gem_object </em>obj);</p>
-
-<p>No alloc-and-init function exists for private GEM objects.</p>
-
-<p><strong>GEM Objects Lifetime</strong></p>
-
-<p>All GEM objects are reference-counted by the GEM core. References can be acquired and release by calling drm_gem_object_reference and drm_gem_object_unreference respectively. The caller must hold the drm_device struct_mutex lock. As a convenience, GEM provides the drm_gem_object_reference_unlocked and drm_gem_object_unreference_unlocked functions that can be called without holding the lock.</p>
-
-<p>When the last reference to a GEM object is released the GEM core calls the drm_driver gem_free_object operation. That operation is mandatory for GEM-enabled drivers and must free the GEM object and all associated resources.</p>
-
-<p>void (<em>gem_free_object) (struct drm_gem_object </em>obj);</p>
-
-<p>Drivers are responsible for freeing all GEM object resources, including the resources created by the GEM core. If an mmap offset has been created for the object (in which case drm_gem_object::map_list::map is not NULL) it must be freed by a call to drm_gem_free_mmap_offset. The shmfs backing store must be released by calling drm_gem_object_release (that function can safely be called if no shmfs backing store has been created).</p>
-
-<p><strong>GEM Objects Naming</strong></p>
-
-<p>Communication between userspace and the kernel refers to GEM objects using local handles, global names or, more recently, file descriptors. All of those are 32-bit integer values; the usual Linux kernel limits apply to the file descriptors.</p>
-
-<p>GEM handles are local to a DRM file. Applications get a handle to a GEM object through a driver-specific ioctl, and can use that handle to refer to the GEM object in other standard or driver-specific ioctls. Closing a DRM file handle frees all its GEM handles and dereferences the associated GEM objects.</p>
-
-<p>To create a handle for a GEM object drivers call drm_gem_handle_create. The function takes a pointer to the DRM file and the GEM object and returns a locally unique handle. When the handle is no longer needed drivers delete it with a call to drm_gem_handle_delete. Finally the GEM object associated with a handle can be retrieved by a call to drm_gem_object_lookup.</p>
-
-<p>Handles don&rsquo;t take ownership of GEM objects, they only take a reference to the object that will be dropped when the handle is destroyed. To avoid leaking GEM objects, drivers must make sure they drop the reference(s) they own (such as the initial reference taken at object creation time) as appropriate, without any special consideration for the handle. For example, in the particular case of combined GEM object and handle creation in the implementation of the dumb_create operation, drivers must drop the initial reference to the GEM object before returning the handle.</p>
-
-<p>GEM names are similar in purpose to handles but are not local to DRM files. They can be passed between processes to reference a GEM object globally. Names can&rsquo;t be used directly to refer to objects in the DRM API, applications must convert handles to names and names to handles using the DRM_IOCTL_GEM_FLINK and DRM_IOCTL_GEM_OPEN ioctls respectively. The conversion is handled by the DRM core without any driver-specific support.</p>
-
-<p>GEM also supports buffer sharing with dma-buf file descriptors through PRIME. GEM-based drivers must use the provided helpers functions to implement the exporting and importing correctly. See the section called “PRIME Buffer Sharing”. Since sharing file descriptors is inherently more secure than the easily guessable and global GEM names it is the preferred buffer sharing mechanism. Sharing buffers through GEM names is only supported for legacy userspace. Furthermore PRIME also allows cross-device buffer sharing since it is based on dma-bufs.</p>
-
-<p><strong>GEM Objects Mapping</strong></p>
-
-<p>Because mapping operations are fairly heavyweight GEM favours read/write-like access to buffers, implemented through driver-specific ioctls, over mapping buffers to userspace. However, when random access to the buffer is needed (to perform software rendering for instance), direct access to the object can be more efficient.</p>
-
-<p>The mmap system call can&rsquo;t be used directly to map GEM objects, as they don&rsquo;t have their own file handle. Two alternative methods currently co-exist to map GEM objects to userspace. The first method uses a driver-specific ioctl to perform the mapping operation, calling do_mmap under the hood. This is often considered dubious, seems to be discouraged for new GEM-enabled drivers, and will thus not be described here.</p>
-
-<p>The second method uses the mmap system call on the DRM file handle.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">void</span> <span class="o">*</span><span class="n">mmap</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">addr</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">length</span><span class="p">,</span> <span class="kt">int</span> <span class="n">prot</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span>
-</span><span class='line'>             <span class="n">off_t</span> <span class="n">offset</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>DRM identifies the GEM object to be mapped by a fake offset passed through the mmap offset argument. Prior to being mapped, a GEM object must thus be associated with a fake offset. To do so, drivers must call drm_gem_create_mmap_offset on the object. The function allocates a fake offset range from a pool and stores the offset divided by PAGE_SIZE in obj->map_list.hash.key. Care must be taken not to call drm_gem_create_mmap_offset if a fake offset has already been allocated for the object. This can be tested by obj->map_list.map being non-NULL.</p>
-
-<p>Once allocated, the fake offset value (obj->map_list.hash.key &lt;&lt; PAGE_SHIFT) must be passed to the application in a driver-specific way and can then be used as the mmap offset argument.</p>
-
-<p>The GEM core provides a helper method drm_gem_mmap to handle object mapping. The method can be set directly as the mmap file operation handler. It will look up the GEM object based on the offset value and set the VMA operations to the drm_driver gem_vm_ops field. Note that drm_gem_mmap doesn&rsquo;t map memory to userspace, but relies on the driver-provided fault handler to map pages individually.</p>
-
-<p>To use drm_gem_mmap, drivers must fill the struct drm_driver gem_vm_ops field with a pointer to VM operations.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">struct</span> <span class="n">vm_operations_struct</span> <span class="o">*</span><span class="n">gem_vm_ops</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">struct</span> <span class="n">vm_operations_struct</span> <span class="p">{</span>
-</span><span class='line'>          <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">open</span><span class="p">)(</span><span class="k">struct</span> <span class="n">vm_area_struct</span> <span class="o">*</span> <span class="n">area</span><span class="p">);</span>
-</span><span class='line'>          <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">close</span><span class="p">)(</span><span class="k">struct</span> <span class="n">vm_area_struct</span> <span class="o">*</span> <span class="n">area</span><span class="p">);</span>
-</span><span class='line'>          <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">fault</span><span class="p">)(</span><span class="k">struct</span> <span class="n">vm_area_struct</span> <span class="o">*</span><span class="n">vma</span><span class="p">,</span> <span class="k">struct</span> <span class="n">vm_fault</span> <span class="o">*</span><span class="n">vmf</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The open and close operations must update the GEM object reference count. Drivers can use the drm_gem_vm_open and drm_gem_vm_close helper functions directly as open and close handlers.</p>
-
-<p>The fault operation handler is responsible for mapping individual pages to userspace when a page fault occurs. Depending on the memory allocation scheme, drivers can allocate pages at fault time, or can decide to allocate memory for the GEM object at the time the object is created.</p>
-
-<p>Drivers that want to map the GEM object upfront instead of handling page faults can implement their own mmap file operation handler.</p>
-
-<p><strong>Memory Coherency</strong></p>
-
-<p>When mapped to the device or used in a command buffer, backing pages for an object are flushed to memory and marked write combined so as to be coherent with the GPU. Likewise, if the CPU accesses an object after the GPU has finished rendering to the object, then the object must be made coherent with the CPU&rsquo;s view of memory, usually involving GPU cache flushing of various kinds. This core CPU&lt;&ndash;>GPU coherency management is provided by a device-specific ioctl, which evaluates an object&rsquo;s current domain and performs any necessary flushing or synchronization to put the object into the desired coherency domain (note that the object may be busy, i.e. an active render target; in that case, setting the domain blocks the client and waits for rendering to complete before performing any necessary flushing operations).</p>
-
-<p><strong>Command Execution</strong></p>
-
-<p>Perhaps the most important GEM function for GPU devices is providing a command execution interface to clients. Client programs construct command buffers containing references to previously allocated memory objects, and then submit them to GEM. At that point, GEM takes care to bind all the objects into the GTT, execute the buffer, and provide necessary synchronization between clients accessing the same buffers. This often involves evicting some objects from the GTT and re-binding others (a fairly expensive operation), and providing relocation support which hides fixed GTT offsets from clients. Clients must take care not to submit command buffers that reference more objects than can fit in the GTT; otherwise, GEM will reject them and no rendering will occur. Similarly, if several objects in the buffer require fence registers to be allocated for correct rendering (e.g. 2D blits on pre-965 chips), care must be taken not to require more fence registers than are available to the client. Such resource management should be abstracted from the client in libdrm.</p>
-
-<p><strong>GEM Function Reference</strong></p>
-
-<p>VMA Offset Manager</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">drm_vma_offset_manager_init</span> <span class="err">—</span> <span class="n">Initialize</span> <span class="k">new</span> <span class="n">offset</span><span class="o">-</span><span class="n">manager</span>
-</span><span class='line'><span class="n">drm_vma_offset_manager_destroy</span> <span class="err">—</span> <span class="n">Destroy</span> <span class="n">offset</span> <span class="n">manager</span>
-</span><span class='line'><span class="n">drm_vma_offset_lookup</span> <span class="err">—</span> <span class="n">Find</span> <span class="n">node</span> <span class="n">in</span> <span class="n">offset</span> <span class="n">space</span>
-</span><span class='line'><span class="n">drm_vma_offset_lookup_locked</span> <span class="err">—</span> <span class="n">Find</span> <span class="n">node</span> <span class="n">in</span> <span class="n">offset</span> <span class="n">space</span>
-</span><span class='line'><span class="n">drm_vma_offset_add</span> <span class="err">—</span> <span class="n">Add</span> <span class="n">offset</span> <span class="n">node</span> <span class="n">to</span> <span class="n">manager</span>
-</span><span class='line'><span class="n">drm_vma_offset_remove</span> <span class="err">—</span> <span class="n">Remove</span> <span class="n">offset</span> <span class="n">node</span> <span class="n">from</span> <span class="n">manager</span>
-</span><span class='line'><span class="n">drm_vma_node_allow</span> <span class="err">—</span> <span class="n">Add</span> <span class="n">open</span><span class="o">-</span><span class="n">file</span> <span class="n">to</span> <span class="n">list</span> <span class="n">of</span> <span class="n">allowed</span> <span class="n">users</span>
-</span><span class='line'><span class="n">drm_vma_node_revoke</span> <span class="err">—</span> <span class="n">Remove</span> <span class="n">open</span><span class="o">-</span><span class="n">file</span> <span class="n">from</span> <span class="n">list</span> <span class="n">of</span> <span class="n">allowed</span> <span class="n">users</span>
-</span><span class='line'><span class="n">drm_vma_node_is_allowed</span> <span class="err">—</span> <span class="n">Check</span> <span class="n">whether</span> <span class="n">an</span> <span class="n">open</span><span class="o">-</span><span class="n">file</span> <span class="n">is</span> <span class="n">granted</span> <span class="n">access</span>
-</span><span class='line'><span class="n">drm_vma_offset_exact_lookup</span> <span class="err">—</span> <span class="n">Look</span> <span class="n">up</span> <span class="n">node</span> <span class="n">by</span> <span class="n">exact</span> <span class="n">address</span>
-</span><span class='line'><span class="n">drm_vma_offset_lock_lookup</span> <span class="err">—</span> <span class="n">Lock</span> <span class="n">lookup</span> <span class="k">for</span> <span class="n">extended</span> <span class="k">private</span> <span class="n">use</span>
-</span><span class='line'><span class="n">drm_vma_offset_unlock_lookup</span> <span class="err">—</span> <span class="n">Unlock</span> <span class="n">lookup</span> <span class="k">for</span> <span class="n">extended</span> <span class="k">private</span> <span class="n">use</span>
-</span><span class='line'><span class="n">drm_vma_node_reset</span> <span class="err">—</span> <span class="n">Initialize</span> <span class="n">or</span> <span class="n">reset</span> <span class="n">node</span> <span class="n">object</span>
-</span><span class='line'><span class="n">drm_vma_node_start</span> <span class="err">—</span> <span class="n">Return</span> <span class="n">start</span> <span class="n">address</span> <span class="k">for</span> <span class="n">page</span><span class="o">-</span><span class="n">based</span> <span class="n">addressing</span>
-</span><span class='line'><span class="n">drm_vma_node_size</span> <span class="err">—</span> <span class="n">Return</span> <span class="n">size</span> <span class="p">(</span><span class="n">page</span><span class="o">-</span><span class="n">based</span><span class="p">)</span>
-</span><span class='line'><span class="n">drm_vma_node_has_offset</span> <span class="err">—</span> <span class="n">Check</span> <span class="n">whether</span> <span class="n">node</span> <span class="n">is</span> <span class="n">added</span> <span class="n">to</span> <span class="n">offset</span> <span class="n">manager</span>
-</span><span class='line'><span class="n">drm_vma_node_offset_addr</span> <span class="err">—</span> <span class="n">Return</span> <span class="n">sanitized</span> <span class="n">offset</span> <span class="k">for</span> <span class="n">user</span><span class="o">-</span><span class="n">space</span> <span class="n">mmaps</span>
-</span><span class='line'><span class="n">drm_vma_node_unmap</span> <span class="err">—</span> <span class="n">Unmap</span> <span class="n">offset</span> <span class="n">node</span>
-</span><span class='line'><span class="n">drm_vma_node_verify_access</span> <span class="err">—</span> <span class="n">Access</span> <span class="n">verification</span> <span class="n">helper</span> <span class="k">for</span> <span class="n">TTM</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The vma-manager is responsible to map arbitrary driver-dependent memory regions into the linear user address-space. It provides offsets to the caller which can then be used on the address_space of the drm-device. It takes care to not overlap regions, size them appropriately and to not confuse mm-core by inconsistent fake vm_pgoff fields. Drivers shouldn&rsquo;t use this for object placement in VMEM. This manager should only be used to manage mappings into linear user-space VMs.</p>
-
-<p>We use drm_mm as backend to manage object allocations. But it is highly optimized for alloc/free calls, not lookups. Hence, we use an rb-tree to speed up offset lookups.</p>
-
-<p>You must not use multiple offset managers on a single address_space. Otherwise, mm-core will be unable to tear down memory mappings as the VM will no longer be linear.</p>
-
-<p>This offset manager works on page-based addresses. That is, every argument and return code (with the exception of drm_vma_node_offset_addr) is given in number of pages, not number of bytes. That means, object sizes and offsets must always be page-aligned (as usual). If you want to get a valid byte-based user-space address for a given offset, please see drm_vma_node_offset_addr.</p>
-
-<p>Additionally to offset management, the vma offset manager also handles access management. For every open-file context that is allowed to access a given node, you must call drm_vma_node_allow. Otherwise, an mmap call on this open-file with the offset of the node will fail with -EACCES. To revoke access again, use drm_vma_node_revoke. However, the caller is responsible for destroying already existing mappings, if required.</p>
-
-<p><strong>PRIME Buffer Sharing</strong></p>
-
-<p>Overview and Driver Interface
-PRIME Helper Functions
-PRIME is the cross device buffer sharing framework in drm, originally created for the OPTIMUS range of multi-gpu platforms. To userspace PRIME buffers are dma-buf based file descriptors.</p>
-
-<p><strong>Overview and Driver Interface</strong></p>
-
-<p>Similar to GEM global names, PRIME file descriptors are also used to share buffer objects across processes. They offer additional security: as file descriptors must be explicitly sent over UNIX domain sockets to be shared between applications, they can&rsquo;t be guessed like the globally unique GEM names.</p>
-
-<p>Drivers that support the PRIME API must set the DRIVER_PRIME bit in the struct drm_driver driver_features field, and implement the prime_handle_to_fd and prime_fd_to_handle operations.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">prime_handle_to_fd</span><span class="p">)(</span><span class="k">struct</span> <span class="n">drm_device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span>
-</span><span class='line'>                          <span class="k">struct</span> <span class="n">drm_file</span> <span class="o">*</span><span class="n">file_priv</span><span class="p">,</span> <span class="n">uint32_t</span> <span class="n">handle</span><span class="p">,</span>
-</span><span class='line'>                          <span class="n">uint32_t</span> <span class="n">flags</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">prime_fd</span><span class="p">);</span>
-</span><span class='line'><span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">prime_fd_to_handle</span><span class="p">)(</span><span class="k">struct</span> <span class="n">drm_device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span>
-</span><span class='line'>                          <span class="k">struct</span> <span class="n">drm_file</span> <span class="o">*</span><span class="n">file_priv</span><span class="p">,</span> <span class="kt">int</span> <span class="n">prime_fd</span><span class="p">,</span>
-</span><span class='line'>                          <span class="n">uint32_t</span> <span class="o">*</span><span class="n">handle</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Those two operations convert a handle to a PRIME file descriptor and vice versa. Drivers must use the kernel dma-buf buffer sharing framework to manage the PRIME file descriptors. Similar to the mode setting API PRIME is agnostic to the underlying buffer object manager, as long as handles are 32bit unsigned integers.</p>
-
-<p>While non-GEM drivers must implement the operations themselves, GEM drivers must use the drm_gem_prime_handle_to_fd and drm_gem_prime_fd_to_handle helper functions. Those helpers rely on the driver gem_prime_export and gem_prime_import operations to create a dma-buf instance from a GEM object (dma-buf exporter role) and to create a GEM object from a dma-buf instance (dma-buf importer role).</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">struct</span> <span class="n">dma_buf</span> <span class="o">*</span> <span class="p">(</span><span class="o">*</span><span class="n">gem_prime_export</span><span class="p">)(</span><span class="k">struct</span> <span class="n">drm_device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span>
-</span><span class='line'>                             <span class="k">struct</span> <span class="n">drm_gem_object</span> <span class="o">*</span><span class="n">obj</span><span class="p">,</span>
-</span><span class='line'>                             <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>
-</span><span class='line'><span class="k">struct</span> <span class="n">drm_gem_object</span> <span class="o">*</span> <span class="p">(</span><span class="o">*</span><span class="n">gem_prime_import</span><span class="p">)(</span><span class="k">struct</span> <span class="n">drm_device</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span>
-</span><span class='line'>                                            <span class="k">struct</span> <span class="n">dma_buf</span> <span class="o">*</span><span class="n">dma_buf</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>These two operations are mandatory for GEM drivers that support PRIME.</p>
-
-<p><strong>PRIME Helper Functions</strong></p>
-
-<p>Drivers can implement gem_prime_export and gem_prime_import in terms of simpler APIs by using the helper functions drm_gem_prime_export and drm_gem_prime_import. These functions implement dma-buf support in terms of five lower-level driver callbacks:</p>
-
-<p>Export callbacks:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">gem_prime_pin</span> <span class="p">(</span><span class="n">optional</span><span class="p">)</span><span class="o">:</span> <span class="n">prepare</span> <span class="n">a</span> <span class="n">GEM</span> <span class="n">object</span> <span class="k">for</span> <span class="n">exporting</span>
-</span><span class='line'><span class="nl">gem_prime_get_sg_table:</span> <span class="n">provide</span> <span class="n">a</span> <span class="n">scatter</span><span class="o">/</span><span class="n">gather</span> <span class="n">table</span> <span class="n">of</span> <span class="n">pinned</span> <span class="n">pages</span>
-</span><span class='line'><span class="nl">gem_prime_vmap:</span> <span class="n">vmap</span> <span class="n">a</span> <span class="n">buffer</span> <span class="n">exported</span> <span class="n">by</span> <span class="n">your</span> <span class="n">driver</span>
-</span><span class='line'><span class="nl">gem_prime_vunmap:</span> <span class="n">vunmap</span> <span class="n">a</span> <span class="n">buffer</span> <span class="n">exported</span> <span class="n">by</span> <span class="n">your</span> <span class="n">driver</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Import callback:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">gem_prime_import_sg_table</span> <span class="p">(</span><span class="n">import</span><span class="p">)</span><span class="o">:</span> <span class="n">produce</span> <span class="n">a</span> <span class="n">GEM</span> <span class="n">object</span> <span class="n">from</span> <span class="n">another</span> <span class="n">driver</span><span class="err">&#39;</span><span class="n">s</span> <span class="n">scatter</span><span class="o">/</span><span class="n">gather</span> <span class="n">table</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>PRIME Function References</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">drm_gem_dmabuf_release</span> <span class="err">—</span> <span class="n">dma_buf</span> <span class="n">release</span> <span class="n">implementation</span> <span class="k">for</span> <span class="n">GEM</span>
-</span><span class='line'><span class="n">drm_gem_prime_export</span> <span class="err">—</span> <span class="n">helper</span> <span class="n">library</span> <span class="n">implementation</span> <span class="n">of</span> <span class="n">the</span> <span class="k">export</span> <span class="n">callback</span>
-</span><span class='line'><span class="n">drm_gem_prime_handle_to_fd</span> <span class="err">—</span> <span class="n">PRIME</span> <span class="k">export</span> <span class="n">function</span> <span class="k">for</span> <span class="n">GEM</span> <span class="n">drivers</span>
-</span><span class='line'><span class="n">drm_gem_prime_import</span> <span class="err">—</span> <span class="n">helper</span> <span class="n">library</span> <span class="n">implementation</span> <span class="n">of</span> <span class="n">the</span> <span class="n">import</span> <span class="n">callback</span>
-</span><span class='line'><span class="n">drm_gem_prime_fd_to_handle</span> <span class="err">—</span> <span class="n">PRIME</span> <span class="n">import</span> <span class="n">function</span> <span class="k">for</span> <span class="n">GEM</span> <span class="n">drivers</span>
-</span><span class='line'><span class="n">drm_prime_pages_to_sg</span> <span class="err">—</span> <span class="n">converts</span> <span class="n">a</span> <span class="n">page</span> <span class="n">array</span> <span class="n">into</span> <span class="n">an</span> <span class="n">sg</span> <span class="n">list</span>
-</span><span class='line'><span class="n">drm_prime_sg_to_page_addr_arrays</span> <span class="err">—</span> <span class="n">convert</span> <span class="n">an</span> <span class="n">sg</span> <span class="n">table</span> <span class="n">into</span> <span class="n">a</span> <span class="n">page</span> <span class="n">array</span>
-</span><span class='line'><span class="n">drm_prime_gem_destroy</span> <span class="err">—</span> <span class="n">helper</span> <span class="n">to</span> <span class="n">clean</span> <span class="n">up</span> <span class="n">a</span> <span class="n">PRIME</span><span class="o">-</span><span class="n">imported</span> <span class="n">GEM</span> <span class="n">object</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>DRM MM Range Allocator</strong></p>
-
-<p>Overview
-LRU Scan/Eviction Support
-Overview</p>
-
-<p>drm_mm provides a simple range allocator. The drivers are free to use the resource allocator from the linux core if it suits them, the upside of drm_mm is that it&rsquo;s in the DRM core. Which means that it&rsquo;s easier to extend for some of the crazier special purpose needs of gpus.</p>
-
-<p>The main data struct is drm_mm, allocations are tracked in drm_mm_node. Drivers are free to embed either of them into their own suitable datastructures. drm_mm itself will not do any allocations of its own, so if drivers choose not to embed nodes they need to still allocate them themselves.</p>
-
-<p>The range allocator also supports reservation of preallocated blocks. This is useful for taking over initial mode setting configurations from the firmware, where an object needs to be created which exactly matches the firmware&rsquo;s scanout target. As long as the range is still free it can be inserted anytime after the allocator is initialized, which helps with avoiding looped depencies in the driver load sequence.</p>
-
-<p>drm_mm maintains a stack of most recently freed holes, which of all simplistic datastructures seems to be a fairly decent approach to clustering allocations and avoiding too much fragmentation. This means free space searches are O(num_holes). Given that all the fancy features drm_mm supports something better would be fairly complex and since gfx thrashing is a fairly steep cliff not a real concern. Removing a node again is O(1).</p>
-
-<p>drm_mm supports a few features: Alignment and range restrictions can be supplied. Further more every drm_mm_node has a color value (which is just an opaqua unsigned long) which in conjunction with a driver callback can be used to implement sophisticated placement restrictions. The i915 DRM driver uses this to implement guard pages between incompatible caching domains in the graphics TT.</p>
-
-<p>Two behaviors are supported for searching and allocating: bottom-up and top-down. The default is bottom-up. Top-down allocation can be used if the memory area has different restrictions, or just to reduce fragmentation.</p>
-
-<p>Finally iteration helpers to walk all nodes and all holes are provided as are some basic allocator dumpers for debugging.</p>
-
-<p><strong>LRU Scan/Eviction Support</strong></p>
-
-<p>Very often GPUs need to have continuous allocations for a given object. When evicting objects to make space for a new one it is therefore not most efficient when we simply start to select all objects from the tail of an LRU until there&rsquo;s a suitable hole: Especially for big objects or nodes that otherwise have special allocation constraints there&rsquo;s a good chance we evict lots of (smaller) objects unecessarily.</p>
-
-<p>The DRM range allocator supports this use-case through the scanning interfaces. First a scan operation needs to be initialized with drm_mm_init_scan or drm_mm_init_scan_with_range. The the driver adds objects to the roaster (probably by walking an LRU list, but this can be freely implemented) until a suitable hole is found or there&rsquo;s no further evitable object.</p>
-
-<p>The the driver must walk through all objects again in exactly the reverse order to restore the allocator state. Note that while the allocator is used in the scan mode no other operation is allowed.</p>
-
-<p>Finally the driver evicts all objects selected in the scan. Adding and removing an object is O(1), and since freeing a node is also O(1) the overall complexity is O(scanned_objects). So like the free stack which needs to be walked before a scan operation even begins this is linear in the number of objects. It doesn&rsquo;t seem to hurt badly.</p>
-
-<p><strong>DRM MM Range Allocator Function References</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">drm_mm_reserve_node</span> <span class="err">—</span> <span class="n">insert</span> <span class="n">an</span> <span class="n">pre</span><span class="o">-</span><span class="n">initialized</span> <span class="n">node</span>
-</span><span class='line'><span class="n">drm_mm_insert_node_generic</span> <span class="err">—</span> <span class="n">search</span> <span class="k">for</span> <span class="n">space</span> <span class="n">and</span> <span class="n">insert</span> <span class="n">node</span>
-</span><span class='line'><span class="n">drm_mm_insert_node_in_range_generic</span> <span class="err">—</span> <span class="n">ranged</span> <span class="n">search</span> <span class="k">for</span> <span class="n">space</span> <span class="n">and</span> <span class="n">insert</span> <span class="n">node</span>
-</span><span class='line'><span class="n">drm_mm_remove_node</span> <span class="err">—</span> <span class="n">Remove</span> <span class="n">a</span> <span class="n">memory</span> <span class="n">node</span> <span class="n">from</span> <span class="n">the</span> <span class="n">allocator</span><span class="p">.</span>
-</span><span class='line'><span class="n">drm_mm_replace_node</span> <span class="err">—</span> <span class="n">move</span> <span class="n">an</span> <span class="n">allocation</span> <span class="n">from</span> <span class="n">old</span> <span class="n">to</span> <span class="k">new</span>
-</span><span class='line'><span class="n">drm_mm_init_scan</span> <span class="err">—</span> <span class="n">initialize</span> <span class="n">lru</span> <span class="n">scanning</span>
-</span><span class='line'><span class="n">drm_mm_init_scan_with_range</span> <span class="err">—</span> <span class="n">initialize</span> <span class="n">range</span><span class="o">-</span><span class="n">restricted</span> <span class="n">lru</span> <span class="n">scanning</span>
-</span><span class='line'><span class="n">drm_mm_scan_add_block</span> <span class="err">—</span> <span class="n">add</span> <span class="n">a</span> <span class="n">node</span> <span class="n">to</span> <span class="n">the</span> <span class="n">scan</span> <span class="n">list</span>
-</span><span class='line'><span class="n">drm_mm_scan_remove_block</span> <span class="err">—</span> <span class="n">remove</span> <span class="n">a</span> <span class="n">node</span> <span class="n">from</span> <span class="n">the</span> <span class="n">scan</span> <span class="n">list</span>
-</span><span class='line'><span class="n">drm_mm_clean</span> <span class="err">—</span> <span class="n">checks</span> <span class="n">whether</span> <span class="n">an</span> <span class="n">allocator</span> <span class="n">is</span> <span class="n">clean</span>
-</span><span class='line'><span class="n">drm_mm_init</span> <span class="err">—</span> <span class="n">initialize</span> <span class="n">a</span> <span class="n">drm</span><span class="o">-</span><span class="n">mm</span> <span class="n">allocator</span>
-</span><span class='line'><span class="n">drm_mm_takedown</span> <span class="err">—</span> <span class="n">clean</span> <span class="n">up</span> <span class="n">a</span> <span class="n">drm_mm</span> <span class="n">allocator</span>
-</span><span class='line'><span class="n">drm_mm_debug_table</span> <span class="err">—</span> <span class="n">dump</span> <span class="n">allocator</span> <span class="n">state</span> <span class="n">to</span> <span class="n">dmesg</span>
-</span><span class='line'><span class="n">drm_mm_dump_table</span> <span class="err">—</span> <span class="n">dump</span> <span class="n">allocator</span> <span class="n">state</span> <span class="n">to</span> <span class="n">a</span> <span class="n">seq_file</span>
-</span><span class='line'><span class="n">drm_mm_node_allocated</span> <span class="err">—</span> <span class="n">checks</span> <span class="n">whether</span> <span class="n">a</span> <span class="n">node</span> <span class="n">is</span> <span class="n">allocated</span>
-</span><span class='line'><span class="n">drm_mm_initialized</span> <span class="err">—</span> <span class="n">checks</span> <span class="n">whether</span> <span class="n">an</span> <span class="n">allocator</span> <span class="n">is</span> <span class="n">initialized</span>
-</span><span class='line'><span class="n">drm_mm_hole_node_start</span> <span class="err">—</span> <span class="n">computes</span> <span class="n">the</span> <span class="n">start</span> <span class="n">of</span> <span class="n">the</span> <span class="n">hole</span> <span class="n">following</span> <span class="n">node</span>
-</span><span class='line'><span class="n">drm_mm_hole_node_end</span> <span class="err">—</span> <span class="n">computes</span> <span class="n">the</span> <span class="n">end</span> <span class="n">of</span> <span class="n">the</span> <span class="n">hole</span> <span class="n">following</span> <span class="n">node</span>
-</span><span class='line'><span class="n">drm_mm_for_each_node</span> <span class="err">—</span> <span class="n">iterator</span> <span class="n">to</span> <span class="n">walk</span> <span class="n">over</span> <span class="n">all</span> <span class="n">allocated</span> <span class="n">nodes</span>
-</span><span class='line'><span class="n">drm_mm_for_each_hole</span> <span class="err">—</span> <span class="n">iterator</span> <span class="n">to</span> <span class="n">walk</span> <span class="n">over</span> <span class="n">all</span> <span class="n">holes</span>
-</span><span class='line'><span class="n">drm_mm_insert_node</span> <span class="err">—</span> <span class="n">search</span> <span class="k">for</span> <span class="n">space</span> <span class="n">and</span> <span class="n">insert</span> <span class="n">node</span>
-</span><span class='line'><span class="n">drm_mm_insert_node_in_range</span> <span class="err">—</span> <span class="n">ranged</span> <span class="n">search</span> <span class="k">for</span> <span class="n">space</span> <span class="n">and</span> <span class="n">insert</span> <span class="n">node</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>CMA Helper Functions Reference</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">drm_gem_cma_create</span> <span class="err">—</span> <span class="n">allocate</span> <span class="n">an</span> <span class="n">object</span> <span class="n">with</span> <span class="n">the</span> <span class="n">given</span> <span class="n">size</span>
-</span><span class='line'><span class="n">drm_gem_cma_free_object</span> <span class="err">—</span> <span class="n">free</span> <span class="n">resources</span> <span class="n">associated</span> <span class="n">with</span> <span class="n">a</span> <span class="n">CMA</span> <span class="n">GEM</span> <span class="n">object</span>
-</span><span class='line'><span class="n">drm_gem_cma_dumb_create_internal</span> <span class="err">—</span> <span class="n">create</span> <span class="n">a</span> <span class="n">dumb</span> <span class="n">buffer</span> <span class="n">object</span>
-</span><span class='line'><span class="n">drm_gem_cma_dumb_create</span> <span class="err">—</span> <span class="n">create</span> <span class="n">a</span> <span class="n">dumb</span> <span class="n">buffer</span> <span class="n">object</span>
-</span><span class='line'><span class="n">drm_gem_cma_dumb_map_offset</span> <span class="err">—</span> <span class="k">return</span> <span class="n">the</span> <span class="n">fake</span> <span class="n">mmap</span> <span class="n">offset</span> <span class="k">for</span> <span class="n">a</span> <span class="n">CMA</span> <span class="n">GEM</span> <span class="n">object</span>
-</span><span class='line'><span class="n">drm_gem_cma_mmap</span> <span class="err">—</span> <span class="n">memory</span><span class="o">-</span><span class="n">map</span> <span class="n">a</span> <span class="n">CMA</span> <span class="n">GEM</span> <span class="n">object</span>
-</span><span class='line'><span class="n">drm_gem_cma_describe</span> <span class="err">—</span> <span class="n">describe</span> <span class="n">a</span> <span class="n">CMA</span> <span class="n">GEM</span> <span class="n">object</span> <span class="k">for</span> <span class="n">debugfs</span>
-</span><span class='line'><span class="n">drm_gem_cma_prime_get_sg_table</span> <span class="err">—</span> <span class="n">provide</span> <span class="n">a</span> <span class="n">scatter</span><span class="o">/</span><span class="n">gather</span> <span class="n">table</span> <span class="n">of</span> <span class="n">pinned</span> <span class="n">pages</span> <span class="k">for</span> <span class="n">a</span> <span class="n">CMA</span> <span class="n">GEM</span> <span class="n">object</span>
-</span><span class='line'><span class="n">drm_gem_cma_prime_import_sg_table</span> <span class="err">—</span> <span class="n">produce</span> <span class="n">a</span> <span class="n">CMA</span> <span class="n">GEM</span> <span class="n">object</span> <span class="n">from</span> <span class="n">another</span> <span class="n">driver</span><span class="err">&#39;</span><span class="n">s</span> <span class="n">scatter</span><span class="o">/</span><span class="n">gather</span> <span class="n">table</span> <span class="n">of</span> <span class="n">pinned</span> <span class="n">pages</span>
-</span><span class='line'><span class="n">drm_gem_cma_prime_mmap</span> <span class="err">—</span> <span class="n">memory</span><span class="o">-</span><span class="n">map</span> <span class="n">an</span> <span class="n">exported</span> <span class="n">CMA</span> <span class="n">GEM</span> <span class="n">object</span>
-</span><span class='line'><span class="n">drm_gem_cma_prime_vmap</span> <span class="err">—</span> <span class="n">map</span> <span class="n">a</span> <span class="n">CMA</span> <span class="n">GEM</span> <span class="n">object</span> <span class="n">into</span> <span class="n">the</span> <span class="n">kernel</span><span class="err">&#39;</span><span class="n">s</span> <span class="k">virtual</span> <span class="n">address</span> <span class="n">space</span>
-</span><span class='line'><span class="n">drm_gem_cma_prime_vunmap</span> <span class="err">—</span> <span class="n">unmap</span> <span class="n">a</span> <span class="n">CMA</span> <span class="n">GEM</span> <span class="n">object</span> <span class="n">from</span> <span class="n">the</span> <span class="n">kernel</span><span class="err">&#39;</span><span class="n">s</span> <span class="k">virtual</span> <span class="n">address</span> <span class="n">space</span>
-</span><span class='line'><span class="k">struct</span> <span class="n">drm_gem_cma_object</span> <span class="err">—</span> <span class="n">GEM</span> <span class="n">object</span> <span class="n">backed</span> <span class="n">by</span> <span class="n">CMA</span> <span class="n">memory</span> <span class="n">allocations</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The Contiguous Memory Allocator reserves a pool of memory at early boot that is used to service requests for large blocks of contiguous memory.</p>
-
-<p>The DRM GEM/CMA helpers use this allocator as a means to provide buffer objects that are physically contiguous in memory. This is useful for display drivers that are unable to map scattered buffers via an IOMMU.Memory management</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[转载：我的iphone6退货之路]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/02/13/iphone6-refund/"/>
-    <updated>2015-02-13T10:41:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/02/13/iphone6-refund</id>
-    <content type="html"><![CDATA[<p>本文转载自：<a href="http://www.cnblogs.com/Romantic/p/4289363.html">http://www.cnblogs.com/Romantic/p/4289363.html</a></p>
-
-<p>匆匆这一年又快结束了，眼看年关将近，老婆的生日也快到了，正打算给老婆买个礼物，由于现在老婆用的手机是公司的工程机，而且还是低端产品，所以一直想给老婆改善改善，也算是对老婆这一年来辛苦的默默的支持的一种肯定吧，于是我就开始网上找，哎……最近听说iphone6不错啊，火的不得了, 好吧就肾6了。没有多想打开京东，搜索产品，下单，支付一气呵成，比写代码的感觉还流畅还爽。</p>
-
-<!-- more -->
-
-
-<p>话说京东的物流还是很给力的，带着激动的心情收到iphone6plus，看到外观的确比较惊艳，2.5D屏幕，纤细的机身，结果操作了几下发现 home按键, 和power按键，手感及其的差劲，嘎巴嘎巴的脆脆的声音有异响，我本身也是从事手机行业的开发设计的，对于这个价格和这种按键质量，一下子让我失望到极点，根本无法容忍一款6000元的手机还存在这种按键异响，原本是买给老婆的礼物, 这种质量我自己都接受不了，于是第一个念头就是退货。但是由于之前知道苹果的手机是具有一些特殊性的，比如激活之类的。所以事先咨询了苹果上海总部的客服，以及了解了一些消费者权益保护法，关于7天无理由退货的细则，但是我查了网上很多人都退不了，关于苹果退货是个难啃的骨头，所以我不能轻视必须做足了功课，我从苹果官方，消费者权益保障法，京东政策三个方面出发，经过一番精心的准备, 梳理了一下要点和对策, 于是拿起了电话第一次拨通了京东客服电话……</p>
-
-<p>跟客服沟通之后电话被直接京东售后那边，京东总部售后说他们处理不了，但是可以帮我转到成都售后那边，结果5分钟后成都售后给我打来电话，说要求我需要带着产品去苹果售后出具一份问题检验报告，拿到检测报告后才能给我办理退货，其实他说到这里我心里依然有底了，我事先做了些准备，之前早就咨询过苹果官方客服了，而且从官网上记了一些关于检测的一些政策，政策是这样说的：</p>
-
-<blockquote><p>苹果所有产品在中国大陆是享有三包政策的, 无论是否激活使用, 只要在7天内, 任何经销商都应无理由, 无条件退换货。 而且如果15日内有质量问题, 可以直接退换货, 无需检测报告, 而且我查的结果是维修点不具备开具检测单的能力, 这明显是个陷阱</p></blockquote>
-
-<p>另外我还准备了一些关于2014年3月是15号新的消费者权益保障法关于7天无理由退货的实施细则:</p>
-
-<blockquote><p>新《消法》第二十五条规定：“经营者采用网络、电视、电话、邮购等方式销售商品，消费者有权自收到商品之日起七日内退货，且无需说明理由，但下列商品除外：由消费者定作的、鲜活易腐的、数字化商品、报纸期刊等商品，以及其他经消费者在购买时确认不宜退货的商品，不适用无理由退货。“</p></blockquote>
-
-<p>令人想不到的是，客服又说了说呃，苹果手机一旦激活就属于私人定制产品，所以我们不能给你退，我说苹果官方条款是说不管激活与否都可以支持七天无理由退货，你们的网站上不仅没有在明显的位置标注而且根本就没有标注，这属于信息不完整误导消费者，并且我已经看过了你们京东自己的七天无理由退货政策中并不包含此项，我说大家咱都别浪费时间，他一听我是有备而来的，吱吱呜呜之后，说我们还是需要检测但是你可以先退回给我们。最终协商结果是两个小时之内上门取货, 7-10个工作日内给我办理退货退款。</p>
-
-<p>听到这里是不是有大快人心的感觉，昨天我查了很多退不了的，要求出具检测报告的，说苹果产品不是7天无理由退货的商品, 激活了就不能退的等等各种拒绝的理由，而我今天的对策是不要按照他们给你设计的线路走，否则会被折腾死，因为苹果出具问题检测需要3-7个工作日，这样极有可能就不符合7天无理由退货了。</p>
-
-<p>但是事情到这里远远没有结束，更大的麻烦在后面等着我……</p>
-
-<p>下午3点左右京东上门取件的小伙如约打来了电话，我早就准备好了，就等上门收货了，高高兴兴带给了快递哥，我以为快递哥让我签个字收下手机就完了，可是快递哥，从兜里掏出一个小手电，我站在一边心底嘀咕着，这是手机又不是古董, 难道还得用手电来检查, 果不其然快递哥，撸了撸袖子摆好了姿势, 拿着那个小手电，开始先从手机的边缘开始照，然后又从手机正面，背面照了一遍，我则站在一边抽着烟，慢慢的等着，在我来看这不过是个流程而已，突然快递哥，说兄弟你这手机边框有一道划痕啊， 我一下子愣住了，嘴了的烟还没吐出来，我说什么，不可能怎么会有划痕呢，我昨天下午才刚刚收到的，膜我都没揭掉………… 快递哥根本不听我解释说你来看，让我盯着那个边框看，我看了一下划痕不不敢说没有，但是基本上属于指甲之类的东西滑的，不用他带的小灯肉眼很难分辨。</p>
-
-<p>快递哥说， 对不起这个手机我可能收不了，我说那不行，这个手机有质量问题，跟划痕是两码事。 快递哥说，兄弟我理解你的心情，可是我也是按规矩办事，如果我就这样拿回去，一旦查出来有划痕，这手机就落我头上了，你这手机这么贵我一个月也挣不了多少钱，之前我同事曾经遇到过类似的一桩事，当时我同事上门收件的时候，有个小伙子也是买的苹果手机，当时外观有轻微的划痕，当然比你的要轻的多了，我同事也是拒收说你这个我收回去也入不了库的，可是小伙子说，你收吧入不了库你再给我拿回来不就完了吗，结果我同事就答应了，最后事情如大家所料，手机库管不收有划痕，当回头再找当初买手机的小伙子的时候, 无凭无据人家不承认最终，我这个可怜的哥们当了替罪羊，所以我现在也不敢给你收了。</p>
-
-<p>要不这样吧，我现在打个电话给你报备一下把这个情况说明一下，如果他们说让我收我马上就收了，如果他们不让我收呢我也说了不算。 话说到这里，我心里这个堵得慌啊，当初我记得我收货的时候，刷卡交了钱，看了看发票，扭头就走了，根本没在现场验货，可是人家上门取货的时候，却是带着手电来了，不能说这不公平，只能怪自己大意啊。  于是我说哥们，如果你一报备的话，客服他们肯定不会让你收的，这不就小题大做了吗，而且这种轻微的划痕肉眼根本不好分辨，何必斤斤计较呢，咱们大家心里都清楚这绝对不影响二次销售。 结果快递哥说，兄弟我理解你的心情，可是你也别难为我，这样吧，我描述的时候说的轻微点，最后看着快递哥，我说好吧…………</p>
-
-<p>一分钟后，快递哥拨通了售后，说我这边的顾客的手机有一道很小的划痕，但是特别轻微，跟头发丝似的，不好好瞅根本瞅不出来。 快递哥描述完后，电话那头隐隐约约的一阵子声音，只见快递哥不停的，嗯、嗯、嗯…………电话挂了，快递哥朝我笑了笑，我基本上知道答案了，快递哥说兄弟不好意思，他们说这单取件让停止，不让我收，我也不敢收。 不过你放心，你这个手机肯定能退掉的，我之前遇到过这种情况，我心里在想你TMD的这不扯蛋吗，你这一关都不收我咋退啊…………</p>
-
-<p>手机照例还给我了，我一下子凉了半截子，5998，六千块钱呢，我再tmd的任性，也不能拿着六千块不当回事吧。 再说了日后我老婆拿这个手机，用的不痛快心里得有多么堵得慌啊。 不行，这个手机我还得退…………</p>
-
-<p>400-606-5500 京东客服我再次拨通了，我把事情原委描述了一遍，客服说我们很快会派售后跟您联系的，我说我要的不是“很快”你具体给我个时间吧，客服不慌不忙的说24小时之内，我说那不行，我这个事急，你也听好了电话我录音了，耽误了时间就算你了。客服一听说先生您别生气，我会尽快的。</p>
-
-<p>看来这帮子客服，不给点颜色看看，她不给你老老实实办事，过了二十来分钟，江苏宿迁的客服 打来了电话，听说您的手机退货的时候发现有划痕是这样吗，我说快递哥带着手电来的，他拿着手电看着划痕了，我拿肉眼还真没看到，幸亏那快递哥带的是手电，如果扛着显微镜来的话，没准我还能看到雅鲁藏布大峡谷呢，你信不信。如果顾客去买手机多少人都带着手电筒，那我承认是有划痕，如果像你们这样刁钻的话，这个划痕我不认，再有告诉你，划痕和质量问题可是两码事，如果你准备借划痕把质量问题给我忽略了，你会觉得我就此罢休吗，那客服听了，怎么会呢，这样吧，我们再派取货的上门再取吧。 具体情况我们拿回来再看…………</p>
-
-<p>没过30分钟, 我手机又响了，果不其然又是那个快递哥，电话里问我请问您还在吗，我现在过去取货。 我说在，我再一次我把手机装好准备好，一会儿快递哥驾着小三轮又到了楼下，快递哥上来第一句话，你跟客服说啥了！我都快到家了客服又给我打电话， 我说我说啥了你不用管，不过客服有话让我转给你，快递小哥马上停下手中的活，转过身来问我说呀客服她说啥了，客服让我转告你，“有问题的不用照也能发现，没问题的你也照不出来问题，所以赶紧把兜里的手电赶紧扔了，别没事拿着瞎照”。快递小哥听着嘿嘿一笑，这次快递小哥没再掏手电。 大体检查了一下塞进了袋子, 给我一张回执单。 匆匆消失在夜色中…………此时已经是晚上7点多。</p>
-
-<p>由于之前的沟通一直态度明确强硬，所以接下来的流程没再出什么麻烦，最后一次客服打来电话，说钱是退到余额还是退到银行卡，我立即要求退到银行卡，因为京东是不支持余额自己转到银行卡。</p>
-
-<p>……</p>
-
-<p>……</p>
-
-<p>……</p>
-
-<p>经过这一次经历，我总结了几条经验，</p>
-
-<p>一，有时间的时候可以多了解《消费者权益保护法》《劳动权益保障法》等一些日常大家都能用到的法律条款。</p>
-
-<p>二，在购买在网上购买东西的时候一定提前要看清楚，比如是否支持七天退货是否是属于特殊的商品，或者是咨询一下客服把自己关心的问题问清楚。</p>
-
-<p>三，收到货物后，一定要打开包裹当场验货，很多人习惯性的拿着包裹回去再拆，其实这样是很有风险的，如果要是产品有质量问题，并且对方想抵赖的话，那就很容易吃哑巴亏。</p>
-
-<p>四，在跟他们客服沟通的时候，尽量的多引用一些法律方面的知识，让对方知道你并不是这么容易被忽悠的，而且一定要有自己的态度，如果要是涉及到回头回复的话，一定跟客服要一个最晚的答复时间。</p>
-
-<p>五，树立一个很强的法律观念和很强的证据意识，所有的沟通记录聊天记录，包括一些商品图片，最好做好保存。</p>
-
-<p>最后给你大家推荐几个投诉并且管用的方式，每个投诉都会有人回你回复，并且会协调商家解决，最后给你一个回访。</p>
-
-<p>有关消费者的投诉包括网购</p>
-
-<p><a href="http://www.315online.com.cn/">http://www.315online.com.cn/</a></p>
-
-<p>快递行业的投诉，因为网购很重要的一个环节就是快递</p>
-
-<p><a href="http://sswz.chinapost.gov.cn/">http://sswz.chinapost.gov.cn/</a></p>
-
-<p>同时，不得不说中国法制化虽然不像西方国家一样健全发达，但从我们自身时间的轨迹上来对比中国相比以前也算是有了很大的改善，</p>
-
-<p>这就是一种进步！</p>
 ]]></content>
   </entry>
   
@@ -1651,28 +920,795 @@ Overview</p>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[捷克武器那么好，二战面对德国为什么没一点抵抗？]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/11/27/czech-world-war-ii/"/>
-    <updated>2014-11-27T17:39:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/11/27/czech-world-war-ii</id>
-    <content type="html"><![CDATA[<p>转载自铁血社区：<a href="http://bbs.tiexue.net/post_5621844_1.html">http://bbs.tiexue.net/post_5621844_1.html</a></p>
-
-<p>捷克斯洛伐克虽然有很好的军事工业基础，但是其人口和军队都和纳粹德国没得比，并且之前并没有为战争做好准备，不过这是次要原因。</p>
+    <title type="html"><![CDATA[Thunderbird 80(72) column - 邮件在80(72)列处line break]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/11/25/thunderbird-72-column/"/>
+    <updated>2014-11-25T11:13:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/11/25/thunderbird-72-column</id>
+    <content type="html"><![CDATA[<p>这个需求做linux kernel upstream的人都懂的&hellip;&hellip;要设置Thunderbird在80列正确换行，只需要这样：</p>
 
 <!-- more -->
 
 
-<p>最主要的原因是当时的地缘政治环境将捷克逼到了绝路。尽管现代只着重宣传纳粹德国对捷克斯洛伐克的野心，但实际上由于一战结束后中欧、东南欧版图发生巨变，这个地区聚集了大量民族矛盾和领土纠纷。如原奥匈帝国解体、波兰重新独立、南斯拉夫成立、特兰西瓦尼亚并入罗马尼亚、德国领土萎缩，这就使得中欧的国际关系变得错综复杂。各国往往呈现国土内有大量邻国主体民族国民的状况，如捷克境内有大量的德意志人（毕竟是当初奥匈的主体民族）、匈牙利人、波兰人，罗马尼亚境内有德意志人、匈牙利人，而匈牙利境内又有大量德意志人等等。其结果就是各国的矛盾套成了连环套，希望瓜分捷克的并不仅仅只有德国，而是出于各自的利益考虑，包括德国、波兰、匈牙利等邻国，还有意大利这不接壤的国家都希望肢解掉捷克，南斯拉夫态度暧昧，罗马尼亚在德国和苏联间左右摇摆。</p>
+<ul>
+<li><p>Thunderbird如果撰写的邮件是plain text格式（在这里设置：Edit &ndash;> Account Settings &ndash;> Composition &amp; Addressing, you should uncheck Compose in HTML format for all accounts），那么自动就会在72列处做line wrap。但是需要注意的是，这里的line wrap只是在display邮件内容和撰写邮件时，你可以看到。当你发出邮件的时候，这个line wrap就没有了，换句话说，别人看到的你的邮件内容，还是很长的一行行的文字。所以需要下面一步。</p></li>
+<li><p>以下内容来自：</p></li>
+</ul>
 
-<p>法国曾经试图联合中欧小国建立一个同盟共同遏制德国扩张，甚至不惜与苏联结盟。但是这个努力显然被潜在同盟国各自的矛盾消解得一干二净。匈牙利接在德国之后试图肢解捷克，对罗马尼亚有特兰西瓦尼亚争议。后来他们如愿将捷克的有匈牙利人居住的领土吞并，顺带划走了20%捷克人。</p>
 
-<p>波兰试图以反正捷克要被肢解，那不如让波兰也乘机收复切欣地区扩充领土好对抗德国为借口，与纳粹德国一起共同对捷克施压，其张牙舞爪的姿态比德国还生猛。波兰甚至为了消除罗马尼亚同意苏军过境的可能，撺掇本来对捷克无野心的罗马尼亚共同参与瓜分捷克。而那个壮大波兰的借口也被波兰用来解释他们威胁吞并立陶宛的举动，立陶宛是因有苏联撑腰才顶住了压力，由于有德国的威胁，此时的苏联还是很仗义的（颇为黑色幽默，40年恰是苏联同意德国吞并立陶宛）。后来波兰获得了捷克的切欣地区。</p>
+<p><a href="http://arapulido.com/2009/12/01/enabling-line-wrapping-in-thunderbird/#comment-807">http://arapulido.com/2009/12/01/enabling-line-wrapping-in-thunderbird/#comment-807</a></p>
 
-<p>罗马尼亚的态度最能说明问题，各国认为如历史上那样对付捷克最符合自己利益。首先罗马尼亚与苏联接壤，并且有西乌克兰领土争议。其次罗马尼亚与匈牙利态度紧张，尽管它与德国不接壤，但是匈牙利明显准备做德国的跟班。因此罗马尼亚做出了最符合自身利益的决定：支持匈牙利吞并捷克的匈牙利人地区，但是坚决反对匈牙利吞并整个斯洛伐克，当然这意味着放苏军过境。同时声明当苏联进攻波兰时坚决站在波兰一边，但要是波兰不入侵捷克，苏联不会进攻波兰。</p>
+<p>下文中提到的option设置在：Edit &ndash;> Preferences &ndash;> Advanced (General tab) &ndash;> Configure Editor：</p>
 
-<p>这样捷克就变得非常令人崩溃了。苏联提出只要法国履行对捷克的保护义务它就绝对出兵。法国提出帮捷克要英国人一起进攻德国，至少波兰人得站在法国一边。而要波兰人此时还反过来帮法国避免捷克被肢解，那除非母猪会上树。英国人则见机不妙提出它只对法国有同盟义务，虽然英国人很不想捷克被肢解，但是当初破坏法国人的中欧同盟的恰恰又是他们，他们是有苦说不出。转回到苏联，他们虽然确实想保护捷克，但苦于有力无处使，也不能当真进攻波兰。</p>
+<blockquote><p>I am a happy user of the daily build of Thunderbird 3. Although it is still under development, is the best email client for Linux I’ve tried so far, at least, the one that better works for me. Email search &amp; filtering is fast and reliable.</p>
 
-<p>于是尽管捷克都开始过总动员，预计自身可以至少抵抗德国3到6个月，必要时也能顶住匈牙利的攻击，甚至被迫同意波兰的要求以使其退出战争，但他们抵抗成功的前提是西边的法国和东边的苏联都有实质性的援助，这两者最终都只是水中月。最后压垮了捷克的稻草是波兰的态度，波兰甚至根本不屑于见好就收，他们公开要求肢解掉捷克。这就是一个小国的悲哀，捷克如何能够在被两个大国抛弃，三个邻国重兵压境，外边还有两个看热闹的一个扇风点火的外加一个虽然热心帮忙但很可能居心叵测的国家共同侵凌下幸存呢？这就叫弱国无外交。于是最终，捷克斯洛伐克同意了三个邻国的领土要求，倒向德国成了一个卫星国。</p>
+<p>The only thing I don’t like is that wrapping your emails to 72 characters when sending plain text is not straightforward. Once you have selected to send your emails as plain text and have set the line wrap option to 72, there is still one more option to tweak.</p>
+
+<p>Thunderbird has a “feature” that sends by default all plain text with the option format=flowed, which unwraps the email in the client receiver. To turn this feature off, you have to toggle one of the options in the chrome editor:</p>
+
+<p>To disable flowed paragraphs, enforcing line breaks as formatted in the message, set the preference:</p>
+
+<p>mailnews.display.disable_format_flowed_support true
+(<a href="http://kb.mozillazine.org/Mail_content_types#Plain_text">http://kb.mozillazine.org/Mail_content_types#Plain_text</a>)</p>
+
+<p>To disable paragraph flow when you send plain text messages, and in the plain text part of multipart messages, set the preference:</p>
+
+<p>mailnews.send_plaintext_flowed false
+(<a href="http://kb.mozillazine.org/Mail_content_types#Disabling_paragraph_flow">http://kb.mozillazine.org/Mail_content_types#Disabling_paragraph_flow</a>)</p></blockquote>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ChromeOS配置SSH Server]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/10/17/chromeos-enable-ssh-server/"/>
+    <updated>2014-10-17T12:52:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/10/17/chromeos-enable-ssh-server</id>
+    <content type="html"><![CDATA[<p>ChromeOS是一个相当&#8221;Linux&#8221;的OS。现在一般能拿到手的ChromeOS的设备很多都是Chromebook，所以本文是在一台Chromebook上做的测试。</p>
+
+<p>ChromeOS默认的零售版本是什么开发类工具都没有的，包括ssh client都没有。要enable SSH client/server，首先要将ChromeOS切换到 <code>Developer Mode</code>。在我手上的这台Chromebook上，做法很简单，就是三键同按开机即可（ESC + Refresh + Power）。</p>
+
+<p>具体的切换到 <code>Developer Mode</code> 的做法可以参考Google的ChromeOS网站上的文章。接下来来看怎么enable SSH Server。</p>
+
+<!-- more -->
+
+
+<p>以下内容完全参考了文章：</p>
+
+<p><a href="http://www.de7ec7ed.com/2013/05/ssh-daemon-samsung-chromebook-exynos.html">http://www.de7ec7ed.com/2013/05/ssh-daemon-samsung-chromebook-exynos.html</a></p>
+
+<p>所以在这里基本上是做一个英翻中的工作。</p>
+
+<ul>
+<li><p>首先启动Chrome浏览器，按下 <code>ctrl + alt + t</code>，开启Crosh（浏览器界面的一个Terminal程序）。Crosh也是只有将ChromeOS切换成 <code>Developer Mode</code> 之后才有的。</p></li>
+<li><p>输入：<code>shell</code>，得到一个bash，然后输入 <code>sudo -i</code>，就可以得到root权限了。</p></li>
+<li><p>mkdir -p /mnt/stateful_partition/etc/ssh</p></li>
+<li><p>ssh-keygen -t dsa -f /mnt/stateful_partition/etc/ssh/ssh_host_dsa_key</p></li>
+<li><p>ssh-keygen -t rsa -f /mnt/stateful_partition/etc/ssh/ssh_host_rsa_key</p></li>
+<li><p>vi /etc/ssh/sshd_config，将 <code>PasswordAuthentication</code> 改成 <code>yes</code>。在这里也可以看到，为什么我们要在/mnt/stateful_partition下面创建etc/ssh目录，并在里面生成keys。就是因为在这个配置文件中指定了ssh key的路径。</p></li>
+<li><p>/sbin/iptables -A INPUT -p tcp &mdash;dport 22 -j ACCEPT</p></li>
+<li><p>给root用户设置一个密码，输入passwd即可。</p></li>
+<li><p>/usr/sbin/sshd，这样SSH server就启动起来了，可以从其他机器登录过来了。</p></li>
+</ul>
+
+
+<p>题外话：如果你是 <code>cd /usr/sbin;./sshd</code>，或者 <code>/usr/sbin</code> 在PATH里面，直接输入 <code>sshd</code> 启动，你会发现sshd无法启动，错误是：</p>
+
+<blockquote><p>sshd re-exec requires execution with an absolute path</p></blockquote>
+
+<p>Stackexchange有这个问题的回答，很有意思，有两点：</p>
+
+<blockquote><p>This is specific to OpenSSH from version 3.9 onwards.</p>
+
+<p>For every new connection, sshd will re-execute itself, to ensure that all execute-time randomisations are re-generated for each new connection. In order for sshd to re-execute itself, it needs to know the full path to itself.</p>
+
+<p>Here&rsquo;s a quote from the release notes for 3.9:</p>
+
+<p>Make sshd(8) re-execute itself on accepting a new connection. This security measure ensures that all execute-time randomisations are reapplied for each connection rather than once, for the master process&#8217; lifetime. This includes mmap and malloc mappings, shared library addressing, shared library mapping order, ProPolice and StackGhost cookies on systems that support such things</p></blockquote>
+
+<p>另外一个说法也有一定道理：</p>
+
+<blockquote><p>This is to prevent someone from injecting a sshd program somewhere in one of the directories in your PATH and you inadvertently executing it.</p></blockquote>
+
+<p>回到SSH server的配置上来，如果想ChromeOS开机的时候启动SSHD，写这样一个脚本放到 <code>/etc/init</code> 目录下面即可：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>start on started system-services
+</span><span class='line'>script
+</span><span class='line'>     /sbin/iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+</span><span class='line'>     /usr/sbin/sshd
+</span><span class='line'>end script
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后，突然想到，要做上面的所有的事情，要求ChromeOS的root partition是可写的，但是默认情况下，ChromeOS的root partition是read-only的。需要修改的话这样做：</p>
+
+<ul>
+<li><p>/usr/share/vboot/bin/make_dev_ssd.sh &mdash;remove_rootfs_verification &mdash;partitions 2</p></li>
+<li><p>做完上述命令后，需要重启ChromeOS</p></li>
+<li><p>重启完成之后，再开启一个Crosh，执行：mount -o rw,remount /，就可以将root partition变成可写的了。</p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[PS3 KillZone 3（杀戮地带3）黑屏死机问题]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/09/17/killzone-3-freezing-issue/"/>
+    <updated>2014-09-17T10:34:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/09/17/killzone-3-freezing-issue</id>
+    <content type="html"><![CDATA[<p>PS3上的杀戮地带3，当升级了1.14（最新版本）之后，有一个黑屏死机的问题：</p>
+
+<p><a href="http://community.killzone.com/t5/Killzone-3-PS3/Patch-1-14-freezing-issues/td-p/1351164">http://community.killzone.com/t5/Killzone-3-PS3/Patch-1-14-freezing-issues/td-p/1351164</a></p>
+
+<!-- more -->
+
+
+<p>最近我也买了一张二手的杀戮地带3，也碰到了这个问题。为此我Google看了好多帖子，基本上这些帖子七嘴八舌的都说这个问题的原因是：</p>
+
+<p><strong> 你的PS3更换过硬盘，而且更换的是一个高速的（比如7200 RPM），大容量的硬盘。</strong></p>
+
+<p>没错，我的PS3的确换过硬盘，因为原装的250G的坏掉了，所以我换了一个500G的7200 RPM的。但是我也不想就因为这个就再换一次硬盘啊，于是我继续Google看看有没有其他的办法，结果是我试了这么几种方法：</p>
+
+<ul>
+<li>进入PS3的恢复模式，重建Database</li>
+<li>进入PS3的恢复模式，格式化PS3</li>
+<li>完全格式化PS3（在PS3的XMB界面下）</li>
+</ul>
+
+
+<p>试验下来，以上三种方法均无效。最后没办法我找来一块以前用过的一块5400转160G的硬盘，换到PS3上，开机：</p>
+
+<ul>
+<li>PS3提示系统软件丢失</li>
+<li>PS3提示插入一个带有最新firmware的USB key，然后同时按下 <code>start</code> + <code>select</code> 开始重新往硬盘上安装系统软件</li>
+<li>于是我去download了一个4.65的firmware，放到U盘的 <code>PS3</code> &ndash;> <code>UPDATE</code> 目录下，就像给PS3升级系统软件一样</li>
+<li>PS3会给硬盘重新分区并安装系统软件</li>
+</ul>
+
+
+<p>完成之后，登录PSN，插入杀戮地带3，再升级1.14，果然就好了。。。已无力吐槽，GG的程序员是临时工吧？</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[RouterOS配置记录（四）：OpenVPN Client]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/09/01/ros-openvpn/"/>
+    <updated>2014-09-01T15:42:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/09/01/ros-openvpn</id>
+    <content type="html"><![CDATA[<p>OpenVPN是现在使用相当广泛的一种VPN solution。它不使用特定协议（比如PPTP依赖于GRE协议，如果GRE协议被墙，PPTP就完了），也不使用特定端口，TCP/UDP都支持，性能表现也相当优异（UDP）。所以现在使用OpenVPN作为VPN的solution很多，在Mikrotik的论坛上可以找到大量赞美OpenVPN的帖子。</p>
+
+<p>但是，事实上当我把OpenVPN全部配置完成之后，发现两个问题：</p>
+
+<!-- more -->
+
+
+<ul>
+<li>OpenVPN已被墙，应该就是2013年（或者更早）的事情。虽然上面提到了OpenVPN不使用特定协议，不使用特定端口，但是聪明的GFW还是找到了OpenVPN TLS验证时的特征并墙之。所以如果你辛辛苦苦配置好了服务器端和客户端，客户端拨号的时候发现：&#8221;Peer disconnected/Connection reset&#8221;，那就是被墙的标志。OpenVPN TLS验证的时候，连接直接被reset了。</li>
+</ul>
+
+
+<p>针对这个问题，当然也有解决方案，那就是模糊TLS验证的数据，让GFW寻不到TLS的特征，比如：</p>
+
+<p><a href="http://igfw.net/archives/13018">http://igfw.net/archives/13018</a></p>
+
+<p>但是这种做法是没法在ROS上实现的。因为这要求修改OpenVPN sever和client的代码，而我们是无法修改ROS中的OpenVPN的实现的。</p>
+
+<ul>
+<li>ROS不支持UDP模式的OpenVPN。这个已经被广大ROS用户诟病已久，但不知道为什么Mikrotik就是不改：</li>
+</ul>
+
+
+<p><a href="http://forum.mikrotik.com/viewtopic.php?f=1&amp;t=26499">http://forum.mikrotik.com/viewtopic.php?f=1&amp;t=26499</a></p>
+
+<p>TCP模式的OpenVPN延迟（latency）很高，不适合诸如电话会议、在线游戏等场景。</p>
+
+<p>所以坦白说，有上述的两个问题，ROS+OpenVPN，已经没有太多的使用价值了。但是既然我已经将其配置完成了，所以本文还是将过程记录了下来。</p>
+
+<h2>OpenVPN server侧配置</h2>
+
+<p>OpenVPN server侧的配置稍微复杂一些，关键是要生成一堆证书、秘钥。但是也不是复杂到没法忍，关键是要有一篇好的turtorial。所以这里是我找到的一篇很好的文章，照做就行：</p>
+
+<p><a href="https://www.linode.com/docs/networking/vpn/secure-communications-with-openvpn-on-ubuntu-12-04-precise-and-debian-7">Secure communications with OpenVPN on Ubuntu 12.04</a></p>
+
+<p>照着上面的文章做就可以了，这里再给出我最终的OpenVPN server的配置文件作为一个参考：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>port 3389
+</span><span class='line'>proto tcp
+</span><span class='line'>dev tun
+</span><span class='line'>
+</span><span class='line'><span class="c">#Keys</span>
+</span><span class='line'>ca /etc/openvpn/easy-rsa/2.0/keys/ca.crt
+</span><span class='line'>cert /etc/openvpn/easy-rsa/2.0/keys/server.crt
+</span><span class='line'>key /etc/openvpn/easy-rsa/2.0/keys/server.key
+</span><span class='line'>dh /etc/openvpn/easy-rsa/2.0/keys/dh1024.pem
+</span><span class='line'>
+</span><span class='line'><span class="c"># This will be the internal tun0 connection IP</span>
+</span><span class='line'>server 10.8.0.0 255.255.255.0
+</span><span class='line'>ifconfig-pool-persist ipp.txt
+</span><span class='line'>
+</span><span class='line'><span class="c"># This will send all of a client&#39;s 10.x.x.x traffic through the VPN</span>
+</span><span class='line'><span class="c"># push &quot;route 10.0.0.0 255.0.0.0&quot;</span>
+</span><span class='line'>keepalive 10 120
+</span><span class='line'>
+</span><span class='line'><span class="c"># Mikrotik does not support LZO compression</span>
+</span><span class='line'><span class="c">#comp-lzo</span>
+</span><span class='line'>
+</span><span class='line'>auth SHA1
+</span><span class='line'><span class="c"># Select a cryptographic cipher.</span>
+</span><span class='line'><span class="c">#cipher BF-CBC        # Blowfish (default)</span>
+</span><span class='line'>cipher AES-256-CBC
+</span><span class='line'>
+</span><span class='line'><span class="c">#user nobody</span>
+</span><span class='line'><span class="c">#group nogroup</span>
+</span><span class='line'>status /var/log/openvpn/openvpn-status.log
+</span><span class='line'>
+</span><span class='line'>persist-key
+</span><span class='line'>persist-tun
+</span><span class='line'>verb 3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>几点解释：</p>
+
+<ol>
+<li>ROS的OpenVPN client只支持TCP，所以这里使用TCP模式：<code>proto tcp</code>。</li>
+<li>被注释的那句：<code>push "route 10.0.0.0 255.0.0.0"</code> 是可以用来给客户端设置路由表的，但是由于我的ROS有chnroutes，所以我会在我的ROS上设置路由表，所以我的OpenVPN server侧就没有push路由表给客户端了。</li>
+<li><code>comp-lzo</code> 一定要注释掉，这是因为ROS OpenVPN client不支持这个。所以ROS的OpenVPN UDP不支持，数据压缩又不支持，你就可以想想Mikrotik论坛上大家的怨气有多大了。有空可以上去搜看相关的帖子，相当欢乐。</li>
+<li>有关cipher，Blowfish, AES这些ROS OpenVPN client都是支持的，所以可以自由选择。使用默认的Blowfish就挺好。</li>
+<li>最后的 <code>verb 3</code> 可以改成诸如 <code>verb 6</code>，这样在 <code>/var/log/syslog</code> 中可以得到很多的log，客户端连不上OpenVPN server的时候，可以帮助调试和定位。</li>
+</ol>
+
+
+<p>配置完成之后，<code>sudo service openvpn restart</code>，OpenVPN server就ready了。</p>
+
+<h2>OpenVPN client侧配置（ROS）</h2>
+
+<p>相比server侧，ROS上client的配置就相对简单了很多。</p>
+
+<p>首先是上传证书和秘钥到ROS上：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-system-certificates.png" alt="Certificates" /></p>
+
+<p>这里其实是3个文件，client的公钥和私钥，还有就是server的证书，这三个文件首先upload到ROS上，然后在上图中点击 <code>Import</code> 按钮就可以导入了。</p>
+
+<p>然后就是创建一个OpenVPN的client了：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-ppp-openvpn.png" alt="PPP Create OpenVPN Client" /></p>
+
+<p>几点说明：</p>
+
+<ol>
+<li><code>Connect To</code> 和 <code>Port</code> 不用说了</li>
+<li><code>Mode</code> ，这个有两个选项：<code>IP</code> 和 <code>Ethernet</code>，这表示数据是走layer 3还是layer 2，反映到VPN创建出来的本地虚拟网卡，就是tun还是tap，一般来说OpenVPN都是tun，所以这里是选择 <code>IP</code>。如果你使用PPTP，就可以看到虚拟网卡是tap。</li>
+<li><code>User</code>，这个其实不需要，因为OpenVPN是使用证书来识别client的，每个client都会有一个证书。但是这里ROS需要填一个用户名，所以随便填一个就好（貌似OpenVPN也可以支持username/password的那种验证的，我没去调查）。</li>
+<li><code>Profile</code>，因为在下面会选择加密方式等，所以profile就选default就好，default意思就是按照server的默认设置来。</li>
+<li><code>Certificate</code>，这里要选择你upload到ROS上的，client的私钥，这个私钥是用来解密数据的。</li>
+<li><code>Auth</code> / <code>Cipher</code>，这个就选成跟server端的配置一致即可。</li>
+</ol>
+
+
+<h2>结束</h2>
+
+<p>所以总的来说，OpenVPN的配置并不复杂，只是ROS不支持UDP的OpenVPN，所以用来翻墙看看网页还是可以的，玩游戏啥的就要差不少。不过OpenVPN作为一个free的，性能优良的VPN solution，在国内网络中使用也是相当不错的。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[RouterOS配置记录（三）：DDNS]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/08/21/ros-ddns/"/>
+    <updated>2014-08-21T15:26:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/08/21/ros-ddns</id>
+    <content type="html"><![CDATA[<p>配置动态DNS主要是为了能让你的RouterBoard在Internet上被访问到，这样我就可以远程控制我的RouterBoard，同时也可以开始做端口映射，在内网做server&hellip;等。</p>
+
+<p>在ROS上配置DDNS非常简单，就是写一个script然后放到ROS的 <code>System</code> &ndash;> <code>Scheduler</code> 中就好了。不过在此之前，先去申请一个DDNS，我用的是3322的。</p>
+
+<p>不过在开始之前，你要先确保你的宽带连接拨号之后，得到的是一个真实的IP地址。现在电信/联通/移动宽带有的时候拨号会得到一个假IP地址，比如 <code>192.168.x.x</code>，<code>10.x.x.x</code>，甚至之前我得到过 <code>100.x.x.x</code>，这个也不是真实的IP地址（RFC编号为6598。RFC 6598 &ndash; IANA-Reserved IPv4 Prefix for Shared Address Space）。判断自己拨号得到的IP是否是真实IP很简单，打开 www.ipaddress.com，网站会告诉你你目前的IP地址，把这个IP跟你在ROS里面看到的你拨号得到的IP比较是不是一样就知道了。</p>
+
+<p>如果你得到的不是真实的IP地址，那就说明在运营商那边还有一层NAT，那么你做DDNS就没有用了，除非你用花生壳客户端这种专门的软件，但是花生壳客户端软件是没法装在ROS上的。可以打电话给宽带运营商投诉，让它给你分配真实的IP地址，如果它不从你可以打工信部电话投诉（我没试过，网友们说可以）。</p>
+
+<!-- more -->
+
+
+<p>所以先来看一下这个script是长什么模样：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>:global ednsuser <span class="s2">&quot;xxxxxxxx&quot;</span>
+</span><span class='line'>:global ednspass <span class="s2">&quot;xxxxxxxx&quot;</span>
+</span><span class='line'>:global ednshost <span class="s2">&quot;xxxxxxxx.3322.org&quot;</span>
+</span><span class='line'>:global ednsinterface <span class="s2">&quot;SHUnicom&quot;</span>
+</span><span class='line'>:global members <span class="s2">&quot;http://members.3322.net/dyndns/update\?system=dyndns&quot;</span>
+</span><span class='line'>:global status
+</span><span class='line'>:global status <span class="o">[</span>/interface get <span class="o">[</span>/interface find <span class="nv">name</span><span class="o">=</span><span class="nv">$ednsinterface</span><span class="o">]</span> running<span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>:if <span class="o">(</span><span class="nv">$status</span>!<span class="o">=</span><span class="nb">false</span><span class="o">)</span> <span class="k">do</span><span class="o">={</span>
+</span><span class='line'>:global ednslastip <span class="o">[</span>:resolve <span class="nv">$ednshost</span><span class="o">]</span>
+</span><span class='line'>:if <span class="o">([</span> :typeof <span class="nv">$ednslastip</span> <span class="o">]</span> <span class="o">=</span> nil <span class="o">)</span> <span class="k">do</span><span class="o">={</span> :global ednslastip <span class="s2">&quot;0&quot;</span> <span class="o">}</span>
+</span><span class='line'>:global ednsiph <span class="o">[</span> /ip address get <span class="o">[</span>/ip address find <span class="nv">interface</span><span class="o">=</span><span class="nv">$ednsinterface</span> <span class="o">]</span> address <span class="o">]</span>
+</span><span class='line'>:global ednsip <span class="o">[</span>:pick <span class="nv">$ednsiph</span> 0 <span class="o">[</span>:find <span class="nv">$ednsiph</span> <span class="s2">&quot;/&quot;</span><span class="o">]]</span>
+</span><span class='line'>:global ednsstr <span class="s2">&quot;&amp;hostname=$ednshost&amp;myip=$ednsip&quot;</span>
+</span><span class='line'>:if <span class="o">(</span><span class="nv">$ednslastip</span> !<span class="o">=</span> <span class="nv">$ednsip</span><span class="o">)</span> <span class="k">do</span><span class="o">={</span>
+</span><span class='line'>/tool fetch <span class="nv">url</span><span class="o">=</span><span class="s2">&quot;$members$ednsstr&quot;</span> <span class="nv">mode</span><span class="o">=</span>http <span class="nv">user</span><span class="o">=</span><span class="nv">$ednsuser</span> <span class="nv">password</span><span class="o">=</span><span class="nv">$ednspass</span> dst-path<span class="o">=</span><span class="nv">$ednshost</span>
+</span><span class='line'>:delay 4
+</span><span class='line'>:global result <span class="o">[</span>/file get <span class="nv">$ednshost</span> contents<span class="o">]</span>
+</span><span class='line'>:log info <span class="o">(</span><span class="nv">$ednshost</span> . <span class="s2">&quot; &quot;</span> .<span class="nv">$result</span><span class="o">)</span>
+</span><span class='line'>/file remove <span class="nv">$ednshost</span> ;
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上script来自：<a href="http://h2appy.blog.51cto.com/609721/776837">ROS DDNS update script</a></p>
+
+<p>修改一下 <code>ednsuser</code>/<code>ednspass</code>/<code>ednshost</code>就可以使用了。</p>
+
+<p>简单来说这个script就是利用ROS的 <code>/tool fetch</code> 来访问一个网页：</p>
+
+<p><a href="http://members.3322.net/dyndns/update?system=dyndns&amp;hostname=xxx&amp;myip=xxx">http://members.3322.net/dyndns/update?system=dyndns&amp;hostname=xxx&amp;myip=xxx</a></p>
+
+<p>这个方法也是3322官方提供的，3322的server就可以从这个http请求中得到你的真实IP地址了。</p>
+
+<p>然后就是来到ROS的 <code>System</code> &ndash;> <code>Scheduler</code>，点击加号按钮：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-system-scheduler.png" alt="ROS Add scheduler" /></p>
+
+<p>把上面的你修改好的script贴到 <code>OnEvent</code> 那个编辑框里面，设定好名字和Interval就OK了。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[RouterOS配置记录（二）：chnroutes]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/08/20/ros-chnroutes/"/>
+    <updated>2014-08-20T16:52:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/08/20/ros-chnroutes</id>
+    <content type="html"><![CDATA[<p>之前写过一篇博客：Chnroutes的使用（Mac OS X Mavericks），讲述了在我的macbook pro上安装chnroutes，从而可以在上网的时候区分国内国外的IP，最终让国外的IP访问走VPN，国内的不走VPN。</p>
+
+<p><a href="http://markzhang.cn/blog/2013/12/04/chnroutes-on-mac/">Chnroutes的使用（Mac OS X Mavericks）</a></p>
+
+<p>现在有了ROS，事情就变的更加棒了，把chnroutes做在ROS上，那所有的网络设备就自动具备了chnroutes的功能。所以在刚配置好了ROS之后，我就尝试配置了chnroutes。</p>
+
+<!-- more -->
+
+
+<p>首先我的配置参考了这篇文章：</p>
+
+<p><a href="http://autorosvpn.blogspot.jp/2013/05/ros-vpn.html">ros智能vpn自动翻墙</a></p>
+
+<p>总的说来，在ROS上配置chnroutes，就是几个步骤：</p>
+
+<ol>
+<li>导入国内IP地址表</li>
+<li>对每个请求中的IP进行查找，如果不在国内IP地址列表中的，就标记一下</li>
+<li>在路由表中，根据标记，让数据走正常网关或是VPN</li>
+</ol>
+
+
+<h2>导入国内IP地址表</h2>
+
+<p>这个其实非常简单，用VI就搞定了。首先根据我之前的文章：Chnroutes的使用（Mac OS X Mavericks），在我的MBP上运行 <code>./chnroutes.py -p mac</code>，就会生成ip-up/ip-down这两个文件。</p>
+
+<p>ip-up文件里面就包含了所有的国内IP地址，所以接下来我们只需要将这个文件修改成ROS能认识的格式就行了，用VI就可以轻松搞定了。这里给出一个我目前在使用的（2014/7/22的数据）：</p>
+
+<p><a href="http://www.markzhang.cn/downloads/file/chinasites.rsc">2014/7/22 国内IP地址列表</a></p>
+
+<p>一般来说，这个列表不需要经常更新，在IPv4地址已经差不多消耗殆尽的今天，你能经常访问到新的属于国内的IP地址也不是件容易的事情。</p>
+
+<p>接下来就是把这个 <code>chinasites.rsc</code> 上传到RouterBoard上就OK了，可以用Filezilla，使用FTP的方式。或者你如果是windows平台，使用WinBox的话，也可以用拖拽的方式将文件拖到ROS的 <code>Files</code> 对话框中即可。</p>
+
+<p>上传了之后，点击ROS的 <code>New Terminal</code>，在命令行下输入：<code>import chinasites.rsc</code>，所有的国内IP地址列表就导入了，在ROS的 <code>IP</code> &ndash;> <code>Firewall</code> &ndash;> <code>Address Lists</code> 中就可以看到：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-ip-firewall-address-lists.png" alt="China IP address list" /></p>
+
+<p>在上图中可以看到，我们给这些IP地址都设了一个名字叫做 <code>novpn</code>，表示路由这些地址的时候，不需要走VPN，后面会看到如何使用的。</p>
+
+<h2>标记Packets</h2>
+
+<p>这是Linux netfilter/iptables非常强大的功能体现了，首先来看在ROS里面是怎么配置的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Flags: X - disabled, I - invalid, D - dynamic
+</span><span class='line'> 0   <span class="nv">chain</span><span class="o">=</span>prerouting <span class="nv">action</span><span class="o">=</span>mark-routing new-routing-mark<span class="o">=</span>vpn <span class="nv">passthrough</span><span class="o">=</span>yes
+</span><span class='line'>     dst-address<span class="o">=</span>!192.168.88.0/24 dst-address-list<span class="o">=</span>!novpn
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这个配置项位于：<code>IP</code> &ndash;> <code>Firewall</code> &ndash;> <code>Mangle</code>。首先这个配置针对的是 <code>prerouting</code> 表，对Mangle/Prerouting还不清楚的，看我的这篇文章：</p>
+
+<p><a href="http://markzhang.cn/blog/2014/07/23/netfilter-overview/">Linux Netfilter overview</a></p>
+
+<p>然后，<code>dst-address-list=!novpn</code> 其实意思就是，如果目的地址不在 <code>novpn</code> 这个address list中的；最后 <code>action=mark-routing new-routing-mark=vpn</code> 就表示如果目的地址不在 <code>novpn</code> 中的，就给这些packet打上一个名为 <code>vpn</code> 的routing标记。</p>
+
+<p>当然，上述命令中的：<code>dst-address=!192.168.88.0/24</code>，这表示本地局域网的地址不受该条规则影响，这也是非常好理解的。</p>
+
+<p>所以总结来说，我们通过Linux netfilter的Mangle功能，成功的给不属于国内IP地址列表中的packet，打上了一个名为 <code>vpn</code> 的路由标记。</p>
+
+<p>这里需要提一下 <code>passthrough=yes</code> 这个东西的作用。<code>passthrough=yes</code> 表示packet经过了本规则的处理之后，还会继续往下传递，给下面的rules继续处理。相反的例子是 <code>IP</code> &ndash;> <code>Firewall</code> &ndash;> <code>Fliter</code> 中的规则，比如 <code>accept</code> 或者 <code>drop</code> ，一旦匹配到了这些规则，就不会再继续往下处理了（下面的规则就不会再去执行了），所以这就是为什么我在上篇文章中提到说有一条 <code>drop</code> 的规则一定要放在最后。</p>
+
+<p>所以这里我们设置了 <code>passthrough=yes</code> ，表示位于我们本条规则之后的规则还有机会继续被得到执行，所以你可以继续添加标记类的规则，或者其他任何Mangle的规则。所以再次重申，在Filter/Mangle这些表里，规则的顺序是很有影响的。</p>
+
+<h2>添加路由</h2>
+
+<p>点击 <code>IP</code> &ndash;> <code>Routes</code>，在 <code>Routes</code> 标签页，点击加号按钮添加一条路由规则：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-ip-routes.png" alt="ROS add routing" /></p>
+
+<ul>
+<li><p>Dst. Address，这表示哪些目的IP地址受这条路由影响，这里填写 <code>0.0.0.0/0</code> 表示所有IP地址。</p></li>
+<li><p>Gateway，这表示这条路由走哪个Interface，一般来说，这就是你的VPN的PPP连接了。</p></li>
+<li><p>Distance，这表示这条路由的权重。在之前的一篇介绍ROS的基础设置的文章中，有说到我们添加了一个PPPoE client来实现宽带拨号，在创建那个PPPoE Client的时候，有一个选项叫做：<code>Default Route Distance</code>，我的这项设置是10，而如上图所示，现在我们添加的这条路由，我的设置是1。其实很好理解，我们在添加PPPoE Client的时候，有选择 <code>Add Default Route</code>，所谓Default route就是路由所有IP地址：<code>0.0.0.0/0</code>的，那么现在我们又添加了一条路由，也是路由所有IP地址的，那应该选哪条路由呢？这就是根据路由的Distance来决定的。Distance值越小的，权重越高。</p></li>
+<li><p>Routing Mark，这里填写的是 <code>vpn</code>。</p></li>
+</ul>
+
+
+<p>所以总结来说，这条路由的作用就是，对于 <code>Routing Mark</code> 是 <code>vpn</code> 的packet，走我们指定的 <code>Gateway</code>。而且由于这条路由的权重高于默认路由，所以就实现了非国内的IP地址，走我们指定的Gateway，而国内的IP地址还是走默认路由（宽带连接的那条路由）。</p>
+
+<p>写了一堆字，其实做一下就是两分钟的事。ROS的确是非常Power的东西。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[RouterOS 配置记录（一）：基础设置]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/08/19/ros-basic-setup/"/>
+    <updated>2014-08-19T14:38:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/08/19/ros-basic-setup</id>
+    <content type="html"><![CDATA[<p>RouterOS（以下简称ROS）是一个软路由系统，由拉脱维亚的Mikrotik开发，完全基于Linux。项目刚开始的时候，只支持x86，所以我们可以找一台PC机来安装ROS，从而可以让PC机瞬间变身成一个软路由。</p>
+
+<p>后来Mikrotik开发了专用的硬件设备：RouterBoard。RouterBoard是MIPS架构，运行ROS，所以不想搞一台PC机的话，买一台RouterBoard就显的非常不错。而且RouterBoard有好多型号，带wifi的不带wifi的，企业用的个人用的，千兆的百兆的。。。，最关键的是家用的RouterBoard，带wifi的也不贵，所以最近就把家里的路由器换成了RouterBoard，型号是：951Ui-2HnD。</p>
+
+<p>本系列文章旨在记录我在使用ROS的时候的一些配置，之前已经写了一篇有关修改WinBox字体的文章，算是个引子。ROS虽然强大，但是配置项目的繁杂也颇为吓人，坦白说没有网络基础的话还是别用ROS。</p>
+
+<!-- more -->
+
+
+<p>本文讲述拿到RouterBoard之后的最基础配置，也就是配置宽带拨号，WIFI，NAT，DHCP，最终能让家里的各网络设备上网。</p>
+
+<h2>宽带拨号</h2>
+
+<p>RouterBoard第一次开机，winbox连入之后，会有一个提示让我们备份当前的配置或是删掉目前的配置，为了从头开始，我删掉了原来的所有配置，从头开始一步一步自己来。</p>
+
+<p>配置宽带拨号非常简单，就是在 <code>PPP</code> 里面添加一个 <code>PPPoE Client</code> 的interface即可：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-pppoe-client.png" alt="ROS add PPPoE client" /></p>
+
+<p>必须要填的会以红色表示，在上图中，要填的是Name和Interfaces。Interfaces指的是哪个网口连接了宽带网线，一般来说，RouterBoard的第一个网口我们都用来连接外网（WAN），所以选择第一个网口即可（如上图所示，我给第一个网口做了重命名，修改名称为ether1-wan）。在第二个标签页 <code>Dial Out</code> 中，就需要填写你的宽带账号和密码了，此外 <code>Use Peer DNS</code> 和 <code>Add Default Router</code> 也可以勾选上。</p>
+
+<p><code>Use Peer DNS</code> 指的是是否使用宽带运营商提供的DNS（在PPPoE拨号的时候能得到），一般都需要使用，当然你也可以不用运营商提供的DNS，自己定义一些DNS server，比如Google的 <code>8.8.8.8</code>, <code>8.8.4.4</code>，还有OpenDNS的 <code>208.67.222.222</code>, <code>208.67.220.220</code>。只是使用这些DNS的话，你要先把翻墙准备好。</p>
+
+<p>在Winbox的 <code>IP</code> &ndash;> <code>DNS</code> 里面，就可以自己设置DNS server：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-ip-dns.png" alt="ROS DNS setting" /></p>
+
+<p>在上图中可以看到，<code>Dynamic Servers</code> 就是来自宽带运营商的DNS server信息。</p>
+
+<p>而 <code>Allow Remote Requests</code> 指的是，RouterBoard本身是否也作为一个DNS server从而可以响应DNS查询请求。一般来说，这个应该enable。顺理成章的，下面的一些有关Cache的配置也就变的有意义了，如上图所示，我加大了Cache的size，从而可以多缓存一些DNS信息。不过在enable了 <code>Allow Remote Request</code> 之后，需要注意要打开TCP/UDP的DNS端口，以防客户端无法通过RouterBoard查询DNS。</p>
+
+<p>回到宽带拨号，配置好了 <code>PPPoE Client</code> 之后，就可以尝试去enable它了，一旦连接成功，就表示你的宽带拨号已经OK了。</p>
+
+<h2>WIFI</h2>
+
+<p>打开 <code>Wireless</code> ，在Interface标签页，可以看到一个wireless interface，默认名字是wlan1，关键的配置在标签页 <code>Wireless</code>：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-wireless.png" alt="ROS Wirelss config" /></p>
+
+<p>大部分都非常好理解，有几个地方需要注意：</p>
+
+<ul>
+<li>Channel Width，这里有所谓的HT Above和HT Below，有关这个的解释是（来自Mikrotik官方）：</li>
+</ul>
+
+
+<blockquote><p>ht above and ht below allows to use additional 20MHz extension channel and if it should be located below or above control (main) channel. Extension channel allows 11n device to use 40MHz of spectrum in total thus increasing max throughput.</p></blockquote>
+
+<p>不过需要注意的是，不是所有的Frequency都可以设置Above/Below，这里有一张来自Mikrotik的表说明了这一点，所以最终在设置Frequency的时候需要注意：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-wireless-ht-above-below.png" alt="ROS wireless HT above/below setting" /></p>
+
+<ul>
+<li><p>Frequency，上面已经提到了，设置Frequency要注意HT Above/Below是否有取值，此外可以通过点击 <code>Scan</code> 按钮来查看当前环境中有哪些Frequency是被占用的，尽量挑选一个没人使用的频率吧。</p></li>
+<li><p>Wireless Protocol，Mikrotik开发了一些自己私有的WIFI协议，比如这里看到的NV2等，对于我们来说，肯定是使用802.11了。</p></li>
+<li><p>Security Profile，这个后面紧接着就要配置，就是在这个profile中，我们可以配置WIFI的加密方式（WPA/WEP等）。</p></li>
+<li><p>Bridge Mode，要选成Enabled，后面会提到，为了让WIFI的clients能和RouterBoard上的几个以太网口通信，需要将它们都放到一个bridge中。</p></li>
+</ul>
+
+
+<p>接下来就要配置WIFI Security Profile了，如下图所示：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-wireless-security-profile.png" alt="ROS wireless security profile" /></p>
+
+<p>在 <code>Security Profile</code> 标签页中，点击加号按钮就可以新建一个 <code>Security Profile</code> 了。上图中我们配置的security profile name是default，所以在刚才我们设置Wireless Interface的时候，<code>Security Profile</code> 一项我们选择的就是这个 <code>default</code>。</p>
+
+<p>配置到这里，WIFI热点就配置完成了，接下来我们需要将WIFI的wlan1这个interface和以太网的四个端口（第一个端口ether1-wan我们是分配给了宽带连接）放到一个bridge中去，这样才可以实现WIFI的clients和这四个以太网口互通。</p>
+
+<p>在配置Bridge的时候，其实有两个配置步骤，顾名思义Bridge肯定只能包含两个Interface（Bridge的两端），而我们需要将wlan1和四个以太网口都配置到Bridge上去，那怎么办？</p>
+
+<p>所以第一步是，将以太网口3/4/5都配置成以太网口2的 <code>Slave Port</code>，如下图所示：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-interface-master-port.png" alt="ROS interface master port" /></p>
+
+<p>点击 <code>Interfaces</code>，在出来的对话框的 <code>Interface</code> 标签页，点击以太网口3/4/5就可以看到上图。在上图中可以看到，我们将以太网口3（ether3）的 <code>Master Port</code> 这一项选成了 <code>lan-ps3</code>。这里解释一下，<code>lan-ps3</code> 就是我的第二个以太网口，因为这个网口接着我的PS3，所以我给它取名为 <code>lan-ps3</code>。</p>
+
+<p>将3/4/5以太网口设置成以太网口2的Slave Port之后，就可以创建Bridge了，点击 <code>Bridge</code>，在出来的对话框的 <code>Bridge</code> 标签页中，点击加号新建一个Bridge，啥都不需要修改，只需要给个名字就OK了。关键是在标签页 <code>Ports</code> 中，点击加号按钮，将wlan1和lan-ps3加入到Bridge中去：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-bridge-ports.png" alt="ROS Bridge ports" /></p>
+
+<p>这样就OK了，WIFI部分的配置就差不多了。</p>
+
+<h2>NAT</h2>
+
+<p>但凡搞过Linux iptables的都知道了，input/forward/output，pre-route/post-route&hellip;，对这些概念不清楚的可以看我这篇文章：</p>
+
+<p><a href="http://markzhang.cn/blog/2014/07/23/netfilter-overview/">Linux Netfilter overview</a></p>
+
+<p>说起来配置一个简单的能上网的NAT非常的简单，选择 <code>IP</code> &ndash;> <code>Firewall</code>，在 <code>NAT</code> 标签页里面点击加号按钮，添加一个NAT：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-ip-firewall-nat.png" alt="ROS add NAT" /></p>
+
+<p>总共就只需要做三件事情：Chain选成srcnat（表示伪装源地址），Out Interface选成宽带连接那个PPPoE client，最后在 <code>Action</code> 标签页里面选择动作为：masquerade。</p>
+
+<p>这样就表示所有的packet，在经过路由表之后，如果最终经过路由决定要从 <code>Out Interface</code> 这个接口出去的话，就做masquerade。</p>
+
+<h2>DHCP Server</h2>
+
+<ul>
+<li>首先是创建一个IP Pool。点击 <code>IP</code> &ndash;> <code>Pool</code>，然后新建一个Pool：</li>
+</ul>
+
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-ip-pool.png" alt="ROS create IP pool" /></p>
+
+<p>就是填写一个名字，一个IP地址范围即可，比如我这里设置的就是192.168.88.2-192.168.88.254，RouterBoard自己就是192.168.88.1了。</p>
+
+<ul>
+<li>然后就是创建一个DHCP server了，来到 <code>IP</code> &ndash;> <code>DHCP Server</code>，点击加号按钮创建一个DHCP Server:</li>
+</ul>
+
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-ip-dhcp-server.png" alt="ROS Create DHCP server" /></p>
+
+<p>需要注意的就是，首先 <code>Interface</code> 那一项要选成你的Bridge device，这样WIFI和以太网的网络client就都可以DHCP了；其次 <code>Address Pool</code> 那一项就选我们刚才创建的那个IP Pool。</p>
+
+<ul>
+<li>最后设定DHCP Server的Network的一些信息，还是在DHCP Server的对话框中，选 <code>Networks</code> 那个标签页，点击加号按钮：</li>
+</ul>
+
+
+<p><img src="http://www.markzhang.cn/downloads/image/ros-ip-dhcp-server-networks.png" alt="ROS DHCP server networks" /></p>
+
+<p>可以看到，这其实就是设定网关和DNS Server的。上图中，对于192.168.88.0/24这个网络的DHCP，clients自动获得了IP地址之后，获得的网关就是192.168.88.1，DNS也是192.168.88.1。联想到一开始的时候提到的 <code>IP</code> &ndash;> <code>DNS</code> 的设定，网络客户端知道DNS Server是RouterBoard就是在这里设定的。</p>
+
+<h2>最后</h2>
+
+<p>最后我们还可以配置一些简单的防火墙规则，用来拦截来自外网的请求，这里用命令行的方式来展现，这些规则都是配置在：<code>IP</code> &ndash;> <code>Firewall</code> &ndash;> <code>Filter</code> 里面的，非常简单：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Flags: X - disabled, I - invalid, D - dynamic
+</span><span class='line'> 0   <span class="nv">chain</span><span class="o">=</span>input <span class="nv">action</span><span class="o">=</span>accept <span class="nv">protocol</span><span class="o">=</span>icmp
+</span><span class='line'>
+</span><span class='line'> 1   <span class="nv">chain</span><span class="o">=</span>input <span class="nv">action</span><span class="o">=</span>accept connection-state<span class="o">=</span>established
+</span><span class='line'>
+</span><span class='line'> 2   <span class="nv">chain</span><span class="o">=</span>input <span class="nv">action</span><span class="o">=</span>accept connection-state<span class="o">=</span>related
+</span><span class='line'>
+</span><span class='line'> 3   <span class="nv">chain</span><span class="o">=</span>input <span class="nv">action</span><span class="o">=</span>accept <span class="nv">protocol</span><span class="o">=</span>tcp dst-port<span class="o">=</span>22
+</span><span class='line'>
+</span><span class='line'> 4   <span class="nv">chain</span><span class="o">=</span>input <span class="nv">action</span><span class="o">=</span>accept <span class="nv">protocol</span><span class="o">=</span>tcp dst-port<span class="o">=</span>8291
+</span><span class='line'>
+</span><span class='line'> 5   <span class="nv">chain</span><span class="o">=</span>input <span class="nv">action</span><span class="o">=</span>accept <span class="nv">protocol</span><span class="o">=</span>tcp dst-port<span class="o">=</span>3987
+</span><span class='line'>
+</span><span class='line'> 6   <span class="nv">chain</span><span class="o">=</span>input <span class="nv">action</span><span class="o">=</span>accept <span class="nv">protocol</span><span class="o">=</span>tcp dst-port<span class="o">=</span>80
+</span><span class='line'>
+</span><span class='line'> 7  <span class="nv">chain</span><span class="o">=</span>input <span class="nv">action</span><span class="o">=</span>accept <span class="nv">protocol</span><span class="o">=</span>tcp dst-port<span class="o">=</span>53
+</span><span class='line'>
+</span><span class='line'> 8   <span class="nv">chain</span><span class="o">=</span>input <span class="nv">action</span><span class="o">=</span>accept <span class="nv">protocol</span><span class="o">=</span>udp dst-port<span class="o">=</span>53
+</span><span class='line'>
+</span><span class='line'> 9   <span class="nv">chain</span><span class="o">=</span>input <span class="nv">action</span><span class="o">=</span>drop in-interface<span class="o">=</span>SHUnicom
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>打开22端口是为了可以远程ssh RouterBoard，打开8291/3987/80端口是为了可以远程使用WinBox登录（可以额外添加src-address来限定只允许某个IP地址登录，这样可以增强安全性），接受53端口是为了DNS查询（实际上DNS一般都是使用UDP，TCP不需要打开），最后一条就是拦截所有外部的网络请求，请确保这一条一定位于所有规则的最后，iptables是匹配到一条规则之后就会返回的，所以如果这条不出现在最后，那么这一条之后的所有规则都会无法生效。</p>
+
+<p>这个最后一条规则，可以看到，是说如果是从 <code>SHUnicom</code> 这个接口进来的数据一律drop，而 <code>SHUnicom</code> 是我的宽带连接接口。想到这个宽带连接其实是在我的ether1-wan这个物理接口上，那么这里是否也可以设置成从 <code>ether1-wan</code> 接口进来的数据一律drop呢？仔细想想是不对的，<code>ether1-wan</code> 是物理接口，用于宽带拨号；而 <code>SHUnicom</code> 其实是一个PPPoE，它会创建一个虚拟的网卡interface，所以我们要drop的是从这个虚拟的网卡interface尝试进入RouterBoard的数据，而不是物理的 <code>ether1-wan</code> 上进入的数据。如果我们真的drop了 <code>ether1-wan</code> 上进来的数据，那就上不了网了，因为所有的返回的数据都被丢掉了。在PPPoE/VPN的时候，虚拟网卡会被创建，所以这个时候要分清楚虚拟网卡和物理网卡，免的设置错误的规则。</p>
+
+<p>能上网只是最基本需求了，接下来才是开始各种折腾的时候，VPN/chnroutes/DDNS/&hellip; 后续博客将记录这些。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Winbox for Mac OS X，修改界面字体]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/07/24/winbox-mac-change-font/"/>
+    <updated>2014-07-24T18:19:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/07/24/winbox-mac-change-font</id>
+    <content type="html"><![CDATA[<p>RouterOS（或简称ROS）是拉脱维亚的Mikrotik开发的一个强大到变态（对于个人用户而言）的路由系统。基于Linux，支持x86和MIPS（routerboard）。也就是说，你可以找一台PC来，装上routeros，就变身成了一台路由器。所以也有很多人称RouterOS为软路由。</p>
+
+<p>Winbox是Mikrotik开发的RouterOS的管理工具（客户端）。当然，RouterOS也有网页版和命令行（终端，支持SSH，串口等）的管理界面，但是Winbox是相对来说最直观和好用的（当然用多了肯定到最后就是纯命令行了）。</p>
+
+<p>有一个问题就是，Winbox只有windows版的。在Mac和Linux上，要使用wine来运行（或安装虚拟机）。</p>
+
+<!-- more -->
+
+
+<p>对于Mac OS X，网上有爱好者已经做好了一个包，下载下来安装即可，不用自己去折腾安装和配置 <code>wine</code>。地址在这里：</p>
+
+<p><a href="http://wiki.mikrotik.com/wiki/MikroTik_WinBox_for_Mac_StandAlone">http://wiki.mikrotik.com/wiki/MikroTik_WinBox_for_Mac_StandAlone</a></p>
+
+<p>的确很好用，就是有一个问题，字体太难看。看起来用的是默认的宋体，所以英文显示效果不忍直视。</p>
+
+<p>所以很自然想修改字体。说起修改这个字体，其实就是修改windows的默认字体。参考了这篇文章：</p>
+
+<p><a href="http://linfan.info/blog/2012/03/01/wine-mac/">http://linfan.info/blog/2012/03/01/wine-mac/</a></p>
+
+<p>具体可以这么做：</p>
+
+<ul>
+<li>找一个喜欢的字体（Mac OS X自带了很多字体，如果安装了Office for Mac，那微软的很多字体也都有了），拷贝到 <code>/Applications/Winbox.app/drive_c/windows/Fonts</code> 目录下。比如我用的是微软雅黑：</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp /Library/Fonts/Microsoft/Microsoft<span class="se">\ </span>Yahei.ttf /Applications/WinBox.app/drive_c/windows/Fonts
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>使用Wine运行注册表编辑器。这个打包好的Winbox for Mac，使用的是Wineskin（就是一个wine的wrapper，这样就把winbox.exe做成了Mac上的Winbox.app），所以这样：</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>open /Applications/WinBox.app/Wineskin.app/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>然后点击 <code>Advanced</code> 按钮，再选择 <code>Tools</code> 标签页，最后点击 <code>Registry Editor (regedit)</code> 按钮，出现windows的注册表编辑器，导入这个注册表：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='ini'><span class='line'><span class="err">REGEDIT4</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\FontSubstitutes]</span>
+</span><span class='line'><span class="na">&quot;Microsoft Yahei&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;Comic Sans MS&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;Courier&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;Courier New&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;Fixedsys&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;Helv&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;Helvetica&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;Lucida Console&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;Lucida Sans&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;Microsoft Sans Serif&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;MingLiU&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;PMingLiu&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;MS Shell Dlg&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;MS Shell Dlg 2&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;MS Dialog&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;MS Gothic&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;MS PGothic&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;MS UI Gothic&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;MS Mincho&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;MS PMincho&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;SimHei&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;SimSun&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;NSimSun&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;System&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;Tahoma&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;Times&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;Times New Roman&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;Tms Rmn&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;Trebuchet MS&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span><span class='line'><span class="na">&quot;Verdana&quot;</span><span class="o">=</span><span class="s">&quot;Microsoft Yahei&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样就OK了，再次打开Winbox，终于看到舒服的界面了：</p>
+
+<p><img src="http://www.markzhang.cn/downloads/image/mac-winbox-change-font.png" alt="Mac Winbox changed font" /></p>
 ]]></content>
   </entry>
   

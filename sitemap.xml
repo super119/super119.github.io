@@ -33,10 +33,6 @@
         <lastmod>2015-02-13T11:02:58+08:00</lastmod>
     </url>
     <url>
-        <loc>http://www.markzhang.cn/blog/2013/12/25/macosx-screen-shot/</loc>
-        <lastmod>2015-02-13T11:04:36+08:00</lastmod>
-    </url>
-    <url>
         <loc>http://www.markzhang.cn/blog/2013/12/27/add-origin-statement-conditionally/</loc>
         <lastmod>2015-02-13T11:04:24+08:00</lastmod>
     </url>
@@ -101,16 +97,6 @@
         <lastmod>2015-02-13T11:02:58+08:00</lastmod>
     </url>
     <url>
-        <loc>http://www.markzhang.cn/blog/2014/04/23/homogeneous-coordinates/</loc>
-        <lastmod>2015-02-13T11:04:46+08:00</lastmod>
-    </url>
-    <url>
-        <loc>
-            http://www.markzhang.cn/blog/2014/04/23/translation-rotation-scale-in-homogeneous-coordinate/
-        </loc>
-        <lastmod>2015-02-13T11:03:14+08:00</lastmod>
-    </url>
-    <url>
         <loc>http://www.markzhang.cn/blog/2014/04/23/wxwidget-on-mavericks/</loc>
         <lastmod>2015-02-13T11:02:58+08:00</lastmod>
     </url>
@@ -137,10 +123,6 @@
     <url>
         <loc>http://www.markzhang.cn/blog/2014/07/17/mac-share-vpn-connection/</loc>
         <lastmod>2015-02-13T11:02:58+08:00</lastmod>
-    </url>
-    <url>
-        <loc>http://www.markzhang.cn/blog/2014/07/23/netfilter-overview/</loc>
-        <lastmod>2015-02-13T11:03:37+08:00</lastmod>
     </url>
     <url>
         <loc>http://www.markzhang.cn/blog/2014/07/24/winbox-mac-change-font/</loc>
@@ -175,10 +157,6 @@
         <lastmod>2015-02-13T11:02:58+08:00</lastmod>
     </url>
     <url>
-        <loc>http://www.markzhang.cn/blog/2014/11/27/czech-world-war-ii/</loc>
-        <lastmod>2015-02-13T11:03:25+08:00</lastmod>
-    </url>
-    <url>
         <loc>http://www.markzhang.cn/blog/2014/12/09/ros-rdp-wol/</loc>
         <lastmod>2015-02-13T11:02:58+08:00</lastmod>
     </url>
@@ -187,28 +165,12 @@
         <lastmod>2015-02-13T11:02:58+08:00</lastmod>
     </url>
     <url>
-        <loc>http://www.markzhang.cn/blog/2015/02/13/iphone6-refund/</loc>
-        <lastmod>2015-02-13T11:02:58+08:00</lastmod>
-    </url>
-    <url>
-        <loc>http://www.markzhang.cn/blog/2015/03/02/drm-memory-management/</loc>
-        <lastmod>2015-03-02T10:56:07+08:00</lastmod>
-    </url>
-    <url>
         <loc>http://www.markzhang.cn/blog/2015/03/02/linux-graphics-stack-notes/</loc>
         <lastmod>2015-03-02T11:04:36+08:00</lastmod>
     </url>
     <url>
         <loc>http://www.markzhang.cn/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem/</loc>
         <lastmod>2015-03-02T11:07:13+08:00</lastmod>
-    </url>
-    <url>
-        <loc>http://www.markzhang.cn/blog/2015/03/02/gem-vs-ttm/</loc>
-        <lastmod>2015-03-02T11:13:53+08:00</lastmod>
-    </url>
-    <url>
-        <loc>http://www.markzhang.cn/blog/2015/03/02/gem-introduction/</loc>
-        <lastmod>2015-03-02T11:23:45+08:00</lastmod>
     </url>
     <url>
         <loc>http://www.markzhang.cn/blog/2015/03/03/cron/</loc>
@@ -235,20 +197,8 @@
         <lastmod>2015-06-03T22:04:09+08:00</lastmod>
     </url>
     <url>
-        <loc>http://www.markzhang.cn/blog/2015/06/27/power-transfer/</loc>
-        <lastmod>2015-06-27T18:16:23+08:00</lastmod>
-    </url>
-    <url>
-        <loc>http://www.markzhang.cn/blog/2015/06/27/live-naught-earth-wires/</loc>
-        <lastmod>2015-06-27T18:51:42+08:00</lastmod>
-    </url>
-    <url>
         <loc>http://www.markzhang.cn/blog/2015/07/24/throttle-hold-and-throttle-cut/</loc>
         <lastmod>2015-07-24T12:06:23+08:00</lastmod>
-    </url>
-    <url>
-        <loc>http://www.markzhang.cn/blog/2015/07/28/zone-dma/</loc>
-        <lastmod>2015-07-28T11:07:41+08:00</lastmod>
     </url>
     <url>
         <loc>http://www.markzhang.cn/blog/2015/08/31/hack-cisco-anyconnect/</loc>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux-kernel | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/linux-kernel/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-08-31T09:07:37+08:00</updated>
+  <updated>2015-12-11T15:21:40+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,65 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[Kernel的ZONE_DMA]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/07/28/zone-dma/"/>
-    <updated>2015-07-28T10:54:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/07/28/zone-dma</id>
-    <content type="html"><![CDATA[<p>转载自：<a href="https://lkml.org/lkml/2011/7/6/249">https://lkml.org/lkml/2011/7/6/249</a></p>
-
-<!-- more -->
-
-
-<p>On Wed, Jul 06, 2011 at 11:19:00AM -0500, Christoph Lameter wrote:</p>
-
-<blockquote><p>What I described is the basic memory architecture of Linux. I am not that
-familiar with ARM and the issue discussed here. Only got involved because
-ZONE_DMA was mentioned. The nature of ZONE_DMA is often misunderstood.</p>
-
-<p>The allocation of the memory banks for the Samsung devices has to fit
-somehow into one of these zones. Its probably best to put the memory banks
-into ZONE_NORMAL and not have any dependency on ZONE_DMA at all.</p></blockquote>
-
-<p>Let me teach you about the ARM memory management on Linux.</p>
-
-<p>Firstly, lets go over the structure of zones in Linux.  There are three
-zones &ndash; ZONE_DMA, ZONE_NORMAL and ZONE_HIGHMEM.  These zones are filled
-in that order.  So, ZONE_DMA starts at zero.  Following on from ZONE_DMA
-is ZONE_NORMAL memory, and lastly ZONE_HIGHMEM.</p>
-
-<p>At boot, we pass all memory over to the kernel as follows:</p>
-
-<ol>
-<li><p>If there is no DMA zone, then we pass all low memory over as ZONE_NORMAL.</p></li>
-<li><p>If there is a DMA zone, by default we pass all low memory as ZONE_DMA.
-This is required so drivers which use GFP_DMA can work.</p>
-
-<p>Platforms with restricted DMA requirements can modify that layout to
-move memory from ZONE_DMA into ZONE_NORMAL, thereby restricting the
-upper address which the kernel allocators will give for GFP_DMA
-allocations.</p></li>
-<li><p>In either case, any high memory as ZONE_HIGHMEM if configured (or memory
-is truncated if not.)</p></li>
-</ol>
-
-
-<p>So, when we have (eg) a platform where only the <em>even</em> MBs of memory are
-DMA-able, we have a 1MB DMA zone at the beginning of system memory, and
-everything else in ZONE_NORMAL.  This means GFP_DMA will return either
-memory from the first 1MB or fail if it can&rsquo;t.  This is the behaviour we
-desire.</p>
-
-<p>Normal allocations will come from ZONE_NORMAL <em>first</em> and then try ZONE_DMA
-if there&rsquo;s no other alternative.  This is the same desired behaviour as
-x86.</p>
-
-<p>So, ARM is no different from x86, with the exception that the 16MB DMA
-zone due to ISA ends up being different sizes on ARM depending on our
-restrictions.</p>
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[编译out-of-tree的kernel模块]]></title>
@@ -108,76 +49,6 @@ make ARCH=arm64 CROSS_COMPILE=&lt;your toolchain&gt; INSTALL_MOD_PATH=&lt;kernel
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[GEM - Graphics Execution Manager 介绍]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/03/02/gem-introduction/"/>
-    <updated>2015-03-02T11:15:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/03/02/gem-introduction</id>
-    <content type="html"><![CDATA[<p>本文来自：<a href="http://lwn.net/Articles/283798/">http://lwn.net/Articles/283798/</a></p>
-
-<p>NOTE: Currently the buffer creation/read/write are implemented by driver specified ioctls. So right now you can&rsquo;t find functions like &ldquo;drm_gem_create&rdquo; in kernel sources.
-And that&rsquo;s also why we need &ldquo;dumb buffer&rdquo; in drm&rsquo;s ioctls(dumb_create, dumb_destroy&hellip;)</p>
-
-<!-- more -->
-
-
-<p>原文请看：<a href="http://lwn.net/Articles/283798/">http://lwn.net/Articles/283798/</a></p>
-
-<p>GEM是Intel建议提出并实现的，所以这篇文章是GEM maintainer写的introduction，非常详尽，只是对照现在的kernel来说，内容已经有一点outdate（所以我写了上面的NOTE），但是大部分内容都是OK的。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[转载：GEM vs TTM]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/03/02/gem-vs-ttm/"/>
-    <updated>2015-03-02T11:09:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/03/02/gem-vs-ttm</id>
-    <content type="html"><![CDATA[<p>本文来自: <a href="http://lwn.net/Articles/283793/">http://lwn.net/Articles/283793/</a></p>
-
-<p>Getting high-performance, three-dimensional graphics working under Linux is quite a challenge even when the fundamental hardware programming information is available.  One component of this problem is memory management: a graphics processor (GPU) is, essentially, a computer of its own with a distinct view of memory.  Managing the GPU&rsquo;s memory &ndash; and its view of system RAM &ndash; must be done carefully if the resulting system is intended to work at all, much less with acceptable performance.</p>
-
-<p>Not that long ago, it appeared that this problem had been solved with thetranslation table maps (TTM) subsystem.  TTM remains outside of the mainline kernel, though, as do all drivers which use it.  A recent queryabout what would be required to get TTM merged led to an interesting discussion where it turned out that, in fact, TTM may not be the future of graphics memory management after all.</p>
-
-<!-- more -->
-
-
-<p></p>
-
-<p>A number of complaints about TTM have been raised.  Its API is far larger than is needed for any free Linux driver; it has, in other words, a certain amount of code dedicated to the needs of binary-only drivers.  The fencing mechanism (which manages concurrency between the host CPUs and the GPU) is seen as being complex, difficult to work with, and not always yielding the best performance.  Heavy use of memory-mapped buffers can create performance problems of its own.  The TTM API is an exercise in trying to provide for everything in all situations;  as a result it is, according to some driver developers, hard to match to any specific hardware, hard to get started with, and still insufficiently flexible.  And, importantly, there is a distinct shortage of working free drivers which use TTM.  So Dave Airlie worries:</p>
-
-<blockquote><p>I was hoping that by now, one of the radeon or nouveau drivers would have adopted TTM, or at least demoed something working using it, this hasn&rsquo;t happened which worries me&hellip;  The real question is whether TTM suits the driver writers for use in Linux desktop and embedded environments, and I think so far I&rsquo;m not seeing enough positive feedback from the desktop side
-All of these worries would seem to be moot, since TTM is available and there is nothing else out there.  Except, as it turns out, there issomething out there: it&rsquo;s called the Graphics Execution Manager, or GEM. The Intel-sponsored GEM project is all of one month old, as of this writing. The GEM developers had not really intended to announce their work quite yet, but the TTM discussion brought the issue to the fore.</p></blockquote>
-
-<p>Keith Packard&rsquo;s introduction to GEM includes a document describing the API as it exists so far.  There are a number of significant differences in how GEM does things.  To begin with, GEM allocates graphical buffer objects using normal, anonymous, user-space memory.  That means that these buffers can be forced out to swap when memory gets tight.  There are clear advantages to this approach, and not just in memory flexibility: it also makes the implementation of suspend and resume easier by automatically providing backing store for all buffer objects.</p>
-
-<p>The GEM API tries to do away with the mapping of buffers into user space. That mapping is expensive to do and brings all sorts of interesting issues with cache coherency between the CPU and GPU.  So, instead, buffer objects are accessed with simple read() and write() calls.  Or, at least, that&rsquo;s the way it would be if the GEM developers could attach a file descriptor to each buffer object.  The kernel, however, does not make the management of that many file descriptors easy (yet), so the real API uses separate handles for buffer objects and a series of ioctl()calls.</p>
-
-<p>That said, it is possible to map a buffer object into user space.  But then the user-space driver must take explicit responsibility for the management of cache coherency.  To that end there is a set of ioctl()calls for managing the &ldquo;domain&rdquo; of a buffer; the domain, essentially, describes which component of the system owns the buffer and is entitled to operate on it.  Changing the domains (there are two, one for read access and one for writes) of a buffer will perform the necessary cache flushes.  In a sense, this mechanism resembles the streaming DMA API, where the ownership of DMA buffers can be switched between the CPU and the peripheral controller. That is not entirely surprising, as a very similar problem is being solved.</p>
-
-<p>This API also does away with the need for explicit fence operations. Instead, a CPU operation which requires access to a buffer will simply wait, if necessary, for the GPU to finish any outstanding operations involving that buffer.</p>
-
-<p>Finally, the GEM API does not try to solve the entire problem; a number of important operations (such as the execution of a set of GPU commands) are left for the hardware-specific driver to implement.  GEM is, thus, quite specific to the needs of Intel&rsquo;s driver at this time; it does not try for the same sort of generality that was a goal of TTM.  As describedby Eric Anholt:</p>
-
-<blockquote><p>The problem with TTM is that it&rsquo;s designed to expose one general API for all hardware, when that&rsquo;s not what our drivers want&hellip; We&rsquo;re trying to come at it from the other direction: Implement one driver well.  When someone else implements another driver and finds that there&rsquo;s code that should be common, make it into a support library and share it.</p></blockquote>
-
-<p>The advantage to this approach is that it makes it relatively easy to create something which works well with Intel drivers.  And that may well be a good start; one working set of drivers is better than none.  On the other hand, that means that a significant amount of work may be required to get GEM to the point where it can support drivers for other hardware.  There seem to be two points of view on how that might be done: (1) add capabilities to GEM when needed by other drivers, or (2) have each driver use its own memory manager.</p>
-
-<p>The first approach is, in many ways, more pleasing.  But it implies that the GEM API could change significantly over time.  And that, in turn, could delay the merging of the whole thing; the GEM API is exported to user space, and, as a result, must remain compatible as things change.  So there may be resistance to a quick merge of an API which looks like it may yet have to evolve for some time.</p>
-
-<p>The second approach, instead, is best describedby Dave Airlie:</p>
-
-<blockquote><p>Well the thing is I can&rsquo;t believe we don&rsquo;t know enough to do this in some way generically, but maybe the TTM vs GEM thing proves its not possible.  So we can then punt to having one memory manager per driver, but I suspect this will be a maintenance nightmare, so if people decide this is the way forward, I&rsquo;m happy to see it happen. However the person submitting the memory manager n+1 must damn well be willing to stand behind the interface until time ends, and explain why they couldn&rsquo;t re-use 1..n memory managers.</p></blockquote>
-
-<p>One other remaining issue is performance.  Keith Whitwell posted some benchmark results showing that the i915 driver performs significantly worse with either TTM or GEM than without.  Keith Packard gets different results, though; his tests show that the GEM-based driver is significantly faster.  Clearly there is a need for a set of consistent benchmarks; performance of graphics drivers is important, but performance cannot be optimized if it cannot be reliably measured.</p>
-
-<p>The use of anonymous memory also raises some performance concerns: a first-person shooter game will not provide the same experience if its blood-and-gore textures must be continually paged in.  Anonymous memory can also be high memory, and, thus, not necessarily accessible via a 32-bit pointer.  Some GPU hardware cannot address high memory; that will likely force the use of bounce buffers within the kernel.  In the end, GEM will have to prove that it can deliver good performance; GEM&rsquo;s developers are highly motivated to make their hardware look good, so there is a reasonable chance that things will work out on this front.</p>
-
-<p>The conclusion to draw from all of this is that the GPU memory management problem cannot yet be considered solved.  GEM might eventually become that solution, but it is a very new API which still needs a fair amount of work.  There is likely to be a lot of work yet to be done in this area.</p>
-
-<p>(Thanks to Timo Jyrinki for suggesting this topic.)</p>
-]]></content>
-  </entry>
-  
-  <entry>
     <title type="html"><![CDATA[有关DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU]]></title>
     <link href="http://www.markzhang.cn/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem/"/>
     <updated>2015-03-02T11:06:00+08:00</updated>
@@ -188,6 +59,121 @@ All of these worries would seem to be moot, since TTM is available and there is 
 <li><p>For tegra, GART &amp; SMMU can be used to implement IOMMU apis.</p></li>
 </ol>
 
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Linux graphics stack 随便写写]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/03/02/linux-graphics-stack-notes/"/>
+    <updated>2015-03-02T11:03:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/03/02/linux-graphics-stack-notes</id>
+    <content type="html"><![CDATA[<ul>
+<li><p>Display and mode setting: DRM. DRM defines connector/encoder/crtc to support display(including multi-monitor). And KMS makes mode setting happens in kernel space.</p></li>
+<li><p>2D acceleration: X server EXA/UXA extension. Vendor should write a X server driver which implements EXA or UXA(should be upstreamed). UXA is an enhancement design of EXA, proposed by intel, so GEM is used in UXA. DRM has no direct 2D acceleration interface definitions(e.g: memory copy/move, blit, color space conversion&hellip;), this is defined in EXA/UXA extensions. But vendor&rsquo;s X server driver will use drm functions, mostly is buffer manipulations.</p></li>
+<li><p>3D acceleration: via Mesa. Mesa has 2 parts:</p></li>
+</ul>
+
+
+<!-- more -->
+
+
+<ol>
+<li>libGL.so &mdash; the implementation of OpenGL spec, the default OpenGL implementation library in Linux. This libGL.so translates OpenGL callings to Mesa-specified instructions.</li>
+<li>DRI driver &mdash; the driver accepts the Mesa-specified instructions generated by libGL.so and call drm functions to get them accelerated in GPU. Should be upstreamed.</li>
+</ol>
+
+
+<p>DRM: has userspace libdrm &amp; kernel space drm driver.</p>
+
+<p>libdrm: Implemented drm APIs. Vendor can hook it&rsquo;s implementations as well as add more APIs which used by EXA/UXA driver(2D) or DRI driver(3D). That&rsquo;s why the build result of libdrm normally has 2 libraries(e.g: libdrm.so &amp; libdrm_intel.so). Vendor codes of libdrm should be upstreamed.</p>
+
+<p>Kernel drm driver: Works under kernel drm framework, should be upstreamed. Cause vendor can add APIs in libdrm, so kernel drm driver can handle vendor specified ioctls.</p>
+
+<p>GLX: X server extension of OpenGL. X server has DRI/DRI2 extensions as well.</p>
+
+<p>They&rsquo;re working with libGL.so in Mesa. By these extensions, Mesa can do:</p>
+
+<ol>
+<li><p>Direct rendering: libGL.so in Mesa try to figure out whether DRI driver is ready in Mesa. If so, GLX returns some infos(such as window size, position&hellip;) or create off-screen buffers(via DRI/DRI2 X extension) for Mesa. The rendering is handled in Mesa&rsquo;s DRI driver &mdash; no relations with X server.</p></li>
+<li><p>Indirect rendering: libGL.so in Mesa can&rsquo;t find out Mesa&rsquo;s DRI driver. So it queries whether DRI is available in X server. If so, it pass the Mesa-specified instructions which generated by libGL.so to X server. And GLX/DRI/DRI2 extensions of X server handles the rest things. Normally it&rsquo;s software rendering which implemented by Mesa as well. AIGLX(Accelerated Indirect GLX) seems has some solutions to accelerate this.</p></li>
+</ol>
+
+
+<p>So Mesa handles a lot of works in linux 3D graphics stack. And it has lots of relations with X server as well(GLX and DRI X extensions).</p>
+
+<p>An important reason that why we involve so many components is, decouple the dependencies of all of these guys. According to this design, DRM is not related with X server so it works with other programs as well(e.g: Wayland). Mesa is the same.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[32/64的问题：32bit指针转换成64bit - Sign Extension]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit/"/>
+    <updated>2014-12-16T15:09:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit</id>
+    <content type="html"><![CDATA[<p>32/64有很多问题，指针转换是其中一个，比如这个例子：</p>
+
+<!-- more -->
+
+
+<p><code>cpp
+void *p = 0xc8f68000;
+unsigned long long v = (unsigned long long)p;
+</code></p>
+
+<p>这个时候得到的 <code>v</code> 是： <code>0xffffffffc8f68000</code> 而不是 <code>0x00000000c8f68000</code></p>
+
+<p>以上例子来自：</p>
+
+<p><a href="http://stackoverflow.com/questions/22239752/convert-32-bit-pointer-to-64-bit-integer">http://stackoverflow.com/questions/22239752/convert-32-bit-pointer-to-64-bit-integer</a></p>
+
+<p>最近就碰到了好几次类似的问题。原因非常简单，就是编译器看到我们要把一个指针转换成 <code>unsigned long long</code>，而 <code>p</code> 的最高位是1，编译器认为这是负数，所以编译器就启动了 <code>Sign Extension</code>，将高32bit全部设置成1，这样最终你看到的高32bit就是全F了。</p>
+
+<p>所以当做32bit &ndash;> 64bit指针转换的时候，要使用 <code>intptr_t</code> 和 <code>uintptr_t</code>。这样编译器就知道这是指针的转换，高32bit就会是全0了。同样，这也就说明了，为什么 <code>stdint.h</code> 里面要定义这么些个typedef了:</p>
+
+<p><code>cpp
+void *p = 0xc8f68000;
+uint64_t v = (uintptr_t)p;
+</code></p>
+
+<p>事实上，无论何时都尽量要避免指针和Integer之间的转换，因为Integer是有正负的。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Thunderbird 80(72) column - 邮件在80(72)列处line break]]></title>
+    <link href="http://www.markzhang.cn/blog/2014/11/25/thunderbird-72-column/"/>
+    <updated>2014-11-25T11:13:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2014/11/25/thunderbird-72-column</id>
+    <content type="html"><![CDATA[<p>这个需求做linux kernel upstream的人都懂的&hellip;&hellip;要设置Thunderbird在80列正确换行，只需要这样：</p>
+
+<!-- more -->
+
+
+<ul>
+<li><p>Thunderbird如果撰写的邮件是plain text格式（在这里设置：Edit &ndash;> Account Settings &ndash;> Composition &amp; Addressing, you should uncheck Compose in HTML format for all accounts），那么自动就会在72列处做line wrap。但是需要注意的是，这里的line wrap只是在display邮件内容和撰写邮件时，你可以看到。当你发出邮件的时候，这个line wrap就没有了，换句话说，别人看到的你的邮件内容，还是很长的一行行的文字。所以需要下面一步。</p></li>
+<li><p>以下内容来自：</p></li>
+</ul>
+
+
+<p><a href="http://arapulido.com/2009/12/01/enabling-line-wrapping-in-thunderbird/#comment-807">http://arapulido.com/2009/12/01/enabling-line-wrapping-in-thunderbird/#comment-807</a></p>
+
+<p>下文中提到的option设置在：Edit &ndash;> Preferences &ndash;> Advanced (General tab) &ndash;> Configure Editor：</p>
+
+<blockquote><p>I am a happy user of the daily build of Thunderbird 3. Although it is still under development, is the best email client for Linux I’ve tried so far, at least, the one that better works for me. Email search &amp; filtering is fast and reliable.</p>
+
+<p>The only thing I don’t like is that wrapping your emails to 72 characters when sending plain text is not straightforward. Once you have selected to send your emails as plain text and have set the line wrap option to 72, there is still one more option to tweak.</p>
+
+<p>Thunderbird has a “feature” that sends by default all plain text with the option format=flowed, which unwraps the email in the client receiver. To turn this feature off, you have to toggle one of the options in the chrome editor:</p>
+
+<p>To disable flowed paragraphs, enforcing line breaks as formatted in the message, set the preference:</p>
+
+<p>mailnews.display.disable_format_flowed_support true
+(<a href="http://kb.mozillazine.org/Mail_content_types#Plain_text">http://kb.mozillazine.org/Mail_content_types#Plain_text</a>)</p>
+
+<p>To disable paragraph flow when you send plain text messages, and in the plain text part of multipart messages, set the preference:</p>
+
+<p>mailnews.send_plaintext_flowed false
+(<a href="http://kb.mozillazine.org/Mail_content_types#Disabling_paragraph_flow">http://kb.mozillazine.org/Mail_content_types#Disabling_paragraph_flow</a>)</p></blockquote>
 ]]></content>
   </entry>
   
