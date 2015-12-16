@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: git - Make Things Cool</title>
+  <title>Raspberry Pi + ArchLinux：网络dhcp不稳定，经常无法获取IP地址 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="Category: git">
+  <meta name="description" content="经常发现树莓派开机之后网络没有起来，最终发现是因为dhcpcd的-t参数，也就是等待dhcp server响应的timeout时间太短导致的。 默认是30秒，但是ArchLinux中配置的是10秒。 查看了脚本，调用dhcpcd的是netcfg，netcfg本身也是一个脚本，所以最终发现这个- &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cnblog/categories/git/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2015/12/16/raspberrypi-dhcp-timeout/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -72,113 +72,129 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: Git</h1>
+    
+      
+        <h1 class="entry-title">Raspberry Pi + ArchLinux：网络dhcp不稳定，经常无法获取IP地址</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-16T14:40:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2015</time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p>经常发现树莓派开机之后网络没有起来，最终发现是因为dhcpcd的-t参数，也就是等待dhcp server响应的timeout时间太短导致的。</p>
 
-  
-  <h2>2015</h2>
+<p>默认是30秒，但是ArchLinux中配置的是10秒。</p>
 
-<article>
-  
-<h1><a href="/blog/2015/05/11/deal-with-git-am-failures/">git am失败的时候怎么办</a></h1>
-<time datetime="2015-05-11T10:15:00+08:00" pubdate><span class='month'>May</span> <span class='day'>11</span> <span class='year'>2015</span></time>
+<p>查看了脚本，调用dhcpcd的是netcfg，netcfg本身也是一个脚本，所以最终发现这个-t是在/usr/lib/network/connections/ethernet中设置的。</p>
 
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/git/'>git</a></span>
-</footer>
+<p>于是在这个文件的开头加上了：<code>DHCP_TIMEOUT=300</code></p>
 
-
-</article>
-
-
-
-  
-  <h2>2014</h2>
-
-<article>
-  
-<h1><a href="/blog/2014/04/22/git-gossip-3/">Git都在说些啥（三）</a></h1>
-<time datetime="2014-04-22T07:58:00+08:00" pubdate><span class='month'>Apr</span> <span class='day'>22</span> <span class='year'>2014</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/git/'>git</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2014/04/21/git-gossip-2/">Git都在说些啥（二）</a></h1>
-<time datetime="2014-04-21T21:33:00+08:00" pubdate><span class='month'>Apr</span> <span class='day'>21</span> <span class='year'>2014</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/git/'>git</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2014/04/04/git-gossip-1/">Git都在说些啥（一）</a></h1>
-<time datetime="2014-04-04T14:28:00+08:00" pubdate><span class='month'>Apr</span> <span class='day'>04</span> <span class='year'>2014</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/git/'>git</a></span>
-</footer>
-
-
-</article>
-
-
-
-  
-  <h2>2013</h2>
-
-<article>
-  
-<h1><a href="/blog/2013/11/20/git-tips/">Git常见命令和配置</a></h1>
-<time datetime="2013-11-20T21:01:00+08:00" pubdate><span class='month'>Nov</span> <span class='day'>20</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/git/'>git</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2013/11/07/linus-git-config/">Linus说，请将这个配置加到你的.gitconfig</a></h1>
-<time datetime="2013-11-07T18:18:00+08:00" pubdate><span class='month'>Nov</span> <span class='day'>07</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/git/'>git</a></span>
-</footer>
-
-
-</article>
-
+<p>这样超时就变成了5分钟，足够了。</p>
 </div>
 
+
+  <footer>
+    
+    <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
+      <strong>版权所有 &copy;2015 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
+原文链接: http://www.markzhang.cn/blog/2015/12/16/raspberrypi-dhcp-timeout/<br>
+您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
+    </section>
+    
+
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Mark Zhang</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-16T14:40:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/linux/'>linux</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2015/08/31/hack-cisco-anyconnect/" title="Previous Post: How to HACK CISCO anyconnect secure mobile client">&laquo; How to HACK CISCO anyconnect secure mobile client</a>
+      
+      
+    </p>
+  </footer>
 </article>
 
+  <section>
+    <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_24x24">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_kaixin001"></a>
+	<a href="http://www.jiathis.com/share?uid=1860527" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1352426099508779" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+  </section>
+
+
+  <section>
+    <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1860527"></script>
+<!-- UY END -->
+
+  </section>
 
 </div>
 

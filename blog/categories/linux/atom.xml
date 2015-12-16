@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-12-11T15:21:40+08:00</updated>
+  <updated>2015-12-16T14:42:01+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,23 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Raspberry Pi + ArchLinux：网络dhcp不稳定，经常无法获取IP地址]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/12/16/raspberrypi-dhcp-timeout/"/>
+    <updated>2015-12-16T14:40:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/12/16/raspberrypi-dhcp-timeout</id>
+    <content type="html"><![CDATA[<p>经常发现树莓派开机之后网络没有起来，最终发现是因为dhcpcd的-t参数，也就是等待dhcp server响应的timeout时间太短导致的。</p>
+
+<p>默认是30秒，但是ArchLinux中配置的是10秒。</p>
+
+<p>查看了脚本，调用dhcpcd的是netcfg，netcfg本身也是一个脚本，所以最终发现这个-t是在/usr/lib/network/connections/ethernet中设置的。</p>
+
+<p>于是在这个文件的开头加上了：<code>DHCP_TIMEOUT=300</code></p>
+
+<p>这样超时就变成了5分钟，足够了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[NVIDIA Linux驱动在Ubuntu 12.04上的安装]]></title>
@@ -317,74 +334,6 @@ script</p>
 <li><p>重启完成之后，再开启一个Crosh，执行：mount -o rw,remount /，就可以将root partition变成可写的了。</p></li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[CloneZilla磁盘克隆，超快的更换硬盘]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/06/03/ubuntu-disk-clone/"/>
-    <updated>2014-06-03T12:49:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/06/03/ubuntu-disk-clone</id>
-    <content type="html"><![CDATA[<p>开发用的PC机用的是一块128G的SSD，安装的Ubuntu 12.04，速度明显比机械硬盘快了好多，唯一的不足就是容量太小。于是最近购入了一块新的240G的SSD，需要将原来128G的SSD上的东西全部克隆过来。</p>
-
-<p>对于Linux ext4文件分区系统的磁盘来说，<code>ghost</code>工作的并不好，工作的比较好的是<code>CloneZilla</code>，因为它能识别ext4的文件系统，从而使克隆变的无比快速，之前我写过一篇类似的文章：</p>
-
-<p><a href="http://www.cnblogs.com/super119/archive/2012/09/26/2703479.html">http://www.cnblogs.com/super119/archive/2012/09/26/2703479.html</a></p>
-
-<p>但是那一次的克隆是两块容量一样的磁盘，而这一次两块SSD的容量并不相同，所以我做了一些改变。</p>
-
-<!-- more -->
-
-
-<p>两块磁盘的容量不一样，我能想到的问题是，如果是克隆整块硬盘的话，那MBR部分也会被克隆过去，也就是说，源磁盘的分区信息也会被克隆到目的盘上，这样，会不会240G的SSD就会变成120G？我没有试验，有可能 <code>CloneZilla</code> 能帮我们解决这个问题，但是为了避免麻烦，我还是手动的克隆了。</p>
-
-<p>所以我的做法是，不是克隆整个硬盘，而是只克隆源磁盘上的分区。完成之后，在目的盘上重建MBR信息，也就是在目的盘上恢复grub。具体我是这么做的：</p>
-
-<ul>
-<li><p>使用Ubuntu 12.04安装盘，进入Ubuntu Live（不是安装Ubuntu那个选项），然后使用Ubuntu的Disk Utility给目的盘分区</p></li>
-<li><p>使用CloneZilla的启动ISO启动系统，可以把这个ISO刻成光盘，也可以使用UltraISO这种工具将ISO烧录到U盘上，然后从USB启动电脑。启动起来之后，按照 <code>CloneZilla</code> 提供的向导，一步一步进行即可，超级简单。将源磁盘每个分区都克隆到目的盘对应的分区上即可。100G的数据五分钟搞定。</p></li>
-</ul>
-
-
-<p><img src="/downloads/image/clonezilla.jpg" alt="CloneZilla Cloning" /></p>
-
-<ul>
-<li>接下来就可以将源磁盘从机器中拿出来了，我们只需要再把目的磁盘的MBR恢复就可以成功启动系统了。其实就是恢复grub的标准做法：首先还是使用Ubuntu的安装盘进入Ubuntu Live，然后打开终端，输入以下命令：</li>
-</ul>
-
-
-<p>``` bash</p>
-
-<h1>Mount root partition to /mnt</h1>
-
-<p>sudo mount /dev/sda1 /mnt
-sudo mount &mdash;bind /dev /mnt/dev
-sudo mount &mdash;bind /dev/pts /mnt/dev/pts
-sudo mount &mdash;bind /proc /mnt/proc
-sudo mount &mdash;bind /sys /mnt/sys</p>
-
-<h1>Chroot into it and update grub</h1>
-
-<p>sudo chroot /mnt
-grub-install /dev/sda
-grub-install &mdash;recheck /dev/sda
-update-grub
-exit</p>
-
-<h1>Quit chroot environment and umount all stuffs</h1>
-
-<p>sudo umount /mnt/dev &amp;&amp;
-sudo umount /mnt/dev/pts &amp;&amp;
-sudo umount /mnt/proc &amp;&amp;
-sudo umount /mnt/sys &amp;&amp;
-sudo umount /mnt
-```</p>
-
-<p>这样就完成了，在我的机器上，/dev/sda就是我新更换的240G的SSD，你需要根据你的机器上的磁盘配置来决定使用哪个磁盘。</p>
-
-<p>上述操作来自文章：</p>
-
-<p><a href="http://howtoubuntu.org/how-to-repair-restore-reinstall-grub-2-with-a-ubuntu-live-cd">http://howtoubuntu.org/how-to-repair-restore-reinstall-grub-2-with-a-ubuntu-live-cd</a></p>
 ]]></content>
   </entry>
   
