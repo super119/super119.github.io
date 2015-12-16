@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-12-16T14:42:01+08:00</updated>
+  <updated>2015-12-16T14:45:24+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,29 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Chromium OS相比Chrome OS缩水的地方]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/12/16/chromiumos-chromeos/"/>
+    <updated>2015-12-16T14:44:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/12/16/chromiumos-chromeos</id>
+    <content type="html"><![CDATA[<p>关于两者的区别，下面是Google官方的解释：
+1. Chromium OS人人都可下载、修改，并且免费使用。Chrome OS只提供给品牌厂商的特定笔记本机型（也就是Chromebook）使用。
+2. Chrome OS具有需验证的引导和轻松恢复功能，Chromium OS则没有（也没需要）。</p>
+
+<!-- more -->
+
+
+<ol>
+<li>Chrome OS具有自动更新功能，可以保持你的系统是最新状态，Chromium OS则没有，要想更新系统只有下载新版来重装。</li>
+<li>Chrome OS针对具体的笔记本硬件有特别优化，运行时性能更高，也更稳定（这个笔者有深刻体会）；Chromium OS则只包含一些早已存在的开源硬件驱动。</li>
+<li>Chrome OS由Google公司和笔记本品牌厂商提供技术支持，Chromium OS则由开源社区提供支持。</li>
+<li>Chrome OS内置Flash、PDF和Netflix Instant插件，并且有Google Talk软件，支持3G网络，Chromium OS则没有以上特性（没有Flash插件最要命啊）。</li>
+<li>图标不一样，Chrome OS的图标是红黄蓝绿四色，Chromium OS只有蓝色。</li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Raspberry Pi + ArchLinux：网络dhcp不稳定，经常无法获取IP地址]]></title>
@@ -259,81 +282,6 @@ export PATH=/usr/local/bin:$PATH
 
 <p>mailnews.send_plaintext_flowed false
 (<a href="http://kb.mozillazine.org/Mail_content_types#Disabling_paragraph_flow">http://kb.mozillazine.org/Mail_content_types#Disabling_paragraph_flow</a>)</p></blockquote>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ChromeOS配置SSH Server]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/10/17/chromeos-enable-ssh-server/"/>
-    <updated>2014-10-17T12:52:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/10/17/chromeos-enable-ssh-server</id>
-    <content type="html"><![CDATA[<p>ChromeOS是一个相当"Linux"的OS。现在一般能拿到手的ChromeOS的设备很多都是Chromebook，所以本文是在一台Chromebook上做的测试。</p>
-
-<p>ChromeOS默认的零售版本是什么开发类工具都没有的，包括ssh client都没有。要enable SSH client/server，首先要将ChromeOS切换到 <code>Developer Mode</code>。在我手上的这台Chromebook上，做法很简单，就是三键同按开机即可（ESC + Refresh + Power）。</p>
-
-<p>具体的切换到 <code>Developer Mode</code> 的做法可以参考Google的ChromeOS网站上的文章。接下来来看怎么enable SSH Server。</p>
-
-<!-- more -->
-
-
-<p>以下内容完全参考了文章：</p>
-
-<p><a href="http://www.de7ec7ed.com/2013/05/ssh-daemon-samsung-chromebook-exynos.html">http://www.de7ec7ed.com/2013/05/ssh-daemon-samsung-chromebook-exynos.html</a></p>
-
-<p>所以在这里基本上是做一个英翻中的工作。</p>
-
-<ul>
-<li><p>首先启动Chrome浏览器，按下 <code>ctrl + alt + t</code>，开启Crosh（浏览器界面的一个Terminal程序）。Crosh也是只有将ChromeOS切换成 <code>Developer Mode</code> 之后才有的。</p></li>
-<li><p>输入：<code>shell</code>，得到一个bash，然后输入 <code>sudo -i</code>，就可以得到root权限了。</p></li>
-<li><p>mkdir -p /mnt/stateful_partition/etc/ssh</p></li>
-<li><p>ssh-keygen -t dsa -f /mnt/stateful_partition/etc/ssh/ssh_host_dsa_key</p></li>
-<li><p>ssh-keygen -t rsa -f /mnt/stateful_partition/etc/ssh/ssh_host_rsa_key</p></li>
-<li><p>vi /etc/ssh/sshd_config，将 <code>PasswordAuthentication</code> 改成 <code>yes</code>。在这里也可以看到，为什么我们要在/mnt/stateful_partition下面创建etc/ssh目录，并在里面生成keys。就是因为在这个配置文件中指定了ssh key的路径。</p></li>
-<li><p>/sbin/iptables -A INPUT -p tcp &mdash;dport 22 -j ACCEPT</p></li>
-<li><p>给root用户设置一个密码，输入passwd即可。</p></li>
-<li><p>/usr/sbin/sshd，这样SSH server就启动起来了，可以从其他机器登录过来了。</p></li>
-</ul>
-
-
-<p>题外话：如果你是 <code>cd /usr/sbin;./sshd</code>，或者 <code>/usr/sbin</code> 在PATH里面，直接输入 <code>sshd</code> 启动，你会发现sshd无法启动，错误是：</p>
-
-<blockquote><p>sshd re-exec requires execution with an absolute path</p></blockquote>
-
-<p>Stackexchange有这个问题的回答，很有意思，有两点：</p>
-
-<blockquote><p>This is specific to OpenSSH from version 3.9 onwards.</p>
-
-<p>For every new connection, sshd will re-execute itself, to ensure that all execute-time randomisations are re-generated for each new connection. In order for sshd to re-execute itself, it needs to know the full path to itself.</p>
-
-<p>Here&rsquo;s a quote from the release notes for 3.9:</p>
-
-<p>Make sshd(8) re-execute itself on accepting a new connection. This security measure ensures that all execute-time randomisations are reapplied for each connection rather than once, for the master process' lifetime. This includes mmap and malloc mappings, shared library addressing, shared library mapping order, ProPolice and StackGhost cookies on systems that support such things</p></blockquote>
-
-<p>另外一个说法也有一定道理：</p>
-
-<blockquote><p>This is to prevent someone from injecting a sshd program somewhere in one of the directories in your PATH and you inadvertently executing it.</p></blockquote>
-
-<p>回到SSH server的配置上来，如果想ChromeOS开机的时候启动SSHD，写这样一个脚本放到 <code>/etc/init</code> 目录下面即可：</p>
-
-<p>``` bash
-start on started system-services
-script</p>
-
-<pre><code> /sbin/iptables -A INPUT -p tcp --dport 22 -j ACCEPT
- /usr/sbin/sshd
-</code></pre>
-
-<p>end script
-```</p>
-
-<p>最后，突然想到，要做上面的所有的事情，要求ChromeOS的root partition是可写的，但是默认情况下，ChromeOS的root partition是read-only的。需要修改的话这样做：</p>
-
-<ul>
-<li><p>/usr/share/vboot/bin/make_dev_ssd.sh &mdash;remove_rootfs_verification &mdash;partitions 2</p></li>
-<li><p>做完上述命令后，需要重启ChromeOS</p></li>
-<li><p>重启完成之后，再开启一个Crosh，执行：mount -o rw,remount /，就可以将root partition变成可写的了。</p></li>
-</ul>
-
 ]]></content>
   </entry>
   
