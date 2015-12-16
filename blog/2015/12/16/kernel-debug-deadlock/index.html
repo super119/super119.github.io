@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>PS3 KillZone 3（杀戮地带3）黑屏死机问题 - Make Things Cool</title>
+  <title>Linux kernel: How to debug mutex deadlock 如何调试mutex死锁 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="PS3上的杀戮地带3，当升级了1.14（最新版本）之后，有一个黑屏死机的问题： http://community.killzone.com/t5/Killzone-3-PS3/Patch-1-14-freezing-issues/td-p/1351164 最近我也买了一张二手的杀戮地带3， &hellip;">
+  <meta name="description" content="和userspace调试lock一样，主要是要： 找到lock死锁的地方，打印出调用栈
+找出这个mutex目前被谁占用了 针对1：在kernel config中，Kernel Hacking这个大项中，enable跟lock/mutex相关的config，比如CONFIG_DEBUG_MUTEX， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/09/17/killzone-3-freezing-issue/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2015/12/16/kernel-debug-deadlock/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +78,7 @@
   <header>
     
       
-        <h1 class="entry-title">PS3 KillZone 3（杀戮地带3）黑屏死机问题</h1>
+        <h1 class="entry-title">Linux Kernel: How to Debug Mutex Deadlock 如何调试mutex死锁</h1>
       
     
     
@@ -94,44 +95,42 @@
   
 
 
-<time datetime="2014-09-17T10:34:00+08:00" pubdate data-updated="true">Sep 17<span>th</span>, 2014</time>
+<time datetime="2015-12-16T15:47:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2015</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>PS3上的杀戮地带3，当升级了1.14（最新版本）之后，有一个黑屏死机的问题：</p>
+<div class="entry-content"><p>和userspace调试lock一样，主要是要：</p>
 
-<p><a href="http://community.killzone.com/t5/Killzone-3-PS3/Patch-1-14-freezing-issues/td-p/1351164">http://community.killzone.com/t5/Killzone-3-PS3/Patch-1-14-freezing-issues/td-p/1351164</a></p>
+<ol>
+<li><p>找到lock死锁的地方，打印出调用栈</p></li>
+<li><p>找出这个mutex目前被谁占用了</p></li>
+</ol>
+
 
 <!-- more -->
 
 
-<p>最近我也买了一张二手的杀戮地带3，也碰到了这个问题。为此我Google看了好多帖子，基本上这些帖子七嘴八舌的都说这个问题的原因是：</p>
+<p>针对1：在kernel config中，Kernel Hacking这个大项中，enable跟lock/mutex相关的config，比如CONFIG_DEBUG_MUTEX，以及CONFIG_DETECT_HUNG_TASKS, 这样当死锁发生时，稍微等待一段时间（默认120秒），kernel就会检测到死锁，同时打印出调用栈。在kernel hacking里面，包含了大量的有利于调试的config，可以一项一项都看一遍，总有一款适合您。</p>
 
-<p><strong> 你的PS3更换过硬盘，而且更换的是一个高速的（比如7200 RPM），大容量的硬盘。</strong></p>
+<p>针对2：来到代码中死锁的地方，在enable了CONFIG_DEBUG_MUTEX的情况下，添加这样的代码：</p>
 
-<p>没错，我的PS3的确换过硬盘，因为原装的250G的坏掉了，所以我换了一个500G的7200 RPM的。但是我也不想就因为这个就再换一次硬盘啊，于是我继续Google看看有没有其他的办法，结果是我试了这么几种方法：</p>
-
-<ul>
-<li>进入PS3的恢复模式，重建Database</li>
-<li>进入PS3的恢复模式，格式化PS3</li>
-<li>完全格式化PS3（在PS3的XMB界面下）</li>
-</ul>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">show_stack</span><span class="p">(</span><span class="o">&lt;</span><span class="n">lock</span><span class="o">&gt;</span><span class="p">.</span><span class="n">owner</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p>试验下来，以上三种方法均无效。最后没办法我找来一块以前用过的一块5400转160G的硬盘，换到PS3上，开机：</p>
+<p><lock>是你的mutex的变量名，.owner是一个struct task_struct *，利用show_stack函数就可以打印出该mutex被谁占用了，而且占用该mutex时的调用栈。非常cool。</p>
 
-<ul>
-<li>PS3提示系统软件丢失</li>
-<li>PS3提示插入一个带有最新firmware的USB key，然后同时按下 <code>start</code> + <code>select</code> 开始重新往硬盘上安装系统软件</li>
-<li>于是我去download了一个4.65的firmware，放到U盘的 <code>PS3</code> &ndash;> <code>UPDATE</code> 目录下，就像给PS3升级系统软件一样</li>
-<li>PS3会给硬盘重新分区并安装系统软件</li>
-</ul>
+<p>此外可以看一下struct mutex的定义，有一些实用的东西，比如mutex的name。struct task_struct中也有一些实用的东西，比如pid等。</p>
 
+<p>所以总结来说，kernel中目前可以打印调用栈的有：</p>
 
-<p>完成之后，登录PSN，插入杀戮地带3，再升级1.14，果然就好了。。。已无力吐槽，GG的程序员是临时工吧？</p>
+<p>dump_stack：打印当前的backtrace</p>
+
+<p>show_stack：打印指定task_struct的backtrace</p>
 </div>
 
 
@@ -139,7 +138,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2015 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2014/09/17/killzone-3-freezing-issue/<br>
+原文链接: http://www.markzhang.cn/blog/2015/12/16/kernel-debug-deadlock/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -162,12 +161,12 @@
   
 
 
-<time datetime="2014-09-17T10:34:00+08:00" pubdate data-updated="true">Sep 17<span>th</span>, 2014</time>
+<time datetime="2015-12-16T15:47:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2015</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/games/'>Games</a>
+    <a class='category' href='/blog/categories/linux-kernel/'>linux-kernel</a>
   
 </span>
 
@@ -183,10 +182,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2014/09/01/ros-openvpn/" title="Previous Post: RouterOS配置记录（四）：OpenVPN Client">&laquo; RouterOS配置记录（四）：OpenVPN Client</a>
+        <a class="basic-alignment left articlenav" href="/blog/2015/12/16/chromiumos-chromeos/" title="Previous Post: Chromium OS相比Chrome OS缩水的地方">&laquo; Chromium OS相比Chrome OS缩水的地方</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/10/17/chromeos-enable-ssh-server/" title="Next Post: ChromeOS配置SSH Server">ChromeOS配置SSH Server &raquo;</a>
       
     </p>
   </footer>
