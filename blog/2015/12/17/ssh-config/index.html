@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>在Octopress中使用友言，替换Disqus - Make Things Cool</title>
+  <title>SSH client config Sample - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="Disqus应该是国外做的一个评论系统，按现在时髦的话说，不太接中国的地气，所以考虑换一个评论系统。具体做起来非常的简单，Octopress就像一个模板系统，以前Java火热的时候用过Velocity，大体思路都是利用一些markdown的语法填在预先写好的模板文件中，然后解析器解释该文件， &hellip;">
+  <meta name="description" content="man ssh_config，查看~/.ssh/config的语法。 Host可以使用通配符，当ssh的时候如果server的URL能match上这里Host指定的值，则Host下面指定的HostName将被作为最终URL使用。同时该Host下配置的User, Port都将被使用。 当然， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2013/11/05/add-uyan-comment/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2015/12/17/ssh-config/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">在Octopress中使用友言，替换Disqus</h1>
+        <h1 class="entry-title">SSH Client Config Sample</h1>
       
     
     
@@ -94,33 +94,27 @@
   
 
 
-<time datetime="2013-11-05T21:56:00+08:00" pubdate data-updated="true">Nov 5<span>th</span>, 2013</time>
+<time datetime="2015-12-17T11:01:00+08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2015</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Disqus应该是国外做的一个评论系统，按现在时髦的话说，不太接中国的地气，所以考虑换一个评论系统。具体做起来非常的简单，Octopress就像一个模板系统，以前Java火热的时候用过Velocity，大体思路都是利用一些markdown的语法填在预先写好的模板文件中，然后解析器解释该文件，从而生成最终需要的东西。</p>
+<div class="entry-content"><p>man ssh_config，查看~/.ssh/config的语法。</p>
 
-<p>在Octopress中，发表的博客文章使用的模板是<code>source/_layout/post.html</code>，打开之后搜索disqus就可以发现原来的disqus部分的代码。所以要将其替换成其他的评论系统就很直观了。这里我使用了友言，因为Google了一下貌似现在国内友言做的还不错。</p>
+<p>Host可以使用通配符，当ssh的时候如果server的URL能match上这里Host指定的值，则Host下面指定的HostName将被作为最终URL使用。同时该Host下配置的User, Port都将被使用。</p>
 
-<p>总体来说就是三步：</p>
+<p>当然，User和Port都可以被命令行上指定的override。</p>
+
+<p>附上目前的一份sample配置：</p>
 
 <!-- more -->
 
 
-<ol>
-<li>在<code>_config.yml</code>中添加一个配置项，比如<code>uyan_id: xxx</code></li>
-<li>添加一个被include的文件，用来存放友言提供给我们的插入代码，比如：<code>source/_include/post/uyan_comments.html</code></li>
-<li>修改<code>source/_layout/post.html</code>，将disqus的部分替换成使用友言。</li>
-</ol>
 
 
-<p>以下就是我的修改：</p>
-
-<figure class='code'><figcaption><span>上述三点的改动 diff (uyan-comments-changes.diff)</span> <a href='/downloads/code/uyan-comments-changes.diff'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -148,64 +142,38 @@
 <span class='line-number'>26</span>
 <span class='line-number'>27</span>
 <span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-</pre></td><td class='code'><pre><code class='diff'><span class='line'><span class="gh">diff --git a/_config.yml b/_config.yml</span>
-</span><span class='line'><span class="gh">index 6caabf1..98a32c8 100644</span>
-</span><span class='line'><span class="gd">--- a/_config.yml</span>
-</span><span class='line'><span class="gi">+++ b/_config.yml</span>
-</span><span class='line'><span class="gu">@@ -93,6 +93,9 @@ delicious_count: 3</span>
-</span><span class='line'> disqus_short_name:
-</span><span class='line'> disqus_show_comment_count: false
-</span><span class='line'>
-</span><span class='line'><span class="gi">+# Uyan Comments</span>
-</span><span class='line'><span class="gi">+uyan_id: &lt;填写你的友言的uid&gt;</span>
-</span><span class='line'><span class="gi">+</span>
-</span><span class='line'> # Google Analytics
-</span><span class='line'> google_analytics_tracking_id:
-</span><span class='line'>
-</span><span class='line'><span class="gh">diff --git a/source/_includes/post/uyan_comments.html b/source/_includes/post/uyan_comments.html</span>
-</span><span class='line'>new file mode 100644
-</span><span class='line'><span class="gh">index 0000000..7e063c3</span>
-</span><span class='line'><span class="gd">--- /dev/null</span>
-</span><span class='line'><span class="gi">+++ b/source/_includes/post/uyan_comments.html</span>
-</span><span class='line'><span class="gu">@@ -0,0 +1,4 @@</span>
-</span><span class='line'><span class="gi">+&lt;!-- UY BEGIN --&gt;</span>
-</span><span class='line'><span class="gi">+&lt;div id=&quot;uyan_frame&quot;&gt;&lt;/div&gt;</span>
-</span><span class='line'><span class="gi">+&lt;script type=&quot;text/javascript&quot; src=&quot;http://v2.uyan.cc/code/uyan.js?uid={{ site.uyan_id }}&quot;&gt;&lt;/script&gt;</span>
-</span><span class='line'><span class="gi">+&lt;!-- UY END --&gt;</span>
-</span><span class='line'><span class="gh">diff --git a/source/_layouts/post.html b/source/_layouts/post.html</span>
-</span><span class='line'><span class="gh">index da9e9c4..36bd433 100644</span>
-</span><span class='line'><span class="gd">--- a/source/_layouts/post.html</span>
-</span><span class='line'><span class="gi">+++ b/source/_layouts/post.html</span>
-</span><span class='line'><span class="gu">@@ -25,10 +25,10 @@ single: true</span>
-</span><span class='line'>     &lt;/p&gt;
-</span><span class='line'>   &lt;/footer&gt;
-</span><span class='line'> &lt;/article&gt;
-</span><span class='line'><span class="gd">-{% if site.disqus_short_name and page.comments == true %}</span>
-</span><span class='line'><span class="gi">+{% if site.uyan_id and page.comments == true %}</span>
-</span><span class='line'>   &lt;section&gt;
-</span><span class='line'>     &lt;h1&gt;Comments&lt;/h1&gt;
-</span><span class='line'><span class="gd">-    &lt;div id=&quot;disqus_thread&quot; aria-live=&quot;polite&quot;&gt;{% include post/disqus_thread.html %}&lt;/div&gt;</span>
-</span><span class='line'><span class="gi">+    {% include post/uyan_comments.html %}</span>
-</span><span class='line'>   &lt;/section&gt;
-</span><span class='line'> {% endif %}
-</span><span class='line'> &lt;/div&gt;
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Host chromium
+</span><span class='line'>  HostName gerrit.chromium.org
+</span><span class='line'>  User markz
+</span><span class='line'>  Port 29418
+</span><span class='line'>  PubkeyAuthentication yes
+</span><span class='line'>  IdentityFile ~/.ssh/chromium
+</span><span class='line'>Host bitbucket.*
+</span><span class='line'>  HostName bitbucket.org
+</span><span class='line'>  PubkeyAuthentication yes
+</span><span class='line'>  IdentityFile ~/.ssh/bitbucket
+</span><span class='line'>Host gitorious.*
+</span><span class='line'>  HostName gitorious.org
+</span><span class='line'>  PubkeyAuthentication yes
+</span><span class='line'>  IdentityFile ~/.ssh/gitorious
+</span><span class='line'>Host gitse
+</span><span class='line'>  HostName gitse.nvidia.com
+</span><span class='line'>  PubkeyAuthentication yes
+</span><span class='line'>  IdentityFile ~/.ssh/gitse
+</span><span class='line'>Host github.*
+</span><span class='line'>  HostName github.com
+</span><span class='line'>  PubkeyAuthentication yes
+</span><span class='line'>  IdentityFile ~/.ssh/github
+</span><span class='line'>Host *.cyanogenmod.*
+</span><span class='line'>  HostName review.cyanogenmod.org
+</span><span class='line'>  PubkeyAuthentication yes
+</span><span class='line'>  IdentityFile ~/.ssh/cmreview
+</span><span class='line'>Host *
+</span><span class='line'>  PubkeyAuthentication no
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><strong>Note:</strong> 有一个注意点就是友言会采集当前域名作为评论来源的一个index，来归类存放你的留言。所以在<code>rake preview</code>的时候，是看不到友言的评论框的。只有将你的博客上传到了网络上之后，你才能看到。因为很多时候我们开发完了都会使用<code>rake preview</code>先在本地<code>http://localhost:4000</code>上看一下，所以这是看不到的，并不是代码有问题。</p>
+<p>在最末尾默认禁止Public key的验证方式，也就是说，优先采用password验证。否则有些ssh server就会登录不上，因为有些ssh server优先验证public key，而我们这里有很多public key，一个一个验证失败之后就会因为验证失败次数太多从而连不上server。</p>
 </div>
 
 
@@ -213,7 +181,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2015 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2013/11/05/add-uyan-comment/<br>
+原文链接: http://www.markzhang.cn/blog/2015/12/17/ssh-config/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -236,12 +204,12 @@
   
 
 
-<time datetime="2013-11-05T21:56:00+08:00" pubdate data-updated="true">Nov 5<span>th</span>, 2013</time>
+<time datetime="2015-12-17T11:01:00+08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2015</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/blog/'>Blog</a>
+    <a class='category' href='/blog/categories/linux/'>linux</a>
   
 </span>
 
@@ -257,10 +225,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/11/04/blog-code-names/" title="Previous Post: 博客 Code Names">&laquo; 博客 Code Names</a>
+        <a class="basic-alignment left articlenav" href="/blog/2015/12/17/mmap-invalid-arg/" title="Previous Post: mmap: invalid argument & MAP_PRIVATE">&laquo; mmap: invalid argument & MAP_PRIVATE</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/11/07/embed-liquid-codes-in-blog/" title="Next Post: 在博客内容中插入Liquid代码时的注意点">在博客内容中插入Liquid代码时的注意点 &raquo;</a>
       
     </p>
   </footer>

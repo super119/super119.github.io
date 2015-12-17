@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="之前有一篇文章说了在RouterOS下配置chnroutes： RouterOS配置记录（二）：chnroutes 配置了chnroutes之后，国内IP不走VPN，国外的走VPN，一切看起来都很好。但是随着使用时间的增长，发现了一些问题： ">
+  <meta name="description" content="现在的Android APP对空间的使用是越来越大，APP本身一般都有几十M，再加上使用过程中也会消耗大量存储，比如微信就经常会使用到上百M空间。 卓普大黑的默认data分区大小是3G，随着安装的APP越来越多，data分区就经常会被耗尽。所以，增大data分区就顺理成章的成为一个需求。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/04/05/zopo-c7-increase-primary-partition/">卓普大黑（C7、zp990）增大data分区</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-04-05T18:18:00+08:00" pubdate data-updated="true">Apr 5<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>现在的Android APP对空间的使用是越来越大，APP本身一般都有几十M，再加上使用过程中也会消耗大量存储，比如微信就经常会使用到上百M空间。</p>
+
+<p>卓普大黑的默认data分区大小是3G，随着安装的APP越来越多，data分区就经常会被耗尽。所以，增大data分区就顺理成章的成为一个需求。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/04/05/zopo-c7-increase-primary-partition/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -490,51 +535,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/09/01/ros-openvpn/">RouterOS配置记录（四）：OpenVPN Client</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-01T15:42:00+08:00" pubdate data-updated="true">Sep 1<span>st</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>OpenVPN是现在使用相当广泛的一种VPN solution。它不使用特定协议（比如PPTP依赖于GRE协议，如果GRE协议被墙，PPTP就完了），也不使用特定端口，TCP/UDP都支持，性能表现也相当优异（UDP）。所以现在使用OpenVPN作为VPN的solution很多，在Mikrotik的论坛上可以找到大量赞美OpenVPN的帖子。</p>
-
-<p>但是，事实上当我把OpenVPN全部配置完成之后，发现两个问题：</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/01/ros-openvpn/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -549,11 +549,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (10)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (9)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (11)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (9)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/12/17/ssh-config/">SSH Client Config Sample</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/12/17/mmap-invalid-arg/">Mmap: Invalid Argument & MAP_PRIVATE</a>
@@ -569,10 +573,6 @@
     
       <li class="post">
         <a href="/blog/2015/12/16/raspberrypi-dhcp-timeout/">Raspberry Pi + ArchLinux：网络dhcp不稳定，经常无法获取IP地址</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/08/31/hack-cisco-anyconnect/">How to HACK CISCO Anyconnect Secure Mobile Client</a>
       </li>
     
   </ul>

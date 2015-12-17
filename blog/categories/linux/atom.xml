@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-12-17T10:54:41+08:00</updated>
+  <updated>2015-12-17T11:04:19+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,78 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[SSH client config Sample]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/12/17/ssh-config/"/>
+    <updated>2015-12-17T11:01:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/12/17/ssh-config</id>
+    <content type="html"><![CDATA[<p>man ssh_config，查看~/.ssh/config的语法。</p>
+
+<p>Host可以使用通配符，当ssh的时候如果server的URL能match上这里Host指定的值，则Host下面指定的HostName将被作为最终URL使用。同时该Host下配置的User, Port都将被使用。</p>
+
+<p>当然，User和Port都可以被命令行上指定的override。</p>
+
+<p>附上目前的一份sample配置：</p>
+
+<!-- more -->
+
+
+<p>``` bash
+Host chromium</p>
+
+<pre><code>HostName gerrit.chromium.org
+User markz
+Port 29418
+PubkeyAuthentication yes
+IdentityFile ~/.ssh/chromium
+</code></pre>
+
+<p>Host bitbucket.*</p>
+
+<pre><code>HostName bitbucket.org
+PubkeyAuthentication yes
+IdentityFile ~/.ssh/bitbucket
+</code></pre>
+
+<p>Host gitorious.*</p>
+
+<pre><code>HostName gitorious.org
+PubkeyAuthentication yes
+IdentityFile ~/.ssh/gitorious
+</code></pre>
+
+<p>Host gitse</p>
+
+<pre><code>HostName gitse.nvidia.com
+PubkeyAuthentication yes
+IdentityFile ~/.ssh/gitse
+</code></pre>
+
+<p>Host github.*</p>
+
+<pre><code>HostName github.com
+PubkeyAuthentication yes
+IdentityFile ~/.ssh/github
+</code></pre>
+
+<p>Host <em>.cyanogenmod.</em></p>
+
+<pre><code>HostName review.cyanogenmod.org
+PubkeyAuthentication yes
+IdentityFile ~/.ssh/cmreview
+</code></pre>
+
+<p>Host *</p>
+
+<pre><code>PubkeyAuthentication no
+</code></pre>
+
+<p>```</p>
+
+<p>在最末尾默认禁止Public key的验证方式，也就是说，优先采用password验证。否则有些ssh server就会登录不上，因为有些ssh server优先验证public key，而我们这里有很多public key，一个一个验证失败之后就会因为验证失败次数太多从而连不上server。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[mmap: invalid argument & MAP_PRIVATE]]></title>
@@ -188,84 +260,6 @@ sudo apt-get install ia32-libs
 <ul>
 <li><p>去 <a href="http://www.geforce.com/drivers">http://www.geforce.com/drivers</a> 看看有没有BETA版本的驱动下载，有的话下载下来试试。再说一次，记得先uninstall当前的驱动再安装新的。</p></li>
 <li><p>去NVIDIA的论坛报bug，我没这么干，因为本身我用的Ubuntu就是老版本了，估计NVIDIA也不会理我，如果去报告Ubuntu 14.04上的bug，可能NVIDIA会创建bug并派人fix。</p></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux定时任务 - Cron]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/03/03/cron/"/>
-    <updated>2015-03-03T17:09:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/03/03/cron</id>
-    <content type="html"><![CDATA[<ul>
-<li><p>crontab -e编辑定时任务，crontab -l查看。最后的cron任务文件保存在/var/spool/cron/crontab目录下</p></li>
-<li><p>cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户，然后执行定义的定时任务。</p></li>
-</ul>
-
-
-<!-- more -->
-
-
-<ul>
-<li>但是cron切换用户的时候，任何环境变量，包括.bashrc都不会被执行到。所以诸如$HOME这样的变量也是没有定义的。所以，一般在定时任务的脚本中，我们会这样处理：</li>
-</ul>
-
-
-<p>``` bash</p>
-
-<h1>!/bin/bash</h1>
-
-<p>HOME=/home/markz
-source ${HOME}/.bashrc
-export PATH=/usr/local/bin:$PATH
-```</p>
-
-<p>然后才是具体的要执行的任务。</p>
-
-<p>有一点注意，~/.bashrc往往都含有大量的定义和脚本执行，这有可能会影响到source的成功执行。我们之所以在需要cron的脚本中加入这句source，大多数情况下是为了定义一些环境变量。所以为了让source能保证成功，一般我们都会把需要的环境变量单独存放到一个文件中，然后去source那个文件即可。直接source ~/.bashrc不是一个好的做法。</p>
-
-<ul>
-<li><p>/var/log/syslog保存了cron的log，查看该log可以方便的知道定时任务执行的一些情况。</p></li>
-<li><p>不要assume cron会在你想要的目录下执行脚本/程序，所以，奔放但是有效的做法是，在你的定时脚本和程序中，请全部使用绝对路径。</p></li>
-<li><p>貌似crontab -e的时候，命令行中不能使用>&amp;，否则会导致命令不会被定时触发。可以使用这个来代替：</p></li>
-</ul>
-
-
-<p><code>bash
-&lt;cmd...&gt; &gt;&gt; /home/super/cmd.log 2&gt;&amp;1
-</code></p>
-
-<ul>
-<li>定义定时任务（crontab -e）的几个例子：</li>
-</ul>
-
-
-<p>``` bash</p>
-
-<h1>每小时执行一次</h1>
-
-<p>0 * * * * /script/path</p>
-
-<h1>每五分钟执行一次</h1>
-
-<p>0,5,10,15,20,25,30,35,40,45,50,55 * * * * /script/path</p>
-
-<h1>每五分钟执行一次</h1>
-
-<h1>这种写法不保证在所有Linux distribution上都能work</h1>
-
-<p>0-59/5 * * * * /script/path</p>
-
-<h1>每分钟执行一次</h1>
-
-<p>0-59 * * * * /script/path</p>
-
-<h1>每天执行一次</h1>
-
-<ul>
-<li>0 * * * /script/path
-```</li>
 </ul>
 
 ]]></content>

@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="配置动态DNS主要是为了能让你的RouterBoard在Internet上被访问到，这样我就可以远程控制我的RouterBoard，同时也可以开始做端口映射，在内网做server&hellip;等。 在ROS上配置DDNS非常简单，就是写一个script然后放到ROS的 System &ndash &hellip;">
+  <meta name="description" content="OpenVPN是现在使用相当广泛的一种VPN solution。它不使用特定协议（比如PPTP依赖于GRE协议，如果GRE协议被墙，PPTP就完了），也不使用特定端口，TCP/UDP都支持，性能表现也相当优异（UDP）。所以现在使用OpenVPN作为VPN的solution很多， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/09/01/ros-openvpn/">RouterOS配置记录（四）：OpenVPN Client</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-01T15:42:00+08:00" pubdate data-updated="true">Sep 1<span>st</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>OpenVPN是现在使用相当广泛的一种VPN solution。它不使用特定协议（比如PPTP依赖于GRE协议，如果GRE协议被墙，PPTP就完了），也不使用特定端口，TCP/UDP都支持，性能表现也相当优异（UDP）。所以现在使用OpenVPN作为VPN的solution很多，在Mikrotik的论坛上可以找到大量赞美OpenVPN的帖子。</p>
+
+<p>但是，事实上当我把OpenVPN全部配置完成之后，发现两个问题：</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/09/01/ros-openvpn/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -495,55 +540,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/06/03/ubuntu-disk-clone/">CloneZilla磁盘克隆，超快的更换硬盘</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-03T12:49:00+08:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>开发用的PC机用的是一块128G的SSD，安装的Ubuntu 12.04，速度明显比机械硬盘快了好多，唯一的不足就是容量太小。于是最近购入了一块新的240G的SSD，需要将原来128G的SSD上的东西全部克隆过来。</p>
-
-<p>对于Linux ext4文件分区系统的磁盘来说，<code>ghost</code>工作的并不好，工作的比较好的是<code>CloneZilla</code>，因为它能识别ext4的文件系统，从而使克隆变的无比快速，之前我写过一篇类似的文章：</p>
-
-<p><a href="http://www.cnblogs.com/super119/archive/2012/09/26/2703479.html">http://www.cnblogs.com/super119/archive/2012/09/26/2703479.html</a></p>
-
-<p>但是那一次的克隆是两块容量一样的磁盘，而这一次两块SSD的容量并不相同，所以我做了一些改变。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/06/03/ubuntu-disk-clone/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -558,11 +554,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (10)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (9)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (11)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (9)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/12/17/ssh-config/">SSH Client Config Sample</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/12/17/mmap-invalid-arg/">Mmap: Invalid Argument & MAP_PRIVATE</a>
@@ -578,10 +578,6 @@
     
       <li class="post">
         <a href="/blog/2015/12/16/raspberrypi-dhcp-timeout/">Raspberry Pi + ArchLinux：网络dhcp不稳定，经常无法获取IP地址</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/08/31/hack-cisco-anyconnect/">How to HACK CISCO Anyconnect Secure Mobile Client</a>
       </li>
     
   </ul>
