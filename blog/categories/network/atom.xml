@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: network | Make Things Cool]]></title>
-  <link href="http://www.markzhang.cn/blog/categories/network/atom.xml" rel="self"/>
-  <link href="http://www.markzhang.cn/"/>
-  <updated>2015-12-17T11:36:48+08:00</updated>
-  <id>http://www.markzhang.cn/</id>
+  <link href="http://markzhang.cn/blog/categories/network/atom.xml" rel="self"/>
+  <link href="http://markzhang.cn/"/>
+  <updated>2015-12-17T11:38:40+08:00</updated>
+  <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
     <email><![CDATA[super119@139.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[How to HACK CISCO anyconnect secure mobile client]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/08/31/hack-cisco-anyconnect/"/>
+    <link href="http://markzhang.cn/blog/2015/08/31/hack-cisco-anyconnect/"/>
     <updated>2015-08-31T08:31:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/08/31/hack-cisco-anyconnect</id>
+    <id>http://markzhang.cn/blog/2015/08/31/hack-cisco-anyconnect</id>
     <content type="html"><![CDATA[<p>本文参考了以下两篇文章：</p>
 
 <p><a href="http://superuser.com/questions/284709/how-to-allow-local-lan-access-while-connected-to-cisco-vpn">http://superuser.com/questions/284709/how-to-allow-local-lan-access-while-connected-to-cisco-vpn</a></p>
@@ -137,9 +137,9 @@ iptables -t nat -A POSTROUTING -o cscotun0 -j MASQUERADE
   
   <entry>
     <title type="html"><![CDATA[RouterOS：为什么我不用chnroutes]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/03/04/why-i-leave-chnroutes/"/>
+    <link href="http://markzhang.cn/blog/2015/03/04/why-i-leave-chnroutes/"/>
     <updated>2015-03-04T09:28:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/03/04/why-i-leave-chnroutes</id>
+    <id>http://markzhang.cn/blog/2015/03/04/why-i-leave-chnroutes</id>
     <content type="html"><![CDATA[<p>之前有一篇文章说了在RouterOS下配置chnroutes：</p>
 
 <p><a href="http://markzhang.cn/blog/2014/08/20/ros-chnroutes/">RouterOS配置记录（二）：chnroutes</a></p>
@@ -305,9 +305,9 @@ chmod 644 /Public/pub/vpn-hosts-ips
   
   <entry>
     <title type="html"><![CDATA[RouterOS/远程启动/控制家里的PC]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/12/09/ros-rdp-wol/"/>
+    <link href="http://markzhang.cn/blog/2014/12/09/ros-rdp-wol/"/>
     <updated>2014-12-09T17:35:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/12/09/ros-rdp-wol</id>
+    <id>http://markzhang.cn/blog/2014/12/09/ros-rdp-wol</id>
     <content type="html"><![CDATA[<h2>远程启动</h2>
 
 <p>远程启动其实就是 <code>WOL(Wake on Lan)</code>，现在的PC机基本上都支持。需要两个东西：</p>
@@ -367,9 +367,9 @@ shutdown /f /s
   
   <entry>
     <title type="html"><![CDATA[RouterOS配置记录（四）：OpenVPN Client]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/09/01/ros-openvpn/"/>
+    <link href="http://markzhang.cn/blog/2014/09/01/ros-openvpn/"/>
     <updated>2014-09-01T15:42:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/09/01/ros-openvpn</id>
+    <id>http://markzhang.cn/blog/2014/09/01/ros-openvpn</id>
     <content type="html"><![CDATA[<p>OpenVPN是现在使用相当广泛的一种VPN solution。它不使用特定协议（比如PPTP依赖于GRE协议，如果GRE协议被墙，PPTP就完了），也不使用特定端口，TCP/UDP都支持，性能表现也相当优异（UDP）。所以现在使用OpenVPN作为VPN的solution很多，在Mikrotik的论坛上可以找到大量赞美OpenVPN的帖子。</p>
 
 <p>但是，事实上当我把OpenVPN全部配置完成之后，发现两个问题：</p>
@@ -500,9 +500,9 @@ verb 3
   
   <entry>
     <title type="html"><![CDATA[RouterOS配置记录（三）：DDNS]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/08/21/ros-ddns/"/>
+    <link href="http://markzhang.cn/blog/2014/08/21/ros-ddns/"/>
     <updated>2014-08-21T15:26:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/08/21/ros-ddns</id>
+    <id>http://markzhang.cn/blog/2014/08/21/ros-ddns</id>
     <content type="html"><![CDATA[<p>配置动态DNS主要是为了能让你的RouterBoard在Internet上被访问到，这样我就可以远程控制我的RouterBoard，同时也可以开始做端口映射，在内网做server&hellip;等。</p>
 
 <p>在ROS上配置DDNS非常简单，就是写一个script然后放到ROS的 <code>System</code> &ndash;> <code>Scheduler</code> 中就好了。不过在此之前，先去申请一个DDNS，我用的是3322的。</p>

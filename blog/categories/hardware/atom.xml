@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: hardware | Make Things Cool]]></title>
-  <link href="http://www.markzhang.cn/blog/categories/hardware/atom.xml" rel="self"/>
-  <link href="http://www.markzhang.cn/"/>
-  <updated>2015-12-17T11:36:48+08:00</updated>
-  <id>http://www.markzhang.cn/</id>
+  <link href="http://markzhang.cn/blog/categories/hardware/atom.xml" rel="self"/>
+  <link href="http://markzhang.cn/"/>
+  <updated>2015-12-17T11:38:40+08:00</updated>
+  <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
     <email><![CDATA[super119@139.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[厦华LC-42T18电视机维修]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/04/15/prime-lc-42t18-fix/"/>
+    <link href="http://markzhang.cn/blog/2014/04/15/prime-lc-42t18-fix/"/>
     <updated>2014-04-15T23:10:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/04/15/prime-lc-42t18-fix</id>
+    <id>http://markzhang.cn/blog/2014/04/15/prime-lc-42t18-fix</id>
     <content type="html"><![CDATA[<p>家里客厅的电视是10年前买的厦华LC-42T18，几年前维修过一次，更换掉了整块主控板（也就是数字信号板）。但是上周电视再次罢工，如果让厦华再来维修，那又是大几百块，所以决定自己拆开来修修看。</p>
 
 <p>之所以想自己维修，是因为故障现象跟上次差不多：</p>

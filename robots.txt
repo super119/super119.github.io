@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://www.markzhang.cn/sitemap.xml 
+Sitemap: http://markzhang.cn/sitemap.xml 

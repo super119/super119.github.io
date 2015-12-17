@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Blog | Make Things Cool]]></title>
-  <link href="http://www.markzhang.cn/blog/categories/blog/atom.xml" rel="self"/>
-  <link href="http://www.markzhang.cn/"/>
-  <updated>2015-12-17T11:36:48+08:00</updated>
-  <id>http://www.markzhang.cn/</id>
+  <link href="http://markzhang.cn/blog/categories/blog/atom.xml" rel="self"/>
+  <link href="http://markzhang.cn/"/>
+  <updated>2015-12-17T11:38:40+08:00</updated>
+  <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
     <email><![CDATA[super119@139.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Octopress - 有条件的为文章添加转载声明]]></title>
-    <link href="http://www.markzhang.cn/blog/2013/12/27/add-origin-statement-conditionally/"/>
+    <link href="http://markzhang.cn/blog/2013/12/27/add-origin-statement-conditionally/"/>
     <updated>2013-12-27T15:33:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2013/12/27/add-origin-statement-conditionally</id>
+    <id>http://markzhang.cn/blog/2013/12/27/add-origin-statement-conditionally</id>
     <content type="html"><![CDATA[<p>对于原创的文章，我在Octopress的post模板文件中，加入了一段转载声明。但对于一些好的文章，经常也会忍不住想要转载。所以，对于转载的文章，还出现这么一个转载声明就是打自己耳光了。很显然，要做个小手脚，对于转载的文章，去掉这个转载声明。有意思的是，在这个过程中，我居然发现 <code>liquid</code> 语法中没有 <code>逻辑非</code> ?!</p>
 
 <!-- more -->
@@ -71,9 +71,9 @@ index 5d83b4d201f6..12d6466734ec 100644
   
   <entry>
     <title type="html"><![CDATA[在博客内容中插入Liquid代码时的注意点]]></title>
-    <link href="http://www.markzhang.cn/blog/2013/11/07/embed-liquid-codes-in-blog/"/>
+    <link href="http://markzhang.cn/blog/2013/11/07/embed-liquid-codes-in-blog/"/>
     <updated>2013-11-07T09:44:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2013/11/07/embed-liquid-codes-in-blog</id>
+    <id>http://markzhang.cn/blog/2013/11/07/embed-liquid-codes-in-blog</id>
     <content type="html"><![CDATA[<p>Octopress/Jekyll一个很好的功能就是可以非常方便的插入代码，深得码农的喜爱。不过这里有一个注意点就是，如果你插入的代码中含有Liquid代码，那很可能会导致编译出错，比如：</p>
 
 <!-- more -->
@@ -130,9 +130,9 @@ Build Failed
   
   <entry>
     <title type="html"><![CDATA[在Octopress中使用友言，替换Disqus]]></title>
-    <link href="http://www.markzhang.cn/blog/2013/11/05/add-uyan-comment/"/>
+    <link href="http://markzhang.cn/blog/2013/11/05/add-uyan-comment/"/>
     <updated>2013-11-05T21:56:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2013/11/05/add-uyan-comment</id>
+    <id>http://markzhang.cn/blog/2013/11/05/add-uyan-comment</id>
     <content type="html"><![CDATA[<p>Disqus应该是国外做的一个评论系统，按现在时髦的话说，不太接中国的地气，所以考虑换一个评论系统。具体做起来非常的简单，Octopress就像一个模板系统，以前Java火热的时候用过Velocity，大体思路都是利用一些markdown的语法填在预先写好的模板文件中，然后解析器解释该文件，从而生成最终需要的东西。</p>
 
 <p>在Octopress中，发表的博客文章使用的模板是<code>source/_layout/post.html</code>，打开之后搜索disqus就可以发现原来的disqus部分的代码。所以要将其替换成其他的评论系统就很直观了。这里我使用了友言，因为Google了一下貌似现在国内友言做的还不错。</p>
@@ -242,9 +242,9 @@ Build Failed
   
   <entry>
     <title type="html"><![CDATA[博客 Code Names]]></title>
-    <link href="http://www.markzhang.cn/blog/2013/11/04/blog-code-names/"/>
+    <link href="http://markzhang.cn/blog/2013/11/04/blog-code-names/"/>
     <updated>2013-11-04T20:46:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2013/11/04/blog-code-names</id>
+    <id>http://markzhang.cn/blog/2013/11/04/blog-code-names</id>
     <content type="html"><![CDATA[<p>跟老美共事发现它们很喜欢每件事情都起个Code Name，所以我也给我的博客每年都取一个Code Name。命名的逻辑跟Ubuntu一样，从2013年的H开始，每个Code Name都是两个单词且开头字母相同。如下：</p>
 
 <!-- more -->

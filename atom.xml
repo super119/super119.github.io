@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Make Things Cool]]></title>
-  <link href="http://www.markzhang.cn/atom.xml" rel="self"/>
-  <link href="http://www.markzhang.cn/"/>
-  <updated>2015-12-17T11:36:48+08:00</updated>
-  <id>http://www.markzhang.cn/</id>
+  <link href="http://markzhang.cn/atom.xml" rel="self"/>
+  <link href="http://markzhang.cn/"/>
+  <updated>2015-12-17T11:38:40+08:00</updated>
+  <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
     <email><![CDATA[super119@139.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Android system.img: yaffs or ext4?]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4/"/>
+    <link href="http://markzhang.cn/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4/"/>
     <updated>2015-12-17T11:18:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4</id>
+    <id>http://markzhang.cn/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4</id>
     <content type="html"><![CDATA[<p>随着现在手机的内部存储从NAND转变到eMMC，现在的system.img已经越来越多的使用ext4作为文件系统，而不是以前的yaffs2。</p>
 
 <p>使用file命令查看system.img，如果输出是：VMS Alpha Exectutable，那么这是yaffs</p>
@@ -39,9 +39,9 @@
   
   <entry>
     <title type="html"><![CDATA[天语（k-touch） w619: Dump boot.img和system.img，然后做成recovery可用的刷机zip包]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/12/17/ktouch-w619-create-flash-package/"/>
+    <link href="http://markzhang.cn/blog/2015/12/17/ktouch-w619-create-flash-package/"/>
     <updated>2015-12-17T11:08:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/12/17/ktouch-w619-create-flash-package</id>
+    <id>http://markzhang.cn/blog/2015/12/17/ktouch-w619-create-flash-package</id>
     <content type="html"><![CDATA[<p>有的时候会有这样的问题：发现一个民间的刷机包很不错，但是就是缺少一些你想要的东西。这个时候，其实就可以尝试基于这个包自己做一些修改、添加，最终生成自己满意的系统包。</p>
 
 <p>也有的时候，要给老人一部安卓机器来用，但是老人不擅长智能手机操作，经常会把一些APP误删除。这个时候其实可以自己制作刷机包，将必须的一些APP放到<code>system</code>下面，这样就不怕老人误删除APP了。</p>
@@ -87,9 +87,9 @@
   
   <entry>
     <title type="html"><![CDATA[SSH client config Sample]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/12/17/ssh-config/"/>
+    <link href="http://markzhang.cn/blog/2015/12/17/ssh-config/"/>
     <updated>2015-12-17T11:01:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/12/17/ssh-config</id>
+    <id>http://markzhang.cn/blog/2015/12/17/ssh-config</id>
     <content type="html"><![CDATA[<p>man ssh_config，查看~/.ssh/config的语法。</p>
 
 <p>Host可以使用通配符，当ssh的时候如果server的URL能match上这里Host指定的值，则Host下面指定的HostName将被作为最终URL使用。同时该Host下配置的User, Port都将被使用。</p>
@@ -168,9 +168,9 @@
   
   <entry>
     <title type="html"><![CDATA[mmap: invalid argument & MAP_PRIVATE]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/12/17/mmap-invalid-arg/"/>
+    <link href="http://markzhang.cn/blog/2015/12/17/mmap-invalid-arg/"/>
     <updated>2015-12-17T10:53:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/12/17/mmap-invalid-arg</id>
+    <id>http://markzhang.cn/blog/2015/12/17/mmap-invalid-arg</id>
     <content type="html"><![CDATA[<p>mmap，使用PROT_READ | PROT_WRITE, MAP_SHARED，总是返回EINVAL。</p>
 
 <p>最后发现是因为被mmap的文件是一个network filesystem上的文件。</p>
@@ -192,9 +192,9 @@
   
   <entry>
     <title type="html"><![CDATA[Linux kernel: How to debug mutex deadlock 如何调试mutex死锁]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/12/16/kernel-debug-deadlock/"/>
+    <link href="http://markzhang.cn/blog/2015/12/16/kernel-debug-deadlock/"/>
     <updated>2015-12-16T15:47:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/12/16/kernel-debug-deadlock</id>
+    <id>http://markzhang.cn/blog/2015/12/16/kernel-debug-deadlock</id>
     <content type="html"><![CDATA[<p>和userspace调试lock一样，主要是要：</p>
 
 <ol>
@@ -229,9 +229,9 @@
   
   <entry>
     <title type="html"><![CDATA[Chromium OS相比Chrome OS缩水的地方]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/12/16/chromiumos-chromeos/"/>
+    <link href="http://markzhang.cn/blog/2015/12/16/chromiumos-chromeos/"/>
     <updated>2015-12-16T14:44:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/12/16/chromiumos-chromeos</id>
+    <id>http://markzhang.cn/blog/2015/12/16/chromiumos-chromeos</id>
     <content type="html"><![CDATA[<p>关于两者的区别，下面是Google官方的解释：</p>
 
 <!-- more -->
@@ -252,9 +252,9 @@
   
   <entry>
     <title type="html"><![CDATA[Raspberry Pi + ArchLinux：网络dhcp不稳定，经常无法获取IP地址]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/12/16/raspberrypi-dhcp-timeout/"/>
+    <link href="http://markzhang.cn/blog/2015/12/16/raspberrypi-dhcp-timeout/"/>
     <updated>2015-12-16T14:40:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/12/16/raspberrypi-dhcp-timeout</id>
+    <id>http://markzhang.cn/blog/2015/12/16/raspberrypi-dhcp-timeout</id>
     <content type="html"><![CDATA[<p>经常发现树莓派开机之后网络没有起来，最终发现是因为dhcpcd的-t参数，也就是等待dhcp server响应的timeout时间太短导致的。</p>
 
 <p>默认是30秒，但是ArchLinux中配置的是10秒。</p>
@@ -269,9 +269,9 @@
   
   <entry>
     <title type="html"><![CDATA[How to HACK CISCO anyconnect secure mobile client]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/08/31/hack-cisco-anyconnect/"/>
+    <link href="http://markzhang.cn/blog/2015/08/31/hack-cisco-anyconnect/"/>
     <updated>2015-08-31T08:31:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/08/31/hack-cisco-anyconnect</id>
+    <id>http://markzhang.cn/blog/2015/08/31/hack-cisco-anyconnect</id>
     <content type="html"><![CDATA[<p>本文参考了以下两篇文章：</p>
 
 <p><a href="http://superuser.com/questions/284709/how-to-allow-local-lan-access-while-connected-to-cisco-vpn">http://superuser.com/questions/284709/how-to-allow-local-lan-access-while-connected-to-cisco-vpn</a></p>
@@ -418,9 +418,9 @@
   
   <entry>
     <title type="html"><![CDATA[电动直升机的油门锁定（THRU HOLD）和油门熄火（THRU CUT）]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/07/24/throttle-hold-and-throttle-cut/"/>
+    <link href="http://markzhang.cn/blog/2015/07/24/throttle-hold-and-throttle-cut/"/>
     <updated>2015-07-24T11:43:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/07/24/throttle-hold-and-throttle-cut</id>
+    <id>http://markzhang.cn/blog/2015/07/24/throttle-hold-and-throttle-cut</id>
     <content type="html"><![CDATA[<p><code>油门锁定</code> 和 <code>油门熄火</code> 是不太容易理解的两个东西，关键是他们俩有什么区别。5IMX上有一篇帖子挺精彩的：</p>
 
 <p><a href="http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=544614&amp;page=1">http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=544614&amp;page=1</a></p>
@@ -458,9 +458,9 @@
   
   <entry>
     <title type="html"><![CDATA[NVIDIA Linux驱动在Ubuntu 12.04上的安装]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/06/03/nvidia-linux-driver-on-ubuntu/"/>
+    <link href="http://markzhang.cn/blog/2015/06/03/nvidia-linux-driver-on-ubuntu/"/>
     <updated>2015-06-03T21:35:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/06/03/nvidia-linux-driver-on-ubuntu</id>
+    <id>http://markzhang.cn/blog/2015/06/03/nvidia-linux-driver-on-ubuntu</id>
     <content type="html"><![CDATA[<p>在Ubuntu上安装显卡驱动不是一件容易的事情，安装不是Ubuntu官方认证过的NVIDIA自家的驱动就更是困难，而我选择在一个老的Ubuntu版本上安装显卡驱动，事情就变的更加麻烦起来。</p>
 
 <p>其实一开始我也不想安装NVIDIA自家的驱动，首先想尝试用 <code>nouveau</code>，但是悲剧的发现Ubuntu 12.04上的nouveau无法驱动我的GTX970，可能需要新版本的Ubuntu才可以。所以，被迫选择安装NVIDIA自家的驱动。</p>
@@ -589,9 +589,9 @@
   
   <entry>
     <title type="html"><![CDATA[编译out-of-tree的kernel模块]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/05/12/build-out-of-tree-kernel-module/"/>
+    <link href="http://markzhang.cn/blog/2015/05/12/build-out-of-tree-kernel-module/"/>
     <updated>2015-05-12T10:51:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/05/12/build-out-of-tree-kernel-module</id>
+    <id>http://markzhang.cn/blog/2015/05/12/build-out-of-tree-kernel-module</id>
     <content type="html"><![CDATA[<p>所谓 <code>out-of-tree</code> 的内核模块，指的是源代码不在kernel tree里面的模块，比如 <code>nouveau</code> 的tree。</p>
 
 <p>熟悉nouveau的都知道，nouveau的maintainer是单独维护nouveau tree的，所以，一般来说，我们会把nouveau的代码直接放在一个目录下，然后将nouveau编译成一个模块（.ko），这样来编译运行测试就都比较简单。</p>
@@ -626,9 +626,9 @@
   
   <entry>
     <title type="html"><![CDATA[git am失败的时候怎么办]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/05/11/deal-with-git-am-failures/"/>
+    <link href="http://markzhang.cn/blog/2015/05/11/deal-with-git-am-failures/"/>
     <updated>2015-05-11T10:15:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/05/11/deal-with-git-am-failures</id>
+    <id>http://markzhang.cn/blog/2015/05/11/deal-with-git-am-failures</id>
     <content type="html"><![CDATA[<p>本文主要参考了以下文章:</p>
 
 <p><a href="http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/">http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/</a></p>
@@ -666,9 +666,9 @@
   
   <entry>
     <title type="html"><![CDATA[卓普大黑（C7、zp990）增大data分区]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/04/05/zopo-c7-increase-primary-partition/"/>
+    <link href="http://markzhang.cn/blog/2015/04/05/zopo-c7-increase-primary-partition/"/>
     <updated>2015-04-05T18:18:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/04/05/zopo-c7-increase-primary-partition</id>
+    <id>http://markzhang.cn/blog/2015/04/05/zopo-c7-increase-primary-partition</id>
     <content type="html"><![CDATA[<p>现在的Android APP对空间的使用是越来越大，APP本身一般都有几十M，再加上使用过程中也会消耗大量存储，比如微信就经常会使用到上百M空间。</p>
 
 <p>卓普大黑的默认data分区大小是3G，随着安装的APP越来越多，data分区就经常会被耗尽。所以，增大data分区就顺理成章的成为一个需求。</p>
@@ -684,7 +684,7 @@
 
 <p>由于上述的帖子中将 <code>EBR1</code> 和 <code>EBR2</code> 这两个文件是放在了4share上，这个网站是被墙的，所以这里将我使用的 <code>EBR1</code> 和 <code>EBR2</code> 文件放在这里：</p>
 
-<p><a href="http://www.markzhang.cn/downloads/file/ebr-mtk-6589-partizione-7gb.zip">ebr-mtk-6589-partizione-7gb.zip</a></p>
+<p><a href="http://markzhang.cn/downloads/file/ebr-mtk-6589-partizione-7gb.zip">ebr-mtk-6589-partizione-7gb.zip</a></p>
 
 <p>再次重申这两个文件我是在我的大黑上测试OK的，虽然上面给出的帖子中说MTK的 6577/ 6582/ 6589 /6592 /8382 都可以，但是我只测试过6589。</p>
 
@@ -696,15 +696,15 @@
 
 <p>刷完之后就可以看到data分区变成了7GB：</p>
 
-<p><img src="http://www.markzhang.cn/downloads/image/zopo-c7-7gb-data-partition.jpg" alt="Zopo C7 7GB data partition" /></p>
+<p><img src="http://markzhang.cn/downloads/image/zopo-c7-7gb-data-partition.jpg" alt="Zopo C7 7GB data partition" /></p>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[RouterOS：为什么我不用chnroutes]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/03/04/why-i-leave-chnroutes/"/>
+    <link href="http://markzhang.cn/blog/2015/03/04/why-i-leave-chnroutes/"/>
     <updated>2015-03-04T09:28:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/03/04/why-i-leave-chnroutes</id>
+    <id>http://markzhang.cn/blog/2015/03/04/why-i-leave-chnroutes</id>
     <content type="html"><![CDATA[<p>之前有一篇文章说了在RouterOS下配置chnroutes：</p>
 
 <p><a href="http://markzhang.cn/blog/2014/08/20/ros-chnroutes/">RouterOS配置记录（二）：chnroutes</a></p>
@@ -924,9 +924,9 @@
   
   <entry>
     <title type="html"><![CDATA[Linux定时任务 - Cron]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/03/03/cron/"/>
+    <link href="http://markzhang.cn/blog/2015/03/03/cron/"/>
     <updated>2015-03-03T17:09:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/03/03/cron</id>
+    <id>http://markzhang.cn/blog/2015/03/03/cron</id>
     <content type="html"><![CDATA[<ul>
 <li><p>crontab -e编辑定时任务，crontab -l查看。最后的cron任务文件保存在/var/spool/cron/crontab目录下</p></li>
 <li><p>cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户，然后执行定义的定时任务。</p></li>
@@ -1010,9 +1010,9 @@
   
   <entry>
     <title type="html"><![CDATA[有关DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem/"/>
+    <link href="http://markzhang.cn/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem/"/>
     <updated>2015-03-02T11:06:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem</id>
+    <id>http://markzhang.cn/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem</id>
     <content type="html"><![CDATA[<ol>
 <li><p>DMABUF can be used as a wrapper to encapsulate other memory management frameworks. All these memory management framework(I mean mostly for graphics), buffer is the keypoint. DMABUF defines a standard buffer structure. So DMABUF can be used as a wrapper for TTM/GEM/Android ION&hellip; and etc. Notice DMABUF can&rsquo;t replace these things, cause it doesn&rsquo;t cover everything. E.g: DMABUF has no userspace interfaces, right now only kernel interfaces(can be used in device driver).</p></li>
 <li><p>Kernel has DMA mapping API from origin. ARM defines IOMMU which can be used to connect scattered physical memory as a continuous region for devices which needs continue address to work(e.g: DMA). So IOMMU implementations &amp; CMA should work behind kernel DMA mapping API. E.g: dma_alloc_from_contiguous can be implemented by CMA; dma_alloc_coherent can be implemented by IOMMU or by the normal case(just call __get_free_pages). So for device drivers need dma buffers, we should use dma mapping APIs, not call iommu api directly.</p></li>
@@ -1024,9 +1024,9 @@
   
   <entry>
     <title type="html"><![CDATA[Linux graphics stack 随便写写]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/03/02/linux-graphics-stack-notes/"/>
+    <link href="http://markzhang.cn/blog/2015/03/02/linux-graphics-stack-notes/"/>
     <updated>2015-03-02T11:03:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/03/02/linux-graphics-stack-notes</id>
+    <id>http://markzhang.cn/blog/2015/03/02/linux-graphics-stack-notes</id>
     <content type="html"><![CDATA[<ul>
 <li><p>Display and mode setting: DRM. DRM defines connector/encoder/crtc to support display(including multi-monitor). And KMS makes mode setting happens in kernel space.</p></li>
 <li><p>2D acceleration: X server EXA/UXA extension. Vendor should write a X server driver which implements EXA or UXA(should be upstreamed). UXA is an enhancement design of EXA, proposed by intel, so GEM is used in UXA. DRM has no direct 2D acceleration interface definitions(e.g: memory copy/move, blit, color space conversion&hellip;), this is defined in EXA/UXA extensions. But vendor&rsquo;s X server driver will use drm functions, mostly is buffer manipulations.</p></li>
@@ -1067,9 +1067,9 @@
   
   <entry>
     <title type="html"><![CDATA[32/64的问题：32bit指针转换成64bit - Sign Extension]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit/"/>
+    <link href="http://markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit/"/>
     <updated>2014-12-16T15:09:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit</id>
+    <id>http://markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit</id>
     <content type="html"><![CDATA[<p>32/64有很多问题，指针转换是其中一个，比如这个例子：</p>
 
 <!-- more -->
@@ -1107,9 +1107,9 @@
   
   <entry>
     <title type="html"><![CDATA[RouterOS/远程启动/控制家里的PC]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/12/09/ros-rdp-wol/"/>
+    <link href="http://markzhang.cn/blog/2014/12/09/ros-rdp-wol/"/>
     <updated>2014-12-09T17:35:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/12/09/ros-rdp-wol</id>
+    <id>http://markzhang.cn/blog/2014/12/09/ros-rdp-wol</id>
     <content type="html"><![CDATA[<h2>远程启动</h2>
 
 <p>远程启动其实就是 <code>WOL(Wake on Lan)</code>，现在的PC机基本上都支持。需要两个东西：</p>
@@ -1132,7 +1132,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><img src="http://www.markzhang.cn/downloads/image/ros-wol.png" alt="ROS Wake on Lan" /></p>
+<p><img src="http://markzhang.cn/downloads/image/ros-wol.png" alt="ROS Wake on Lan" /></p>
 
 <p>如果你的路由器不是ROS，或是没有WOL功能的话，那就需要另外一台PC来执行WOL的程序了。在Linux下，可以使用：</p>
 
@@ -1149,7 +1149,7 @@
 
 <p>首先就是打开Windows的远程桌面功能。在 <code>高级系统设置 -&gt; 远程</code> 标签页里面：</p>
 
-<p><img src="http://www.markzhang.cn/downloads/image/windows-rdp.png" alt="Windows RDP" /></p>
+<p><img src="http://markzhang.cn/downloads/image/windows-rdp.png" alt="Windows RDP" /></p>
 
 <p>完了就是在ROS里面打开端口映射，这样你才可以从Internet上远程RDP到家里的PC机，需要映射的是著名的3389端口：</p>
 
@@ -1175,9 +1175,9 @@
   
   <entry>
     <title type="html"><![CDATA[Thunderbird 80(72) column - 邮件在80(72)列处line break]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/11/25/thunderbird-72-column/"/>
+    <link href="http://markzhang.cn/blog/2014/11/25/thunderbird-72-column/"/>
     <updated>2014-11-25T11:13:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/11/25/thunderbird-72-column</id>
+    <id>http://markzhang.cn/blog/2014/11/25/thunderbird-72-column</id>
     <content type="html"><![CDATA[<p>这个需求做linux kernel upstream的人都懂的&hellip;&hellip;要设置Thunderbird在80列正确换行，只需要这样：</p>
 
 <!-- more -->

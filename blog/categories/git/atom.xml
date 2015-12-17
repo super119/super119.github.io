@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: git | Make Things Cool]]></title>
-  <link href="http://www.markzhang.cn/blog/categories/git/atom.xml" rel="self"/>
-  <link href="http://www.markzhang.cn/"/>
-  <updated>2015-12-17T11:36:48+08:00</updated>
-  <id>http://www.markzhang.cn/</id>
+  <link href="http://markzhang.cn/blog/categories/git/atom.xml" rel="self"/>
+  <link href="http://markzhang.cn/"/>
+  <updated>2015-12-17T11:38:40+08:00</updated>
+  <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
     <email><![CDATA[super119@139.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[git am失败的时候怎么办]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/05/11/deal-with-git-am-failures/"/>
+    <link href="http://markzhang.cn/blog/2015/05/11/deal-with-git-am-failures/"/>
     <updated>2015-05-11T10:15:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/05/11/deal-with-git-am-failures</id>
+    <id>http://markzhang.cn/blog/2015/05/11/deal-with-git-am-failures</id>
     <content type="html"><![CDATA[<p>本文主要参考了以下文章:</p>
 
 <p><a href="http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/">http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/</a></p>
@@ -52,9 +52,9 @@ The copy of the patch that failed is found in&hellip;</p>
   
   <entry>
     <title type="html"><![CDATA[Git都在说些啥（三）]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/04/22/git-gossip-3/"/>
+    <link href="http://markzhang.cn/blog/2014/04/22/git-gossip-3/"/>
     <updated>2014-04-22T07:58:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/04/22/git-gossip-3</id>
+    <id>http://markzhang.cn/blog/2014/04/22/git-gossip-3</id>
     <content type="html"><![CDATA[<p>这次来说说有关 <code>no branch</code> 的那些事。</p>
 
 <p>其实之前在<a href="http://markzhang.cn/blog/2014/04/04/git-gossip-1/">Git都在说些啥（一）</a>中已经提过一些有关 <code>no branch</code> 的东西。这次再来看看其他两段git的提示信息，都是与 <code>no branch</code> 有关的。</p>
@@ -104,9 +104,9 @@ See git-pull(1) for details.
   
   <entry>
     <title type="html"><![CDATA[Git都在说些啥（二）]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/04/21/git-gossip-2/"/>
+    <link href="http://markzhang.cn/blog/2014/04/21/git-gossip-2/"/>
     <updated>2014-04-21T21:33:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/04/21/git-gossip-2</id>
+    <id>http://markzhang.cn/blog/2014/04/21/git-gossip-2</id>
     <content type="html"><![CDATA[<p>这一次我们来说说 <code>git pull</code> 的时候经常会碰到的一段信息。</p>
 
 <!-- more -->
@@ -193,9 +193,9 @@ merge = refs/heads/master
   
   <entry>
     <title type="html"><![CDATA[Git都在说些啥（一）]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/04/04/git-gossip-1/"/>
+    <link href="http://markzhang.cn/blog/2014/04/04/git-gossip-1/"/>
     <updated>2014-04-04T14:28:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/04/04/git-gossip-1</id>
+    <id>http://markzhang.cn/blog/2014/04/04/git-gossip-1</id>
     <content type="html"><![CDATA[<p>当我们在做某些git操作的时候，git有的时候会给出一段一段的提示信息，而往往这些信息都是比较重要的。因为按照UNIX的设计哲学，执行成功或是无害操作，这些都是不会有任何提示信息的。做Linux的Hackers也奉行这种哲学，所以当git开始唠叨的时候，你真的需要关注一下它到底在罗嗦些啥。</p>
 
 <p>这篇文章描述的就是某一个git的唠叨。</p>
@@ -246,9 +246,9 @@ to do so with:</p>
   
   <entry>
     <title type="html"><![CDATA[Git常见命令和配置]]></title>
-    <link href="http://www.markzhang.cn/blog/2013/11/20/git-tips/"/>
+    <link href="http://markzhang.cn/blog/2013/11/20/git-tips/"/>
     <updated>2013-11-20T21:01:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2013/11/20/git-tips</id>
+    <id>http://markzhang.cn/blog/2013/11/20/git-tips</id>
     <content type="html"><![CDATA[<h2>常用配置</h2>
 
 <p>``` cfg git常用配置
