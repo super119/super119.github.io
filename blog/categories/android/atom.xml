@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Android | Make Things Cool]]></title>
-  <link href="http://markzhang.cn/blog/categories/android/atom.xml" rel="self"/>
-  <link href="http://markzhang.cn/"/>
-  <updated>2015-12-17T11:23:10+08:00</updated>
-  <id>http://markzhang.cn/</id>
+  <link href="http://www.markzhang.cn/blog/categories/android/atom.xml" rel="self"/>
+  <link href="http://www.markzhang.cn/"/>
+  <updated>2015-12-17T11:36:48+08:00</updated>
+  <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
     <email><![CDATA[super119@139.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Android system.img: yaffs or ext4?]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4/"/>
+    <link href="http://www.markzhang.cn/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4/"/>
     <updated>2015-12-17T11:18:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4</id>
+    <id>http://www.markzhang.cn/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4</id>
     <content type="html"><![CDATA[<p>随着现在手机的内部存储从NAND转变到eMMC，现在的system.img已经越来越多的使用ext4作为文件系统，而不是以前的yaffs2。</p>
 
 <p>使用file命令查看system.img，如果输出是：VMS Alpha Exectutable，那么这是yaffs</p>
@@ -39,9 +39,9 @@
   
   <entry>
     <title type="html"><![CDATA[天语（k-touch） w619: Dump boot.img和system.img，然后做成recovery可用的刷机zip包]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/17/ktouch-w619-create-flash-package/"/>
+    <link href="http://www.markzhang.cn/blog/2015/12/17/ktouch-w619-create-flash-package/"/>
     <updated>2015-12-17T11:08:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/17/ktouch-w619-create-flash-package</id>
+    <id>http://www.markzhang.cn/blog/2015/12/17/ktouch-w619-create-flash-package</id>
     <content type="html"><![CDATA[<p>有的时候会有这样的问题：发现一个民间的刷机包很不错，但是就是缺少一些你想要的东西。这个时候，其实就可以尝试基于这个包自己做一些修改、添加，最终生成自己满意的系统包。</p>
 
 <p>也有的时候，要给老人一部安卓机器来用，但是老人不擅长智能手机操作，经常会把一些APP误删除。这个时候其实可以自己制作刷机包，将必须的一些APP放到<code>system</code>下面，这样就不怕老人误删除APP了。</p>
@@ -87,9 +87,9 @@
   
   <entry>
     <title type="html"><![CDATA[卓普大黑（C7、zp990）增大data分区]]></title>
-    <link href="http://markzhang.cn/blog/2015/04/05/zopo-c7-increase-primary-partition/"/>
+    <link href="http://www.markzhang.cn/blog/2015/04/05/zopo-c7-increase-primary-partition/"/>
     <updated>2015-04-05T18:18:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/04/05/zopo-c7-increase-primary-partition</id>
+    <id>http://www.markzhang.cn/blog/2015/04/05/zopo-c7-increase-primary-partition</id>
     <content type="html"><![CDATA[<p>现在的Android APP对空间的使用是越来越大，APP本身一般都有几十M，再加上使用过程中也会消耗大量存储，比如微信就经常会使用到上百M空间。</p>
 
 <p>卓普大黑的默认data分区大小是3G，随着安装的APP越来越多，data分区就经常会被耗尽。所以，增大data分区就顺理成章的成为一个需求。</p>
@@ -123,9 +123,9 @@
   
   <entry>
     <title type="html"><![CDATA[卓普大黑（Zopo C7/zp990）刷原生ROM，root，升级触控屏，修改GPS]]></title>
-    <link href="http://markzhang.cn/blog/2014/06/08/zopo-c7-flash/"/>
+    <link href="http://www.markzhang.cn/blog/2014/06/08/zopo-c7-flash/"/>
     <updated>2014-06-08T15:00:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2014/06/08/zopo-c7-flash</id>
+    <id>http://www.markzhang.cn/blog/2014/06/08/zopo-c7-flash</id>
     <content type="html"><![CDATA[<p>卓普（Zopo）大黑（C7）手机在国内的行货默认安装的是阿里的云OS，而向国外销售的版本称为zp990，装的是原生的安卓（当然有一些针对这款手机的改动，比如FOTA部分，双卡设置部分等）。</p>
 
 <p>如果你用云OS用腻了的话，肯定会想刷机，而要刷机，刷zp990的原生安卓版本成为一个好的选择。我的使用感受是，这个版本相比其他的民间ROM（比如民间做的MIUI的ROM）要稳定一些，所以你不想经常折腾的话，刷这个版本会安逸很多。</p>

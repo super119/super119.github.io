@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: OpenGL | Make Things Cool]]></title>
-  <link href="http://markzhang.cn/blog/categories/opengl/atom.xml" rel="self"/>
-  <link href="http://markzhang.cn/"/>
-  <updated>2015-12-17T11:23:10+08:00</updated>
-  <id>http://markzhang.cn/</id>
+  <link href="http://www.markzhang.cn/blog/categories/opengl/atom.xml" rel="self"/>
+  <link href="http://www.markzhang.cn/"/>
+  <updated>2015-12-17T11:36:48+08:00</updated>
+  <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
     <email><![CDATA[super119@139.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[在Mavericks上使用Makefile编写wxWidgets程序]]></title>
-    <link href="http://markzhang.cn/blog/2014/04/23/wxwidget-on-mavericks/"/>
+    <link href="http://www.markzhang.cn/blog/2014/04/23/wxwidget-on-mavericks/"/>
     <updated>2014-04-23T23:31:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2014/04/23/wxwidget-on-mavericks</id>
+    <id>http://www.markzhang.cn/blog/2014/04/23/wxwidget-on-mavericks</id>
     <content type="html"><![CDATA[<p>OpenGL的设计与操作系统无关，与窗口系统也无关，所以，要编写一个可以运行（能看到界面）的程序，还需要一些额外的GUI的框架，比如glut。</p>
 
 <p>glut基本上是所有OpenGL教科书上的唯一推荐了，因为它的API简单，跨平台。所以读者不需要花额外的时间去了解并使用glut。但是glut比较老了，有点跟不上时代了。而且编译出来的东西是一个可执行文件，不是Mac OS X上的 <code>.app</code> 的那种Applicaiton。所以在StackOverflow上也有很多人推荐使用 <code>glfw</code>。我也去试用了一下，感觉还是太单薄了。</p>
@@ -506,9 +506,9 @@ OpenGL support:   no
   
   <entry>
     <title type="html"><![CDATA[OpenGL Programming on MacOS X (Mavericks)]]></title>
-    <link href="http://markzhang.cn/blog/2014/01/06/hellogl-on-macosx/"/>
+    <link href="http://www.markzhang.cn/blog/2014/01/06/hellogl-on-macosx/"/>
     <updated>2014-01-06T21:30:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2014/01/06/hellogl-on-macosx</id>
+    <id>http://www.markzhang.cn/blog/2014/01/06/hellogl-on-macosx</id>
     <content type="html"><![CDATA[<p>最近开始看《OpenGL Programming Guide 8th Edition》一书。所以很自然的，就会想把书中的源代码在MacOS X Mavericks上试验一遍。很显然程序是没法在Mavericks上run的，所以就对程序做了一些修改。在试验的过程中，自然也发现了一些书中没有说到的内容，所以记录下来。</p>
 
 <p>事实上，这本书中的代码是在Windows上测试的，所以MacOS X上就会有一些不同。尤其体现在一些第三方的framework/library上。</p>

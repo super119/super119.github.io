@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Games | Make Things Cool]]></title>
-  <link href="http://markzhang.cn/blog/categories/games/atom.xml" rel="self"/>
-  <link href="http://markzhang.cn/"/>
-  <updated>2015-12-17T11:23:10+08:00</updated>
-  <id>http://markzhang.cn/</id>
+  <link href="http://www.markzhang.cn/blog/categories/games/atom.xml" rel="self"/>
+  <link href="http://www.markzhang.cn/"/>
+  <updated>2015-12-17T11:36:48+08:00</updated>
+  <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
     <email><![CDATA[super119@139.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[PS3 KillZone 3（杀戮地带3）黑屏死机问题]]></title>
-    <link href="http://markzhang.cn/blog/2014/09/17/killzone-3-freezing-issue/"/>
+    <link href="http://www.markzhang.cn/blog/2014/09/17/killzone-3-freezing-issue/"/>
     <updated>2014-09-17T10:34:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2014/09/17/killzone-3-freezing-issue</id>
+    <id>http://www.markzhang.cn/blog/2014/09/17/killzone-3-freezing-issue</id>
     <content type="html"><![CDATA[<p>PS3上的杀戮地带3，当升级了1.14（最新版本）之后，有一个黑屏死机的问题：</p>
 
 <p><a href="http://community.killzone.com/t5/Killzone-3-PS3/Patch-1-14-freezing-issues/td-p/1351164">http://community.killzone.com/t5/Killzone-3-PS3/Patch-1-14-freezing-issues/td-p/1351164</a></p>
