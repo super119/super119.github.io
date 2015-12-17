@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="现在的Android APP对空间的使用是越来越大，APP本身一般都有几十M，再加上使用过程中也会消耗大量存储，比如微信就经常会使用到上百M空间。 卓普大黑的默认data分区大小是3G，随着安装的APP越来越多，data分区就经常会被耗尽。所以，增大data分区就顺理成章的成为一个需求。 ">
+  <meta name="description" content="本文主要参考了以下文章: http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/ git am 或 git am -3 打patch的时候经常会遇到fail，就是因为patch不apply。但是 git am 不像 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/05/11/deal-with-git-am-failures/">Git Am失败的时候怎么办</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-11T10:15:00+08:00" pubdate data-updated="true">May 11<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>本文主要参考了以下文章:</p>
+
+<p><a href="http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/">http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/</a></p>
+
+<p><code>git am</code> 或 <code>git am -3</code> 打patch的时候经常会遇到fail，就是因为patch不apply。但是 <code>git am</code> 不像 <code>git cherry-pick</code> 一样会显示冲突的地方从而让我们可以修改，很多时候 <code>git am</code> 并不显示冲突，只是让我们修正冲突，这就产生了麻烦。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/05/11/deal-with-git-am-failures/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -490,51 +537,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/09/17/killzone-3-freezing-issue/">PS3 KillZone 3（杀戮地带3）黑屏死机问题</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-09-17T10:34:00+08:00" pubdate data-updated="true">Sep 17<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>PS3上的杀戮地带3，当升级了1.14（最新版本）之后，有一个黑屏死机的问题：</p>
-
-<p><a href="http://community.killzone.com/t5/Killzone-3-PS3/Patch-1-14-freezing-issues/td-p/1351164">http://community.killzone.com/t5/Killzone-3-PS3/Patch-1-14-freezing-issues/td-p/1351164</a></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/17/killzone-3-freezing-issue/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -549,11 +551,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (11)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (9)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (3)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (11)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (9)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/12/17/ktouch-w619-create-flash-package/">天语（k-touch） W619: Dump boot.img和system.img，然后做成recovery可用的刷机zip包</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/12/17/ssh-config/">SSH Client Config Sample</a>
@@ -569,10 +575,6 @@
     
       <li class="post">
         <a href="/blog/2015/12/16/chromiumos-chromeos/">Chromium OS相比Chrome OS缩水的地方</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/16/raspberrypi-dhcp-timeout/">Raspberry Pi + ArchLinux：网络dhcp不稳定，经常无法获取IP地址</a>
       </li>
     
   </ul>

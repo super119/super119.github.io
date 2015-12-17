@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Android | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-12-17T11:04:19+08:00</updated>
+  <updated>2015-12-17T11:09:56+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,47 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[天语（k-touch） w619: Dump boot.img和system.img，然后做成recovery可用的刷机zip包]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/12/17/ktouch-w619-create-flash-package/"/>
+    <updated>2015-12-17T11:08:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/12/17/ktouch-w619-create-flash-package</id>
+    <content type="html"><![CDATA[<p>步骤如下：</p>
+
+<ol>
+<li><p>root手机</p></li>
+<li><p>配置/etc/udev/rules.d/51-Android.conf，将手机的USB的vendor id/product id加进去。用lsusb可以看到这两个ID。</p></li>
+<li><p>adb shell</p></li>
+<li><p>su; cd /sdcard</p></li>
+<li><p>tar czvf system.tar.gz /system</p></li>
+<li><p>dd if=/dev/mtd/mtd0 of=/sdcard/boot.img  # 应该可以和system分区同样处理，用tar将/boot打包即可。dump整个分区有很多废数据产生</p></li>
+<li><p>退出adb shell</p></li>
+<li><p>在PC上：adb pull /sdcard/system.tar.gz</p></li>
+<li><p>tar zxvf system.tar.gz</p></li>
+<li><p>mkfs.yaffs2.x86 ./system system.img  # mkfs.yaffs2.x86在googlecode上下载</p></li>
+<li><p>有了boot.img和system.img，就可以使用Android Kitchen来制作一个刷机包了。</p></li>
+</ol>
+
+
+<p>cat /proc/mtd可以看到所有的mtd分区和对应的名字，这样就可以知道boot分区是哪个设备文件了。</p>
+
+<p>刷机时发现：</p>
+
+<ol>
+<li><p>Android kitchen做的刷机包，META-INF/com/google/android目录下的update-binary是不正确的，可以找一个别人制作的w619刷机包中的替代。不正确的update-binary的现象就是刷机出错：status 0（使用的是CWM recovery）</p></li>
+<li><p>META-INF/com/google/android目录下的updater-script中也有几个问题：</p>
+
+<ol type="a">
+<li><p>文件行尾不能有\r\n，只能有\r，也就是说必须是unix格式的文本。刷机现象：status 6</p></li>
+<li><p>format(&ldquo;MTD&rdquo;, &ldquo;system&rdquo;); &ndash;> format(&ldquo;yaffs2&rdquo;, &ldquo;MTD&rdquo;, &ldquo;system&rdquo;); 刷机现象：CWM recovery会提示format有三个参数</p></li>
+<li><p>mount(&ldquo;MTD&rdquo;, &ldquo;system&rdquo;, &ldquo;/system&rdquo;); &ndash;> mount(&ldquo;yaffs2&rdquo;, &ldquo;MTD&rdquo;, &ldquo;system&rdquo;, &ldquo;/system&rdquo;); # 和format的现象一样</p></li>
+</ol>
+</li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[卓普大黑（C7、zp990）增大data分区]]></title>

@@ -5,14 +5,15 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>32/64的问题：32bit指针转换成64bit - Sign Extension - Make Things Cool</title>
+  <title>天语（k-touch） w619: Dump boot.img和system.img，然后做成recovery可用的刷机zip包 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="32/64有很多问题，指针转换是其中一个，比如这个例子： 1
-2
-void *p = 0xc8f68000;
-unsigned long long v = (unsigned long long)p; 这个时候得到的 v 是： 0xffffffffc8f68000 而不是 &hellip;">
+  <meta name="description" content="步骤如下： root手机
+配置/etc/udev/rules.d/51-Android.conf，将手机的USB的vendor id/product id加进去。用lsusb可以看到这两个ID。
+adb shell
+su; cd /sdcard
+tar czvf system.tar.gz / &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -21,7 +22,7 @@ unsigned long long v = (unsigned long long)p; 这个时候得到的 v 是： 0xf
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2015/12/17/ktouch-w619-create-flash-package/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -80,7 +81,7 @@ unsigned long long v = (unsigned long long)p; 这个时候得到的 v 是： 0xf
   <header>
     
       
-        <h1 class="entry-title">32/64的问题：32bit指针转换成64bit - Sign Extension</h1>
+        <h1 class="entry-title">天语（k-touch） W619: Dump boot.img和system.img，然后做成recovery可用的刷机zip包</h1>
       
     
     
@@ -97,45 +98,46 @@ unsigned long long v = (unsigned long long)p; 这个时候得到的 v 是： 0xf
   
 
 
-<time datetime="2014-12-16T15:09:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2014</time>
+<time datetime="2015-12-17T11:08:00+08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2015</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>32/64有很多问题，指针转换是其中一个，比如这个例子：</p>
+<div class="entry-content"><p>步骤如下：</p>
 
-<!-- more -->
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">void</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mh">0xc8f68000</span><span class="p">;</span>
-</span><span class='line'><span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span><span class="p">)</span><span class="n">p</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个时候得到的 <code>v</code> 是： <code>0xffffffffc8f68000</code> 而不是 <code>0x00000000c8f68000</code></p>
-
-<p>以上例子来自：</p>
-
-<p><a href="http://stackoverflow.com/questions/22239752/convert-32-bit-pointer-to-64-bit-integer">http://stackoverflow.com/questions/22239752/convert-32-bit-pointer-to-64-bit-integer</a></p>
-
-<p>最近就碰到了好几次类似的问题。原因非常简单，就是编译器看到我们要把一个指针转换成 <code>unsigned long long</code>，而 <code>p</code> 的最高位是1，编译器认为这是负数，所以编译器就启动了 <code>Sign Extension</code>，将高32bit全部设置成1，这样最终你看到的高32bit就是全F了。</p>
-
-<p>所以当做32bit &ndash;> 64bit指针转换的时候，要使用 <code>intptr_t</code> 和 <code>uintptr_t</code>。这样编译器就知道这是指针的转换，高32bit就会是全0了。同样，这也就说明了，为什么 <code>stdint.h</code> 里面要定义这么些个typedef了:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">void</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mh">0xc8f68000</span><span class="p">;</span>
-</span><span class='line'><span class="n">uint64_t</span> <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="n">uintptr_t</span><span class="p">)</span><span class="n">p</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
+<ol>
+<li><p>root手机</p></li>
+<li><p>配置/etc/udev/rules.d/51-Android.conf，将手机的USB的vendor id/product id加进去。用lsusb可以看到这两个ID。</p></li>
+<li><p>adb shell</p></li>
+<li><p>su; cd /sdcard</p></li>
+<li><p>tar czvf system.tar.gz /system</p></li>
+<li><p>dd if=/dev/mtd/mtd0 of=/sdcard/boot.img  # 应该可以和system分区同样处理，用tar将/boot打包即可。dump整个分区有很多废数据产生</p></li>
+<li><p>退出adb shell</p></li>
+<li><p>在PC上：adb pull /sdcard/system.tar.gz</p></li>
+<li><p>tar zxvf system.tar.gz</p></li>
+<li><p>mkfs.yaffs2.x86 ./system system.img  # mkfs.yaffs2.x86在googlecode上下载</p></li>
+<li><p>有了boot.img和system.img，就可以使用Android Kitchen来制作一个刷机包了。</p></li>
+</ol>
 
 
-<p>事实上，无论何时都尽量要避免指针和Integer之间的转换，因为Integer是有正负的。</p>
+<p>cat /proc/mtd可以看到所有的mtd分区和对应的名字，这样就可以知道boot分区是哪个设备文件了。</p>
+
+<p>刷机时发现：</p>
+
+<ol>
+<li><p>Android kitchen做的刷机包，META-INF/com/google/android目录下的update-binary是不正确的，可以找一个别人制作的w619刷机包中的替代。不正确的update-binary的现象就是刷机出错：status 0（使用的是CWM recovery）</p></li>
+<li><p>META-INF/com/google/android目录下的updater-script中也有几个问题：</p>
+
+<ol type="a">
+<li><p>文件行尾不能有\r\n，只能有\r，也就是说必须是unix格式的文本。刷机现象：status 6</p></li>
+<li><p>format(&ldquo;MTD&rdquo;, &ldquo;system&rdquo;); &ndash;> format(&ldquo;yaffs2&rdquo;, &ldquo;MTD&rdquo;, &ldquo;system&rdquo;); 刷机现象：CWM recovery会提示format有三个参数</p></li>
+<li><p>mount(&ldquo;MTD&rdquo;, &ldquo;system&rdquo;, &ldquo;/system&rdquo;); &ndash;> mount(&ldquo;yaffs2&rdquo;, &ldquo;MTD&rdquo;, &ldquo;system&rdquo;, &ldquo;/system&rdquo;); # 和format的现象一样</p></li>
+</ol>
+</li>
+</ol>
+
 </div>
 
 
@@ -143,7 +145,7 @@ unsigned long long v = (unsigned long long)p; 这个时候得到的 v 是： 0xf
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2015 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit/<br>
+原文链接: http://www.markzhang.cn/blog/2015/12/17/ktouch-w619-create-flash-package/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -166,12 +168,12 @@ unsigned long long v = (unsigned long long)p; 这个时候得到的 v 是： 0xf
   
 
 
-<time datetime="2014-12-16T15:09:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2014</time>
+<time datetime="2015-12-17T11:08:00+08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2015</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/linux-kernel/'>linux-kernel</a>
+    <a class='category' href='/blog/categories/android/'>Android</a>
   
 </span>
 
@@ -187,10 +189,8 @@ unsigned long long v = (unsigned long long)p; 这个时候得到的 v 是： 0xf
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2014/12/09/ros-rdp-wol/" title="Previous Post: RouterOS/远程启动/控制家里的PC">&laquo; RouterOS/远程启动/控制家里的PC</a>
+        <a class="basic-alignment left articlenav" href="/blog/2015/12/17/ssh-config/" title="Previous Post: SSH client config Sample">&laquo; SSH client config Sample</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2015/03/02/linux-graphics-stack-notes/" title="Next Post: Linux graphics stack 随便写写">Linux graphics stack 随便写写 &raquo;</a>
       
     </p>
   </footer>

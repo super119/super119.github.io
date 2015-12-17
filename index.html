@@ -9,7 +9,11 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="man ssh_config，查看~/.ssh/config的语法。 Host可以使用通配符，当ssh的时候如果server的URL能match上这里Host指定的值，则Host下面指定的HostName将被作为最终URL使用。同时该Host下配置的User, Port都将被使用。 当然， &hellip;">
+  <meta name="description" content="步骤如下： root手机
+配置/etc/udev/rules.d/51-Android.conf，将手机的USB的vendor id/product id加进去。用lsusb可以看到这两个ID。
+adb shell
+su; cd /sdcard
+tar czvf system.tar.gz / &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +77,76 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/12/17/ktouch-w619-create-flash-package/">天语（k-touch） W619: Dump boot.img和system.img，然后做成recovery可用的刷机zip包</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-17T11:08:00+08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>步骤如下：</p>
+
+<ol>
+<li><p>root手机</p></li>
+<li><p>配置/etc/udev/rules.d/51-Android.conf，将手机的USB的vendor id/product id加进去。用lsusb可以看到这两个ID。</p></li>
+<li><p>adb shell</p></li>
+<li><p>su; cd /sdcard</p></li>
+<li><p>tar czvf system.tar.gz /system</p></li>
+<li><p>dd if=/dev/mtd/mtd0 of=/sdcard/boot.img  # 应该可以和system分区同样处理，用tar将/boot打包即可。dump整个分区有很多废数据产生</p></li>
+<li><p>退出adb shell</p></li>
+<li><p>在PC上：adb pull /sdcard/system.tar.gz</p></li>
+<li><p>tar zxvf system.tar.gz</p></li>
+<li><p>mkfs.yaffs2.x86 ./system system.img  # mkfs.yaffs2.x86在googlecode上下载</p></li>
+<li><p>有了boot.img和system.img，就可以使用Android Kitchen来制作一个刷机包了。</p></li>
+</ol>
+
+
+<p>cat /proc/mtd可以看到所有的mtd分区和对应的名字，这样就可以知道boot分区是哪个设备文件了。</p>
+
+<p>刷机时发现：</p>
+
+<ol>
+<li><p>Android kitchen做的刷机包，META-INF/com/google/android目录下的update-binary是不正确的，可以找一个别人制作的w619刷机包中的替代。不正确的update-binary的现象就是刷机出错：status 0（使用的是CWM recovery）</p></li>
+<li><p>META-INF/com/google/android目录下的updater-script中也有几个问题：</p>
+
+<ol type="a">
+<li><p>文件行尾不能有\r\n，只能有\r，也就是说必须是unix格式的文本。刷机现象：status 6</p></li>
+<li><p>format(&ldquo;MTD&rdquo;, &ldquo;system&rdquo;); &ndash;> format(&ldquo;yaffs2&rdquo;, &ldquo;MTD&rdquo;, &ldquo;system&rdquo;); 刷机现象：CWM recovery会提示format有三个参数</p></li>
+<li><p>mount(&ldquo;MTD&rdquo;, &ldquo;system&rdquo;, &ldquo;/system&rdquo;); &ndash;> mount(&ldquo;yaffs2&rdquo;, &ldquo;MTD&rdquo;, &ldquo;system&rdquo;, &ldquo;/system&rdquo;); # 和format的现象一样</p></li>
+</ol>
+</li>
+</ol>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -488,53 +562,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2015/05/11/deal-with-git-am-failures/">Git Am失败的时候怎么办</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-05-11T10:15:00+08:00" pubdate data-updated="true">May 11<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>本文主要参考了以下文章:</p>
-
-<p><a href="http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/">http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/</a></p>
-
-<p><code>git am</code> 或 <code>git am -3</code> 打patch的时候经常会遇到fail，就是因为patch不apply。但是 <code>git am</code> 不像 <code>git cherry-pick</code> 一样会显示冲突的地方从而让我们可以修改，很多时候 <code>git am</code> 并不显示冲突，只是让我们修正冲突，这就产生了麻烦。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/05/11/deal-with-git-am-failures/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -547,11 +574,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (11)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (9)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (3)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (11)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (9)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/12/17/ktouch-w619-create-flash-package/">天语（k-touch） W619: Dump boot.img和system.img，然后做成recovery可用的刷机zip包</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/12/17/ssh-config/">SSH Client Config Sample</a>
@@ -567,10 +598,6 @@
     
       <li class="post">
         <a href="/blog/2015/12/16/chromiumos-chromeos/">Chromium OS相比Chrome OS缩水的地方</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/16/raspberrypi-dhcp-timeout/">Raspberry Pi + ArchLinux：网络dhcp不稳定，经常无法获取IP地址</a>
       </li>
     
   </ul>
