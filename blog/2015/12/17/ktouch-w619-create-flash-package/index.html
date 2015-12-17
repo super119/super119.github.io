@@ -9,11 +9,8 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="步骤如下： root手机
-配置/etc/udev/rules.d/51-Android.conf，将手机的USB的vendor id/product id加进去。用lsusb可以看到这两个ID。
-adb shell
-su; cd /sdcard
-tar czvf system.tar.gz / &hellip;">
+  <meta name="description" content="有的时候会有这样的问题：发现一个民间的刷机包很不错，但是就是缺少一些你想要的东西。这个时候，其实就可以尝试基于这个包自己做一些修改、添加，最终生成自己满意的系统包。
+也有的时候，要给老人一部安卓机器来用，但是老人不擅长智能手机操作，经常会把一些APP误删除。这个时候其实可以自己制作刷机包， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -105,7 +102,13 @@ tar czvf system.tar.gz / &hellip;">
   </header>
 
 
-<div class="entry-content"><p>步骤如下：</p>
+<div class="entry-content"><p>有的时候会有这样的问题：发现一个民间的刷机包很不错，但是就是缺少一些你想要的东西。这个时候，其实就可以尝试基于这个包自己做一些修改、添加，最终生成自己满意的系统包。
+也有的时候，要给老人一部安卓机器来用，但是老人不擅长智能手机操作，经常会把一些APP误删除。这个时候其实可以自己制作刷机包，将必须的一些APP放到<code>system</code>下面，这样就不怕老人误删除APP了。</p>
+
+<p>以下是我自己在天语w619的尝试：</p>
+
+<!-- more -->
+
 
 <ol>
 <li><p>root手机</p></li>
