@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: RCHelicopter | Make Things Cool]]></title>
-  <link href="http://www.markzhang.cn/blog/categories/rchelicopter/atom.xml" rel="self"/>
-  <link href="http://www.markzhang.cn/"/>
-  <updated>2015-12-17T11:19:45+08:00</updated>
-  <id>http://www.markzhang.cn/</id>
+  <link href="http://markzhang.cn/blog/categories/rchelicopter/atom.xml" rel="self"/>
+  <link href="http://markzhang.cn/"/>
+  <updated>2015-12-17T11:23:10+08:00</updated>
+  <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
     <email><![CDATA[super119@139.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[电动直升机的油门锁定（THRU HOLD）和油门熄火（THRU CUT）]]></title>
-    <link href="http://www.markzhang.cn/blog/2015/07/24/throttle-hold-and-throttle-cut/"/>
+    <link href="http://markzhang.cn/blog/2015/07/24/throttle-hold-and-throttle-cut/"/>
     <updated>2015-07-24T11:43:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2015/07/24/throttle-hold-and-throttle-cut</id>
+    <id>http://markzhang.cn/blog/2015/07/24/throttle-hold-and-throttle-cut</id>
     <content type="html"><![CDATA[<p><code>油门锁定</code> 和 <code>油门熄火</code> 是不太容易理解的两个东西，关键是他们俩有什么区别。5IMX上有一篇帖子挺精彩的：</p>
 
 <p><a href="http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=544614&amp;page=1">http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=544614&amp;page=1</a></p>
@@ -55,9 +55,9 @@
   
   <entry>
     <title type="html"><![CDATA[450 FBL 相位臂不顺滑？缺少一个小垫片]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/06/17/fbl-phase-arm-pad/"/>
+    <link href="http://markzhang.cn/blog/2014/06/17/fbl-phase-arm-pad/"/>
     <updated>2014-06-17T15:37:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/06/17/fbl-phase-arm-pad</id>
+    <id>http://markzhang.cn/blog/2014/06/17/fbl-phase-arm-pad</id>
     <content type="html"><![CDATA[<p>450 FBL有一个相位臂，没有这个相位臂那旋翼一旋转，十字盘拉杆就转成麻花了。但是由于十字盘是需要上下移动的（改变集体螺距），所以这个相位臂也是需要能运动的。基本上，当十字盘上下运动时，相位臂有两个地方也会发生运动：一个是中间部位，能改变角度；另外一个地方不起眼容易被忽略，就是相位臂固定在中联的那个位置，会发生转动。</p>
 
 <p>所以最近在拆装相位臂的时候，突然发现相位臂的转动不顺畅了，非常的生涩，结果发现丢了一个小垫片。</p>
@@ -89,9 +89,9 @@
   
   <entry>
     <title type="html"><![CDATA[机械盲科普：推力轴承和单向轴承]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/06/08/thrust-bearing-and-one-way-bearing/"/>
+    <link href="http://markzhang.cn/blog/2014/06/08/thrust-bearing-and-one-way-bearing/"/>
     <updated>2014-06-08T21:08:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/06/08/thrust-bearing-and-one-way-bearing</id>
+    <id>http://markzhang.cn/blog/2014/06/08/thrust-bearing-and-one-way-bearing</id>
     <content type="html"><![CDATA[<p>航模直升机中有两个重要的轴承。一个是位于旋翼桨夹内的推力轴承，另外一个是位于大齿盘中间的单向轴承。由于自己对机械不怎么懂，所以就去琢磨了一下这两个玩意，也在5imx上发了帖子询问，最终整理成了此文。</p>
 
 <p>本文中所有内容都来自<a href="http://bbs.5imx.com">http://bbs.5imx.com</a>。</p>
@@ -147,9 +147,9 @@
   
   <entry>
     <title type="html"><![CDATA[陀螺进动（Gyroscope Precession）和循环螺距（Cyclic Pitch）]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/01/28/gyroscope-precession/"/>
+    <link href="http://markzhang.cn/blog/2014/01/28/gyroscope-precession/"/>
     <updated>2014-01-28T16:10:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/01/28/gyroscope-precession</id>
+    <id>http://markzhang.cn/blog/2014/01/28/gyroscope-precession</id>
     <content type="html"><![CDATA[<p>循环螺距就是通过改变十字盘（Swashplate），使直升机双桨上的升力造成差异，从而使直升机可以向前、向后、向左、向右移动。之所以称为“循环”（Cyclic），是因为双桨在旋转的过程中，其螺距循环的，有规律的进行改变。</p>
 
 <p>在这其中有一个有意思的现象：陀螺进动（Gyroscope Precession）。有关这个现象我首先是在这里看到的：</p>
@@ -187,9 +187,9 @@
   
   <entry>
     <title type="html"><![CDATA[伟力v911-2 心得体会]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/01/02/v911-2-tips/"/>
+    <link href="http://markzhang.cn/blog/2014/01/02/v911-2-tips/"/>
     <updated>2014-01-02T20:56:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/01/02/v911-2-tips</id>
+    <id>http://markzhang.cn/blog/2014/01/02/v911-2-tips</id>
     <content type="html"><![CDATA[<p>伟力v911-2是一款很不错的入门4通航模。说不错，主要是它有以下的优点：</p>
 
 <ul>

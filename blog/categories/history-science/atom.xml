@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: History-Science | Make Things Cool]]></title>
-  <link href="http://www.markzhang.cn/blog/categories/history-science/atom.xml" rel="self"/>
-  <link href="http://www.markzhang.cn/"/>
-  <updated>2015-12-17T11:19:45+08:00</updated>
-  <id>http://www.markzhang.cn/</id>
+  <link href="http://markzhang.cn/blog/categories/history-science/atom.xml" rel="self"/>
+  <link href="http://markzhang.cn/"/>
+  <updated>2015-12-17T11:23:10+08:00</updated>
+  <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
     <email><![CDATA[super119@139.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Defeating the Hackers]]></title>
-    <link href="http://www.markzhang.cn/blog/2013/12/17/defeating-the-hackers/"/>
+    <link href="http://markzhang.cn/blog/2013/12/17/defeating-the-hackers/"/>
     <updated>2013-12-17T14:06:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2013/12/17/defeating-the-hackers</id>
+    <id>http://markzhang.cn/blog/2013/12/17/defeating-the-hackers</id>
     <content type="html"><![CDATA[<p>Defeating the Hackers是BBC拍摄的一部纪录片。本片主要描述了目前生活中，特别是网络中的各种安全问题（窃取隐私，盗取帐号，删除资料，控制设备。。。），然后引申出了计算机技术中的一些安全防范技术和手段，是相当通俗易懂的科普类纪录片。</p>
 
 <p><a href="http://www.youtube.com/watch?v=_4NrrKTYmBI">http://www.youtube.com/watch?v=_4NrrKTYmBI</a></p>

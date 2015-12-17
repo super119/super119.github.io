@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: MacOSX | Make Things Cool]]></title>
-  <link href="http://www.markzhang.cn/blog/categories/macosx/atom.xml" rel="self"/>
-  <link href="http://www.markzhang.cn/"/>
-  <updated>2015-12-17T11:19:45+08:00</updated>
-  <id>http://www.markzhang.cn/</id>
+  <link href="http://markzhang.cn/blog/categories/macosx/atom.xml" rel="self"/>
+  <link href="http://markzhang.cn/"/>
+  <updated>2015-12-17T11:23:10+08:00</updated>
+  <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
     <email><![CDATA[super119@139.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Winbox for Mac OS X，修改界面字体]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/07/24/winbox-mac-change-font/"/>
+    <link href="http://markzhang.cn/blog/2014/07/24/winbox-mac-change-font/"/>
     <updated>2014-07-24T18:19:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/07/24/winbox-mac-change-font</id>
+    <id>http://markzhang.cn/blog/2014/07/24/winbox-mac-change-font</id>
     <content type="html"><![CDATA[<p>RouterOS（或简称ROS）是拉脱维亚的Mikrotik开发的一个强大到变态（对于个人用户而言）的路由系统。基于Linux，支持x86和MIPS（routerboard）。也就是说，你可以找一台PC来，装上routeros，就变身成了一台路由器。所以也有很多人称RouterOS为软路由。</p>
 
 <p>Winbox是Mikrotik开发的RouterOS的管理工具（客户端）。当然，RouterOS也有网页版和命令行（终端，支持SSH，串口等）的管理界面，但是Winbox是相对来说最直观和好用的（当然用多了肯定到最后就是纯命令行了）。</p>
@@ -103,9 +103,9 @@ REGEDIT4</p>
   
   <entry>
     <title type="html"><![CDATA[Mac OS X（Mavericks）共享VPN给其他设备]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/07/17/mac-share-vpn-connection/"/>
+    <link href="http://markzhang.cn/blog/2014/07/17/mac-share-vpn-connection/"/>
     <updated>2014-07-17T11:22:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/07/17/mac-share-vpn-connection</id>
+    <id>http://markzhang.cn/blog/2014/07/17/mac-share-vpn-connection</id>
     <content type="html"><![CDATA[<p>之前写过一篇文章叫“Chnroutes的使用“，主要说的是如何通过使用 <code>chnroutes</code> 从而将国内和国外的路由分开，国内走正常路由，国外则走VPN。现在的问题是，如果在一台电脑上有了VPN之后，如何将这个VPN share给其他设备，比如PS3？</p>
 
 <!-- more -->
@@ -176,9 +176,9 @@ REGEDIT4</p>
   
   <entry>
     <title type="html"><![CDATA[Mac OS X(Mavericks) CommandLineTools 和 osx-gcc-installer]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/07/03/apple-cli-and-osx-gcc-installer/"/>
+    <link href="http://markzhang.cn/blog/2014/07/03/apple-cli-and-osx-gcc-installer/"/>
     <updated>2014-07-03T13:22:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/07/03/apple-cli-and-osx-gcc-installer</id>
+    <id>http://markzhang.cn/blog/2014/07/03/apple-cli-and-osx-gcc-installer</id>
     <content type="html"><![CDATA[<p>Mac OS X Command Line Tools是Mac开发人员经常会遇到的一个问题。Command Line Tools（以下简称CLI）其实就是一堆Unix/Linux上开发需要的基础东西，比如gcc, make, g++等。在Mac上开发，如果使用Xcode的话，是不需要这些东西的，因为Xcode已经集成了这些东西，在Xcode的IDE中直接进行编译调试，所以用户不需要关心这些东西有没有，在哪。</p>
 
 <p>但是如果我们在开发自己的基于Makefile的程序时，或者是要porting UNIX/Linux上的一些程序时，这些东西就变成必须的了。</p>
@@ -264,9 +264,9 @@ drwxr-xr-x  6 mark  staff   204B  7  3 14:00 llvm-gcc4.2.pkg
   
   <entry>
     <title type="html"><![CDATA[给Mac OS X上的Chrome添加SSL证书]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/03/25/mac-chrome-add-ssl-certification/"/>
+    <link href="http://markzhang.cn/blog/2014/03/25/mac-chrome-add-ssl-certification/"/>
     <updated>2014-03-25T21:49:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/03/25/mac-chrome-add-ssl-certification</id>
+    <id>http://markzhang.cn/blog/2014/03/25/mac-chrome-add-ssl-certification</id>
     <content type="html"><![CDATA[<p>Chrome在访问自签名SSL证书的网站时，会给出一个warning的页面，每次都要去点一下那个 <code>Proceed</code> 按钮特烦。每天点一次，日积月累下来每年也要花不少时间来点这个破玩意。Chrome就不能聪明一点来个诸如”记住我的选择“这样的按钮么？</p>
 
 <p>折腾总是发生在忍无可忍的时候，幸好要解决这个问题不麻烦。</p>
@@ -299,9 +299,9 @@ drwxr-xr-x  6 mark  staff   204B  7  3 14:00 llvm-gcc4.2.pkg
   
   <entry>
     <title type="html"><![CDATA[MacOS X Mavericks上的浏览器插件的问题]]></title>
-    <link href="http://www.markzhang.cn/blog/2014/01/20/internet-plugins-on-mavericks/"/>
+    <link href="http://markzhang.cn/blog/2014/01/20/internet-plugins-on-mavericks/"/>
     <updated>2014-01-20T21:30:00+08:00</updated>
-    <id>http://www.markzhang.cn/blog/2014/01/20/internet-plugins-on-mavericks</id>
+    <id>http://markzhang.cn/blog/2014/01/20/internet-plugins-on-mavericks</id>
     <content type="html"><![CDATA[<p>升级了Mavericks之后，发现浏览器中的一些插件出问题了。最先遇到的就是在Safari中经常会蹦出来对话框说，是否要在该网站上运行迅雷（Thunder xxx）插件，有几个选项，yes/no/never for this site&hellip;. 后来又发现旺旺不工作了，也就是在浏览器中点击旺旺图标，旺旺出不来了&hellip;.</p>
 
 <p>所以花了点时间看了一下，原来现在在Safari中有专门的 <code>Internet plug-ins</code> 这样的设置了，而且该设置影响安装的所有浏览器（如Chrome, Firefox）。</p>
