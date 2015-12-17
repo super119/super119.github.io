@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Android | Make Things Cool]]></title>
   <link href="http://www.markzhang.cn/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://www.markzhang.cn/"/>
-  <updated>2015-12-17T11:14:26+08:00</updated>
+  <updated>2015-12-17T11:19:45+08:00</updated>
   <id>http://www.markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -14,12 +14,37 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Android system.img: yaffs or ext4?]]></title>
+    <link href="http://www.markzhang.cn/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4/"/>
+    <updated>2015-12-17T11:18:00+08:00</updated>
+    <id>http://www.markzhang.cn/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4</id>
+    <content type="html"><![CDATA[<p>随着现在手机的内部存储从NAND转变到eMMC，现在的system.img已经越来越多的使用ext4作为文件系统，而不是以前的yaffs2。</p>
+
+<p>使用file命令查看system.img，如果输出是：VMS Alpha Exectutable，那么这是yaffs</p>
+
+<!-- more -->
+
+
+<p>如果输出是data，那么很可能是ext4的。只不过这个image是一个spare image，含有一些spare数据，所以需要先用simg2img处理一下，然后就可以直接mount了。</p>
+
+<p>至于为什么采用eMMC来代替NAND，摘录百度百科的一段话：</p>
+
+<blockquote><p>eMMC目前是最当红的移动设备本地存储解决方案，目的在于简化手机存储器的设计，由于NAND Flash芯片的不同厂牌包括三星、KingMax、东芝(Toshiba)或海力士(Hynix)、美光(Micron)等，入时，都需要根据每家公司的产品和技术特性来重新设计，过去并没有哪个技术能够通用所有厂牌的NAND Flash芯片。</p>
+
+<p>而每次NAND Flash制程技术改朝换代，包括70纳米演进至50纳米，再演进至40纳米或30纳米制程技术，手机客户也都要重新设计，但半导体产品每1年制程技术都会推陈出新，存储器问题也拖累手机新机种推出的速度，因此像eMMC这种把所有存储器和管理NAND Flash的控制芯片都包在1颗MCP上的概念，逐渐风行起来。</p>
+
+<p>eMMC的设计概念，就是为了简化手机内存储器的使用，将NAND Flash芯片和控制芯片设计成1颗MCP芯片，手机客户只需要采购eMMC芯片，放进新手机中，不需处理其它繁复的NAND Flash兼容性和管理问题，最大优点是缩短新产品的上市周期和研发成本，加速产品的推陈出新速度。</p></blockquote>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[天语（k-touch） w619: Dump boot.img和system.img，然后做成recovery可用的刷机zip包]]></title>
     <link href="http://www.markzhang.cn/blog/2015/12/17/ktouch-w619-create-flash-package/"/>
     <updated>2015-12-17T11:08:00+08:00</updated>
     <id>http://www.markzhang.cn/blog/2015/12/17/ktouch-w619-create-flash-package</id>
-    <content type="html"><![CDATA[<p>有的时候会有这样的问题：发现一个民间的刷机包很不错，但是就是缺少一些你想要的东西。这个时候，其实就可以尝试基于这个包自己做一些修改、添加，最终生成自己满意的系统包。
-也有的时候，要给老人一部安卓机器来用，但是老人不擅长智能手机操作，经常会把一些APP误删除。这个时候其实可以自己制作刷机包，将必须的一些APP放到<code>system</code>下面，这样就不怕老人误删除APP了。</p>
+    <content type="html"><![CDATA[<p>有的时候会有这样的问题：发现一个民间的刷机包很不错，但是就是缺少一些你想要的东西。这个时候，其实就可以尝试基于这个包自己做一些修改、添加，最终生成自己满意的系统包。</p>
+
+<p>也有的时候，要给老人一部安卓机器来用，但是老人不擅长智能手机操作，经常会把一些APP误删除。这个时候其实可以自己制作刷机包，将必须的一些APP放到<code>system</code>下面，这样就不怕老人误删除APP了。</p>
 
 <p>以下是我自己在天语w619的尝试：</p>
 

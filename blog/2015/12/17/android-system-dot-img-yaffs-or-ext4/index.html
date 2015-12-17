@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: git - Make Things Cool</title>
+  <title>Android system.img: yaffs or ext4? - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="Category: git">
+  <meta name="description" content="随着现在手机的内部存储从NAND转变到eMMC，现在的system.img已经越来越多的使用ext4作为文件系统，而不是以前的yaffs2。 使用file命令查看system.img，如果输出是：VMS Alpha Exectutable，那么这是yaffs 如果输出是data， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cnblog/categories/git/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -72,113 +72,136 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: Git</h1>
+    
+      
+        <h1 class="entry-title">Android system.img: Yaffs or Ext4?</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-17T11:18:00+08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2015</time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p>随着现在手机的内部存储从NAND转变到eMMC，现在的system.img已经越来越多的使用ext4作为文件系统，而不是以前的yaffs2。</p>
 
-  
-  <h2>2015</h2>
+<p>使用file命令查看system.img，如果输出是：VMS Alpha Exectutable，那么这是yaffs</p>
 
-<article>
-  
-<h1><a href="/blog/2015/05/11/deal-with-git-am-failures/">git am失败的时候怎么办</a></h1>
-<time datetime="2015-05-11T10:15:00+08:00" pubdate><span class='month'>May</span> <span class='day'>11</span> <span class='year'>2015</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/git/'>git</a></span>
-</footer>
+<!-- more -->
 
 
-</article>
+<p>如果输出是data，那么很可能是ext4的。只不过这个image是一个spare image，含有一些spare数据，所以需要先用simg2img处理一下，然后就可以直接mount了。</p>
 
+<p>至于为什么采用eMMC来代替NAND，摘录百度百科的一段话：</p>
 
+<blockquote><p>eMMC目前是最当红的移动设备本地存储解决方案，目的在于简化手机存储器的设计，由于NAND Flash芯片的不同厂牌包括三星、KingMax、东芝(Toshiba)或海力士(Hynix)、美光(Micron)等，入时，都需要根据每家公司的产品和技术特性来重新设计，过去并没有哪个技术能够通用所有厂牌的NAND Flash芯片。</p>
 
-  
-  <h2>2014</h2>
+<p>而每次NAND Flash制程技术改朝换代，包括70纳米演进至50纳米，再演进至40纳米或30纳米制程技术，手机客户也都要重新设计，但半导体产品每1年制程技术都会推陈出新，存储器问题也拖累手机新机种推出的速度，因此像eMMC这种把所有存储器和管理NAND Flash的控制芯片都包在1颗MCP上的概念，逐渐风行起来。</p>
 
-<article>
-  
-<h1><a href="/blog/2014/04/22/git-gossip-3/">Git都在说些啥（三）</a></h1>
-<time datetime="2014-04-22T07:58:00+08:00" pubdate><span class='month'>Apr</span> <span class='day'>22</span> <span class='year'>2014</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/git/'>git</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2014/04/21/git-gossip-2/">Git都在说些啥（二）</a></h1>
-<time datetime="2014-04-21T21:33:00+08:00" pubdate><span class='month'>Apr</span> <span class='day'>21</span> <span class='year'>2014</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/git/'>git</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2014/04/04/git-gossip-1/">Git都在说些啥（一）</a></h1>
-<time datetime="2014-04-04T14:28:00+08:00" pubdate><span class='month'>Apr</span> <span class='day'>04</span> <span class='year'>2014</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/git/'>git</a></span>
-</footer>
-
-
-</article>
-
-
-
-  
-  <h2>2013</h2>
-
-<article>
-  
-<h1><a href="/blog/2013/11/20/git-tips/">Git常见命令和配置</a></h1>
-<time datetime="2013-11-20T21:01:00+08:00" pubdate><span class='month'>Nov</span> <span class='day'>20</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/git/'>git</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2013/11/07/linus-git-config/">Linus说，请将这个配置加到你的.gitconfig</a></h1>
-<time datetime="2013-11-07T18:18:00+08:00" pubdate><span class='month'>Nov</span> <span class='day'>07</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/git/'>git</a></span>
-</footer>
-
-
-</article>
-
+<p>eMMC的设计概念，就是为了简化手机内存储器的使用，将NAND Flash芯片和控制芯片设计成1颗MCP芯片，手机客户只需要采购eMMC芯片，放进新手机中，不需处理其它繁复的NAND Flash兼容性和管理问题，最大优点是缩短新产品的上市周期和研发成本，加速产品的推陈出新速度。</p></blockquote>
 </div>
 
+
+  <footer>
+    
+    <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
+      <strong>版权所有 &copy;2015 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
+原文链接: http://www.markzhang.cn/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4/<br>
+您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
+    </section>
+    
+
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Mark Zhang</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-17T11:18:00+08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/android/'>Android</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2015/12/17/ktouch-w619-create-flash-package/" title="Previous Post: 天语（k-touch） w619: Dump boot.img和system.img，然后做成recovery可用的刷机zip包">&laquo; 天语（k-touch） w619: Dump boot.img和system.img，然后做成recovery可用的刷机zip包</a>
+      
+      
+    </p>
+  </footer>
 </article>
 
+  <section>
+    <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_24x24">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_kaixin001"></a>
+	<a href="http://www.jiathis.com/share?uid=1860527" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1352426099508779" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+  </section>
+
+
+  <section>
+    <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1860527"></script>
+<!-- UY END -->
+
+  </section>
 
 </div>
 

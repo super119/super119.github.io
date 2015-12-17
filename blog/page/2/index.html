@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="本文主要参考了以下文章: http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/ git am 或 git am -3 打patch的时候经常会遇到fail，就是因为patch不apply。但是 git am 不像 &hellip;">
+  <meta name="description" content="所谓 out-of-tree 的内核模块，指的是源代码不在kernel tree里面的模块，比如 nouveau 的tree。 熟悉nouveau的都知道，nouveau的maintainer是单独维护nouveau tree的，所以，一般来说，我们会把nouveau的代码直接放在一个目录下， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/05/12/build-out-of-tree-kernel-module/">编译out-of-tree的kernel模块</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-12T10:51:00+08:00" pubdate data-updated="true">May 12<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>所谓 <code>out-of-tree</code> 的内核模块，指的是源代码不在kernel tree里面的模块，比如 <code>nouveau</code> 的tree。</p>
+
+<p>熟悉nouveau的都知道，nouveau的maintainer是单独维护nouveau tree的，所以，一般来说，我们会把nouveau的代码直接放在一个目录下，然后将nouveau编译成一个模块（.ko），这样来编译运行测试就都比较简单。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/05/12/build-out-of-tree-kernel-module/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -490,53 +535,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/10/17/chromeos-enable-ssh-server/">ChromeOS配置SSH Server</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-10-17T12:52:00+08:00" pubdate data-updated="true">Oct 17<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>ChromeOS是一个相当&#8221;Linux&#8221;的OS。现在一般能拿到手的ChromeOS的设备很多都是Chromebook，所以本文是在一台Chromebook上做的测试。</p>
-
-<p>ChromeOS默认的零售版本是什么开发类工具都没有的，包括ssh client都没有。要enable SSH client/server，首先要将ChromeOS切换到 <code>Developer Mode</code>。在我手上的这台Chromebook上，做法很简单，就是三键同按开机即可（ESC + Refresh + Power）。</p>
-
-<p>具体的切换到 <code>Developer Mode</code> 的做法可以参考Google的ChromeOS网站上的文章。接下来来看怎么enable SSH Server。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/10/17/chromeos-enable-ssh-server/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -551,11 +549,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (3)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (11)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (9)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (11)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (9)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4/">Android system.img: Yaffs or Ext4?</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/12/17/ktouch-w619-create-flash-package/">天语（k-touch） W619: Dump boot.img和system.img，然后做成recovery可用的刷机zip包</a>
@@ -571,10 +573,6 @@
     
       <li class="post">
         <a href="/blog/2015/12/16/kernel-debug-deadlock/">Linux Kernel: How to Debug Mutex Deadlock 如何调试mutex死锁</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/16/chromiumos-chromeos/">Chromium OS相比Chrome OS缩水的地方</a>
       </li>
     
   </ul>
