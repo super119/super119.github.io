@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: Games - Make Things Cool</title>
+  <title>mmap: invalid argument & MAP_PRIVATE - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="Category: Games">
+  <meta name="description" content="mmap，使用PROT_READ | PROT_WRITE, MAP_SHARED，总是返回EINVAL。 最后发现是因为被mmap的文件是一个network filesystem上的文件。 Linux实现MAP_SHARED是通过share文件的page cache做到的。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.markzhang.cnblog/categories/games/">
+  <link rel="canonical" href="http://www.markzhang.cn/blog/2015/12/17/mmap-invalid-arg/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -72,37 +72,136 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: Games</h1>
+    
+      
+        <h1 class="entry-title">Mmap: Invalid Argument & MAP_PRIVATE</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-17T10:53:00+08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2015</time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p>mmap，使用PROT_READ | PROT_WRITE, MAP_SHARED，总是返回EINVAL。</p>
 
-  
-  <h2>2014</h2>
+<p>最后发现是因为被mmap的文件是一个network filesystem上的文件。</p>
 
-<article>
-  
-<h1><a href="/blog/2014/09/17/killzone-3-freezing-issue/">PS3 KillZone 3（杀戮地带3）黑屏死机问题</a></h1>
-<time datetime="2014-09-17T10:34:00+08:00" pubdate><span class='month'>Sep</span> <span class='day'>17</span> <span class='year'>2014</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/games/'>Games</a></span>
-</footer>
+<!-- more -->
 
 
-</article>
+<p>Linux实现MAP_SHARED是通过share文件的page cache做到的。对于一个网络上的文件来说，Linux无法做到文件的某个部分被修改了，同时打开该文件的其他机器上的程序能立马看到。</p>
 
+<p>所以自然就返回EINVAL了。</p>
+
+<p>悲催的是mmap的manual上并没有提到这种情况，所以查了半天。</p>
+
+<p>此外，MAP_PRIVATE其实就是当你修改了文件之后，会copy一个新的page出来，所以自然就无法跟其他进程共享你的修改了。</p>
+
+<p>同时还需要注意的是，MAP_PRIVATE的时候，对文件进行的修改将不会被写到文件中去！</p>
 </div>
 
+
+  <footer>
+    
+    <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
+      <strong>版权所有 &copy;2015 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
+原文链接: http://www.markzhang.cn/blog/2015/12/17/mmap-invalid-arg/<br>
+您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
+    </section>
+    
+
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Mark Zhang</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-17T10:53:00+08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2015</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/linux/'>linux</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2015/12/16/kernel-debug-deadlock/" title="Previous Post: Linux kernel: How to debug mutex deadlock 如何调试mutex死锁">&laquo; Linux kernel: How to debug mutex deadlock 如何调试mutex死锁</a>
+      
+      
+    </p>
+  </footer>
 </article>
 
+  <section>
+    <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_24x24">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_kaixin001"></a>
+	<a href="http://www.jiathis.com/share?uid=1860527" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1352426099508779" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+  </section>
+
+
+  <section>
+    <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1860527"></script>
+<!-- UY END -->
+
+  </section>
 
 </div>
 

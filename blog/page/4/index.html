@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="这次来说说有关 no branch 的那些事。 其实之前在Git都在说些啥（一）中已经提过一些有关 no branch 的东西。这次再来看看其他两段git的提示信息，都是与 no branch 有关的。 ">
+  <meta name="description" content="OpenGL的设计与操作系统无关，与窗口系统也无关，所以，要编写一个可以运行（能看到界面）的程序，还需要一些额外的GUI的框架，比如glut。 glut基本上是所有OpenGL教科书上的唯一推荐了，因为它的API简单，跨平台。所以读者不需要花额外的时间去了解并使用glut。但是glut比较老了， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/04/23/wxwidget-on-mavericks/">在Mavericks上使用Makefile编写wxWidgets程序</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-23T23:31:00+08:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>OpenGL的设计与操作系统无关，与窗口系统也无关，所以，要编写一个可以运行（能看到界面）的程序，还需要一些额外的GUI的框架，比如glut。</p>
+
+<p>glut基本上是所有OpenGL教科书上的唯一推荐了，因为它的API简单，跨平台。所以读者不需要花额外的时间去了解并使用glut。但是glut比较老了，有点跟不上时代了。而且编译出来的东西是一个可执行文件，不是Mac OS X上的 <code>.app</code> 的那种Applicaiton。所以在StackOverflow上也有很多人推荐使用 <code>glfw</code>。我也去试用了一下，感觉还是太单薄了。</p>
+
+<p>既然要编写一个像样的OpenGL程序，就选择一个像样的GUI framework library吧，于是我决定使用wxWidgets。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/04/23/wxwidget-on-mavericks/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -477,49 +524,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/03/10/kgdb-howto/">KGDB使用简介</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-03-10T13:57:00+08:00" pubdate data-updated="true">Mar 10<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>KGDB是调试linux kernel的一个工具，虽然没有userspace的gdb那么好用，但有些时候还是能派上一些用处。比如kernel启动的时候自动重启，用kgdb连上之后就可以在kernel重启之前被KGDB截获，从而打印出调用栈来。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/03/10/kgdb-howto/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -534,11 +538,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (9)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (9)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (10)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (9)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/12/17/mmap-invalid-arg/">Mmap: Invalid Argument & MAP_PRIVATE</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/12/16/kernel-debug-deadlock/">Linux Kernel: How to Debug Mutex Deadlock 如何调试mutex死锁</a>
@@ -554,10 +562,6 @@
     
       <li class="post">
         <a href="/blog/2015/08/31/hack-cisco-anyconnect/">How to HACK CISCO Anyconnect Secure Mobile Client</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/07/24/throttle-hold-and-throttle-cut/">电动直升机的油门锁定（THRU HOLD）和油门熄火（THRU CUT）</a>
       </li>
     
   </ul>

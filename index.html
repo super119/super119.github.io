@@ -9,8 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="和userspace调试lock一样，主要是要： 找到lock死锁的地方，打印出调用栈
-找出这个mutex目前被谁占用了 ">
+  <meta name="description" content="mmap，使用PROT_READ | PROT_WRITE, MAP_SHARED，总是返回EINVAL。 最后发现是因为被mmap的文件是一个network filesystem上的文件。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +73,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/12/17/mmap-invalid-arg/">Mmap: Invalid Argument & MAP_PRIVATE</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-17T10:53:00+08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>mmap，使用PROT_READ | PROT_WRITE, MAP_SHARED，总是返回EINVAL。</p>
+
+<p>最后发现是因为被mmap的文件是一个network filesystem上的文件。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/12/17/mmap-invalid-arg/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -487,53 +531,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2015/03/04/why-i-leave-chnroutes/">RouterOS：为什么我不用chnroutes</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-03-04T09:28:00+08:00" pubdate data-updated="true">Mar 4<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>之前有一篇文章说了在RouterOS下配置chnroutes：</p>
-
-<p><a href="http://markzhang.cn/blog/2014/08/20/ros-chnroutes/">RouterOS配置记录（二）：chnroutes</a></p>
-
-<p>配置了chnroutes之后，国内IP不走VPN，国外的走VPN，一切看起来都很好。但是随着使用时间的增长，发现了一些问题：</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/03/04/why-i-leave-chnroutes/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -546,11 +543,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (9)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (9)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (2)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (10)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (9)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/12/17/mmap-invalid-arg/">Mmap: Invalid Argument & MAP_PRIVATE</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/12/16/kernel-debug-deadlock/">Linux Kernel: How to Debug Mutex Deadlock 如何调试mutex死锁</a>
@@ -566,10 +567,6 @@
     
       <li class="post">
         <a href="/blog/2015/08/31/hack-cisco-anyconnect/">How to HACK CISCO Anyconnect Secure Mobile Client</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/07/24/throttle-hold-and-throttle-cut/">电动直升机的油门锁定（THRU HOLD）和油门熄火（THRU CUT）</a>
       </li>
     
   </ul>
