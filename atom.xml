@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://markzhang.cn/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2015-12-17T11:38:40+08:00</updated>
+  <updated>2015-12-21T14:23:27+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,169 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Thunderbird配置 - for kernel maillist]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/21/kernel-thunderbird/"/>
+    <updated>2015-12-21T14:22:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/21/kernel-thunderbird</id>
+    <content type="html"><![CDATA[<p>From kernel: Documentation/email-clients.txt</p>
+
+<!-- more -->
+
+
+<p>Thunderbird (GUI)</p>
+
+<p>Thunderbird is an Outlook clone that likes to mangle text, but there are ways
+to coerce it into behaving.</p>
+
+<ul>
+<li>Allows use of an external editor:
+The easiest thing to do with Thunderbird and patches is to use an
+&ldquo;external editor&rdquo; extension and then just use your favorite $EDITOR
+for reading/merging patches into the body text.  To do this, download
+and install the extension, then add a button for it using
+View->Toolbars->Customize&hellip; and finally just click on it when in the
+Compose dialog.</li>
+</ul>
+
+
+<p>To beat some sense out of the internal editor, do this:
+&ndash; Edit your Thunderbird config settings so that it won&rsquo;t use format=flowed.
+  Go to &ldquo;edit->preferences->advanced->config editor&rdquo; to bring up the
+  thunderbird&rsquo;s registry editor, and set &ldquo;mailnews.send_plaintext_flowed&rdquo; to
+  &ldquo;false&rdquo;.
+&ndash; Disable HTML Format: Set &ldquo;mail.identity.id1.compose_html&rdquo; to &ldquo;false&rdquo;.
+&ndash; Enable &ldquo;preformat&rdquo; mode: Set &ldquo;editor.quotesPreformatted&rdquo; to &ldquo;true&rdquo;.
+&ndash; Enable UTF8: Set &ldquo;prefs.converted-to-utf8&rdquo; to &ldquo;true&rdquo;.
+&ndash; Install the &ldquo;toggle wordwrap&rdquo; extension.  Download the file from:</p>
+
+<pre><code>https://addons.mozilla.org/thunderbird/addon/2351/
+</code></pre>
+
+<p>  Then go to &ldquo;tools->add ons&rdquo;, select &ldquo;install&rdquo; at the bottom of the screen,
+  and browse to where you saved the .xul file.  This adds an &ldquo;Enable
+  Wordwrap&rdquo; entry under the Options menu of the message composer.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Kernel Submitting Patches，有关ifdef和static inline & macro]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/21/kernel-ifdef-macros/"/>
+    <updated>2015-12-21T14:19:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/21/kernel-ifdef-macros</id>
+    <content type="html"><![CDATA[<p>From kernel: Documentation/SubmittingPatches</p>
+
+<!-- more -->
+
+
+<p>2) #ifdefs are ugly</p>
+
+<p>Code cluttered with ifdefs is difficult to read and maintain.  Don&rsquo;t do
+it.  Instead, put your ifdefs in a header, and conditionally define
+&lsquo;static inline&rsquo; functions, or macros, which are used in the code.
+Let the compiler optimize away the &ldquo;no-op&rdquo; case.</p>
+
+<p>Simple example, of poor code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'>    <span class="n">dev</span> <span class="o">=</span> <span class="n">alloc_etherdev</span> <span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">funky_private</span><span class="p">));</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dev</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">return</span> <span class="o">-</span><span class="n">ENODEV</span><span class="p">;</span>
+</span><span class='line'>    <span class="err">#</span><span class="n">ifdef</span> <span class="n">CONFIG_NET_FUNKINESS</span>
+</span><span class='line'>    <span class="n">init_funky_net</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
+</span><span class='line'>    <span class="err">#</span><span class="n">endif</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Cleaned-up example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="p">(</span><span class="n">in</span> <span class="n">header</span><span class="p">)</span>
+</span><span class='line'>        <span class="err">#</span><span class="n">ifndef</span> <span class="n">CONFIG_NET_FUNKINESS</span>
+</span><span class='line'>        <span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="n">init_funky_net</span> <span class="p">(</span><span class="k">struct</span> <span class="n">net_device</span> <span class="o">*</span><span class="n">d</span><span class="p">)</span> <span class="p">{}</span>
+</span><span class='line'>        <span class="err">#</span><span class="n">endif</span>
+</span><span class='line'><span class="p">(</span><span class="n">in</span> <span class="n">the</span> <span class="n">code</span> <span class="n">itself</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">dev</span> <span class="o">=</span> <span class="n">alloc_etherdev</span> <span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">funky_private</span><span class="p">));</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dev</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">return</span> <span class="o">-</span><span class="n">ENODEV</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">init_funky_net</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>3) &lsquo;static inline&rsquo; is better than a macro</p>
+
+<p>Static inline functions are greatly preferred over macros.
+They provide type safety, have no length limitations, no formatting
+limitations, and under gcc they are as cheap as macros.
+Macros should only be used for cases where a static inline is clearly
+suboptimal [there are a few, isolated cases of this in fast paths],
+or where it is impossible to use a static inline function [such as
+string-izing].</p>
+
+<p>&lsquo;static inline&rsquo; is preferred over &lsquo;static <strong>inline</strong>&rsquo;, &lsquo;extern inline&rsquo;,
+and &lsquo;extern <strong>inline</strong>&rsquo;.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[kernel: How to decompress the zImage?]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/21/kernel-decompress-zimage/"/>
+    <updated>2015-12-21T14:00:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/21/kernel-decompress-zimage</id>
+    <content type="html"><![CDATA[<p>zImage不是标准的gzip文件，需要自己strip掉开头的一些东西才可以gunzip。</p>
+
+<p>基本上的思路就是找gzip的magic number &ldquo;1f 8b 08&#8221;。</p>
+
+<!-- more -->
+
+
+<p>具体步骤：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mkdir -p /tmp/kernel-uncompressed/; <span class="nb">cd</span> /tmp/kernel-uncompressed/
+</span><span class='line'><span class="nv">$ </span>cp /boot/vmlinuz-<span class="sb">`</span>uname -r<span class="sb">`</span> .
+</span><span class='line'><span class="nv">$ </span>od -t x1 -A d vmlinuz-2.6.18-128.el5.uvm6PAE | grep <span class="s2">&quot;1f 8b 08&quot;</span>
+</span><span class='line'>0008320 1b 00 1f 8b 08 00 d5 c2 9a 49 02 03 ec 3b 7d 7c
+</span><span class='line'><span class="nv">$ </span>dd <span class="nv">bs</span><span class="o">=</span>1 <span class="nv">skip</span><span class="o">=</span>8322 <span class="k">if</span><span class="o">=</span>vmlinuz-2.6.18-128.el5.uvm6PAE | zcat &gt; vmlinux
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[kernel: 调用init程序的地方]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/21/kernel-calls-init/"/>
+    <updated>2015-12-21T13:57:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/21/kernel-calls-init</id>
+    <content type="html"><![CDATA[<p>start_kernel函数的最后一行：rest_init，调用了init程序。</p>
+
+<p>看代码就很清楚了。有个地方值得注意的是，优先被调用的是initramfs中的init程序（可以通过rdinit=xxx来设定）。</p>
+
+<p>然后才会去检查&#8221;init=&ldquo;的设置。</p>
+
+<p>如果这两个都没有设置的话，kernel就会挨个去尝试/sbin/init, /bin/init, /bin/sh&hellip;</p>
+
+<p>这些都没有那就panic了</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Android system.img: yaffs or ext4?]]></title>
@@ -1019,195 +1182,6 @@
 <li><p>For tegra, GART &amp; SMMU can be used to implement IOMMU apis.</p></li>
 </ol>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux graphics stack 随便写写]]></title>
-    <link href="http://markzhang.cn/blog/2015/03/02/linux-graphics-stack-notes/"/>
-    <updated>2015-03-02T11:03:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/03/02/linux-graphics-stack-notes</id>
-    <content type="html"><![CDATA[<ul>
-<li><p>Display and mode setting: DRM. DRM defines connector/encoder/crtc to support display(including multi-monitor). And KMS makes mode setting happens in kernel space.</p></li>
-<li><p>2D acceleration: X server EXA/UXA extension. Vendor should write a X server driver which implements EXA or UXA(should be upstreamed). UXA is an enhancement design of EXA, proposed by intel, so GEM is used in UXA. DRM has no direct 2D acceleration interface definitions(e.g: memory copy/move, blit, color space conversion&hellip;), this is defined in EXA/UXA extensions. But vendor&rsquo;s X server driver will use drm functions, mostly is buffer manipulations.</p></li>
-<li><p>3D acceleration: via Mesa. Mesa has 2 parts:</p></li>
-</ul>
-
-
-<!-- more -->
-
-
-<ol>
-<li>libGL.so &mdash; the implementation of OpenGL spec, the default OpenGL implementation library in Linux. This libGL.so translates OpenGL callings to Mesa-specified instructions.</li>
-<li>DRI driver &mdash; the driver accepts the Mesa-specified instructions generated by libGL.so and call drm functions to get them accelerated in GPU. Should be upstreamed.</li>
-</ol>
-
-
-<p>DRM: has userspace libdrm &amp; kernel space drm driver.</p>
-
-<p>libdrm: Implemented drm APIs. Vendor can hook it&rsquo;s implementations as well as add more APIs which used by EXA/UXA driver(2D) or DRI driver(3D). That&rsquo;s why the build result of libdrm normally has 2 libraries(e.g: libdrm.so &amp; libdrm_intel.so). Vendor codes of libdrm should be upstreamed.</p>
-
-<p>Kernel drm driver: Works under kernel drm framework, should be upstreamed. Cause vendor can add APIs in libdrm, so kernel drm driver can handle vendor specified ioctls.</p>
-
-<p>GLX: X server extension of OpenGL. X server has DRI/DRI2 extensions as well.</p>
-
-<p>They&rsquo;re working with libGL.so in Mesa. By these extensions, Mesa can do:</p>
-
-<ol>
-<li><p>Direct rendering: libGL.so in Mesa try to figure out whether DRI driver is ready in Mesa. If so, GLX returns some infos(such as window size, position&hellip;) or create off-screen buffers(via DRI/DRI2 X extension) for Mesa. The rendering is handled in Mesa&rsquo;s DRI driver &mdash; no relations with X server.</p></li>
-<li><p>Indirect rendering: libGL.so in Mesa can&rsquo;t find out Mesa&rsquo;s DRI driver. So it queries whether DRI is available in X server. If so, it pass the Mesa-specified instructions which generated by libGL.so to X server. And GLX/DRI/DRI2 extensions of X server handles the rest things. Normally it&rsquo;s software rendering which implemented by Mesa as well. AIGLX(Accelerated Indirect GLX) seems has some solutions to accelerate this.</p></li>
-</ol>
-
-
-<p>So Mesa handles a lot of works in linux 3D graphics stack. And it has lots of relations with X server as well(GLX and DRI X extensions).</p>
-
-<p>An important reason that why we involve so many components is, decouple the dependencies of all of these guys. According to this design, DRM is not related with X server so it works with other programs as well(e.g: Wayland). Mesa is the same.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[32/64的问题：32bit指针转换成64bit - Sign Extension]]></title>
-    <link href="http://markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit/"/>
-    <updated>2014-12-16T15:09:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit</id>
-    <content type="html"><![CDATA[<p>32/64有很多问题，指针转换是其中一个，比如这个例子：</p>
-
-<!-- more -->
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">void</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mh">0xc8f68000</span><span class="p">;</span>
-</span><span class='line'><span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span><span class="p">)</span><span class="n">p</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这个时候得到的 <code>v</code> 是： <code>0xffffffffc8f68000</code> 而不是 <code>0x00000000c8f68000</code></p>
-
-<p>以上例子来自：</p>
-
-<p><a href="http://stackoverflow.com/questions/22239752/convert-32-bit-pointer-to-64-bit-integer">http://stackoverflow.com/questions/22239752/convert-32-bit-pointer-to-64-bit-integer</a></p>
-
-<p>最近就碰到了好几次类似的问题。原因非常简单，就是编译器看到我们要把一个指针转换成 <code>unsigned long long</code>，而 <code>p</code> 的最高位是1，编译器认为这是负数，所以编译器就启动了 <code>Sign Extension</code>，将高32bit全部设置成1，这样最终你看到的高32bit就是全F了。</p>
-
-<p>所以当做32bit &ndash;> 64bit指针转换的时候，要使用 <code>intptr_t</code> 和 <code>uintptr_t</code>。这样编译器就知道这是指针的转换，高32bit就会是全0了。同样，这也就说明了，为什么 <code>stdint.h</code> 里面要定义这么些个typedef了:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">void</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="mh">0xc8f68000</span><span class="p">;</span>
-</span><span class='line'><span class="n">uint64_t</span> <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="n">uintptr_t</span><span class="p">)</span><span class="n">p</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>事实上，无论何时都尽量要避免指针和Integer之间的转换，因为Integer是有正负的。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[RouterOS/远程启动/控制家里的PC]]></title>
-    <link href="http://markzhang.cn/blog/2014/12/09/ros-rdp-wol/"/>
-    <updated>2014-12-09T17:35:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2014/12/09/ros-rdp-wol</id>
-    <content type="html"><![CDATA[<h2>远程启动</h2>
-
-<p>远程启动其实就是 <code>WOL(Wake on Lan)</code>，现在的PC机基本上都支持。需要两个东西：</p>
-
-<ul>
-<li>在BIOS里面打开 <code>WOL</code></li>
-<li>使用一个程序，发送WOL的一个包（所谓magic packet）给PC机</li>
-</ul>
-
-
-<p>先说第一个，在我的PC机上，这个设置是 Advanced Options &ndash;> APM &ndash;> Power on PCIE，设成 <code>Enabled</code> 即可。</p>
-
-<!-- more -->
-
-
-<p>再说第二个，很酷的是ROS就支持这个，这样你就不需要另外一台PC机常年开着了，ROS路由一直开着即可。在ROS中，打开 <code>New Terminal</code>，输入：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/tool wol <span class="nv">interface</span><span class="o">=</span>&lt;连着你要唤醒的PC机的那个网口&gt; <span class="nv">mac</span><span class="o">=</span>&lt;要唤醒PC机的网卡的MAC地址&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://markzhang.cn/downloads/image/ros-wol.png" alt="ROS Wake on Lan" /></p>
-
-<p>如果你的路由器不是ROS，或是没有WOL功能的话，那就需要另外一台PC来执行WOL的程序了。在Linux下，可以使用：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo apt-get install etherwake
-</span><span class='line'>wakeonlan &lt;mac address&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Windows下也一样，下载一个Wake on Lan的程序使用就行了。</p>
-
-<h2>远程控制</h2>
-
-<p>首先就是打开Windows的远程桌面功能。在 <code>高级系统设置 -&gt; 远程</code> 标签页里面：</p>
-
-<p><img src="http://markzhang.cn/downloads/image/windows-rdp.png" alt="Windows RDP" /></p>
-
-<p>完了就是在ROS里面打开端口映射，这样你才可以从Internet上远程RDP到家里的PC机，需要映射的是著名的3389端口：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">chain</span><span class="o">=</span>dstnat <span class="nv">action</span><span class="o">=</span>dst-nat to-addresses<span class="o">=</span>&lt;xxx.xxx.xxx.xxx&gt; to-ports<span class="o">=</span>3389 <span class="nv">protocol</span><span class="o">=</span>tcp dst-port<span class="o">=</span>3389
-</span><span class='line'><span class="nv">chain</span><span class="o">=</span>dstnat <span class="nv">action</span><span class="o">=</span>dst-nat to-addresses<span class="o">=</span>&lt;xxx.xxx.xxx.xxx&gt; to-ports<span class="o">=</span>3389 <span class="nv">protocol</span><span class="o">=</span>udp dst-port<span class="o">=</span>3389
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样就可以远程登录了。Ubuntu下面有自带的 <code>Remmina Remote Desktop</code> 可以使用，Mac下我用的是 <code>Jump Desktop</code>，个人感觉很好用。</p>
-
-<p>最后一个小问题，有关远程登录机器开始菜单中没有 <code>关机</code> 这个功能，只需要打开 <code>Windows CMD</code>，也就是命令行界面，输入：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>shutdown /f /s
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>就可以了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Thunderbird 80(72) column - 邮件在80(72)列处line break]]></title>
-    <link href="http://markzhang.cn/blog/2014/11/25/thunderbird-72-column/"/>
-    <updated>2014-11-25T11:13:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2014/11/25/thunderbird-72-column</id>
-    <content type="html"><![CDATA[<p>这个需求做linux kernel upstream的人都懂的&hellip;&hellip;要设置Thunderbird在80列正确换行，只需要这样：</p>
-
-<!-- more -->
-
-
-<ul>
-<li><p>Thunderbird如果撰写的邮件是plain text格式（在这里设置：Edit &ndash;> Account Settings &ndash;> Composition &amp; Addressing, you should uncheck Compose in HTML format for all accounts），那么自动就会在72列处做line wrap。但是需要注意的是，这里的line wrap只是在display邮件内容和撰写邮件时，你可以看到。当你发出邮件的时候，这个line wrap就没有了，换句话说，别人看到的你的邮件内容，还是很长的一行行的文字。所以需要下面一步。</p></li>
-<li><p>以下内容来自：</p></li>
-</ul>
-
-
-<p><a href="http://arapulido.com/2009/12/01/enabling-line-wrapping-in-thunderbird/#comment-807">http://arapulido.com/2009/12/01/enabling-line-wrapping-in-thunderbird/#comment-807</a></p>
-
-<p>下文中提到的option设置在：Edit &ndash;> Preferences &ndash;> Advanced (General tab) &ndash;> Configure Editor：</p>
-
-<blockquote><p>I am a happy user of the daily build of Thunderbird 3. Although it is still under development, is the best email client for Linux I’ve tried so far, at least, the one that better works for me. Email search &amp; filtering is fast and reliable.</p>
-
-<p>The only thing I don’t like is that wrapping your emails to 72 characters when sending plain text is not straightforward. Once you have selected to send your emails as plain text and have set the line wrap option to 72, there is still one more option to tweak.</p>
-
-<p>Thunderbird has a “feature” that sends by default all plain text with the option format=flowed, which unwraps the email in the client receiver. To turn this feature off, you have to toggle one of the options in the chrome editor:</p>
-
-<p>To disable flowed paragraphs, enforcing line breaks as formatted in the message, set the preference:</p>
-
-<p>mailnews.display.disable_format_flowed_support true
-(<a href="http://kb.mozillazine.org/Mail_content_types#Plain_text">http://kb.mozillazine.org/Mail_content_types#Plain_text</a>)</p>
-
-<p>To disable paragraph flow when you send plain text messages, and in the plain text part of multipart messages, set the preference:</p>
-
-<p>mailnews.send_plaintext_flowed false
-(<a href="http://kb.mozillazine.org/Mail_content_types#Disabling_paragraph_flow">http://kb.mozillazine.org/Mail_content_types#Disabling_paragraph_flow</a>)</p></blockquote>
 ]]></content>
   </entry>
   

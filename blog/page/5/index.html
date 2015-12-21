@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="Chrome在访问自签名SSL证书的网站时，会给出一个warning的页面，每次都要去点一下那个 Proceed 按钮特烦。每天点一次，日积月累下来每年也要花不少时间来点这个破玩意。Chrome就不能聪明一点来个诸如”记住我的选择“这样的按钮么？ 折腾总是发生在忍无可忍的时候， &hellip;">
+  <meta name="description" content="家里客厅的电视是10年前买的厦华LC-42T18，几年前维修过一次，更换掉了整块主控板（也就是数字信号板）。但是上周电视再次罢工，如果让厦华再来维修，那又是大几百块，所以决定自己拆开来修修看。 之所以想自己维修，是因为故障现象跟上次差不多： 开机之后，红色电源指示灯亮，此时按电视上的POWER按键 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,186 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/04/15/prime-lc-42t18-fix/">厦华LC-42T18电视机维修</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-15T23:10:00+08:00" pubdate data-updated="true">Apr 15<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>家里客厅的电视是10年前买的厦华LC-42T18，几年前维修过一次，更换掉了整块主控板（也就是数字信号板）。但是上周电视再次罢工，如果让厦华再来维修，那又是大几百块，所以决定自己拆开来修修看。</p>
+
+<p>之所以想自己维修，是因为故障现象跟上次差不多：</p>
+
+<p>开机之后，红色电源指示灯亮，此时按电视上的POWER按键，电源指示灯能从红灯切换到蓝灯，但是没有图像没有声音。此时遥控和电视上的按键全部失灵，只能拔电源或者按电源总开关将电视关闭。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/04/15/prime-lc-42t18-fix/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/04/09/linux-driver-suspend-orders/">Linux设备驱动suspend/resume的顺序</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-09T16:07:00+08:00" pubdate data-updated="true">Apr 9<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Linux在进入suspend的时候，会首先freeze userspace，然后挨个去调用设备驱动程序的suspend，最后调用architecture dependent的callback（非常奔放的描述了，其实有大量的细节问题存在）。Resume就是反过来执行一遍，最后重新enable userspace。那么作为设备驱动程序的编写者来说，主要就是要实现本驱动的suspend/resume逻辑。但是事实上，很多设备之间是有依赖性的，比如在ARM上，很多设备在resume之前，要求 <code>IOMMU</code> 要已经被enable，否则硬件上就会出现问题，因为访问的地址不对了。</p>
+
+<p>那么Linux是如何设计/定义各个设备驱动之间的suspend/resume的顺序的呢？</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/04/09/linux-driver-suspend-orders/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/04/08/lastpass/">一站式密码管理器 - LastPass</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-08T19:56:00+08:00" pubdate data-updated="true">Apr 8<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>我个人感觉，密码是相当反人类的设计。当你刚接触互联网的时候，可能感觉不到，甚至感觉理所当然，银行卡也需要设置密码呢。但是当访问的网站越来越多，各个站点论坛都需要注册用户、设置密码，多了之后密码就会变成非常痛苦的一种体验。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/04/08/lastpass/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/04/04/git-gossip-1/">Git都在说些啥（一）</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-04T14:28:00+08:00" pubdate data-updated="true">Apr 4<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>当我们在做某些git操作的时候，git有的时候会给出一段一段的提示信息，而往往这些信息都是比较重要的。因为按照UNIX的设计哲学，执行成功或是无害操作，这些都是不会有任何提示信息的。做Linux的Hackers也奉行这种哲学，所以当git开始唠叨的时候，你真的需要关注一下它到底在罗嗦些啥。</p>
+
+<p>这篇文章描述的就是某一个git的唠叨。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/04/04/git-gossip-1/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -340,192 +520,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/01/20/internet-plugins-on-mavericks/">MacOS X Mavericks上的浏览器插件的问题</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-01-20T21:30:00+08:00" pubdate data-updated="true">Jan 20<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>升级了Mavericks之后，发现浏览器中的一些插件出问题了。最先遇到的就是在Safari中经常会蹦出来对话框说，是否要在该网站上运行迅雷（Thunder xxx）插件，有几个选项，yes/no/never for this site&hellip;. 后来又发现旺旺不工作了，也就是在浏览器中点击旺旺图标，旺旺出不来了&hellip;.</p>
-
-<p>所以花了点时间看了一下，原来现在在Safari中有专门的 <code>Internet plug-ins</code> 这样的设置了，而且该设置影响安装的所有浏览器（如Chrome, Firefox）。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/01/20/internet-plugins-on-mavericks/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/01/06/hellogl-on-macosx/">OpenGL Programming on MacOS X (Mavericks)</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-01-06T21:30:00+08:00" pubdate data-updated="true">Jan 6<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>最近开始看《OpenGL Programming Guide 8th Edition》一书。所以很自然的，就会想把书中的源代码在MacOS X Mavericks上试验一遍。很显然程序是没法在Mavericks上run的，所以就对程序做了一些修改。在试验的过程中，自然也发现了一些书中没有说到的内容，所以记录下来。</p>
-
-<p>事实上，这本书中的代码是在Windows上测试的，所以MacOS X上就会有一些不同。尤其体现在一些第三方的framework/library上。</p>
-
-<p>本文是在试验该书中第一个源程序的时候，发现的一些东西。和我们第一个编写的HelloWorld程序一样，我称该程序为HelloGL。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/01/06/hellogl-on-macosx/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/01/02/v911-2-tips/">伟力v911-2 心得体会</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-01-02T20:56:00+08:00" pubdate data-updated="true">Jan 2<span>nd</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>伟力v911-2是一款很不错的入门4通航模。说不错，主要是它有以下的优点：</p>
-
-<ul>
-<li>便宜，两百块不到搞定  :)</li>
-<li>耐炸，主要是飞机自重小。相比外观很漂亮，带什么合金外壳，还带闪灯的那种，增加了自重，所以电机相对要大功率的，还要增加电池容量。此外虽然机身有合金外壳，但是主轴、尾部没有啊，所以掉下来这些部分就很容易挂掉。</li>
-<li>体积小，可以在室内飞行，不用专门到户外去找飞场。</li>
-<li>整机只有30个零件，维修方便</li>
-</ul>
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/01/02/v911-2-tips/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/12/27/add-origin-statement-conditionally/">Octopress - 有条件的为文章添加转载声明</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-27T15:33:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>对于原创的文章，我在Octopress的post模板文件中，加入了一段转载声明。但对于一些好的文章，经常也会忍不住想要转载。所以，对于转载的文章，还出现这么一个转载声明就是打自己耳光了。很显然，要做个小手脚，对于转载的文章，去掉这个转载声明。有意思的是，在这个过程中，我居然发现 <code>liquid</code> 语法中没有 <code>逻辑非</code> ?!</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/12/27/add-origin-statement-conditionally/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -540,30 +534,30 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (11)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (9)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (6)</a></li><li><a href='/blog/categories/hardware'>hardware (1)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (11)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (13)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/12/21/kernel-thunderbird/">Thunderbird配置 - for Kernel Maillist</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/21/kernel-ifdef-macros/">Kernel Submitting Patches，有关ifdef和static Inline & Macro</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/21/kernel-decompress-zimage/">Kernel: How to Decompress the zImage?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/21/kernel-calls-init/">Kernel: 调用init程序的地方</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4/">Android system.img: Yaffs or Ext4?</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/17/ktouch-w619-create-flash-package/">天语（k-touch） W619: Dump boot.img和system.img，然后做成recovery可用的刷机zip包</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/17/ssh-config/">SSH Client Config Sample</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/17/mmap-invalid-arg/">Mmap: Invalid Argument & MAP_PRIVATE</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/16/kernel-debug-deadlock/">Linux Kernel: How to Debug Mutex Deadlock 如何调试mutex死锁</a>
       </li>
     
   </ul>

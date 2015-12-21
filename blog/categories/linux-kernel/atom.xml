@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux-kernel | Make Things Cool]]></title>
   <link href="http://markzhang.cn/blog/categories/linux-kernel/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2015-12-17T11:38:40+08:00</updated>
+  <updated>2015-12-21T14:23:27+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,158 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Thunderbird配置 - for kernel maillist]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/21/kernel-thunderbird/"/>
+    <updated>2015-12-21T14:22:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/21/kernel-thunderbird</id>
+    <content type="html"><![CDATA[<p>From kernel: Documentation/email-clients.txt</p>
+
+<!-- more -->
+
+
+<p>Thunderbird (GUI)</p>
+
+<p>Thunderbird is an Outlook clone that likes to mangle text, but there are ways
+to coerce it into behaving.</p>
+
+<ul>
+<li>Allows use of an external editor:
+The easiest thing to do with Thunderbird and patches is to use an
+&ldquo;external editor&rdquo; extension and then just use your favorite $EDITOR
+for reading/merging patches into the body text.  To do this, download
+and install the extension, then add a button for it using
+View->Toolbars->Customize&hellip; and finally just click on it when in the
+Compose dialog.</li>
+</ul>
+
+
+<p>To beat some sense out of the internal editor, do this:
+&ndash; Edit your Thunderbird config settings so that it won&rsquo;t use format=flowed.
+  Go to &ldquo;edit->preferences->advanced->config editor&rdquo; to bring up the
+  thunderbird&rsquo;s registry editor, and set &ldquo;mailnews.send_plaintext_flowed&rdquo; to
+  &ldquo;false&rdquo;.
+&ndash; Disable HTML Format: Set &ldquo;mail.identity.id1.compose_html&rdquo; to &ldquo;false&rdquo;.
+&ndash; Enable &ldquo;preformat&rdquo; mode: Set &ldquo;editor.quotesPreformatted&rdquo; to &ldquo;true&rdquo;.
+&ndash; Enable UTF8: Set &ldquo;prefs.converted-to-utf8&rdquo; to &ldquo;true&rdquo;.
+&ndash; Install the &ldquo;toggle wordwrap&rdquo; extension.  Download the file from:</p>
+
+<pre><code>https://addons.mozilla.org/thunderbird/addon/2351/
+</code></pre>
+
+<p>  Then go to &ldquo;tools->add ons&rdquo;, select &ldquo;install&rdquo; at the bottom of the screen,
+  and browse to where you saved the .xul file.  This adds an &ldquo;Enable
+  Wordwrap&rdquo; entry under the Options menu of the message composer.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Kernel Submitting Patches，有关ifdef和static inline & macro]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/21/kernel-ifdef-macros/"/>
+    <updated>2015-12-21T14:19:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/21/kernel-ifdef-macros</id>
+    <content type="html"><![CDATA[<p>From kernel: Documentation/SubmittingPatches</p>
+
+<!-- more -->
+
+
+<p>2) #ifdefs are ugly</p>
+
+<p>Code cluttered with ifdefs is difficult to read and maintain.  Don&rsquo;t do
+it.  Instead, put your ifdefs in a header, and conditionally define
+&lsquo;static inline&rsquo; functions, or macros, which are used in the code.
+Let the compiler optimize away the &ldquo;no-op&rdquo; case.</p>
+
+<p>Simple example, of poor code:</p>
+
+<p>``` cpp</p>
+
+<pre><code>    dev = alloc_etherdev (sizeof(struct funky_private));
+    if (!dev)
+            return -ENODEV;
+    #ifdef CONFIG_NET_FUNKINESS
+    init_funky_net(dev);
+    #endif
+</code></pre>
+
+<p>```</p>
+
+<p>Cleaned-up example:</p>
+
+<p>``` cpp
+(in header)</p>
+
+<pre><code>    #ifndef CONFIG_NET_FUNKINESS
+    static inline void init_funky_net (struct net_device *d) {}
+    #endif
+</code></pre>
+
+<p>(in the code itself)</p>
+
+<pre><code>    dev = alloc_etherdev (sizeof(struct funky_private));
+    if (!dev)
+            return -ENODEV;
+    init_funky_net(dev);
+</code></pre>
+
+<p>```</p>
+
+<p>3) &lsquo;static inline&rsquo; is better than a macro</p>
+
+<p>Static inline functions are greatly preferred over macros.
+They provide type safety, have no length limitations, no formatting
+limitations, and under gcc they are as cheap as macros.
+Macros should only be used for cases where a static inline is clearly
+suboptimal [there are a few, isolated cases of this in fast paths],
+or where it is impossible to use a static inline function [such as
+string-izing].</p>
+
+<p>&lsquo;static inline&rsquo; is preferred over &lsquo;static <strong>inline</strong>&rsquo;, &lsquo;extern inline&rsquo;,
+and &lsquo;extern <strong>inline</strong>&rsquo;.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[kernel: How to decompress the zImage?]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/21/kernel-decompress-zimage/"/>
+    <updated>2015-12-21T14:00:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/21/kernel-decompress-zimage</id>
+    <content type="html"><![CDATA[<p>zImage不是标准的gzip文件，需要自己strip掉开头的一些东西才可以gunzip。</p>
+
+<p>基本上的思路就是找gzip的magic number &ldquo;1f 8b 08"。</p>
+
+<!-- more -->
+
+
+<p>具体步骤：</p>
+
+<p><code>bash
+$ mkdir -p /tmp/kernel-uncompressed/; cd /tmp/kernel-uncompressed/
+$ cp /boot/vmlinuz-`uname -r` .
+$ od -t x1 -A d vmlinuz-2.6.18-128.el5.uvm6PAE | grep "1f 8b 08"
+0008320 1b 00 1f 8b 08 00 d5 c2 9a 49 02 03 ec 3b 7d 7c
+$ dd bs=1 skip=8322 if=vmlinuz-2.6.18-128.el5.uvm6PAE | zcat &gt; vmlinux
+</code></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[kernel: 调用init程序的地方]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/21/kernel-calls-init/"/>
+    <updated>2015-12-21T13:57:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/21/kernel-calls-init</id>
+    <content type="html"><![CDATA[<p>start_kernel函数的最后一行：rest_init，调用了init程序。</p>
+
+<p>看代码就很清楚了。有个地方值得注意的是，优先被调用的是initramfs中的init程序（可以通过rdinit=xxx来设定）。</p>
+
+<p>然后才会去检查"init=&ldquo;的设置。</p>
+
+<p>如果这两个都没有设置的话，kernel就会挨个去尝试/sbin/init, /bin/init, /bin/sh&hellip;</p>
+
+<p>这些都没有那就panic了</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux kernel: How to debug mutex deadlock 如何调试mutex死锁]]></title>
@@ -46,132 +198,6 @@ show_stack(&lt;lock&gt;.owner, NULL);
 <p>dump_stack：打印当前的backtrace</p>
 
 <p>show_stack：打印指定task_struct的backtrace</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[编译out-of-tree的kernel模块]]></title>
-    <link href="http://markzhang.cn/blog/2015/05/12/build-out-of-tree-kernel-module/"/>
-    <updated>2015-05-12T10:51:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/05/12/build-out-of-tree-kernel-module</id>
-    <content type="html"><![CDATA[<p>所谓 <code>out-of-tree</code> 的内核模块，指的是源代码不在kernel tree里面的模块，比如 <code>nouveau</code> 的tree。</p>
-
-<p>熟悉nouveau的都知道，nouveau的maintainer是单独维护nouveau tree的，所以，一般来说，我们会把nouveau的代码直接放在一个目录下，然后将nouveau编译成一个模块（.ko），这样来编译运行测试就都比较简单。</p>
-
-<!-- more -->
-
-
-<p>所以关于如何编译一个 <code>out-of-tree</code> 的内核模块，其实内核是有官方文档的：</p>
-
-<p><a href="https://www.kernel.org/doc/Documentation/kbuild/modules.txt">https://www.kernel.org/doc/Documentation/kbuild/modules.txt</a></p>
-
-<p>我一般是这么编译的：</p>
-
-<p><code>bash
-make ARCH=arm64 CROSS_COMPILE=&lt;your toolchain&gt; INSTALL_MOD_PATH=&lt;kernel module install path&gt; M=~/nouveau/drm/nouveau/ -C &lt;the kernel root directory&gt; -j4 modules
-make ARCH=arm64 CROSS_COMPILE=&lt;your toolchain&gt; INSTALL_MOD_PATH=&lt;kernel module install path&gt; M=~/nouveau/drm/nouveau/ -C &lt;the kernel root directory&gt; modules_install
-</code></p>
-
-<p>一些注意点：</p>
-
-<ul>
-<li><p>所谓 <code>kernel root directory</code> 就是能找到.config文件的那个目录</p></li>
-<li><p>使用 <code>M=</code> 来指定nouveau在哪里，注意这里要指到 <code>KBuild</code> 所在的那个目录</p></li>
-<li><p>kernel本身也有nouveau driver（位与drivers/gpu/drm/nouveau），所以在编译我们的nouveau之前，要先在kernel config中设置编译nouveau为module，然后编译kernel，这样就会出现一个nouveau.ko（来自drivers/gpu/drm/nouveau），这个时候才可以开始用上面的命令行来编译我们自己的nouveau。而我们的nouveau编译完成，module_install的时候，会被安装到 <code>extra</code> 目录下，所以不会和原来的nouveau.ko冲突。但是为了避免困扰，我们可以将原来的nouveau.ko删掉。</p></li>
-<li><p>如果你曾经使用 <code>O=&lt;dir&gt;</code> 设置了kernel编译的output dir，那么上面的命令行有可能会不work</p></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[有关DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU]]></title>
-    <link href="http://markzhang.cn/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem/"/>
-    <updated>2015-03-02T11:06:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem</id>
-    <content type="html"><![CDATA[<ol>
-<li><p>DMABUF can be used as a wrapper to encapsulate other memory management frameworks. All these memory management framework(I mean mostly for graphics), buffer is the keypoint. DMABUF defines a standard buffer structure. So DMABUF can be used as a wrapper for TTM/GEM/Android ION&hellip; and etc. Notice DMABUF can&rsquo;t replace these things, cause it doesn&rsquo;t cover everything. E.g: DMABUF has no userspace interfaces, right now only kernel interfaces(can be used in device driver).</p></li>
-<li><p>Kernel has DMA mapping API from origin. ARM defines IOMMU which can be used to connect scattered physical memory as a continuous region for devices which needs continue address to work(e.g: DMA). So IOMMU implementations &amp; CMA should work behind kernel DMA mapping API. E.g: dma_alloc_from_contiguous can be implemented by CMA; dma_alloc_coherent can be implemented by IOMMU or by the normal case(just call __get_free_pages). So for device drivers need dma buffers, we should use dma mapping APIs, not call iommu api directly.</p></li>
-<li><p>For tegra, GART &amp; SMMU can be used to implement IOMMU apis.</p></li>
-</ol>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux graphics stack 随便写写]]></title>
-    <link href="http://markzhang.cn/blog/2015/03/02/linux-graphics-stack-notes/"/>
-    <updated>2015-03-02T11:03:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/03/02/linux-graphics-stack-notes</id>
-    <content type="html"><![CDATA[<ul>
-<li><p>Display and mode setting: DRM. DRM defines connector/encoder/crtc to support display(including multi-monitor). And KMS makes mode setting happens in kernel space.</p></li>
-<li><p>2D acceleration: X server EXA/UXA extension. Vendor should write a X server driver which implements EXA or UXA(should be upstreamed). UXA is an enhancement design of EXA, proposed by intel, so GEM is used in UXA. DRM has no direct 2D acceleration interface definitions(e.g: memory copy/move, blit, color space conversion&hellip;), this is defined in EXA/UXA extensions. But vendor&rsquo;s X server driver will use drm functions, mostly is buffer manipulations.</p></li>
-<li><p>3D acceleration: via Mesa. Mesa has 2 parts:</p></li>
-</ul>
-
-
-<!-- more -->
-
-
-<ol>
-<li>libGL.so &mdash; the implementation of OpenGL spec, the default OpenGL implementation library in Linux. This libGL.so translates OpenGL callings to Mesa-specified instructions.</li>
-<li>DRI driver &mdash; the driver accepts the Mesa-specified instructions generated by libGL.so and call drm functions to get them accelerated in GPU. Should be upstreamed.</li>
-</ol>
-
-
-<p>DRM: has userspace libdrm &amp; kernel space drm driver.</p>
-
-<p>libdrm: Implemented drm APIs. Vendor can hook it&rsquo;s implementations as well as add more APIs which used by EXA/UXA driver(2D) or DRI driver(3D). That&rsquo;s why the build result of libdrm normally has 2 libraries(e.g: libdrm.so &amp; libdrm_intel.so). Vendor codes of libdrm should be upstreamed.</p>
-
-<p>Kernel drm driver: Works under kernel drm framework, should be upstreamed. Cause vendor can add APIs in libdrm, so kernel drm driver can handle vendor specified ioctls.</p>
-
-<p>GLX: X server extension of OpenGL. X server has DRI/DRI2 extensions as well.</p>
-
-<p>They&rsquo;re working with libGL.so in Mesa. By these extensions, Mesa can do:</p>
-
-<ol>
-<li><p>Direct rendering: libGL.so in Mesa try to figure out whether DRI driver is ready in Mesa. If so, GLX returns some infos(such as window size, position&hellip;) or create off-screen buffers(via DRI/DRI2 X extension) for Mesa. The rendering is handled in Mesa&rsquo;s DRI driver &mdash; no relations with X server.</p></li>
-<li><p>Indirect rendering: libGL.so in Mesa can&rsquo;t find out Mesa&rsquo;s DRI driver. So it queries whether DRI is available in X server. If so, it pass the Mesa-specified instructions which generated by libGL.so to X server. And GLX/DRI/DRI2 extensions of X server handles the rest things. Normally it&rsquo;s software rendering which implemented by Mesa as well. AIGLX(Accelerated Indirect GLX) seems has some solutions to accelerate this.</p></li>
-</ol>
-
-
-<p>So Mesa handles a lot of works in linux 3D graphics stack. And it has lots of relations with X server as well(GLX and DRI X extensions).</p>
-
-<p>An important reason that why we involve so many components is, decouple the dependencies of all of these guys. According to this design, DRM is not related with X server so it works with other programs as well(e.g: Wayland). Mesa is the same.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[32/64的问题：32bit指针转换成64bit - Sign Extension]]></title>
-    <link href="http://markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit/"/>
-    <updated>2014-12-16T15:09:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2014/12/16/convert-32bit-pointer-to-64bit</id>
-    <content type="html"><![CDATA[<p>32/64有很多问题，指针转换是其中一个，比如这个例子：</p>
-
-<!-- more -->
-
-
-<p><code>cpp
-void *p = 0xc8f68000;
-unsigned long long v = (unsigned long long)p;
-</code></p>
-
-<p>这个时候得到的 <code>v</code> 是： <code>0xffffffffc8f68000</code> 而不是 <code>0x00000000c8f68000</code></p>
-
-<p>以上例子来自：</p>
-
-<p><a href="http://stackoverflow.com/questions/22239752/convert-32-bit-pointer-to-64-bit-integer">http://stackoverflow.com/questions/22239752/convert-32-bit-pointer-to-64-bit-integer</a></p>
-
-<p>最近就碰到了好几次类似的问题。原因非常简单，就是编译器看到我们要把一个指针转换成 <code>unsigned long long</code>，而 <code>p</code> 的最高位是1，编译器认为这是负数，所以编译器就启动了 <code>Sign Extension</code>，将高32bit全部设置成1，这样最终你看到的高32bit就是全F了。</p>
-
-<p>所以当做32bit &ndash;> 64bit指针转换的时候，要使用 <code>intptr_t</code> 和 <code>uintptr_t</code>。这样编译器就知道这是指针的转换，高32bit就会是全0了。同样，这也就说明了，为什么 <code>stdint.h</code> 里面要定义这么些个typedef了:</p>
-
-<p><code>cpp
-void *p = 0xc8f68000;
-uint64_t v = (uintptr_t)p;
-</code></p>
-
-<p>事实上，无论何时都尽量要避免指针和Integer之间的转换，因为Integer是有正负的。</p>
 ]]></content>
   </entry>
   
