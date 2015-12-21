@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://markzhang.cn/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2015-12-21T14:27:14+08:00</updated>
+  <updated>2015-12-21T14:30:43+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -39,13 +39,13 @@ Compose dialog.</li>
 </ul>
 
 
-<p>To beat some sense out of the internal editor, do this:
-&ndash; Edit your Thunderbird config settings so that it won&rsquo;t use format=flowed.
-  Go to &ldquo;edit->preferences->advanced->config editor&rdquo; to bring up the
-  thunderbird&rsquo;s registry editor, and set &ldquo;mailnews.send_plaintext_flowed&rdquo; to
-  &ldquo;false&rdquo;.</p>
+<p>To beat some sense out of the internal editor, do this:</p>
 
 <ul>
+<li><p>Edit your Thunderbird config settings so that it won&rsquo;t use format=flowed.
+Go to &ldquo;edit->preferences->advanced->config editor&rdquo; to bring up the
+thunderbird&rsquo;s registry editor, and set &ldquo;mailnews.send_plaintext_flowed&rdquo; to
+&ldquo;false&rdquo;.</p></li>
 <li><p>Disable HTML Format: Set &ldquo;mail.identity.id1.compose_html&rdquo; to &ldquo;false&rdquo;.</p></li>
 <li><p>Enable &ldquo;preformat&rdquo; mode: Set &ldquo;editor.quotesPreformatted&rdquo; to &ldquo;true&rdquo;.</p></li>
 <li><p>Enable UTF8: Set &ldquo;prefs.converted-to-utf8&rdquo; to &ldquo;true&rdquo;.</p></li>
