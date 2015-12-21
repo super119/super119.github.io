@@ -239,7 +239,7 @@
 
 <p>看代码就很清楚了。有个地方值得注意的是，优先被调用的是initramfs中的init程序（可以通过rdinit=xxx来设定）。</p>
 
-<p>然后才会去检查&#8221;init=&ldquo;的设置。</p>
+<p>然后才会去检查 <code>init=</code> 的设置。</p>
 
 <p>如果这两个都没有设置的话，kernel就会挨个去尝试/sbin/init, /bin/init, /bin/sh&hellip;</p>
 
