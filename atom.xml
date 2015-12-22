@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://markzhang.cn/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2015-12-21T14:30:43+08:00</updated>
+  <updated>2015-12-22T15:03:09+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,42 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[repo init 中指定manifest和branch的含义]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/22/repo-init-manifest-branch/"/>
+    <updated>2015-12-22T14:59:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/22/repo-init-manifest-branch</id>
+    <content type="html"><![CDATA[<p>比如：</p>
+
+<p>repo init -u git://xxx/xxx/manifest.git -b <BRANCH> -m <MANIFEST></p>
+
+<!-- more -->
+
+
+<p></p>
+
+<p>这里-m和-b的含义是：</p>
+
+<ol>
+<li><p>注意到manifest.git本身也是一个git project</p></li>
+<li><p>所以，-b指定的是使用#1中这个git project的哪个branch</p></li>
+<li><p>-m指定的是，下载该git project中的哪个文件（应该是首先切换了branch，然后再下载该文件）。</p></li>
+</ol>
+
+
+<p>repo init这样做过了之后，其实本地就建立起来了一个.repo目录，里面核心文件就是manifest.xml，这个xml中就定义了：</p>
+
+<ul>
+<li><p>包含哪些git project</p></li>
+<li><p>每个git project使用什么branch</p></li>
+<li><p>每个git project在本地磁盘上的路径和远端服务器上该git project的路径。</p></li>
+</ul>
+
+
+<p>事实上，当repo init完成，在本地的.repo/manifests目录下就可以看到manifest这个git project，可以用git branch -av来查看branch，用git log来查看日志。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Thunderbird配置 - for kernel maillist]]></title>
@@ -1168,20 +1204,6 @@ and &lsquo;extern <strong>inline</strong>&rsquo;.</p>
 </span><span class='line'><span class="c"># 每天执行一次</span>
 </span><span class='line'>* 0 * * * /script/path
 </span></code></pre></td></tr></table></div></figure>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[有关DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU]]></title>
-    <link href="http://markzhang.cn/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem/"/>
-    <updated>2015-03-02T11:06:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem</id>
-    <content type="html"><![CDATA[<ol>
-<li><p>DMABUF can be used as a wrapper to encapsulate other memory management frameworks. All these memory management framework(I mean mostly for graphics), buffer is the keypoint. DMABUF defines a standard buffer structure. So DMABUF can be used as a wrapper for TTM/GEM/Android ION&hellip; and etc. Notice DMABUF can&rsquo;t replace these things, cause it doesn&rsquo;t cover everything. E.g: DMABUF has no userspace interfaces, right now only kernel interfaces(can be used in device driver).</p></li>
-<li><p>Kernel has DMA mapping API from origin. ARM defines IOMMU which can be used to connect scattered physical memory as a continuous region for devices which needs continue address to work(e.g: DMA). So IOMMU implementations &amp; CMA should work behind kernel DMA mapping API. E.g: dma_alloc_from_contiguous can be implemented by CMA; dma_alloc_coherent can be implemented by IOMMU or by the normal case(just call __get_free_pages). So for device drivers need dma buffers, we should use dma mapping APIs, not call iommu api directly.</p></li>
-<li><p>For tegra, GART &amp; SMMU can be used to implement IOMMU apis.</p></li>
-</ol>
 
 ]]></content>
   </entry>

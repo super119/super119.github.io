@@ -4,7 +4,7 @@
   <title><![CDATA[Category: git | Make Things Cool]]></title>
   <link href="http://markzhang.cn/blog/categories/git/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2015-12-21T14:30:43+08:00</updated>
+  <updated>2015-12-22T15:03:09+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,42 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[repo init 中指定manifest和branch的含义]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/22/repo-init-manifest-branch/"/>
+    <updated>2015-12-22T14:59:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/22/repo-init-manifest-branch</id>
+    <content type="html"><![CDATA[<p>比如：</p>
+
+<p>repo init -u git://xxx/xxx/manifest.git -b <BRANCH> -m <MANIFEST></p>
+
+<!-- more -->
+
+
+<p></p>
+
+<p>这里-m和-b的含义是：</p>
+
+<ol>
+<li><p>注意到manifest.git本身也是一个git project</p></li>
+<li><p>所以，-b指定的是使用#1中这个git project的哪个branch</p></li>
+<li><p>-m指定的是，下载该git project中的哪个文件（应该是首先切换了branch，然后再下载该文件）。</p></li>
+</ol>
+
+
+<p>repo init这样做过了之后，其实本地就建立起来了一个.repo目录，里面核心文件就是manifest.xml，这个xml中就定义了：</p>
+
+<ul>
+<li><p>包含哪些git project</p></li>
+<li><p>每个git project使用什么branch</p></li>
+<li><p>每个git project在本地磁盘上的路径和远端服务器上该git project的路径。</p></li>
+</ul>
+
+
+<p>事实上，当repo init完成，在本地的.repo/manifests目录下就可以看到manifest这个git project，可以用git branch -av来查看branch，用git log来查看日志。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[git am失败的时候怎么办]]></title>
@@ -241,141 +277,6 @@ to do so with:</p>
 <p>所以，你最好期望 <code>git reflog</code> 中有你需要的commit，因为就像上面所说，这些commit本就是可以被安全删除的commit，如果你做过 <code>git gc</code>，或者是git自动做过 <code>git gc</code> 的话（git有一套逻辑来判断什么时候应该做一次gc），这些commit就真的没有了。</p>
 
 <p>注：上面一段说的有点严重，事实上，git对待失联的commit，有一个expire time的设定，所以也不是说一旦执行过 <code>git gc</code>，这些commit就真的没有了。但是为了安全起见，对于重要的commit，还是需要注意不要丢了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Git常见命令和配置]]></title>
-    <link href="http://markzhang.cn/blog/2013/11/20/git-tips/"/>
-    <updated>2013-11-20T21:01:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2013/11/20/git-tips</id>
-    <content type="html"><![CDATA[<h2>常用配置</h2>
-
-<p>``` cfg git常用配置
-[color]</p>
-
-<pre><code>    ui = auto
-</code></pre>
-
-<p>[user]</p>
-
-<pre><code>    name = Mark Zhang
-    email = xxxx@xxxx.xxx
-</code></pre>
-
-<p>[core]</p>
-
-<pre><code>    editor = vim
-    abbrev = 12
-    pager = less -X -F
-</code></pre>
-
-<p>[diff]</p>
-
-<pre><code>    tool = vimdiff
-    renames = true
-</code></pre>
-
-<p>[difftool]</p>
-
-<pre><code>    prompt = No
-</code></pre>
-
-<p>[sendemail]</p>
-
-<pre><code>    chainreplyto = false
-    smtpserver = xxxxxxxx
-    smtpencryption = tls
-    from = Mark Zhang &lt;xxxx@xxx.xxx&gt;
-    envelopesender = auto
-</code></pre>
-
-<p>[alias]</p>
-
-<pre><code>    s = status
-    cp = cherry-pick
-    ck = checkout
-    b = branch
-    lo = log --oneline
-    dt = difftool
-</code></pre>
-
-<p>```</p>
-
-<!-- more -->
-
-
-<h2>常用命令</h2>
-
-<ul>
-<li><code>git remote add &lt;name&gt; &lt;url&gt;</code></li>
-</ul>
-
-
-<p>如果要添加本地的一个git repository的话，<url>填写成 <code>git repository的路径/.git</code> 即可。</p>
-
-<ul>
-<li><p><code>git fetch -p &lt;remote name, e.g: origin&gt;</code></p></li>
-<li><p><code>git show &lt;commit id&gt;</code></p></li>
-<li><p><code>git push origin HEAD:next</code></p></li>
-</ul>
-
-
-<p>Push本地HEAD commit对应的branch到名为 <code>origin</code> 的远端仓库的 <code>next</code> branch上。</p>
-
-<ul>
-<li><code>git push origin +HEAD:next / git push -f origin HEAD:next</code></li>
-</ul>
-
-
-<p>所谓的Force update，也就是用本地的commit历史覆盖远端的。</p>
-
-<ul>
-<li><code>git push origin :next</code></li>
-</ul>
-
-
-<p>删除远端仓库的 <code>next</code> branch。</p>
-
-<ul>
-<li><code>git push --tags</code></li>
-</ul>
-
-
-<p>Push本地的tag列表到远端。</p>
-
-<ul>
-<li><p><code>git format-patch -&lt;N&gt;</code></p></li>
-<li><p><code>git format-patch &lt;commit id&gt;^..&lt;commit id&gt;</code></p></li>
-</ul>
-
-
-<p>这个命令可以用来为一个指定的commit生成patch。</p>
-
-<ul>
-<li><p><code>git format-patch --subject-prefix 'PATCH V2' --cover-letter</code></p></li>
-<li><p><code>git send-email --to=XXX --to=XXX --cc=XXX *.patch</code></p></li>
-<li><p><code>git send-email --no-signed-off-cc --to=XXX --to=XXX --cc=XXX *.patch</code></p></li>
-<li><p><code>git rebase -i &lt;commit id&gt;</code></p></li>
-<li><p><code>git checkout &lt;branch&gt; -- &lt;file path&gt;</code></p></li>
-</ul>
-
-
-<p>这个命令将指定branch中的指定文件checkout出来，更新当前working tree中的对应文件。</p>
-
-<ul>
-<li><code>git show &lt;branch&gt;:&lt;file path&gt; &gt;&amp; &lt;filename&gt;</code></li>
-</ul>
-
-
-<p>这个命令将指定branch中的指定文件checkout出来，并存到 <code>&lt;filename&gt;</code> 指定的路径上。</p>
-
-<ul>
-<li><code>git diff &lt;branch a&gt;..&lt;branch b&gt; -- &lt;file/folder path&gt;</code></li>
-</ul>
-
-
-<p>这个命令可以用来比较两个branch上的不同，以diff的方式打印出来。而且可以通过加入 <code>--</code> 来比较指定的文件或者目录。我们都知道一般代码都有开发branch和release branch，那么当release branch上测试出现有问题，想看看开发branch上是否已经有fix的话，就可以用这个命令来看到release branch上到底都缺了一些什么改动。</p>
 ]]></content>
   </entry>
   

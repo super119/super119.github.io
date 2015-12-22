@@ -5,39 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Git常见命令和配置 - Make Things Cool</title>
+  <title>repo init 中指定manifest和branch的含义 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="常用配置 git常用配置1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-[color] ui = auto
-[user] name = Mark Zhang email = xxxx@xxxx.xxx &hellip;">
+  <meta name="description" content="比如： repo init -u git://xxx/xxx/manifest.git -b -m 这里-m和-b的含义是： 注意到manifest.git本身也是一个git project
+所以，-b指定的是使用#1中这个git project的哪个branch
+-m指定的是，下载该git &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -46,7 +20,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://markzhang.cn/blog/2013/11/20/git-tips/">
+  <link rel="canonical" href="http://markzhang.cn/blog/2015/12/22/repo-init-manifest-branch/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -105,7 +79,7 @@
   <header>
     
       
-        <h1 class="entry-title">Git常见命令和配置</h1>
+        <h1 class="entry-title">Repo Init 中指定manifest和branch的含义</h1>
       
     
     
@@ -122,148 +96,41 @@
   
 
 
-<time datetime="2013-11-20T21:01:00+08:00" pubdate data-updated="true">Nov 20<span>th</span>, 2013</time>
+<time datetime="2015-12-22T14:59:00+08:00" pubdate data-updated="true">Dec 22<span>nd</span>, 2015</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>常用配置</h2>
+<div class="entry-content"><p>比如：</p>
 
-<figure class='code'><figcaption><span>git常用配置</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[color]</span>
-</span><span class='line'>        <span class="na">ui</span> <span class="o">=</span> <span class="s">auto</span>
-</span><span class='line'><span class="k">[user]</span>
-</span><span class='line'>        <span class="na">name</span> <span class="o">=</span> <span class="s">Mark Zhang</span>
-</span><span class='line'><span class="s">        email = xxxx@xxxx.xxx</span>
-</span><span class='line'><span class="k">[core]</span>
-</span><span class='line'>        <span class="na">editor</span> <span class="o">=</span> <span class="s">vim</span>
-</span><span class='line'><span class="s">        abbrev = 12</span>
-</span><span class='line'><span class="s">        pager = less -X -F</span>
-</span><span class='line'><span class="k">[diff]</span>
-</span><span class='line'>        <span class="na">tool</span> <span class="o">=</span> <span class="s">vimdiff</span>
-</span><span class='line'><span class="s">        renames = true</span>
-</span><span class='line'><span class="k">[difftool]</span>
-</span><span class='line'>        <span class="na">prompt</span> <span class="o">=</span> <span class="s">No</span>
-</span><span class='line'><span class="k">[sendemail]</span>
-</span><span class='line'>        <span class="na">chainreplyto</span> <span class="o">=</span> <span class="s">false</span>
-</span><span class='line'><span class="s">        smtpserver = xxxxxxxx</span>
-</span><span class='line'><span class="s">        smtpencryption = tls</span>
-</span><span class='line'><span class="s">        from = Mark Zhang &lt;xxxx@xxx.xxx&gt;</span>
-</span><span class='line'><span class="s">        envelopesender = auto</span>
-</span><span class='line'><span class="k">[alias]</span>
-</span><span class='line'>        <span class="na">s</span> <span class="o">=</span> <span class="s">status</span>
-</span><span class='line'><span class="s">        cp = cherry-pick</span>
-</span><span class='line'><span class="s">        ck = checkout</span>
-</span><span class='line'><span class="s">        b = branch</span>
-</span><span class='line'><span class="s">        lo = log --oneline</span>
-</span><span class='line'><span class="s">        dt = difftool</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
+<p>repo init -u git://xxx/xxx/manifest.git -b <BRANCH> -m <MANIFEST></p>
 
 <!-- more -->
 
 
-<h2>常用命令</h2>
+<p></p>
+
+<p>这里-m和-b的含义是：</p>
+
+<ol>
+<li><p>注意到manifest.git本身也是一个git project</p></li>
+<li><p>所以，-b指定的是使用#1中这个git project的哪个branch</p></li>
+<li><p>-m指定的是，下载该git project中的哪个文件（应该是首先切换了branch，然后再下载该文件）。</p></li>
+</ol>
+
+
+<p>repo init这样做过了之后，其实本地就建立起来了一个.repo目录，里面核心文件就是manifest.xml，这个xml中就定义了：</p>
 
 <ul>
-<li><code>git remote add &lt;name&gt; &lt;url&gt;</code></li>
+<li><p>包含哪些git project</p></li>
+<li><p>每个git project使用什么branch</p></li>
+<li><p>每个git project在本地磁盘上的路径和远端服务器上该git project的路径。</p></li>
 </ul>
 
 
-<p>如果要添加本地的一个git repository的话，<url>填写成 <code>git repository的路径/.git</code> 即可。</p>
-
-<ul>
-<li><p><code>git fetch -p &lt;remote name, e.g: origin&gt;</code></p></li>
-<li><p><code>git show &lt;commit id&gt;</code></p></li>
-<li><p><code>git push origin HEAD:next</code></p></li>
-</ul>
-
-
-<p>Push本地HEAD commit对应的branch到名为 <code>origin</code> 的远端仓库的 <code>next</code> branch上。</p>
-
-<ul>
-<li><code>git push origin +HEAD:next / git push -f origin HEAD:next</code></li>
-</ul>
-
-
-<p>所谓的Force update，也就是用本地的commit历史覆盖远端的。</p>
-
-<ul>
-<li><code>git push origin :next</code></li>
-</ul>
-
-
-<p>删除远端仓库的 <code>next</code> branch。</p>
-
-<ul>
-<li><code>git push --tags</code></li>
-</ul>
-
-
-<p>Push本地的tag列表到远端。</p>
-
-<ul>
-<li><p><code>git format-patch -&lt;N&gt;</code></p></li>
-<li><p><code>git format-patch &lt;commit id&gt;^..&lt;commit id&gt;</code></p></li>
-</ul>
-
-
-<p>这个命令可以用来为一个指定的commit生成patch。</p>
-
-<ul>
-<li><p><code>git format-patch --subject-prefix 'PATCH V2' --cover-letter</code></p></li>
-<li><p><code>git send-email --to=XXX --to=XXX --cc=XXX *.patch</code></p></li>
-<li><p><code>git send-email --no-signed-off-cc --to=XXX --to=XXX --cc=XXX *.patch</code></p></li>
-<li><p><code>git rebase -i &lt;commit id&gt;</code></p></li>
-<li><p><code>git checkout &lt;branch&gt; -- &lt;file path&gt;</code></p></li>
-</ul>
-
-
-<p>这个命令将指定branch中的指定文件checkout出来，更新当前working tree中的对应文件。</p>
-
-<ul>
-<li><code>git show &lt;branch&gt;:&lt;file path&gt; &gt;&amp; &lt;filename&gt;</code></li>
-</ul>
-
-
-<p>这个命令将指定branch中的指定文件checkout出来，并存到 <code>&lt;filename&gt;</code> 指定的路径上。</p>
-
-<ul>
-<li><code>git diff &lt;branch a&gt;..&lt;branch b&gt; -- &lt;file/folder path&gt;</code></li>
-</ul>
-
-
-<p>这个命令可以用来比较两个branch上的不同，以diff的方式打印出来。而且可以通过加入 <code>--</code> 来比较指定的文件或者目录。我们都知道一般代码都有开发branch和release branch，那么当release branch上测试出现有问题，想看看开发branch上是否已经有fix的话，就可以用这个命令来看到release branch上到底都缺了一些什么改动。</p>
+<p>事实上，当repo init完成，在本地的.repo/manifests目录下就可以看到manifest这个git project，可以用git branch -av来查看branch，用git log来查看日志。</p>
 </div>
 
 
@@ -271,7 +138,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2015 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2013/11/20/git-tips/<br>
+原文链接: http://www.markzhang.cn/blog/2015/12/22/repo-init-manifest-branch/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -294,7 +161,7 @@
   
 
 
-<time datetime="2013-11-20T21:01:00+08:00" pubdate data-updated="true">Nov 20<span>th</span>, 2013</time>
+<time datetime="2015-12-22T14:59:00+08:00" pubdate data-updated="true">Dec 22<span>nd</span>, 2015</time>
       
 
 <span class="categories">
@@ -315,10 +182,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/11/07/linus-git-config/" title="Previous Post: Linus说，请将这个配置加到你的.gitconfig">&laquo; Linus说，请将这个配置加到你的.gitconfig</a>
+        <a class="basic-alignment left articlenav" href="/blog/2015/12/21/kernel-thunderbird/" title="Previous Post: Thunderbird配置 - for kernel maillist">&laquo; Thunderbird配置 - for kernel maillist</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/11/27/dt-interrupts/" title="Next Post: Device tree: interrupts的解释">Device tree: interrupts的解释 &raquo;</a>
       
     </p>
   </footer>
