@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://markzhang.cn/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2015-12-23T10:30:05+08:00</updated>
+  <updated>2015-12-23T10:32:15+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -109,15 +109,18 @@ the size of the structures to a multiple of the maximum member size.</p></li>
 
 <p>In the devide code I have handlers defined as follows. ioctl: device_ioctl</p>
 
-<p>&#8220;` cpp</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#ifdef CONFIG_COMPAT</span>
+</span><span class='line'><span class="nl">compat_ioctl:</span> <span class="n">device_compat_ioctl</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<h1>ifdef CONFIG_COMPAT</h1>
-
-<p>compat_ioctl: device_compat_ioctl</p>
-
-<h1>endif</h1>
 
 <p>Can anybody please provide some explanations around this?</p>
+
+<hr />
 
 <p>A: This compat stuff is for running a 32-bit program in a 64-bit kernel. When you call the ioctl(fd, MY_IOCTL_CMD1, &amp;arg1) from a 32-bit program on a 64-bit kernel, the kernel will divert the ioctl to the .compat_ioctl function in the file_operations struct. This compat_ioctl function is responsible for copying the user argument arg1 as if it were compat_arg1, which uses the 32-bit layout. The compat_arg1 typedef is defined in the kernel so that when compiled for 64-bit, the structure is exactly the same layout as the arg1 compiled for 32-bit.</p>
 
