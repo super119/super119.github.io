@@ -257,12 +257,20 @@
         <lastmod>2015-12-22T16:17:01+08:00</lastmod>
     </url>
     <url>
+        <loc>http://markzhang.cn/blog/2015/12/23/kernel-data-type-compat-ioctl/</loc>
+        <lastmod>2015-12-23T10:28:32+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://markzhang.cn/blog/2015/12/23/kernel-barrier-mb-wmb/</loc>
+        <lastmod>2015-12-23T10:29:42+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://markzhang.cn/blog/archives/</loc>
-        <lastmod>2015-12-22T16:17:01+08:00</lastmod>
+        <lastmod>2015-12-23T10:29:42+08:00</lastmod>
     </url>
     <url>
         <loc>http://markzhang.cn/</loc>
-        <lastmod>2015-12-22T16:17:01+08:00</lastmod>
+        <lastmod>2015-12-23T10:29:42+08:00</lastmod>
     </url>
     <url>
         <loc>http://markzhang.cn/about/</loc>

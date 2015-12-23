@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Android system.img: yaffs or ext4? - Make Things Cool</title>
+  <title>Kernel barrier/wmb/mb宏的作用 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="随着现在手机的内部存储从NAND转变到eMMC，现在的system.img已经越来越多的使用ext4作为文件系统，而不是以前的yaffs2。 使用file命令查看system.img，如果输出是：VMS Alpha Exectutable，那么这是yaffs 如果输出是data， &hellip;">
+  <meta name="description" content="内存屏障主要解决的问题是编译器的优化和CPU的乱序执行。 编译器在优化的时候，生成的汇编指令可能和c语言程序的执行顺序不一样，在需要程序严格按照c语言顺序执行时，需要显式的告诉编译不需要优化，这在linux下是通过barrier()宏完成的，它依靠volidate关键字和memory关键字， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://markzhang.cn/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4/">
+  <link rel="canonical" href="http://markzhang.cn/blog/2015/12/23/kernel-barrier-mb-wmb/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">Android system.img: Yaffs or Ext4?</h1>
+        <h1 class="entry-title">Kernel Barrier/wmb/mb宏的作用</h1>
       
     
     
@@ -94,29 +94,20 @@
   
 
 
-<time datetime="2015-12-17T11:18:00+08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2015</time>
+<time datetime="2015-12-23T10:28:00+08:00" pubdate data-updated="true">Dec 23<span>rd</span>, 2015</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>随着现在手机的内部存储从NAND转变到eMMC，现在的system.img已经越来越多的使用ext4作为文件系统，而不是以前的yaffs2。</p>
+<div class="entry-content"><p>内存屏障主要解决的问题是编译器的优化和CPU的乱序执行。</p>
 
-<p>使用file命令查看system.img，如果输出是：VMS Alpha Exectutable，那么这是yaffs</p>
+<p>编译器在优化的时候，生成的汇编指令可能和c语言程序的执行顺序不一样，在需要程序严格按照c语言顺序执行时，需要显式的告诉编译不需要优化，这在linux下是通过barrier()宏完成的，它依靠volidate关键字和memory关键字，前者告诉编译barrier()周围的指令不要被优化，后者作用是告诉编译器汇编代码会使内存里面的值更改，编译器应使用内存里的新值而非寄存器里保存的老值。</p>
 
-<!-- more -->
+<p>同样，CPU执行会通过乱序以提高性能。汇编里的指令不一定是按照我们看到的顺序执行的。linux中通过mb()系列宏来保证执行的顺序。具体做法是通过mfence/lfence指令（它们是奔4后引进的，早期x86没有）以及x86指令中带有串行特性的指令（这样的指令很多，例如linux中实现时用到的lock指令，I/O指令，操作控制寄存器、系统寄存器、调试寄存器的指令、iret指令等等）。简单的说，如果在程序某处插入了mb()/rmb()/wmb()宏，则宏之前的程序保证比宏之后的程序先执行，从而实现串行化。wmb的实现和barrier()类似，是因为在x86平台上，写内存的操作不会被乱序执行。</p>
 
-
-<p>如果输出是data，那么很可能是ext4的。只不过这个image是一个spare image，含有一些spare数据，所以需要先用simg2img处理一下，然后就可以直接mount了。</p>
-
-<p>至于为什么采用eMMC来代替NAND，摘录百度百科的一段话：</p>
-
-<blockquote><p>eMMC目前是最当红的移动设备本地存储解决方案，目的在于简化手机存储器的设计，由于NAND Flash芯片的不同厂牌包括三星、KingMax、东芝(Toshiba)或海力士(Hynix)、美光(Micron)等，入时，都需要根据每家公司的产品和技术特性来重新设计，过去并没有哪个技术能够通用所有厂牌的NAND Flash芯片。</p>
-
-<p>而每次NAND Flash制程技术改朝换代，包括70纳米演进至50纳米，再演进至40纳米或30纳米制程技术，手机客户也都要重新设计，但半导体产品每1年制程技术都会推陈出新，存储器问题也拖累手机新机种推出的速度，因此像eMMC这种把所有存储器和管理NAND Flash的控制芯片都包在1颗MCP上的概念，逐渐风行起来。</p>
-
-<p>eMMC的设计概念，就是为了简化手机内存储器的使用，将NAND Flash芯片和控制芯片设计成1颗MCP芯片，手机客户只需要采购eMMC芯片，放进新手机中，不需处理其它繁复的NAND Flash兼容性和管理问题，最大优点是缩短新产品的上市周期和研发成本，加速产品的推陈出新速度。</p></blockquote>
+<p>实际上在RSIC平台上，这些串行工作都有专门的指令由程序员显式的完成，比如在需要的地方调用串行指令，而不像x86上有这么多隐性的带有串行特性指令（例如lock指令）。所以在risc平台下工作的朋友通常对串行化操作理解的容易些。</p>
 </div>
 
 
@@ -124,7 +115,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2015 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4/<br>
+原文链接: http://www.markzhang.cn/blog/2015/12/23/kernel-barrier-mb-wmb/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -147,12 +138,12 @@
   
 
 
-<time datetime="2015-12-17T11:18:00+08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2015</time>
+<time datetime="2015-12-23T10:28:00+08:00" pubdate data-updated="true">Dec 23<span>rd</span>, 2015</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/android/'>Android</a>
+    <a class='category' href='/blog/categories/linux-kernel/'>linux-kernel</a>
   
 </span>
 
@@ -168,10 +159,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2015/12/17/ktouch-w619-create-flash-package/" title="Previous Post: 天语（k-touch） w619: Dump boot.img和system.img，然后做成recovery可用的刷机zip包">&laquo; 天语（k-touch） w619: Dump boot.img和system.img，然后做成recovery可用的刷机zip包</a>
+        <a class="basic-alignment left articlenav" href="/blog/2015/12/23/kernel-data-type-compat-ioctl/" title="Previous Post: Linux kernel data types, alignment, compat_ioctl 数据类型，对齐问题和compat_ioctl">&laquo; Linux kernel data types, alignment, compat_ioctl 数据类型，对齐问题和compat_ioctl</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2015/12/21/kernel-calls-init/" title="Next Post: kernel: 调用init程序的地方">kernel: 调用init程序的地方 &raquo;</a>
       
     </p>
   </footer>

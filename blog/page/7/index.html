@@ -9,7 +9,9 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="近日Linus说，请将 git config core.abbrev 12 加到你的git repository中。事实上，这个config很有意义，可以加到你的全局git config中： ">
+  <meta name="description" content="Linux kernel现在使用Device tree（DT）来描述硬件设备。既然是描述硬件设备，那自然就需要对硬件充分了解才能理解DT。Interrupts就是一个例子。 一般来说，DT中的 interrupts （本文不描述interrupt controller）看起来是这样的： 1
+2
+3 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +75,172 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/27/dt-interrupts/">Device Tree: Interrupts的解释</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-27T20:41:00+08:00" pubdate data-updated="true">Nov 27<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Linux kernel现在使用Device tree（DT）来描述硬件设备。既然是描述硬件设备，那自然就需要对硬件充分了解才能理解DT。Interrupts就是一个例子。</p>
+
+<p>一般来说，DT中的 <code>interrupts</code> （本文不描述interrupt controller）看起来是这样的：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">pmu</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">compatible</span> <span class="o">=</span> <span class="s">&quot;arm,cortex-a9-pmu&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">interrupts</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mi">0</span> <span class="mi">144</span> <span class="mh">0x04</span>
+</span><span class='line'>            <span class="mi">0</span> <span class="mi">145</span> <span class="mh">0x04</span>
+</span><span class='line'>            <span class="mi">0</span> <span class="mi">146</span> <span class="mh">0x04</span>
+</span><span class='line'>            <span class="mi">0</span> <span class="mi">147</span> <span class="mh">0x04</span><span class="o">&gt;</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/11/27/dt-interrupts/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/20/git-tips/">Git常见命令和配置</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-20T21:01:00+08:00" pubdate data-updated="true">Nov 20<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>常用配置</h2>
+
+<figure class='code'><figcaption><span>git常用配置</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='cfg'><span class='line'><span class="k">[color]</span>
+</span><span class='line'>        <span class="na">ui</span> <span class="o">=</span> <span class="s">auto</span>
+</span><span class='line'><span class="k">[user]</span>
+</span><span class='line'>        <span class="na">name</span> <span class="o">=</span> <span class="s">Mark Zhang</span>
+</span><span class='line'><span class="s">        email = xxxx@xxxx.xxx</span>
+</span><span class='line'><span class="k">[core]</span>
+</span><span class='line'>        <span class="na">editor</span> <span class="o">=</span> <span class="s">vim</span>
+</span><span class='line'><span class="s">        abbrev = 12</span>
+</span><span class='line'><span class="s">        pager = less -X -F</span>
+</span><span class='line'><span class="k">[diff]</span>
+</span><span class='line'>        <span class="na">tool</span> <span class="o">=</span> <span class="s">vimdiff</span>
+</span><span class='line'><span class="s">        renames = true</span>
+</span><span class='line'><span class="k">[difftool]</span>
+</span><span class='line'>        <span class="na">prompt</span> <span class="o">=</span> <span class="s">No</span>
+</span><span class='line'><span class="k">[sendemail]</span>
+</span><span class='line'>        <span class="na">chainreplyto</span> <span class="o">=</span> <span class="s">false</span>
+</span><span class='line'><span class="s">        smtpserver = xxxxxxxx</span>
+</span><span class='line'><span class="s">        smtpencryption = tls</span>
+</span><span class='line'><span class="s">        from = Mark Zhang &lt;xxxx@xxx.xxx&gt;</span>
+</span><span class='line'><span class="s">        envelopesender = auto</span>
+</span><span class='line'><span class="k">[alias]</span>
+</span><span class='line'>        <span class="na">s</span> <span class="o">=</span> <span class="s">status</span>
+</span><span class='line'><span class="s">        cp = cherry-pick</span>
+</span><span class='line'><span class="s">        ck = checkout</span>
+</span><span class='line'><span class="s">        b = branch</span>
+</span><span class='line'><span class="s">        lo = log --oneline</span>
+</span><span class='line'><span class="s">        dt = difftool</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/11/20/git-tips/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -262,11 +430,19 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (11)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (13)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (11)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (15)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/12/23/kernel-barrier-mb-wmb/">Kernel Barrier/wmb/mb宏的作用</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/23/kernel-data-type-compat-ioctl/">Linux Kernel Data Types, Alignment, Compat_ioctl 数据类型，对齐问题和compat_ioctl</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/12/22/ezviz-family-protection/">家庭安防 - 一套萤石设备组建的家庭安防</a>
@@ -278,14 +454,6 @@
     
       <li class="post">
         <a href="/blog/2015/12/21/kernel-thunderbird/">Thunderbird配置 - for Kernel Maillist</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/21/kernel-ifdef-macros/">Kernel Submitting Patches，有关ifdef和static Inline & Macro</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/21/kernel-decompress-zimage/">Kernel: How to Decompress the zImage?</a>
       </li>
     
   </ul>

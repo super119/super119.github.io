@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux-kernel | Make Things Cool]]></title>
   <link href="http://markzhang.cn/blog/categories/linux-kernel/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2015-12-22T16:19:10+08:00</updated>
+  <updated>2015-12-23T10:30:05+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,121 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Kernel barrier/wmb/mb宏的作用]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/23/kernel-barrier-mb-wmb/"/>
+    <updated>2015-12-23T10:28:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/23/kernel-barrier-mb-wmb</id>
+    <content type="html"><![CDATA[<p>内存屏障主要解决的问题是编译器的优化和CPU的乱序执行。</p>
+
+<p>编译器在优化的时候，生成的汇编指令可能和c语言程序的执行顺序不一样，在需要程序严格按照c语言顺序执行时，需要显式的告诉编译不需要优化，这在linux下是通过barrier()宏完成的，它依靠volidate关键字和memory关键字，前者告诉编译barrier()周围的指令不要被优化，后者作用是告诉编译器汇编代码会使内存里面的值更改，编译器应使用内存里的新值而非寄存器里保存的老值。</p>
+
+<p>同样，CPU执行会通过乱序以提高性能。汇编里的指令不一定是按照我们看到的顺序执行的。linux中通过mb()系列宏来保证执行的顺序。具体做法是通过mfence/lfence指令（它们是奔4后引进的，早期x86没有）以及x86指令中带有串行特性的指令（这样的指令很多，例如linux中实现时用到的lock指令，I/O指令，操作控制寄存器、系统寄存器、调试寄存器的指令、iret指令等等）。简单的说，如果在程序某处插入了mb()/rmb()/wmb()宏，则宏之前的程序保证比宏之后的程序先执行，从而实现串行化。wmb的实现和barrier()类似，是因为在x86平台上，写内存的操作不会被乱序执行。</p>
+
+<p>实际上在RSIC平台上，这些串行工作都有专门的指令由程序员显式的完成，比如在需要的地方调用串行指令，而不像x86上有这么多隐性的带有串行特性指令（例如lock指令）。所以在risc平台下工作的朋友通常对串行化操作理解的容易些。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Linux kernel data types, alignment, compat_ioctl 数据类型，对齐问题和compat_ioctl]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/23/kernel-data-type-compat-ioctl/"/>
+    <updated>2015-12-23T10:21:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/23/kernel-data-type-compat-ioctl</id>
+    <content type="html"><![CDATA[<p>特别是在写IOCTL的时候，由于有32bit userspace + 64bit kernel的问题，而且由于architecture的不同，不同data type的length也不同，所以在IOCTL中建议用u32, u64, s32这样无视architecture fix size的data type。</p>
+
+<p>这里是来自LDD的不同的architecture的data type的size：</p>
+
+<!-- more -->
+
+
+<p><img src="/downloads/image/kernel-u32-s32.png" alt="kernel architecture indepedent data types" /></p>
+
+<p>此外有关IOCTL中structure的alignment的问题，注意添加padding使数据长度alignment，现在一般来说都是添加padding到64bit对齐。这里是为什么需要这么做（针对ARM，x86更不用说，因为x86-64早就有了）：</p>
+
+<blockquote><p>Q: I&rsquo;m new in kernel development. Could you tell me or give me some
+materials to read that why we need to align the size of IOCTL structures
+to 64bit? I can understand if we&rsquo;re working in a 64bit kernel but why we
+need to do this if we&rsquo;re in a 32bit arm kernel? Besides, why the
+pointers in IOCTL structure should be declared as u64?</p>
+
+<p>A: Because in a few years/months you&rsquo;ll have arm64, but still the same
+driver with the same ioctls &hellip; and if the ioctls are not <em>exactly</em>
+the same you get to write compat ioctl code which copies the old 32bit
+struct into the 64bit struct the kernel understands. Hence your ioctl
+must be laid out exactly the same for both 32bit and 64bit, which
+happens if you naturally align/pad everything to 64bits and only use
+fixed-sized integers and no pointers.</p>
+
+<p>Mark: Ah, I see. Thanks. Yes, u64 still works as 32 bit pointer.</p></blockquote>
+
+<p>参看LDD十一章中有关Nature Alignment的描述。Alignment主要是牵涉到性能问题，不对齐的数据在fetch的时候会有exception，从而降低performance。</p>
+
+<p>这里是网上搜到的一些建议：</p>
+
+<p>There are some rules that should be followed regardless:</p>
+
+<ul>
+<li><p>ioctl commands should never be written in an architecture specific
+way. In the example of the OMAP driver, you definitely want to be
+able ot use the same command when running Linux on the C6x DSP.</p></li>
+<li><p>If possible, use only scalar values as ioctl arguments</p></li>
+<li><p>Avoid types that are register sized: &lsquo;long&rsquo;, &lsquo;size_t&rsquo;, pointer.
+Instead use only <strong>u8, </strong>u16, <strong>u32 and </strong>u64 and their signed
+versions.</p></li>
+<li><p>If you use structures, try very hard to avoid pointers in them,
+it messes up all sorts of tools.</p></li>
+<li><p>If you use structures, make all members naturally aligned, and pad
+the size of the structures to a multiple of the maximum member size.</p></li>
+<li><p>Never put sub-command numbers into a structure.</p></li>
+</ul>
+
+
+<p>有关compat_ioctl：支持64bit的driver必须要实现的ioctl，当有32bit的userspace application call 64bit kernel的IOCTL的时候，这个callback会被调用到。</p>
+
+<p>Q: Suppose I have defined the following.</p>
+
+<p>``` cpp</p>
+
+<h1>define MY_IOCTL_CMD1 _IOR(MAGIC_NUMBER, 0x01, arg1)</h1>
+
+<h1>define MY_IOCTL_CMD2 _IOW(MAGIC_NUMBER, 0x02, arg2)</h1>
+
+<h1>ifdef CONFIG_COMPAT</h1>
+
+<h1>define MY_COMPAT_IOCTL_CMD1 _IOR(MAGIC_NUMBER, 0x01, compat_arg1)</h1>
+
+<h1>define MY_COMPAT_IOCTL_CMD2 _IOW(MAGIC_NUMBER, 0x02, compat_arg2)</h1>
+
+<h1>endif</h1>
+
+<p>```</p>
+
+<p>Now when we do ioctl from user space, we usually do</p>
+
+<p>ioctl(fd, MY_IOCTL_CMD1, &amp;arg1)</p>
+
+<p>So do we really need to have an ioctl with MY_COMPAT_IOCTL_CMD1 as request?</p>
+
+<p>In the devide code I have handlers defined as follows. ioctl: device_ioctl</p>
+
+<p>``` cpp</p>
+
+<h1>ifdef CONFIG_COMPAT</h1>
+
+<p>compat_ioctl: device_compat_ioctl</p>
+
+<h1>endif</h1>
+
+<p>Can anybody please provide some explanations around this?</p>
+
+<p>A: This compat stuff is for running a 32-bit program in a 64-bit kernel. When you call the ioctl(fd, MY_IOCTL_CMD1, &amp;arg1) from a 32-bit program on a 64-bit kernel, the kernel will divert the ioctl to the .compat_ioctl function in the file_operations struct. This compat_ioctl function is responsible for copying the user argument arg1 as if it were compat_arg1, which uses the 32-bit layout. The compat_arg1 typedef is defined in the kernel so that when compiled for 64-bit, the structure is exactly the same layout as the arg1 compiled for 32-bit.</p>
+
+<p>The definition of MY_IOCTL_CMD1 will take the sizeof arg1 into account when creating the cmd id. When you compile a program for a 32-bit machine, the value for MY_IOCTL_CMD1 will be different than if you compiled it for a 64-bit machine. The 32-bit MY_IOCTL_CMD1 should have the same value as the 64-bit MY_COMPAT_IOCTL_CMD1 in the kernel, however.</p>
+
+<p>There&rsquo;s never a need to use compat_arg1 or MY_COMPAT_IOCTL_CMD1 in a user-space application. Those are only for code compiled in the kernel.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Thunderbird配置 - for kernel maillist]]></title>
@@ -146,59 +261,6 @@ $ od -t x1 -A d vmlinuz-2.6.18-128.el5.uvm6PAE | grep "1f 8b 08"
 0008320 1b 00 1f 8b 08 00 d5 c2 9a 49 02 03 ec 3b 7d 7c
 $ dd bs=1 skip=8322 if=vmlinuz-2.6.18-128.el5.uvm6PAE | zcat &gt; vmlinux
 </code></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[kernel: 调用init程序的地方]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/21/kernel-calls-init/"/>
-    <updated>2015-12-21T13:57:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/21/kernel-calls-init</id>
-    <content type="html"><![CDATA[<p>start_kernel函数的最后一行：rest_init，调用了init程序。</p>
-
-<p>看代码就很清楚了。有个地方值得注意的是，优先被调用的是initramfs中的init程序（可以通过rdinit=xxx来设定）。</p>
-
-<p>然后才会去检查 <code>init=</code> 的设置。</p>
-
-<p>如果这两个都没有设置的话，kernel就会挨个去尝试/sbin/init, /bin/init, /bin/sh&hellip;</p>
-
-<p>这些都没有那就panic了</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux kernel: How to debug mutex deadlock 如何调试mutex死锁]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/16/kernel-debug-deadlock/"/>
-    <updated>2015-12-16T15:47:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/16/kernel-debug-deadlock</id>
-    <content type="html"><![CDATA[<p>和userspace调试lock一样，主要是要：</p>
-
-<ol>
-<li><p>找到lock死锁的地方，打印出调用栈</p></li>
-<li><p>找出这个mutex目前被谁占用了</p></li>
-</ol>
-
-
-<!-- more -->
-
-
-<p>针对1：在kernel config中，Kernel Hacking这个大项中，enable跟lock/mutex相关的config，比如CONFIG_DEBUG_MUTEX，以及CONFIG_DETECT_HUNG_TASKS, 这样当死锁发生时，稍微等待一段时间（默认120秒），kernel就会检测到死锁，同时打印出调用栈。在kernel hacking里面，包含了大量的有利于调试的config，可以一项一项都看一遍，总有一款适合您。</p>
-
-<p>针对2：来到代码中死锁的地方，在enable了CONFIG_DEBUG_MUTEX的情况下，添加这样的代码：</p>
-
-<p><code>cpp
-show_stack(&lt;lock&gt;.owner, NULL);
-</code></p>
-
-<p><lock>是你的mutex的变量名，.owner是一个struct task_struct *，利用show_stack函数就可以打印出该mutex被谁占用了，而且占用该mutex时的调用栈。非常cool。</p>
-
-<p>此外可以看一下struct mutex的定义，有一些实用的东西，比如mutex的name。struct task_struct中也有一些实用的东西，比如pid等。</p>
-
-<p>所以总结来说，kernel中目前可以打印调用栈的有：</p>
-
-<p>dump_stack：打印当前的backtrace</p>
-
-<p>show_stack：打印指定task_struct的backtrace</p>
 ]]></content>
   </entry>
   
