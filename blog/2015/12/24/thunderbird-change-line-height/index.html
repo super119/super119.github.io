@@ -5,16 +5,24 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>kernel: How to decompress the zImage? - Make Things Cool</title>
+  <title>Thunderbird on Ubuntu 12.04 - 调整邮件列表行间距 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="zImage不是标准的gzip文件，需要自己strip掉开头的一些东西才可以gunzip。 基本上的思路就是找gzip的magic number &ldquo;1f 8b 08&#8221;。 具体步骤： 1
+  <meta name="description" content="很不幸必须手动修改配置文件来做到，Thunderbird本身没有提供这样的配置项： 1
 2
 3
 4
 5
-$ mkdir -p /tmp/kernel-uncompressed &hellip;">
+6
+7
+8
+9
+10
+11
+12
+markz@markz-hp6200:~$ cd .thunderbird/
+markz@markz-hp6200:~/.thunderbird$ ls &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -23,7 +31,7 @@ $ mkdir -p /tmp/kernel-uncompressed &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://markzhang.cn/blog/2015/12/21/kernel-decompress-zimage/">
+  <link rel="canonical" href="http://markzhang.cn/blog/2015/12/24/thunderbird-change-line-height/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -82,7 +90,7 @@ $ mkdir -p /tmp/kernel-uncompressed &hellip;">
   <header>
     
       
-        <h1 class="entry-title">Kernel: How to Decompress the zImage?</h1>
+        <h1 class="entry-title">Thunderbird on Ubuntu 12.04 - 调整邮件列表行间距</h1>
       
     
     
@@ -99,34 +107,48 @@ $ mkdir -p /tmp/kernel-uncompressed &hellip;">
   
 
 
-<time datetime="2015-12-21T14:00:00+08:00" pubdate data-updated="true">Dec 21<span>st</span>, 2015</time>
+<time datetime="2015-12-24T09:14:00+08:00" pubdate data-updated="true">Dec 24<span>th</span>, 2015</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>zImage不是标准的gzip文件，需要自己strip掉开头的一些东西才可以gunzip。</p>
-
-<p>基本上的思路就是找gzip的magic number &ldquo;1f 8b 08&#8221;。</p>
+<div class="entry-content"><p>很不幸必须手动修改配置文件来做到，Thunderbird本身没有提供这样的配置项：</p>
 
 <!-- more -->
 
 
-<p>具体步骤：</p>
+
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mkdir -p /tmp/kernel-uncompressed/; <span class="nb">cd</span> /tmp/kernel-uncompressed/
-</span><span class='line'><span class="nv">$ </span>cp /boot/vmlinuz-<span class="sb">`</span>uname -r<span class="sb">`</span> .
-</span><span class='line'><span class="nv">$ </span>od -t x1 -A d vmlinuz-2.6.18-128.el5.uvm6PAE | grep <span class="s2">&quot;1f 8b 08&quot;</span>
-</span><span class='line'>0008320 1b 00 1f 8b 08 00 d5 c2 9a 49 02 03 ec 3b 7d 7c
-</span><span class='line'><span class="nv">$ </span>dd <span class="nv">bs</span><span class="o">=</span>1 <span class="nv">skip</span><span class="o">=</span>8322 <span class="k">if</span><span class="o">=</span>vmlinuz-2.6.18-128.el5.uvm6PAE | zcat &gt; vmlinux
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>markz@markz-hp6200:~<span class="nv">$ </span><span class="nb">cd</span> .thunderbird/
+</span><span class='line'>markz@markz-hp6200:~/.thunderbird<span class="nv">$ </span>ls
+</span><span class='line'>a8feo3zj.default  Crash Reports  profiles.ini
+</span><span class='line'>markz@markz-hp6200:~/.thunderbird<span class="nv">$ </span><span class="nb">cd </span>a8feo3zj.default/
+</span><span class='line'>markz@markz-hp6200:~/.thunderbird/a8feo3zj.default<span class="nv">$ </span><span class="nb">cd </span>chrome/
+</span><span class='line'>markz@markz-hp6200:~/.thunderbird/a8feo3zj.default/chrome<span class="nv">$ </span>ls
+</span><span class='line'>userChrome.css
+</span><span class='line'>markz@markz-hp6200:~/.thunderbird/a8feo3zj.default/chrome<span class="nv">$ </span>cat userChrome.css
+</span><span class='line'>treechildren:-moz-tree-row <span class="o">{</span>
+</span><span class='line'>height: 35px !important;
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>markz@markz-hp6200:~/.thunderbird/a8feo3zj.default/chrome<span class="err">$</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p>这里注意如果没有发现那个 <code>chrome</code> 的目录，那就自己创建一个，<code>userChrome.css</code> 也自己创建，然后将内容填入即可。全部做完重启Thunderbird就能看到效果了。</p>
 </div>
 
 
@@ -134,7 +156,7 @@ $ mkdir -p /tmp/kernel-uncompressed &hellip;">
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2015 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2015/12/21/kernel-decompress-zimage/<br>
+原文链接: http://www.markzhang.cn/blog/2015/12/24/thunderbird-change-line-height/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -157,12 +179,12 @@ $ mkdir -p /tmp/kernel-uncompressed &hellip;">
   
 
 
-<time datetime="2015-12-21T14:00:00+08:00" pubdate data-updated="true">Dec 21<span>st</span>, 2015</time>
+<time datetime="2015-12-24T09:14:00+08:00" pubdate data-updated="true">Dec 24<span>th</span>, 2015</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/linux-kernel/'>linux-kernel</a>
+    <a class='category' href='/blog/categories/linux/'>linux</a>
   
 </span>
 
@@ -178,10 +200,10 @@ $ mkdir -p /tmp/kernel-uncompressed &hellip;">
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2015/12/21/kernel-calls-init/" title="Previous Post: kernel: 调用init程序的地方">&laquo; kernel: 调用init程序的地方</a>
+        <a class="basic-alignment left articlenav" href="/blog/2015/12/23/kernel-barrier-mb-wmb/" title="Previous Post: Kernel barrier/wmb/mb宏的作用">&laquo; Kernel barrier/wmb/mb宏的作用</a>
       
       
-        <a class="basic-alignment right articlenav" href="/blog/2015/12/21/kernel-ifdef-macros/" title="Next Post: Kernel Submitting Patches，有关ifdef和static inline & macro">Kernel Submitting Patches，有关ifdef和static inline & macro &raquo;</a>
+        <a class="basic-alignment right articlenav" href="/blog/2015/12/24/ubuntu-install-microsoft-camera/" title="Next Post: Ubuntu 12.04安装Microsoft lifecam studio摄像头">Ubuntu 12.04安装Microsoft lifecam studio摄像头 &raquo;</a>
       
     </p>
   </footer>

@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="man ssh_config，查看~/.ssh/config的语法。 Host可以使用通配符，当ssh的时候如果server的URL能match上这里Host指定的值，则Host下面指定的HostName将被作为最终URL使用。同时该Host下配置的User, Port都将被使用。 当然， &hellip;">
+  <meta name="description" content="随着现在手机的内部存储从NAND转变到eMMC，现在的system.img已经越来越多的使用ext4作为文件系统，而不是以前的yaffs2。 使用file命令查看system.img，如果输出是：VMS Alpha Exectutable，那么这是yaffs ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,98 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4/">Android system.img: Yaffs or Ext4?</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-17T11:18:00+08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>随着现在手机的内部存储从NAND转变到eMMC，现在的system.img已经越来越多的使用ext4作为文件系统，而不是以前的yaffs2。</p>
+
+<p>使用file命令查看system.img，如果输出是：VMS Alpha Exectutable，那么这是yaffs</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/12/17/ktouch-w619-create-flash-package/">天语（k-touch） W619: Dump boot.img和system.img，然后做成recovery可用的刷机zip包</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-17T11:08:00+08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>有的时候会有这样的问题：发现一个民间的刷机包很不错，但是就是缺少一些你想要的东西。这个时候，其实就可以尝试基于这个包自己做一些修改、添加，最终生成自己满意的系统包。</p>
+
+<p>也有的时候，要给老人一部安卓机器来用，但是老人不擅长智能手机操作，经常会把一些APP误删除。这个时候其实可以自己制作刷机包，将必须的一些APP放到<code>system</code>下面，这样就不怕老人误删除APP了。</p>
+
+<p>以下是我自己在天语w619的尝试：</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/12/17/ktouch-w619-create-flash-package/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -443,98 +535,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2015/05/12/build-out-of-tree-kernel-module/">编译out-of-tree的kernel模块</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-05-12T10:51:00+08:00" pubdate data-updated="true">May 12<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>所谓 <code>out-of-tree</code> 的内核模块，指的是源代码不在kernel tree里面的模块，比如 <code>nouveau</code> 的tree。</p>
-
-<p>熟悉nouveau的都知道，nouveau的maintainer是单独维护nouveau tree的，所以，一般来说，我们会把nouveau的代码直接放在一个目录下，然后将nouveau编译成一个模块（.ko），这样来编译运行测试就都比较简单。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/05/12/build-out-of-tree-kernel-module/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2015/05/11/deal-with-git-am-failures/">Git Am失败的时候怎么办</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-05-11T10:15:00+08:00" pubdate data-updated="true">May 11<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>本文主要参考了以下文章:</p>
-
-<p><a href="http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/">http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/</a></p>
-
-<p><code>git am</code> 或 <code>git am -3</code> 打patch的时候经常会遇到fail，就是因为patch不apply。但是 <code>git am</code> 不像 <code>git cherry-pick</code> 一样会显示冲突的地方从而让我们可以修改，很多时候 <code>git am</code> 并不显示冲突，只是让我们修正冲突，这就产生了麻烦。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/05/11/deal-with-git-am-failures/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -549,11 +549,19 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (11)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (15)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (13)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (15)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/12/24/ubuntu-install-microsoft-camera/">Ubuntu 12.04安装Microsoft Lifecam Studio摄像头</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/24/thunderbird-change-line-height/">Thunderbird on Ubuntu 12.04 - 调整邮件列表行间距</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/12/23/kernel-barrier-mb-wmb/">Kernel Barrier/wmb/mb宏的作用</a>
@@ -565,14 +573,6 @@
     
       <li class="post">
         <a href="/blog/2015/12/22/ezviz-family-protection/">家庭安防 - 一套萤石设备组建的家庭安防</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/22/repo-init-manifest-branch/">Repo Init 中指定manifest和branch的含义</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/21/kernel-thunderbird/">Thunderbird配置 - for Kernel Maillist</a>
       </li>
     
   </ul>

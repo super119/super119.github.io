@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="内存屏障主要解决的问题是编译器的优化和CPU的乱序执行。 编译器在优化的时候，生成的汇编指令可能和c语言程序的执行顺序不一样，在需要程序严格按照c语言顺序执行时，需要显式的告诉编译不需要优化，这在linux下是通过barrier()宏完成的，它依靠volidate关键字和memory关键字， &hellip;">
+  <meta name="description" content="这是一个UVC摄像头，所以可以使用uvcvideo这个kernel驱动，一般kernel都编译了这个module。 什么是UVC？ UVC，全称为：USB video class 或USB video device class ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,96 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/12/24/ubuntu-install-microsoft-camera/">Ubuntu 12.04安装Microsoft Lifecam Studio摄像头</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-24T09:20:00+08:00" pubdate data-updated="true">Dec 24<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>这是一个UVC摄像头，所以可以使用uvcvideo这个kernel驱动，一般kernel都编译了这个module。</p>
+
+<p>什么是UVC？</p>
+
+<p>UVC，全称为：USB video class 或USB video device class</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/12/24/ubuntu-install-microsoft-camera/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/12/24/thunderbird-change-line-height/">Thunderbird on Ubuntu 12.04 - 调整邮件列表行间距</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-24T09:14:00+08:00" pubdate data-updated="true">Dec 24<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>很不幸必须手动修改配置文件来做到，Thunderbird本身没有提供这样的配置项：</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/12/24/thunderbird-change-line-height/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -430,98 +520,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4/">Android system.img: Yaffs or Ext4?</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-17T11:18:00+08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>随着现在手机的内部存储从NAND转变到eMMC，现在的system.img已经越来越多的使用ext4作为文件系统，而不是以前的yaffs2。</p>
-
-<p>使用file命令查看system.img，如果输出是：VMS Alpha Exectutable，那么这是yaffs</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2015/12/17/ktouch-w619-create-flash-package/">天语（k-touch） W619: Dump boot.img和system.img，然后做成recovery可用的刷机zip包</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-17T11:08:00+08:00" pubdate data-updated="true">Dec 17<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>有的时候会有这样的问题：发现一个民间的刷机包很不错，但是就是缺少一些你想要的东西。这个时候，其实就可以尝试基于这个包自己做一些修改、添加，最终生成自己满意的系统包。</p>
-
-<p>也有的时候，要给老人一部安卓机器来用，但是老人不擅长智能手机操作，经常会把一些APP误删除。这个时候其实可以自己制作刷机包，将必须的一些APP放到<code>system</code>下面，这样就不怕老人误删除APP了。</p>
-
-<p>以下是我自己在天语w619的尝试：</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/12/17/ktouch-w619-create-flash-package/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -534,11 +532,19 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (11)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (15)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (13)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (15)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/12/24/ubuntu-install-microsoft-camera/">Ubuntu 12.04安装Microsoft Lifecam Studio摄像头</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/24/thunderbird-change-line-height/">Thunderbird on Ubuntu 12.04 - 调整邮件列表行间距</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/12/23/kernel-barrier-mb-wmb/">Kernel Barrier/wmb/mb宏的作用</a>
@@ -550,14 +556,6 @@
     
       <li class="post">
         <a href="/blog/2015/12/22/ezviz-family-protection/">家庭安防 - 一套萤石设备组建的家庭安防</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/22/repo-init-manifest-branch/">Repo Init 中指定manifest和branch的含义</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/21/kernel-thunderbird/">Thunderbird配置 - for Kernel Maillist</a>
       </li>
     
   </ul>

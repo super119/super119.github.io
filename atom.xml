@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://markzhang.cn/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2015-12-23T10:32:15+08:00</updated>
+  <updated>2015-12-24T09:24:21+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,119 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ubuntu 12.04安装Microsoft lifecam studio摄像头]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/24/ubuntu-install-microsoft-camera/"/>
+    <updated>2015-12-24T09:20:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/24/ubuntu-install-microsoft-camera</id>
+    <content type="html"><![CDATA[<p>这是一个UVC摄像头，所以可以使用uvcvideo这个kernel驱动，一般kernel都编译了这个module。</p>
+
+<p>什么是UVC？</p>
+
+<p>UVC，全称为：USB video class 或USB video device class</p>
+
+<!-- more -->
+
+
+<p>UVC是Microsoft与另外几家设备厂商联合推出的为USB视频捕获设备定义的协议标准，目前已成为USB org标准之一。</p>
+
+<p>如今的主流操作系统(如Windows XP SP2 and later, Linux 2.4.6 and later, MacOS 10.5 and later)都已提供UVC设备驱动，因此符合UVC规格的硬件设备在不需要安装任何的驱动程序下即可在主机中正常使用。使用UVC技术的包括摄像头、数码相机、类比影像转换器、电视棒及静态影像相机等设备。</p>
+
+<p>最新的UVC版本为UVC 1.1，由USB Implementers Forum定义包括基本协议及负载格式。</p>
+
+<p>网络摄像头是第一个支持UVC而且也是数量最多的UVC设备，目前，操作系统只要是 Windows XP SP2 之后的版本都可以支持 UVC，当然 Vista 就更不用说了。Linux系统自2.4以后的内核都支持了大量的设备驱动，其中支持UVC设备。</p>
+
+<p>使用 UVC 的好处 USB 在 Video这块也成为一项标准了之后，硬件在各个程序之间彼此运行会更加顺利，而且也省略了驱动程序安装这一环节。</p>
+
+<p>所以，apt-get一下guvcview就可以看到图像了。</p>
+
+<p>问题：</p>
+
+<p><strong> 第一个问题 </strong></p>
+
+<p>也是uvc驱动官方网站给出的问题，就是有关这款摄像头每次都请求最大USB带宽的问题，需要给uvcvideo这个kernel module添加一个参数，具体做法是：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo rmmod uvcvideo
+</span><span class='line'>sudo modprobe uvcvideo <span class="nv">quirks</span><span class="o">=</span>0x80
+</span><span class='line'>重新插拔摄像头
+</span><span class='line'>cat /sys/module/uvcvideo/parameters/quirks来检验是否设置成功了。
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>参考资料：<a href="http://www.ideasonboard.org/uvc/faq/#faq6">http://www.ideasonboard.org/uvc/faq/#faq6</a></p>
+
+<p><strong> 第二个问题 </strong></p>
+
+<p>有的时候会发现好好的图像定格了，或者是整个摄像头设备都没了（在lsusb中看不到了）。此外还有个现象就是，摄像头上的蓝灯会莫名其妙的闪烁起来。Google下，这是由于Chrome中的Peperflash造成的。所以，禁用PeperFlash，安装Adobe的flash即可。做法：</p>
+
+<p>打开chrome，输入about:plugins，点右上角Details，Disable PeperFlash</p>
+
+<p>在Adobe网站下载11.2的flashplayer，可以下载.tar.gz包那个版本，解开，得到libflashplayer.so和一个usr目录。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo mkdir /opt/google/chrome/plugins
+</span><span class='line'>sudo cp &lt;libflashplayer.so&gt; /opt/google/chrome/plugins
+</span><span class='line'>sudo cp usr/* /usr
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>重启Chrome，再次进入about:plugins，发现11.2的Adobe flash是enable的，PeperFlash是disable的，就OK了。</p>
+
+<p>貌似PeperFlash是Chrome自带的一个flashplayer，有GPU加速。</p>
+
+<p>Adobe的Linux flashplayer不会再有新版本，但是会有安全更新。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Thunderbird on Ubuntu 12.04 - 调整邮件列表行间距]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/24/thunderbird-change-line-height/"/>
+    <updated>2015-12-24T09:14:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/24/thunderbird-change-line-height</id>
+    <content type="html"><![CDATA[<p>很不幸必须手动修改配置文件来做到，Thunderbird本身没有提供这样的配置项：</p>
+
+<!-- more -->
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>markz@markz-hp6200:~<span class="nv">$ </span><span class="nb">cd</span> .thunderbird/
+</span><span class='line'>markz@markz-hp6200:~/.thunderbird<span class="nv">$ </span>ls
+</span><span class='line'>a8feo3zj.default  Crash Reports  profiles.ini
+</span><span class='line'>markz@markz-hp6200:~/.thunderbird<span class="nv">$ </span><span class="nb">cd </span>a8feo3zj.default/
+</span><span class='line'>markz@markz-hp6200:~/.thunderbird/a8feo3zj.default<span class="nv">$ </span><span class="nb">cd </span>chrome/
+</span><span class='line'>markz@markz-hp6200:~/.thunderbird/a8feo3zj.default/chrome<span class="nv">$ </span>ls
+</span><span class='line'>userChrome.css
+</span><span class='line'>markz@markz-hp6200:~/.thunderbird/a8feo3zj.default/chrome<span class="nv">$ </span>cat userChrome.css
+</span><span class='line'>treechildren:-moz-tree-row <span class="o">{</span>
+</span><span class='line'>height: 35px !important;
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>markz@markz-hp6200:~/.thunderbird/a8feo3zj.default/chrome<span class="err">$</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里注意如果没有发现那个 <code>chrome</code> 的目录，那就自己创建一个，<code>userChrome.css</code> 也自己创建，然后将内容填入即可。全部做完重启Thunderbird就能看到效果了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Kernel barrier/wmb/mb宏的作用]]></title>
@@ -975,83 +1088,6 @@ and &lsquo;extern <strong>inline</strong>&rsquo;.</p>
 <li><p>去 <a href="http://www.geforce.com/drivers">http://www.geforce.com/drivers</a> 看看有没有BETA版本的驱动下载，有的话下载下来试试。再说一次，记得先uninstall当前的驱动再安装新的。</p></li>
 <li><p>去NVIDIA的论坛报bug，我没这么干，因为本身我用的Ubuntu就是老版本了，估计NVIDIA也不会理我，如果去报告Ubuntu 14.04上的bug，可能NVIDIA会创建bug并派人fix。</p></li>
 </ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[编译out-of-tree的kernel模块]]></title>
-    <link href="http://markzhang.cn/blog/2015/05/12/build-out-of-tree-kernel-module/"/>
-    <updated>2015-05-12T10:51:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/05/12/build-out-of-tree-kernel-module</id>
-    <content type="html"><![CDATA[<p>所谓 <code>out-of-tree</code> 的内核模块，指的是源代码不在kernel tree里面的模块，比如 <code>nouveau</code> 的tree。</p>
-
-<p>熟悉nouveau的都知道，nouveau的maintainer是单独维护nouveau tree的，所以，一般来说，我们会把nouveau的代码直接放在一个目录下，然后将nouveau编译成一个模块（.ko），这样来编译运行测试就都比较简单。</p>
-
-<!-- more -->
-
-
-<p>所以关于如何编译一个 <code>out-of-tree</code> 的内核模块，其实内核是有官方文档的：</p>
-
-<p><a href="https://www.kernel.org/doc/Documentation/kbuild/modules.txt">https://www.kernel.org/doc/Documentation/kbuild/modules.txt</a></p>
-
-<p>我一般是这么编译的：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>make <span class="nv">ARCH</span><span class="o">=</span>arm64 <span class="nv">CROSS_COMPILE</span><span class="o">=</span>&lt;your toolchain&gt; <span class="nv">INSTALL_MOD_PATH</span><span class="o">=</span>&lt;kernel module install path&gt; <span class="nv">M</span><span class="o">=</span>~/nouveau/drm/nouveau/ -C &lt;the kernel root directory&gt; -j4 modules
-</span><span class='line'>make <span class="nv">ARCH</span><span class="o">=</span>arm64 <span class="nv">CROSS_COMPILE</span><span class="o">=</span>&lt;your toolchain&gt; <span class="nv">INSTALL_MOD_PATH</span><span class="o">=</span>&lt;kernel module install path&gt; <span class="nv">M</span><span class="o">=</span>~/nouveau/drm/nouveau/ -C &lt;the kernel root directory&gt; modules_install
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>一些注意点：</p>
-
-<ul>
-<li><p>所谓 <code>kernel root directory</code> 就是能找到.config文件的那个目录</p></li>
-<li><p>使用 <code>M=</code> 来指定nouveau在哪里，注意这里要指到 <code>KBuild</code> 所在的那个目录</p></li>
-<li><p>kernel本身也有nouveau driver（位与drivers/gpu/drm/nouveau），所以在编译我们的nouveau之前，要先在kernel config中设置编译nouveau为module，然后编译kernel，这样就会出现一个nouveau.ko（来自drivers/gpu/drm/nouveau），这个时候才可以开始用上面的命令行来编译我们自己的nouveau。而我们的nouveau编译完成，module_install的时候，会被安装到 <code>extra</code> 目录下，所以不会和原来的nouveau.ko冲突。但是为了避免困扰，我们可以将原来的nouveau.ko删掉。</p></li>
-<li><p>如果你曾经使用 <code>O=&lt;dir&gt;</code> 设置了kernel编译的output dir，那么上面的命令行有可能会不work</p></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[git am失败的时候怎么办]]></title>
-    <link href="http://markzhang.cn/blog/2015/05/11/deal-with-git-am-failures/"/>
-    <updated>2015-05-11T10:15:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/05/11/deal-with-git-am-failures</id>
-    <content type="html"><![CDATA[<p>本文主要参考了以下文章:</p>
-
-<p><a href="http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/">http://www.pizzhacks.com/bugdrome/2011/10/deal-with-git-am-failures/</a></p>
-
-<p><code>git am</code> 或 <code>git am -3</code> 打patch的时候经常会遇到fail，就是因为patch不apply。但是 <code>git am</code> 不像 <code>git cherry-pick</code> 一样会显示冲突的地方从而让我们可以修改，很多时候 <code>git am</code> 并不显示冲突，只是让我们修正冲突，这就产生了麻烦。</p>
-
-<!-- more -->
-
-
-<p>于是上面的文章就很好的解决了这个问题，因为一般产生冲突的时候，并不是所有的改动都有冲突，往往冲突是比较少的（<code>patch</code> 本身是可以智能的自动解决一些冲突的），所以我们就可以先用 <code>git apply</code> 来打patch，并将冲突存为一个单独的文件，最后查看冲突文件再手动将冲突修正就可以了。</p>
-
-<p>引用上面文章中的内容，当 <code>git am</code> 失败的时候，可以这么做：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git apply PATCH --reject
-</span><span class='line'><span class="nv">$ </span>edit edit edit
-</span><span class='line'><span class="nv">$ </span>git add FIXED_FILES
-</span><span class='line'><span class="nv">$ </span>git am --resolved
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当 <code>git am</code> 失败的时候，它会告诉你patch文件被它放在了一个路径下面，所有，你只需要直接去 <code>git apply --reject</code> 这个patch就好了：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>The copy of the patch that failed is found in...
-</span><span class='line'>        xxxxxx
-</span></code></pre></td></tr></table></div></figure>
 
 ]]></content>
   </entry>

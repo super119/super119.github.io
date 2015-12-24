@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux | Make Things Cool]]></title>
   <link href="http://markzhang.cn/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2015-12-23T10:32:15+08:00</updated>
+  <updated>2015-12-24T09:24:21+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,98 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ubuntu 12.04安装Microsoft lifecam studio摄像头]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/24/ubuntu-install-microsoft-camera/"/>
+    <updated>2015-12-24T09:20:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/24/ubuntu-install-microsoft-camera</id>
+    <content type="html"><![CDATA[<p>这是一个UVC摄像头，所以可以使用uvcvideo这个kernel驱动，一般kernel都编译了这个module。</p>
+
+<p>什么是UVC？</p>
+
+<p>UVC，全称为：USB video class 或USB video device class</p>
+
+<!-- more -->
+
+
+<p>UVC是Microsoft与另外几家设备厂商联合推出的为USB视频捕获设备定义的协议标准，目前已成为USB org标准之一。</p>
+
+<p>如今的主流操作系统(如Windows XP SP2 and later, Linux 2.4.6 and later, MacOS 10.5 and later)都已提供UVC设备驱动，因此符合UVC规格的硬件设备在不需要安装任何的驱动程序下即可在主机中正常使用。使用UVC技术的包括摄像头、数码相机、类比影像转换器、电视棒及静态影像相机等设备。</p>
+
+<p>最新的UVC版本为UVC 1.1，由USB Implementers Forum定义包括基本协议及负载格式。</p>
+
+<p>网络摄像头是第一个支持UVC而且也是数量最多的UVC设备，目前，操作系统只要是 Windows XP SP2 之后的版本都可以支持 UVC，当然 Vista 就更不用说了。Linux系统自2.4以后的内核都支持了大量的设备驱动，其中支持UVC设备。</p>
+
+<p>使用 UVC 的好处 USB 在 Video这块也成为一项标准了之后，硬件在各个程序之间彼此运行会更加顺利，而且也省略了驱动程序安装这一环节。</p>
+
+<p>所以，apt-get一下guvcview就可以看到图像了。</p>
+
+<p>问题：</p>
+
+<p><strong> 第一个问题 </strong></p>
+
+<p>也是uvc驱动官方网站给出的问题，就是有关这款摄像头每次都请求最大USB带宽的问题，需要给uvcvideo这个kernel module添加一个参数，具体做法是：</p>
+
+<p><code>bash
+sudo rmmod uvcvideo
+sudo modprobe uvcvideo quirks=0x80
+重新插拔摄像头
+cat /sys/module/uvcvideo/parameters/quirks来检验是否设置成功了。
+</code></p>
+
+<p>参考资料：<a href="http://www.ideasonboard.org/uvc/faq/#faq6">http://www.ideasonboard.org/uvc/faq/#faq6</a></p>
+
+<p><strong> 第二个问题 </strong></p>
+
+<p>有的时候会发现好好的图像定格了，或者是整个摄像头设备都没了（在lsusb中看不到了）。此外还有个现象就是，摄像头上的蓝灯会莫名其妙的闪烁起来。Google下，这是由于Chrome中的Peperflash造成的。所以，禁用PeperFlash，安装Adobe的flash即可。做法：</p>
+
+<p>打开chrome，输入about:plugins，点右上角Details，Disable PeperFlash</p>
+
+<p>在Adobe网站下载11.2的flashplayer，可以下载.tar.gz包那个版本，解开，得到libflashplayer.so和一个usr目录。</p>
+
+<p><code>bash
+sudo mkdir /opt/google/chrome/plugins
+sudo cp &lt;libflashplayer.so&gt; /opt/google/chrome/plugins
+sudo cp usr/* /usr
+</code></p>
+
+<p>重启Chrome，再次进入about:plugins，发现11.2的Adobe flash是enable的，PeperFlash是disable的，就OK了。</p>
+
+<p>貌似PeperFlash是Chrome自带的一个flashplayer，有GPU加速。</p>
+
+<p>Adobe的Linux flashplayer不会再有新版本，但是会有安全更新。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Thunderbird on Ubuntu 12.04 - 调整邮件列表行间距]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/24/thunderbird-change-line-height/"/>
+    <updated>2015-12-24T09:14:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/24/thunderbird-change-line-height</id>
+    <content type="html"><![CDATA[<p>很不幸必须手动修改配置文件来做到，Thunderbird本身没有提供这样的配置项：</p>
+
+<!-- more -->
+
+
+<p><code>bash
+markz@markz-hp6200:~$ cd .thunderbird/
+markz@markz-hp6200:~/.thunderbird$ ls
+a8feo3zj.default  Crash Reports  profiles.ini
+markz@markz-hp6200:~/.thunderbird$ cd a8feo3zj.default/
+markz@markz-hp6200:~/.thunderbird/a8feo3zj.default$ cd chrome/
+markz@markz-hp6200:~/.thunderbird/a8feo3zj.default/chrome$ ls
+userChrome.css
+markz@markz-hp6200:~/.thunderbird/a8feo3zj.default/chrome$ cat userChrome.css
+treechildren:-moz-tree-row {
+height: 35px !important;
+}
+markz@markz-hp6200:~/.thunderbird/a8feo3zj.default/chrome$
+</code></p>
+
+<p>这里注意如果没有发现那个 <code>chrome</code> 的目录，那就自己创建一个，<code>userChrome.css</code> 也自己创建，然后将内容填入即可。全部做完重启Thunderbird就能看到效果了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[SSH client config Sample]]></title>
@@ -128,139 +220,6 @@ IdentityFile ~/.ssh/cmreview
 <li>Chrome OS内置Flash、PDF和Netflix Instant插件，并且有Google Talk软件，支持3G网络，Chromium OS则没有以上特性（没有Flash插件最要命啊）。</li>
 <li>图标不一样，Chrome OS的图标是红黄蓝绿四色，Chromium OS只有蓝色。</li>
 </ol>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Raspberry Pi + ArchLinux：网络dhcp不稳定，经常无法获取IP地址]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/16/raspberrypi-dhcp-timeout/"/>
-    <updated>2015-12-16T14:40:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/16/raspberrypi-dhcp-timeout</id>
-    <content type="html"><![CDATA[<p>经常发现树莓派开机之后网络没有起来，最终发现是因为dhcpcd的-t参数，也就是等待dhcp server响应的timeout时间太短导致的。</p>
-
-<p>默认是30秒，但是ArchLinux中配置的是10秒。</p>
-
-<p>查看了脚本，调用dhcpcd的是netcfg，netcfg本身也是一个脚本，所以最终发现这个-t是在/usr/lib/network/connections/ethernet中设置的。</p>
-
-<p>于是在这个文件的开头加上了：<code>DHCP_TIMEOUT=300</code></p>
-
-<p>这样超时就变成了5分钟，足够了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[NVIDIA Linux驱动在Ubuntu 12.04上的安装]]></title>
-    <link href="http://markzhang.cn/blog/2015/06/03/nvidia-linux-driver-on-ubuntu/"/>
-    <updated>2015-06-03T21:35:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/06/03/nvidia-linux-driver-on-ubuntu</id>
-    <content type="html"><![CDATA[<p>在Ubuntu上安装显卡驱动不是一件容易的事情，安装不是Ubuntu官方认证过的NVIDIA自家的驱动就更是困难，而我选择在一个老的Ubuntu版本上安装显卡驱动，事情就变的更加麻烦起来。</p>
-
-<p>其实一开始我也不想安装NVIDIA自家的驱动，首先想尝试用 <code>nouveau</code>，但是悲剧的发现Ubuntu 12.04上的nouveau无法驱动我的GTX970，可能需要新版本的Ubuntu才可以。所以，被迫选择安装NVIDIA自家的驱动。</p>
-
-<!-- more -->
-
-
-<p>安装和使用N卡驱动中途遇到了很多的问题，这里来个总结。</p>
-
-<h2>第一次安装</h2>
-
-<p>现在总结起来，可以按照如下步骤来：</p>
-
-<ul>
-<li>禁用nouveau和其他相关的module：</li>
-</ul>
-
-
-<p>``` bash
-sudo vi /etc/modprobe.d/blacklist.conf</p>
-
-<p>添加：</p>
-
-<p>blacklist vga16fb
-blacklist nouveau
-blacklist rivafb
-blacklist nvidiafb
-blacklist rivatv
-```</p>
-
-<ul>
-<li>卸载nvidia相关的package，否则NVIDIA驱动安装的时候会报错：</li>
-</ul>
-
-
-<p><code>bash
-dpkg -l|grep nvidia
-sudo apt-get remove &lt;nvidia packages&gt;
-</code></p>
-
-<ul>
-<li>安装一些常用的package，比如：</li>
-</ul>
-
-
-<p><code>bash
-sudo apt-get install build-essential
-sudo apt-get install ia32-libs
-</code></p>
-
-<p>这是因为NVIDIA驱动安装的时候，会编译kernel module（nvidia.ko），所以需要一些常用的开发用的package。</p>
-
-<ul>
-<li><p>NVIDIA驱动安装的时候，X server不能运行，所以我是这么做的：</p></li>
-<li><p>重启系统，在grub界面选择进入 <code>Recovery</code> 模式</p></li>
-<li>进入Recovery之后，选择 <code>Enable Network</code></li>
-<li>重新返回到Recovery界面，选择 <code>Drop to root console</code></li>
-<li>运行NVIDIA驱动安装包，按照提示操作即可</li>
-</ul>
-
-
-<p>之所以要做一次 <code>Enable Network</code> 是因为，这个选项会mount一些必要的文件系统，比如 <code>/tmp</code>，NVIDIA驱动安装的时候是需要 <code>/tmp</code> 的。</p>
-
-<h2>Ubuntu更新kernel之后</h2>
-
-<p>如果你使用了Ubuntu的 <code>Update Manager</code> 更新了package之后，一定要注意是否有升级kernel，如果升级了kernel，那么很可能你需要重新安装一次NVIDIA的驱动。</p>
-
-<p>这是因为上面也提到了，<code>nvidia.ko</code> 需要重新编译。所以，如果你更新了kernel，发现X server起不来了，那么就可以尝试这么来：</p>
-
-<ol>
-<li>重启系统，在grub界面选择进入 <code>Recovery</code> 模式</li>
-<li>进入Recovery之后，选择 <code>Enable Network</code></li>
-<li>重新返回到Recovery界面，选择 <code>Drop to root console</code></li>
-<li>运行 <code>nvidia-uninstall</code> 卸载当前的NVIDIA驱动</li>
-<li>重新运行NVIDIA驱动安装包，再安装一遍驱动</li>
-</ol>
-
-
-<p>之前我尝试过不运行 <code>nvidia-uninstall</code>，直接再次安装一遍驱动，发现这样做的话，安装包也会提醒你说发现当前已经安装了驱动，说是否需要卸载再重新安装。然后我就选择OK，但是发现这样操作下来之后有的时候还是不行，所以还是自己手动uninstall，然后再安装吧。</p>
-
-<h2>如何看出错日志</h2>
-
-<p>主要就是要看两个东西：</p>
-
-<ul>
-<li>dmesg：这是kernel的log，看nvidia的内核驱动是否有什么错误，crash，如果有，就Google一下错误信息看是否有帮助</li>
-</ul>
-
-
-<p>这里提一下，看到这个信息是正常的：</p>
-
-<p><code>bash
-[    1.222765] nvidia: module license 'NVIDIA' taints kernel.
-[    1.225367] nvidia: module verification failed: signature and/or  required key missing - tainting kernel
-</code></p>
-
-<ul>
-<li>/var/log/Xorg.0.log：这里主要是看NVIDIA的X server driver（nvidia_drv.so）是否有错误，crash</li>
-</ul>
-
-
-<h2>万般无奈怎么办</h2>
-
-<ul>
-<li><p>去 <a href="http://www.geforce.com/drivers">http://www.geforce.com/drivers</a> 看看有没有BETA版本的驱动下载，有的话下载下来试试。再说一次，记得先uninstall当前的驱动再安装新的。</p></li>
-<li><p>去NVIDIA的论坛报bug，我没这么干，因为本身我用的Ubuntu就是老版本了，估计NVIDIA也不会理我，如果去报告Ubuntu 14.04上的bug，可能NVIDIA会创建bug并派人fix。</p></li>
-</ul>
 
 ]]></content>
   </entry>
