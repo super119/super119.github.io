@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux-kernel | Make Things Cool]]></title>
   <link href="http://markzhang.cn/blog/categories/linux-kernel/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2015-12-25T11:02:08+08:00</updated>
+  <updated>2015-12-25T11:04:44+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -64,10 +64,7 @@ free_page((unsigned long)tmp);
 <!-- more -->
 
 
-<ol>
-<li>make menuconfig, under &ldquo;Kernel Hacking&rdquo;, enable &ldquo;KGDB&rdquo; &amp; &ldquo;KGDB over serial line&rdquo;. Enable &ldquo;compile kernel with debug info&rdquo;(CONFIG_DEBUG_INFO) &amp; &ldquo;enable frame pointer&rdquo;(CONFIG_FRAME_POINTER) options(both are under &ldquo;Kernel Hacking&rdquo;).</li>
-</ol>
-
+<p>make menuconfig, under &ldquo;Kernel Hacking&rdquo;, enable &ldquo;KGDB&rdquo; &amp; &ldquo;KGDB over serial line&rdquo;. Enable &ldquo;compile kernel with debug info&rdquo;(CONFIG_DEBUG_INFO) &amp; &ldquo;enable frame pointer&rdquo;(CONFIG_FRAME_POINTER) options(both are under &ldquo;Kernel Hacking&rdquo;).</p>
 
 <p>有关CONFIG_FRAME_POINTER这个option，需要在enable了ARCH_CONFIG_FRAME_POINTERS这个option之后才会出现在Kernel hacking下面。</p>
 
@@ -79,39 +76,36 @@ free_page((unsigned long)tmp);
 
 <p>从实验结果来看，只要enable了CONFIG_DEBUG_INFO，基本上就差不多了，能看到代码了。</p>
 
-<ol>
-<li>Add kernel option: <code>kgdboc=ttyS0,38400 kgdbwait</code> into kernel command line.</li>
-</ol>
+<hr />
 
+<p>Add kernel option: <code>kgdboc=ttyS0,38400 kgdbwait</code> into kernel command line.</p>
 
 <p>根据我的实验，这里115200不行。在后面gdb设置target remote /dev/ttyS0的时候，会被告知最高支持到38400.</p>
 
 <p>所以，这里如果115200不行，就改成38400。</p>
 
-<ol>
-<li><p>Start kernel, kernel will wait for connection from remote PC&rsquo;s gdb.</p></li>
-<li><p>On remote machine, &ldquo;<gdb path> ./vmlinux&rdquo; &mdash; this &ldquo;vmlinux&rdquo; mostly is under the root directory of kernel(a big kernel image with debug infos, not the one under arch/arm/boot, that is stripped version).</p></li>
-</ol>
+<hr />
 
+<p>Start kernel, kernel will wait for connection from remote PC&rsquo;s gdb.</p>
+
+<p>On remote machine, &ldquo;<gdb path> ./vmlinux&rdquo; &mdash; this &ldquo;vmlinux&rdquo; mostly is under the root directory of kernel(a big kernel image with debug infos, not the one under arch/arm/boot, that is stripped version).</p>
 
 <p>需要注意的是，这里的GDB必须使用host是x86-64，target是ARM的那种GDB。我们PC上的gdb一般host和target都是x86-64。</p>
 
 <p>这样的GDB可以在一些常见的toolchain网站找到，比如linaro。</p>
 
-<ol>
-<li>Enter gdb commands:</li>
-</ol>
+<hr />
 
+<p>Enter gdb commands:</p>
 
 <p><code>bash
 set remotebaud 38400
 target remote /dev/ttyS0
 </code></p>
 
-<ol>
-<li>Done. You can list source codes, set breakpoints now. Continue the debugging after finished.</li>
-</ol>
+<hr />
 
+<p>Done. You can list source codes, set breakpoints now. Continue the debugging after finished.</p>
 
 <p>CAUTION: Close any other programs(normally it&rsquo;s minicom which we use to monitor serial outputs) which may occupy &ldquo;/dev/ttyS0&rdquo; before running gdb on remote machine. Otherwise gdb can&rsquo;t connect with target board.</p>
 ]]></content>
