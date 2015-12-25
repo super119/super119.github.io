@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="所谓 out-of-tree 的内核模块，指的是源代码不在kernel tree里面的模块，比如 nouveau 的tree。 熟悉nouveau的都知道，nouveau的maintainer是单独维护nouveau tree的，所以，一般来说，我们会把nouveau的代码直接放在一个目录下， &hellip;">
+  <meta name="description" content="本文参考了以下两篇文章： http://superuser.com/questions/284709/how-to-allow-local-lan-access-while-connected-to-cisco-vpn https://github.com/jbalint/dnsmasq/blob &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,143 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/08/31/hack-cisco-anyconnect/">How to HACK CISCO Anyconnect Secure Mobile Client</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-08-31T08:31:00+08:00" pubdate data-updated="true">Aug 31<span>st</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>本文参考了以下两篇文章：</p>
+
+<p><a href="http://superuser.com/questions/284709/how-to-allow-local-lan-access-while-connected-to-cisco-vpn">http://superuser.com/questions/284709/how-to-allow-local-lan-access-while-connected-to-cisco-vpn</a></p>
+
+<p><a href="https://github.com/jbalint/dnsmasq/blob/master/run.sh">https://github.com/jbalint/dnsmasq/blob/master/run.sh</a></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/08/31/hack-cisco-anyconnect/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/07/24/throttle-hold-and-throttle-cut/">电动直升机的油门锁定（THRU HOLD）和油门熄火（THRU CUT）</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-07-24T11:43:00+08:00" pubdate data-updated="true">Jul 24<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><code>油门锁定</code> 和 <code>油门熄火</code> 是不太容易理解的两个东西，关键是他们俩有什么区别。5IMX上有一篇帖子挺精彩的：</p>
+
+<p><a href="http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=544614&amp;page=1">http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=544614&amp;page=1</a></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/07/24/throttle-hold-and-throttle-cut/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/06/03/nvidia-linux-driver-on-ubuntu/">NVIDIA Linux驱动在Ubuntu 12.04上的安装</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-06-03T21:35:00+08:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在Ubuntu上安装显卡驱动不是一件容易的事情，安装不是Ubuntu官方认证过的NVIDIA自家的驱动就更是困难，而我选择在一个老的Ubuntu版本上安装显卡驱动，事情就变的更加麻烦起来。</p>
+
+<p>其实一开始我也不想安装NVIDIA自家的驱动，首先想尝试用 <code>nouveau</code>，但是悲剧的发现Ubuntu 12.04上的nouveau无法驱动我的GTX970，可能需要新版本的Ubuntu才可以。所以，被迫选择安装NVIDIA自家的驱动。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/06/03/nvidia-linux-driver-on-ubuntu/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -396,145 +533,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/12/16/convert-32bit-pointer-to-64bit/">32/64的问题：32bit指针转换成64bit - Sign Extension</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-12-16T15:09:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>32/64有很多问题，指针转换是其中一个，比如这个例子：</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/12/16/convert-32bit-pointer-to-64bit/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/12/09/ros-rdp-wol/">RouterOS/远程启动/控制家里的PC</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-12-09T17:35:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>远程启动</h2>
-
-<p>远程启动其实就是 <code>WOL(Wake on Lan)</code>，现在的PC机基本上都支持。需要两个东西：</p>
-
-<ul>
-<li>在BIOS里面打开 <code>WOL</code></li>
-<li>使用一个程序，发送WOL的一个包（所谓magic packet）给PC机</li>
-</ul>
-
-
-<p>先说第一个，在我的PC机上，这个设置是 Advanced Options &ndash;> APM &ndash;> Power on PCIE，设成 <code>Enabled</code> 即可。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/12/09/ros-rdp-wol/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/11/25/thunderbird-72-column/">Thunderbird 80(72) Column - 邮件在80(72)列处line Break</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-25T11:13:00+08:00" pubdate data-updated="true">Nov 25<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>这个需求做linux kernel upstream的人都懂的&hellip;&hellip;要设置Thunderbird在80列正确换行，只需要这样：</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/25/thunderbird-72-column/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -549,11 +547,23 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (13)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (15)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (14)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (17)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/12/25/share-fd-by-sendmsg/">Linux通过sendmsg在进程中共享FD</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/25/get-file-name-by-struct-file-star/">Kernel: 怎么通过struct File *得到文件名</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/25/setup-kgdb/">KGDB配置使用</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/12/24/ubuntu-install-microsoft-camera/">Ubuntu 12.04安装Microsoft Lifecam Studio摄像头</a>
@@ -561,18 +571,6 @@
     
       <li class="post">
         <a href="/blog/2015/12/24/thunderbird-change-line-height/">Thunderbird on Ubuntu 12.04 - 调整邮件列表行间距</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/23/kernel-barrier-mb-wmb/">Kernel Barrier/wmb/mb宏的作用</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/23/kernel-data-type-compat-ioctl/">Linux Kernel Data Types, Alignment, Compat_ioctl 数据类型，对齐问题和compat_ioctl</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/22/ezviz-family-protection/">家庭安防 - 一套萤石设备组建的家庭安防</a>
       </li>
     
   </ul>

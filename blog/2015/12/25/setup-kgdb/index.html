@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>RouterOS/远程启动/控制家里的PC - Make Things Cool</title>
+  <title>KGDB配置使用 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="远程启动 远程启动其实就是 WOL(Wake on Lan)，现在的PC机基本上都支持。需要两个东西： 在BIOS里面打开 WOL
-使用一个程序，发送WOL的一个包（所谓magic packet）给PC机 先说第一个，在我的PC机上，这个设置是 Advanced Options &ndash;> &hellip;">
+  <meta name="description" content="KGDB可以用于linux kernel的调试，具体的配置步骤是： make menuconfig, under &ldquo;Kernel Hacking&rdquo;, enable &ldquo;KGDB&rdquo; &amp; &ldquo;KGDB over serial line& &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://markzhang.cn/blog/2014/12/09/ros-rdp-wol/">
+  <link rel="canonical" href="http://markzhang.cn/blog/2015/12/25/setup-kgdb/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -78,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">RouterOS/远程启动/控制家里的PC</h1>
+        <h1 class="entry-title">KGDB配置使用</h1>
       
     
     
@@ -95,73 +94,70 @@
   
 
 
-<time datetime="2014-12-09T17:35:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2014</time>
+<time datetime="2015-12-25T10:49:00+08:00" pubdate data-updated="true">Dec 25<span>th</span>, 2015</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>远程启动</h2>
-
-<p>远程启动其实就是 <code>WOL(Wake on Lan)</code>，现在的PC机基本上都支持。需要两个东西：</p>
-
-<ul>
-<li>在BIOS里面打开 <code>WOL</code></li>
-<li>使用一个程序，发送WOL的一个包（所谓magic packet）给PC机</li>
-</ul>
-
-
-<p>先说第一个，在我的PC机上，这个设置是 Advanced Options &ndash;> APM &ndash;> Power on PCIE，设成 <code>Enabled</code> 即可。</p>
+<div class="entry-content"><p>KGDB可以用于linux kernel的调试，具体的配置步骤是：</p>
 
 <!-- more -->
 
 
-<p>再说第二个，很酷的是ROS就支持这个，这样你就不需要另外一台PC机常年开着了，ROS路由一直开着即可。在ROS中，打开 <code>New Terminal</code>，输入：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/tool wol <span class="nv">interface</span><span class="o">=</span>&lt;连着你要唤醒的PC机的那个网口&gt; <span class="nv">mac</span><span class="o">=</span>&lt;要唤醒PC机的网卡的MAC地址&gt;
-</span></code></pre></td></tr></table></div></figure>
+<ol>
+<li>make menuconfig, under &ldquo;Kernel Hacking&rdquo;, enable &ldquo;KGDB&rdquo; &amp; &ldquo;KGDB over serial line&rdquo;. Enable &ldquo;compile kernel with debug info&rdquo;(CONFIG_DEBUG_INFO) &amp; &ldquo;enable frame pointer&rdquo;(CONFIG_FRAME_POINTER) options(both are under &ldquo;Kernel Hacking&rdquo;).</li>
+</ol>
 
 
-<p><img src="/downloads/image/ros-wol.png" alt="ROS Wake on Lan" /></p>
+<p>有关CONFIG_FRAME_POINTER这个option，需要在enable了ARCH_CONFIG_FRAME_POINTERS这个option之后才会出现在Kernel hacking下面。</p>
 
-<p>如果你的路由器不是ROS，或是没有WOL功能的话，那就需要另外一台PC来执行WOL的程序了。在Linux下，可以使用：</p>
+<p>这ARCH_CONFIG_FRAME_POINTERS在make menuconfig里面是找不到的。这个option是专门给其他人select用的。一般都是在ARCH config的时候会去select这个option</p>
+
+<p>比如x86下，一般会enable这个option。而ARM则不会（可能是考虑到生成的kernel文件尺寸和性能）。</p>
+
+<p>所以，在ARM下，可以编辑arch/arm/Kconfig，在CONFIG_ARM下面的一堆select的最后，添加上一句select CONFIG_ARCH_FRAME_POINTERS就可以了。</p>
+
+<p>从实验结果来看，只要enable了CONFIG_DEBUG_INFO，基本上就差不多了，能看到代码了。</p>
+
+<ol>
+<li>Add kernel option: <code>kgdboc=ttyS0,38400 kgdbwait</code> into kernel command line.</li>
+</ol>
+
+
+<p>根据我的实验，这里115200不行。在后面gdb设置target remote /dev/ttyS0的时候，会被告知最高支持到38400.</p>
+
+<p>所以，这里如果115200不行，就改成38400。</p>
+
+<ol>
+<li><p>Start kernel, kernel will wait for connection from remote PC&rsquo;s gdb.</p></li>
+<li><p>On remote machine, &ldquo;<gdb path> ./vmlinux&rdquo; &mdash; this &ldquo;vmlinux&rdquo; mostly is under the root directory of kernel(a big kernel image with debug infos, not the one under arch/arm/boot, that is stripped version).</p></li>
+</ol>
+
+
+<p>需要注意的是，这里的GDB必须使用host是x86-64，target是ARM的那种GDB。我们PC上的gdb一般host和target都是x86-64。</p>
+
+<p>这样的GDB可以在一些常见的toolchain网站找到，比如linaro。</p>
+
+<ol>
+<li>Enter gdb commands:</li>
+</ol>
+
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo apt-get install etherwake
-</span><span class='line'>wakeonlan &lt;mac address&gt;
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">set </span>remotebaud 38400
+</span><span class='line'>target remote /dev/ttyS0
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Windows下也一样，下载一个Wake on Lan的程序使用就行了。</p>
-
-<h2>远程控制</h2>
-
-<p>首先就是打开Windows的远程桌面功能。在 <code>高级系统设置 -&gt; 远程</code> 标签页里面：</p>
-
-<p><img src="/downloads/image/windows-rdp.png" alt="Windows RDP" /></p>
-
-<p>完了就是在ROS里面打开端口映射，这样你才可以从Internet上远程RDP到家里的PC机，需要映射的是著名的3389端口：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">chain</span><span class="o">=</span>dstnat <span class="nv">action</span><span class="o">=</span>dst-nat to-addresses<span class="o">=</span>&lt;xxx.xxx.xxx.xxx&gt; to-ports<span class="o">=</span>3389 <span class="nv">protocol</span><span class="o">=</span>tcp dst-port<span class="o">=</span>3389
-</span><span class='line'><span class="nv">chain</span><span class="o">=</span>dstnat <span class="nv">action</span><span class="o">=</span>dst-nat to-addresses<span class="o">=</span>&lt;xxx.xxx.xxx.xxx&gt; to-ports<span class="o">=</span>3389 <span class="nv">protocol</span><span class="o">=</span>udp dst-port<span class="o">=</span>3389
-</span></code></pre></td></tr></table></div></figure>
+<ol>
+<li>Done. You can list source codes, set breakpoints now. Continue the debugging after finished.</li>
+</ol>
 
 
-<p>这样就可以远程登录了。Ubuntu下面有自带的 <code>Remmina Remote Desktop</code> 可以使用，Mac下我用的是 <code>Jump Desktop</code>，个人感觉很好用。</p>
-
-<p>最后一个小问题，有关远程登录机器开始菜单中没有 <code>关机</code> 这个功能，只需要打开 <code>Windows CMD</code>，也就是命令行界面，输入：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>shutdown /f /s
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>就可以了。</p>
+<p>CAUTION: Close any other programs(normally it&rsquo;s minicom which we use to monitor serial outputs) which may occupy &ldquo;/dev/ttyS0&rdquo; before running gdb on remote machine. Otherwise gdb can&rsquo;t connect with target board.</p>
 </div>
 
 
@@ -169,7 +165,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2015 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2014/12/09/ros-rdp-wol/<br>
+原文链接: http://www.markzhang.cn/blog/2015/12/25/setup-kgdb/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -192,12 +188,12 @@
   
 
 
-<time datetime="2014-12-09T17:35:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2014</time>
+<time datetime="2015-12-25T10:49:00+08:00" pubdate data-updated="true">Dec 25<span>th</span>, 2015</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/network/'>network</a>
+    <a class='category' href='/blog/categories/linux-kernel/'>linux-kernel</a>
   
 </span>
 
@@ -213,10 +209,10 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2014/11/25/thunderbird-72-column/" title="Previous Post: Thunderbird 80(72) column - 邮件在80(72)列处line break">&laquo; Thunderbird 80(72) column - 邮件在80(72)列处line break</a>
+        <a class="basic-alignment left articlenav" href="/blog/2015/12/24/ubuntu-install-microsoft-camera/" title="Previous Post: Ubuntu 12.04安装Microsoft lifecam studio摄像头">&laquo; Ubuntu 12.04安装Microsoft lifecam studio摄像头</a>
       
       
-        <a class="basic-alignment right articlenav" href="/blog/2014/12/16/convert-32bit-pointer-to-64bit/" title="Next Post: 32/64的问题：32bit指针转换成64bit - Sign Extension">32/64的问题：32bit指针转换成64bit - Sign Extension &raquo;</a>
+        <a class="basic-alignment right articlenav" href="/blog/2015/12/25/get-file-name-by-struct-file-star/" title="Next Post: Kernel: 怎么通过struct file *得到文件名">Kernel: 怎么通过struct file *得到文件名 &raquo;</a>
       
     </p>
   </footer>

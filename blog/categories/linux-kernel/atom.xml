@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux-kernel | Make Things Cool]]></title>
   <link href="http://markzhang.cn/blog/categories/linux-kernel/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2015-12-24T09:24:21+08:00</updated>
+  <updated>2015-12-25T11:02:08+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,110 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Kernel: 怎么通过struct file *得到文件名]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/25/get-file-name-by-struct-file-star/"/>
+    <updated>2015-12-25T10:54:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/25/get-file-name-by-struct-file-star</id>
+    <content type="html"><![CDATA[<p>只是一个小Tip，代码如下：</p>
+
+<!-- more -->
+
+
+<p>``` cpp
+char <em>tmp;
+char </em>pathname;</p>
+
+<p>path_get(&amp;file->f_path);</p>
+
+<p>tmp = (char *)__get_free_page(GFP_TEMPORARY);
+if (!tmp) {</p>
+
+<pre><code>return -ENOMEM;
+</code></pre>
+
+<p>}</p>
+
+<p>pathname = d_path(&amp;file->f_path, tmp, PAGE_SIZE);
+path_put(&amp;file->f_path);</p>
+
+<p>if (IS_ERR(pathname)) {</p>
+
+<pre><code>free_page((unsigned long)tmp);
+return PTR_ERR(pathname);
+</code></pre>
+
+<p>}</p>
+
+<p>printk(KERN_WARNING &ldquo;File name: %s\n&rdquo;, pathname);
+free_page((unsigned long)tmp);
+```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[KGDB配置使用]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/25/setup-kgdb/"/>
+    <updated>2015-12-25T10:49:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/25/setup-kgdb</id>
+    <content type="html"><![CDATA[<p>KGDB可以用于linux kernel的调试，具体的配置步骤是：</p>
+
+<!-- more -->
+
+
+<ol>
+<li>make menuconfig, under &ldquo;Kernel Hacking&rdquo;, enable &ldquo;KGDB&rdquo; &amp; &ldquo;KGDB over serial line&rdquo;. Enable &ldquo;compile kernel with debug info&rdquo;(CONFIG_DEBUG_INFO) &amp; &ldquo;enable frame pointer&rdquo;(CONFIG_FRAME_POINTER) options(both are under &ldquo;Kernel Hacking&rdquo;).</li>
+</ol>
+
+
+<p>有关CONFIG_FRAME_POINTER这个option，需要在enable了ARCH_CONFIG_FRAME_POINTERS这个option之后才会出现在Kernel hacking下面。</p>
+
+<p>这ARCH_CONFIG_FRAME_POINTERS在make menuconfig里面是找不到的。这个option是专门给其他人select用的。一般都是在ARCH config的时候会去select这个option</p>
+
+<p>比如x86下，一般会enable这个option。而ARM则不会（可能是考虑到生成的kernel文件尺寸和性能）。</p>
+
+<p>所以，在ARM下，可以编辑arch/arm/Kconfig，在CONFIG_ARM下面的一堆select的最后，添加上一句select CONFIG_ARCH_FRAME_POINTERS就可以了。</p>
+
+<p>从实验结果来看，只要enable了CONFIG_DEBUG_INFO，基本上就差不多了，能看到代码了。</p>
+
+<ol>
+<li>Add kernel option: <code>kgdboc=ttyS0,38400 kgdbwait</code> into kernel command line.</li>
+</ol>
+
+
+<p>根据我的实验，这里115200不行。在后面gdb设置target remote /dev/ttyS0的时候，会被告知最高支持到38400.</p>
+
+<p>所以，这里如果115200不行，就改成38400。</p>
+
+<ol>
+<li><p>Start kernel, kernel will wait for connection from remote PC&rsquo;s gdb.</p></li>
+<li><p>On remote machine, &ldquo;<gdb path> ./vmlinux&rdquo; &mdash; this &ldquo;vmlinux&rdquo; mostly is under the root directory of kernel(a big kernel image with debug infos, not the one under arch/arm/boot, that is stripped version).</p></li>
+</ol>
+
+
+<p>需要注意的是，这里的GDB必须使用host是x86-64，target是ARM的那种GDB。我们PC上的gdb一般host和target都是x86-64。</p>
+
+<p>这样的GDB可以在一些常见的toolchain网站找到，比如linaro。</p>
+
+<ol>
+<li>Enter gdb commands:</li>
+</ol>
+
+
+<p><code>bash
+set remotebaud 38400
+target remote /dev/ttyS0
+</code></p>
+
+<ol>
+<li>Done. You can list source codes, set breakpoints now. Continue the debugging after finished.</li>
+</ol>
+
+
+<p>CAUTION: Close any other programs(normally it&rsquo;s minicom which we use to monitor serial outputs) which may occupy &ldquo;/dev/ttyS0&rdquo; before running gdb on remote machine. Otherwise gdb can&rsquo;t connect with target board.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Kernel barrier/wmb/mb宏的作用]]></title>
@@ -175,96 +279,6 @@ and browse to where you saved the .xul file.  This adds an &ldquo;Enable
 Wordwrap&rdquo; entry under the Options menu of the message composer.</p></li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Kernel Submitting Patches，有关ifdef和static inline & macro]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/21/kernel-ifdef-macros/"/>
-    <updated>2015-12-21T14:19:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/21/kernel-ifdef-macros</id>
-    <content type="html"><![CDATA[<p>From kernel: Documentation/SubmittingPatches</p>
-
-<!-- more -->
-
-
-<p>2) #ifdefs are ugly</p>
-
-<p>Code cluttered with ifdefs is difficult to read and maintain.  Don&rsquo;t do
-it.  Instead, put your ifdefs in a header, and conditionally define
-&lsquo;static inline&rsquo; functions, or macros, which are used in the code.
-Let the compiler optimize away the &ldquo;no-op&rdquo; case.</p>
-
-<p>Simple example, of poor code:</p>
-
-<p>``` cpp</p>
-
-<pre><code>    dev = alloc_etherdev (sizeof(struct funky_private));
-    if (!dev)
-            return -ENODEV;
-    #ifdef CONFIG_NET_FUNKINESS
-    init_funky_net(dev);
-    #endif
-</code></pre>
-
-<p>```</p>
-
-<p>Cleaned-up example:</p>
-
-<p>``` cpp
-(in header)</p>
-
-<pre><code>    #ifndef CONFIG_NET_FUNKINESS
-    static inline void init_funky_net (struct net_device *d) {}
-    #endif
-</code></pre>
-
-<p>(in the code itself)</p>
-
-<pre><code>    dev = alloc_etherdev (sizeof(struct funky_private));
-    if (!dev)
-            return -ENODEV;
-    init_funky_net(dev);
-</code></pre>
-
-<p>```</p>
-
-<p>3) &lsquo;static inline&rsquo; is better than a macro</p>
-
-<p>Static inline functions are greatly preferred over macros.
-They provide type safety, have no length limitations, no formatting
-limitations, and under gcc they are as cheap as macros.
-Macros should only be used for cases where a static inline is clearly
-suboptimal [there are a few, isolated cases of this in fast paths],
-or where it is impossible to use a static inline function [such as
-string-izing].</p>
-
-<p>&lsquo;static inline&rsquo; is preferred over &lsquo;static <strong>inline</strong>&rsquo;, &lsquo;extern inline&rsquo;,
-and &lsquo;extern <strong>inline</strong>&rsquo;.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[kernel: How to decompress the zImage?]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/21/kernel-decompress-zimage/"/>
-    <updated>2015-12-21T14:00:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/21/kernel-decompress-zimage</id>
-    <content type="html"><![CDATA[<p>zImage不是标准的gzip文件，需要自己strip掉开头的一些东西才可以gunzip。</p>
-
-<p>基本上的思路就是找gzip的magic number &ldquo;1f 8b 08"。</p>
-
-<!-- more -->
-
-
-<p>具体步骤：</p>
-
-<p><code>bash
-$ mkdir -p /tmp/kernel-uncompressed/; cd /tmp/kernel-uncompressed/
-$ cp /boot/vmlinuz-`uname -r` .
-$ od -t x1 -A d vmlinuz-2.6.18-128.el5.uvm6PAE | grep "1f 8b 08"
-0008320 1b 00 1f 8b 08 00 d5 c2 9a 49 02 03 ec 3b 7d 7c
-$ dd bs=1 skip=8322 if=vmlinuz-2.6.18-128.el5.uvm6PAE | zcat &gt; vmlinux
-</code></p>
 ]]></content>
   </entry>
   

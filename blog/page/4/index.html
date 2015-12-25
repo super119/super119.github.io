@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="ChromeOS是一个相当&#8221;Linux&#8221;的OS。现在一般能拿到手的ChromeOS的设备很多都是Chromebook，所以本文是在一台Chromebook上做的测试。 ChromeOS默认的零售版本是什么开发类工具都没有的，包括ssh client都没有。要enable &hellip;">
+  <meta name="description" content="32/64有很多问题，指针转换是其中一个，比如这个例子： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,145 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/12/16/convert-32bit-pointer-to-64bit/">32/64的问题：32bit指针转换成64bit - Sign Extension</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-16T15:09:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>32/64有很多问题，指针转换是其中一个，比如这个例子：</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/12/16/convert-32bit-pointer-to-64bit/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/12/09/ros-rdp-wol/">RouterOS/远程启动/控制家里的PC</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-09T17:35:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>远程启动</h2>
+
+<p>远程启动其实就是 <code>WOL(Wake on Lan)</code>，现在的PC机基本上都支持。需要两个东西：</p>
+
+<ul>
+<li>在BIOS里面打开 <code>WOL</code></li>
+<li>使用一个程序，发送WOL的一个包（所谓magic packet）给PC机</li>
+</ul>
+
+
+<p>先说第一个，在我的PC机上，这个设置是 Advanced Options &ndash;> APM &ndash;> Power on PCIE，设成 <code>Enabled</code> 即可。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/12/09/ros-rdp-wol/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/11/25/thunderbird-72-column/">Thunderbird 80(72) Column - 邮件在80(72)列处line Break</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-25T11:13:00+08:00" pubdate data-updated="true">Nov 25<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>这个需求做linux kernel upstream的人都懂的&hellip;&hellip;要设置Thunderbird在80列正确换行，只需要这样：</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/11/25/thunderbird-72-column/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -401,139 +540,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/07/17/mac-share-vpn-connection/">Mac OS X（Mavericks）共享VPN给其他设备</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-17T11:22:00+08:00" pubdate data-updated="true">Jul 17<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>之前写过一篇文章叫“Chnroutes的使用“，主要说的是如何通过使用 <code>chnroutes</code> 从而将国内和国外的路由分开，国内走正常路由，国外则走VPN。现在的问题是，如果在一台电脑上有了VPN之后，如何将这个VPN share给其他设备，比如PS3？</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/17/mac-share-vpn-connection/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/07/03/apple-cli-and-osx-gcc-installer/">Mac OS X(Mavericks) CommandLineTools 和 Osx-gcc-installer</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-03T13:22:00+08:00" pubdate data-updated="true">Jul 3<span>rd</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Mac OS X Command Line Tools是Mac开发人员经常会遇到的一个问题。Command Line Tools（以下简称CLI）其实就是一堆Unix/Linux上开发需要的基础东西，比如gcc, make, g++等。在Mac上开发，如果使用Xcode的话，是不需要这些东西的，因为Xcode已经集成了这些东西，在Xcode的IDE中直接进行编译调试，所以用户不需要关心这些东西有没有，在哪。</p>
-
-<p>但是如果我们在开发自己的基于Makefile的程序时，或者是要porting UNIX/Linux上的一些程序时，这些东西就变成必须的了。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/03/apple-cli-and-osx-gcc-installer/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/06/17/fbl-phase-arm-pad/">450 FBL 相位臂不顺滑？缺少一个小垫片</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-17T15:37:00+08:00" pubdate data-updated="true">Jun 17<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>450 FBL有一个相位臂，没有这个相位臂那旋翼一旋转，十字盘拉杆就转成麻花了。但是由于十字盘是需要上下移动的（改变集体螺距），所以这个相位臂也是需要能运动的。基本上，当十字盘上下运动时，相位臂有两个地方也会发生运动：一个是中间部位，能改变角度；另外一个地方不起眼容易被忽略，就是相位臂固定在中联的那个位置，会发生转动。</p>
-
-<p>所以最近在拆装相位臂的时候，突然发现相位臂的转动不顺畅了，非常的生涩，结果发现丢了一个小垫片。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/06/17/fbl-phase-arm-pad/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -548,11 +554,23 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (13)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (15)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (14)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (17)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/12/25/share-fd-by-sendmsg/">Linux通过sendmsg在进程中共享FD</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/25/get-file-name-by-struct-file-star/">Kernel: 怎么通过struct File *得到文件名</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/12/25/setup-kgdb/">KGDB配置使用</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/12/24/ubuntu-install-microsoft-camera/">Ubuntu 12.04安装Microsoft Lifecam Studio摄像头</a>
@@ -560,18 +578,6 @@
     
       <li class="post">
         <a href="/blog/2015/12/24/thunderbird-change-line-height/">Thunderbird on Ubuntu 12.04 - 调整邮件列表行间距</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/23/kernel-barrier-mb-wmb/">Kernel Barrier/wmb/mb宏的作用</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/23/kernel-data-type-compat-ioctl/">Linux Kernel Data Types, Alignment, Compat_ioctl 数据类型，对齐问题和compat_ioctl</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/22/ezviz-family-protection/">家庭安防 - 一套萤石设备组建的家庭安防</a>
       </li>
     
   </ul>

@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>RouterOS/远程启动/控制家里的PC - Make Things Cool</title>
+  <title>Linux通过sendmsg在进程中共享FD - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="远程启动 远程启动其实就是 WOL(Wake on Lan)，现在的PC机基本上都支持。需要两个东西： 在BIOS里面打开 WOL
-使用一个程序，发送WOL的一个包（所谓magic packet）给PC机 先说第一个，在我的PC机上，这个设置是 Advanced Options &ndash;> &hellip;">
+  <meta name="description" content="对于现代Linux来说，FD的使用变的越来越广泛。FD不光用于一个文件或设备的打开句柄，现在FD还往往会用于一些其他数据类型的句柄，比如一块buffer。 对于一些要避免拷贝的buffer来说（比如一块用于display的buffer，或者一块用于render的buffer）， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://markzhang.cn/blog/2014/12/09/ros-rdp-wol/">
+  <link rel="canonical" href="http://markzhang.cn/blog/2015/12/25/share-fd-by-sendmsg/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -78,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">RouterOS/远程启动/控制家里的PC</h1>
+        <h1 class="entry-title">Linux通过sendmsg在进程中共享FD</h1>
       
     
     
@@ -95,73 +94,37 @@
   
 
 
-<time datetime="2014-12-09T17:35:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2014</time>
+<time datetime="2015-12-25T10:57:00+08:00" pubdate data-updated="true">Dec 25<span>th</span>, 2015</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>远程启动</h2>
+<div class="entry-content"><p>对于现代Linux来说，FD的使用变的越来越广泛。FD不光用于一个文件或设备的打开句柄，现在FD还往往会用于一些其他数据类型的句柄，比如一块buffer。</p>
 
-<p>远程启动其实就是 <code>WOL(Wake on Lan)</code>，现在的PC机基本上都支持。需要两个东西：</p>
+<p>对于一些要避免拷贝的buffer来说（比如一块用于display的buffer，或者一块用于render的buffer），使用FD来表示这块buffer并在不同进程中传递就被使用的越来越广泛。而且进程退出（不管是正常退出还是被杀）的时候，FD还能被kernel回收，再加上 <code>reference count</code>，这块buffer就不会有泄漏的问题。看看Android和Linux kernel的代码就会发现，现在使用FD的这种例子是越来越多了。</p>
 
-<ul>
-<li>在BIOS里面打开 <code>WOL</code></li>
-<li>使用一个程序，发送WOL的一个包（所谓magic packet）给PC机</li>
-</ul>
-
-
-<p>先说第一个，在我的PC机上，这个设置是 Advanced Options &ndash;> APM &ndash;> Power on PCIE，设成 <code>Enabled</code> 即可。</p>
+<p>在userspace，进程共享FD可以通过 <code>sendmsg</code> 来实现：</p>
 
 <!-- more -->
 
 
-<p>再说第二个，很酷的是ROS就支持这个，这样你就不需要另外一台PC机常年开着了，ROS路由一直开着即可。在ROS中，打开 <code>New Terminal</code>，输入：</p>
+<p>man 7 unix</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/tool wol <span class="nv">interface</span><span class="o">=</span>&lt;连着你要唤醒的PC机的那个网口&gt; <span class="nv">mac</span><span class="o">=</span>&lt;要唤醒PC机的网卡的MAC地址&gt;
-</span></code></pre></td></tr></table></div></figure>
+<p>man sendmsg</p>
 
+<p>sendmsg可以发送control message，也就是不是普通的regular数据。看sendmsg的manual可以知道。</p>
 
-<p><img src="/downloads/image/ros-wol.png" alt="ROS Wake on Lan" /></p>
+<p>control message其实也是指定一个指针和一个长度，和普通数据一样。</p>
 
-<p>如果你的路由器不是ROS，或是没有WOL功能的话，那就需要另外一台PC来执行WOL的程序了。在Linux下，可以使用：</p>
+<p>有趣的事，control message可以发送一个FD（或一组，以数组方式组织）给另外一个进程。不是说把FD这个数字发给了别人，而是这个FD真正的另外一个进程中存在，而且和发送进程的FD指向的是一个struct file</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo apt-get install etherwake
-</span><span class='line'>wakeonlan &lt;mac address&gt;
-</span></code></pre></td></tr></table></div></figure>
+<p>简单来说，就好象接收进程dup了发送进程的那个FD一样。事实上嘛，大家都懂的，其实就是kernel帮助接收进程dup了一下而已。。。</p>
 
+<p>在man 7 unix中搜索SCM_RIGHTS可以看到具体用法和信息。</p>
 
-<p>Windows下也一样，下载一个Wake on Lan的程序使用就行了。</p>
-
-<h2>远程控制</h2>
-
-<p>首先就是打开Windows的远程桌面功能。在 <code>高级系统设置 -&gt; 远程</code> 标签页里面：</p>
-
-<p><img src="/downloads/image/windows-rdp.png" alt="Windows RDP" /></p>
-
-<p>完了就是在ROS里面打开端口映射，这样你才可以从Internet上远程RDP到家里的PC机，需要映射的是著名的3389端口：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">chain</span><span class="o">=</span>dstnat <span class="nv">action</span><span class="o">=</span>dst-nat to-addresses<span class="o">=</span>&lt;xxx.xxx.xxx.xxx&gt; to-ports<span class="o">=</span>3389 <span class="nv">protocol</span><span class="o">=</span>tcp dst-port<span class="o">=</span>3389
-</span><span class='line'><span class="nv">chain</span><span class="o">=</span>dstnat <span class="nv">action</span><span class="o">=</span>dst-nat to-addresses<span class="o">=</span>&lt;xxx.xxx.xxx.xxx&gt; to-ports<span class="o">=</span>3389 <span class="nv">protocol</span><span class="o">=</span>udp dst-port<span class="o">=</span>3389
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样就可以远程登录了。Ubuntu下面有自带的 <code>Remmina Remote Desktop</code> 可以使用，Mac下我用的是 <code>Jump Desktop</code>，个人感觉很好用。</p>
-
-<p>最后一个小问题，有关远程登录机器开始菜单中没有 <code>关机</code> 这个功能，只需要打开 <code>Windows CMD</code>，也就是命令行界面，输入：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>shutdown /f /s
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>就可以了。</p>
+<p>有个条件是：必须工作在UNIX这个socket domain上（AF_UNIX），TCP/IP socket domain是不行的。</p>
 </div>
 
 
@@ -169,7 +132,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2015 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2014/12/09/ros-rdp-wol/<br>
+原文链接: http://www.markzhang.cn/blog/2015/12/25/share-fd-by-sendmsg/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -192,12 +155,12 @@
   
 
 
-<time datetime="2014-12-09T17:35:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2014</time>
+<time datetime="2015-12-25T10:57:00+08:00" pubdate data-updated="true">Dec 25<span>th</span>, 2015</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/network/'>network</a>
+    <a class='category' href='/blog/categories/linux/'>linux</a>
   
 </span>
 
@@ -213,10 +176,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2014/11/25/thunderbird-72-column/" title="Previous Post: Thunderbird 80(72) column - 邮件在80(72)列处line break">&laquo; Thunderbird 80(72) column - 邮件在80(72)列处line break</a>
+        <a class="basic-alignment left articlenav" href="/blog/2015/12/25/get-file-name-by-struct-file-star/" title="Previous Post: Kernel: 怎么通过struct file *得到文件名">&laquo; Kernel: 怎么通过struct file *得到文件名</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/12/16/convert-32bit-pointer-to-64bit/" title="Next Post: 32/64的问题：32bit指针转换成64bit - Sign Extension">32/64的问题：32bit指针转换成64bit - Sign Extension &raquo;</a>
       
     </p>
   </footer>

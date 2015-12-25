@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>有关DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU - Make Things Cool</title>
+  <title>Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="DMABUF can be used as a wrapper to encapsulate other memory management frameworks. All these memory management framework(I mean mostly for graphics &hellip;">
+  <meta name="description" content="跟老美共事发现它们很喜欢每件事情都起个Code Name，所以我也给我的博客每年都取一个Code Name。命名的逻辑跟Ubuntu一样，从2013年的H开始，每个Code Name都是两个单词且开头字母相同。如下： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://markzhang.cn/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem/">
+  <link rel="canonical" href="http://markzhang.cn/blog/page/8/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -71,13 +71,16 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div>
-<article class="hentry" role="article">
+      <div class="blog-index">
   
+  
+  
+    <article>
+      
   <header>
     
-      
-        <h1 class="entry-title">有关DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU</h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/04/blog-code-names/">博客 Code Names</a></h1>
       
     
     
@@ -94,109 +97,34 @@
   
 
 
-<time datetime="2015-03-02T11:06:00+08:00" pubdate data-updated="true">Mar 2<span>nd</span>, 2015</time>
+<time datetime="2013-11-04T20:46:00+08:00" pubdate data-updated="true">Nov 4<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><ol>
-<li><p>DMABUF can be used as a wrapper to encapsulate other memory management frameworks. All these memory management framework(I mean mostly for graphics), buffer is the keypoint. DMABUF defines a standard buffer structure. So DMABUF can be used as a wrapper for TTM/GEM/Android ION&hellip; and etc. Notice DMABUF can&rsquo;t replace these things, cause it doesn&rsquo;t cover everything. E.g: DMABUF has no userspace interfaces, right now only kernel interfaces(can be used in device driver).</p></li>
-<li><p>Kernel has DMA mapping API from origin. ARM defines IOMMU which can be used to connect scattered physical memory as a continuous region for devices which needs continue address to work(e.g: DMA). So IOMMU implementations &amp; CMA should work behind kernel DMA mapping API. E.g: dma_alloc_from_contiguous can be implemented by CMA; dma_alloc_coherent can be implemented by IOMMU or by the normal case(just call __get_free_pages). So for device drivers need dma buffers, we should use dma mapping APIs, not call iommu api directly.</p></li>
-<li><p>For tegra, GART &amp; SMMU can be used to implement IOMMU apis.</p></li>
-</ol>
+  <div class="entry-content"><p>跟老美共事发现它们很喜欢每件事情都起个Code Name，所以我也给我的博客每年都取一个Code Name。命名的逻辑跟Ubuntu一样，从2013年的H开始，每个Code Name都是两个单词且开头字母相同。如下：</p>
 
 </div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/11/04/blog-code-names/">Read on &rarr;</a>
+    </footer>
+  
 
 
-  <footer>
+    </article>
+  
+  <div class="pagination">
     
-    <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
-      <strong>版权所有 &copy;2015 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2015/03/02/dmabuf-dma-mapping-iommu-gem/<br>
-您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
-    </section>
+    <a href="/blog/archives">Blog Archives</a>
     
-
-    <p class="meta">
-      
-  
-
-<span class="byline author vcard">Posted by <span class="fn">Mark Zhang</span></span>
-
-      
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-03-02T11:06:00+08:00" pubdate data-updated="true">Mar 2<span>nd</span>, 2015</time>
-      
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/linux-kernel/'>linux-kernel</a>
-  
-</span>
-
-
-    </p>
+    <a class="next" href="/blog/page/7/">Newer &rarr;</a>
     
-      <div class="sharing">
-  
-  
-  
+  </div>
 </div>
-
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left articlenav" href="/blog/2015/03/02/linux-graphics-stack-notes/" title="Previous Post: Linux graphics stack 随便写写">&laquo; Linux graphics stack 随便写写</a>
-      
-      
-        <a class="basic-alignment right articlenav" href="/blog/2015/03/03/cron/" title="Next Post: Linux定时任务 - Cron">Linux定时任务 - Cron &raquo;</a>
-      
-    </p>
-  </footer>
-</article>
-
-  <section>
-    <!-- JiaThis Button BEGIN -->
-<div class="jiathis_style_24x24">
-	<a class="jiathis_button_qzone"></a>
-	<a class="jiathis_button_tsina"></a>
-	<a class="jiathis_button_tqq"></a>
-	<a class="jiathis_button_renren"></a>
-	<a class="jiathis_button_kaixin001"></a>
-	<a href="http://www.jiathis.com/share?uid=1860527" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
-	<a class="jiathis_counter_style"></a>
-</div>
-<script type="text/javascript">
-var jiathis_config = {data_track_clickback:'true'};
-</script>
-<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1352426099508779" charset="utf-8"></script>
-<!-- JiaThis Button END -->
-
-  </section>
-
-
-  <section>
-    <!-- UY BEGIN -->
-<div id="uyan_frame"></div>
-<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1860527"></script>
-<!-- UY END -->
-
-  </section>
-
-</div>
-
 <aside class="sidebar">
   
     <section>
@@ -233,7 +161,7 @@ var jiathis_config = {data_track_clickback:'true'};
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating...</li>
+    <li class="loading">Status updating&#8230;</li>
   </ul>
   
   <script type="text/javascript">
@@ -260,7 +188,6 @@ var jiathis_config = {data_track_clickback:'true'};
 
   
 </aside>
-
 
     </div>
   </div>
