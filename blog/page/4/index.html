@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="32/64有很多问题，指针转换是其中一个，比如这个例子： ">
+  <meta name="description" content="Display and mode setting: DRM. DRM defines connector/encoder/crtc to support display(including multi-monitor). And KMS makes mode setting happens in &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,54 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/03/02/linux-graphics-stack-notes/">Linux Graphics Stack 随便写写</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-03-02T11:03:00+08:00" pubdate data-updated="true">Mar 2<span>nd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ul>
+<li><p>Display and mode setting: DRM. DRM defines connector/encoder/crtc to support display(including multi-monitor). And KMS makes mode setting happens in kernel space.</p></li>
+<li><p>2D acceleration: X server EXA/UXA extension. Vendor should write a X server driver which implements EXA or UXA(should be upstreamed). UXA is an enhancement design of EXA, proposed by intel, so GEM is used in UXA. DRM has no direct 2D acceleration interface definitions(e.g: memory copy/move, blit, color space conversion&hellip;), this is defined in EXA/UXA extensions. But vendor&rsquo;s X server driver will use drm functions, mostly is buffer manipulations.</p></li>
+<li><p>3D acceleration: via Mesa. Mesa has 2 parts:</p></li>
+</ul>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/03/02/linux-graphics-stack-notes/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -493,53 +541,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/07/24/winbox-mac-change-font/">Winbox for Mac OS X，修改界面字体</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-24T18:19:00+08:00" pubdate data-updated="true">Jul 24<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>RouterOS（或简称ROS）是拉脱维亚的Mikrotik开发的一个强大到变态（对于个人用户而言）的路由系统。基于Linux，支持x86和MIPS（routerboard）。也就是说，你可以找一台PC来，装上routeros，就变身成了一台路由器。所以也有很多人称RouterOS为软路由。</p>
-
-<p>Winbox是Mikrotik开发的RouterOS的管理工具（客户端）。当然，RouterOS也有网页版和命令行（终端，支持SSH，串口等）的管理界面，但是Winbox是相对来说最直观和好用的（当然用多了肯定到最后就是纯命令行了）。</p>
-
-<p>有一个问题就是，Winbox只有windows版的。在Mac和Linux上，要使用wine来运行（或安装虚拟机）。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/24/winbox-mac-change-font/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -554,11 +555,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (14)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (17)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (14)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (18)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/12/29/linux-graphics-stack/">Linux Graphics Stack 理解</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/12/25/share-fd-by-sendmsg/">Linux通过sendmsg在进程中共享FD</a>
@@ -574,10 +579,6 @@
     
       <li class="post">
         <a href="/blog/2015/12/24/ubuntu-install-microsoft-camera/">Ubuntu 12.04安装Microsoft Lifecam Studio摄像头</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/24/thunderbird-change-line-height/">Thunderbird on Ubuntu 12.04 - 调整邮件列表行间距</a>
       </li>
     
   </ul>
