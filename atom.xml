@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://markzhang.cn/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2015-12-29T14:10:56+08:00</updated>
+  <updated>2015-12-30T09:25:23+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,20 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU]]></title>
+    <link href="http://markzhang.cn/blog/2015/12/30/dmabuf-slash-dma-mapping-slash-iommu-slash-cma-slash-ttm-slash-gem-slash-gart-slash-smmu/"/>
+    <updated>2015-12-30T09:24:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2015/12/30/dmabuf-slash-dma-mapping-slash-iommu-slash-cma-slash-ttm-slash-gem-slash-gart-slash-smmu</id>
+    <content type="html"><![CDATA[<ol>
+<li><p>DMABUF can be used as a wrapper to encapsulate other memory management frameworks. All these memory management framework(I mean mostly for graphics), buffer is the keypoint. DMABUF defines a standard buffer structure. So DMABUF can be used as a wrapper for TTM/GEM/Android ION&hellip; and etc. Notice DMABUF can&rsquo;t replace these things, cause it doesn&rsquo;t cover everything. E.g: DMABUF has no userspace interfaces, right now only kernel interfaces(can be used in device driver).</p></li>
+<li><p>Kernel has DMA mapping API from origin. ARM defines IOMMU which can be used to connect scattered physical memory as a continuous region for devices which needs continue address to work(e.g: DMA). So IOMMU implementations &amp; CMA should work behind kernel DMA mapping API. E.g: dma_alloc_from_contiguous can be implemented by CMA; dma_alloc_coherent can be implemented by IOMMU or by the normal case(just call __get_free_pages). So for device drivers need dma buffers, we should use dma mapping APIs, not call iommu api directly.</p></li>
+<li><p>For tegra, GART &amp; SMMU can be used to implement IOMMU apis.</p></li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux graphics stack 理解]]></title>
@@ -919,29 +933,6 @@ and &lsquo;extern <strong>inline</strong>&rsquo;.</p>
 <p>dump_stack：打印当前的backtrace</p>
 
 <p>show_stack：打印指定task_struct的backtrace</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Chromium OS相比Chrome OS缩水的地方]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/16/chromiumos-chromeos/"/>
-    <updated>2015-12-16T14:44:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/16/chromiumos-chromeos</id>
-    <content type="html"><![CDATA[<p>关于两者的区别，下面是Google官方的解释：</p>
-
-<!-- more -->
-
-
-<ol>
-<li>Chromium OS人人都可下载、修改，并且免费使用。Chrome OS只提供给品牌厂商的特定笔记本机型（也就是Chromebook）使用。</li>
-<li>Chrome OS具有需验证的引导和轻松恢复功能，Chromium OS则没有（也没需要）。</li>
-<li>Chrome OS具有自动更新功能，可以保持你的系统是最新状态，Chromium OS则没有，要想更新系统只有下载新版来重装。</li>
-<li>Chrome OS针对具体的笔记本硬件有特别优化，运行时性能更高，也更稳定（这个笔者有深刻体会）；Chromium OS则只包含一些早已存在的开源硬件驱动。</li>
-<li>Chrome OS由Google公司和笔记本品牌厂商提供技术支持，Chromium OS则由开源社区提供支持。</li>
-<li>Chrome OS内置Flash、PDF和Netflix Instant插件，并且有Google Talk软件，支持3G网络，Chromium OS则没有以上特性（没有Flash插件最要命啊）。</li>
-<li>图标不一样，Chrome OS的图标是红黄蓝绿四色，Chromium OS只有蓝色。</li>
-</ol>
-
 ]]></content>
   </entry>
   

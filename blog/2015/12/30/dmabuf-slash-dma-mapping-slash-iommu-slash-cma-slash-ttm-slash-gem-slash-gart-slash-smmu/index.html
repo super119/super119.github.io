@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>电动直升机的油门锁定（THRU HOLD）和油门熄火（THRU CUT） - Make Things Cool</title>
+  <title>DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="油门锁定 和 油门熄火 是不太容易理解的两个东西，关键是他们俩有什么区别。5IMX上有一篇帖子挺精彩的： http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=544614&amp;page=1 看了上面的帖子，又看了看14SG的说明书， &hellip;">
+  <meta name="description" content="DMABUF can be used as a wrapper to encapsulate other memory management frameworks. All these memory management framework(I mean mostly for graphics &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://markzhang.cn/blog/2015/07/24/throttle-hold-and-throttle-cut/">
+  <link rel="canonical" href="http://markzhang.cn/blog/2015/12/30/dmabuf-slash-dma-mapping-slash-iommu-slash-cma-slash-ttm-slash-gem-slash-gart-slash-smmu/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">电动直升机的油门锁定（THRU HOLD）和油门熄火（THRU CUT）</h1>
+        <h1 class="entry-title">DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU</h1>
       
     
     
@@ -94,45 +94,19 @@
   
 
 
-<time datetime="2015-07-24T11:43:00+08:00" pubdate data-updated="true">Jul 24<span>th</span>, 2015</time>
+<time datetime="2015-12-30T09:24:00+08:00" pubdate data-updated="true">Dec 30<span>th</span>, 2015</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p><code>油门锁定</code> 和 <code>油门熄火</code> 是不太容易理解的两个东西，关键是他们俩有什么区别。5IMX上有一篇帖子挺精彩的：</p>
+<div class="entry-content"><ol>
+<li><p>DMABUF can be used as a wrapper to encapsulate other memory management frameworks. All these memory management framework(I mean mostly for graphics), buffer is the keypoint. DMABUF defines a standard buffer structure. So DMABUF can be used as a wrapper for TTM/GEM/Android ION&hellip; and etc. Notice DMABUF can&rsquo;t replace these things, cause it doesn&rsquo;t cover everything. E.g: DMABUF has no userspace interfaces, right now only kernel interfaces(can be used in device driver).</p></li>
+<li><p>Kernel has DMA mapping API from origin. ARM defines IOMMU which can be used to connect scattered physical memory as a continuous region for devices which needs continue address to work(e.g: DMA). So IOMMU implementations &amp; CMA should work behind kernel DMA mapping API. E.g: dma_alloc_from_contiguous can be implemented by CMA; dma_alloc_coherent can be implemented by IOMMU or by the normal case(just call __get_free_pages). So for device drivers need dma buffers, we should use dma mapping APIs, not call iommu api directly.</p></li>
+<li><p>For tegra, GART &amp; SMMU can be used to implement IOMMU apis.</p></li>
+</ol>
 
-<p><a href="http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=544614&amp;page=1">http://bbs.5imx.com/bbs/forum.php?mod=viewthread&amp;tid=544614&amp;page=1</a></p>
-
-<!-- more -->
-
-
-<p>看了上面的帖子，又看了看14SG的说明书，其实这两个功能涉及到的东西都是油门和桨距（pitch）这两个东西。我是这么理解的：</p>
-
-<p>有关油门锁定：</p>
-
-<ul>
-<li>在14SG中，油门锁定是一个 <code>condition</code>，跟 <code>normal</code>, <code>idle up1</code>, <code>idle up2</code>一样，可以用开关来切换</li>
-<li>顾名思义，油门锁定启动后，油门（THROTTLE）的值将会被锁定在设定值上，但是桨距曲线依然管用，这就是为什么油门锁定被设计成一个 <code>condition</code></li>
-<li>所以我的理解，油门锁定可以用于一些固定油门通道，只控制桨距的场景。比如自旋，降落</li>
-</ul>
-
-
-<p>有关油门熄火：</p>
-
-<p>貌似这个概念是从油机过来的。由于现在大家都在玩电直，没有油直的背景，所以对这个东西的理解就很费劲。我也不太理解这个东西，我只是看了下14SG上这个功能的设置，有这么几个理解：</p>
-
-<ul>
-<li>油门熄火不是一种 <code>condition</code>，所以和油门锁定不同，你无法针对油门熄火这种情况设定桨距曲线，也就是说，当油门熄火启动时，桨距曲线将遵循油门熄火启动之前的设定</li>
-<li>14SG中的油门熄火设置中，有一项 <code>THRO</code> 的百分比设置，这个设置跟油门熄火中的 <code>THRO</code> 设定不同，这里的 <code>THRO</code> 不是指当油门熄火启动时，要将油门设定到什么值。这个设定指的是，当当前油门值小于该设定值时，油门熄火功能启动 &mdash; 当然，有一个前提就是对应的油门熄火开关拨到了启动位置</li>
-<li>所以14SG上，要启动油门熄火有两个条件：开关打开、当前油门值低于设定的 <code>THRO</code> 值</li>
-<li>当油门熄火功能启动后（满足上述两个条件），14SG会把油门设成0</li>
-<li>针对电直，我没想到特别适合油门熄火这个功能的场景。我现在是把这个当调试机器的一个功能来用。比如起飞前，我启动油门熄火功能，然后就可以用控来测试桨距、副翼、升降、方向等所有通道，而电机是不会转动的（因为油门是0）。当然你可以把电机线拔掉做同样的测试。</li>
-</ul>
-
-
-<p>其实可以自己在控上琢磨琢磨大概就能搞清楚这两个功能的区别，控上的 <code>Servo</code> 这个功能很实用，你做了任何设置都可以在这里看到各个通道的变化。所以当你设置油门锁定和油门熄火之后，在 <code>Servo</code> 这里就可以很方便的观察油门和桨距两个通道的变化了。</p>
 </div>
 
 
@@ -140,7 +114,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2015 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2015/07/24/throttle-hold-and-throttle-cut/<br>
+原文链接: http://www.markzhang.cn/blog/2015/12/30/dmabuf-slash-dma-mapping-slash-iommu-slash-cma-slash-ttm-slash-gem-slash-gart-slash-smmu/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -163,12 +137,12 @@
   
 
 
-<time datetime="2015-07-24T11:43:00+08:00" pubdate data-updated="true">Jul 24<span>th</span>, 2015</time>
+<time datetime="2015-12-30T09:24:00+08:00" pubdate data-updated="true">Dec 30<span>th</span>, 2015</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/rchelicopter/'>RCHelicopter</a>
+    <a class='category' href='/blog/categories/linux-kernel/'>linux-kernel</a>
   
 </span>
 
@@ -184,10 +158,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2015/06/03/nvidia-linux-driver-on-ubuntu/" title="Previous Post: NVIDIA Linux驱动在Ubuntu 12.04上的安装">&laquo; NVIDIA Linux驱动在Ubuntu 12.04上的安装</a>
+        <a class="basic-alignment left articlenav" href="/blog/2015/12/29/linux-graphics-stack/" title="Previous Post: Linux graphics stack 理解">&laquo; Linux graphics stack 理解</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2015/08/31/hack-cisco-anyconnect/" title="Next Post: How to HACK CISCO anyconnect secure mobile client">How to HACK CISCO anyconnect secure mobile client &raquo;</a>
       
     </p>
   </footer>

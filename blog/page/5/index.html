@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="RouterOS（或简称ROS）是拉脱维亚的Mikrotik开发的一个强大到变态（对于个人用户而言）的路由系统。基于Linux，支持x86和MIPS（routerboard）。也就是说，你可以找一台PC来，装上routeros，就变身成了一台路由器。所以也有很多人称RouterOS为软路由。 &hellip;">
+  <meta name="description" content="RouterOS（以下简称ROS）是一个软路由系统，由拉脱维亚的Mikrotik开发，完全基于Linux。项目刚开始的时候，只支持x86，所以我们可以找一台PC机来安装ROS，从而可以让PC机瞬间变身成一个软路由。 后来Mikrotik开发了专用的硬件设备：RouterBoard。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/08/19/ros-basic-setup/">RouterOS 配置记录（一）：基础设置</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-19T14:38:00+08:00" pubdate data-updated="true">Aug 19<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>RouterOS（以下简称ROS）是一个软路由系统，由拉脱维亚的Mikrotik开发，完全基于Linux。项目刚开始的时候，只支持x86，所以我们可以找一台PC机来安装ROS，从而可以让PC机瞬间变身成一个软路由。</p>
+
+<p>后来Mikrotik开发了专用的硬件设备：RouterBoard。RouterBoard是MIPS架构，运行ROS，所以不想搞一台PC机的话，买一台RouterBoard就显的非常不错。而且RouterBoard有好多型号，带wifi的不带wifi的，企业用的个人用的，千兆的百兆的。。。，最关键的是家用的RouterBoard，带wifi的也不贵，所以最近就把家里的路由器换成了RouterBoard，型号是：951Ui-2HnD。</p>
+
+<p>本系列文章旨在记录我在使用ROS的时候的一些配置，之前已经写了一篇有关修改WinBox字体的文章，算是个引子。ROS虽然强大，但是配置项目的繁杂也颇为吓人，坦白说没有网络基础的话还是别用ROS。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/08/19/ros-basic-setup/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -493,49 +540,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/04/21/git-gossip-2/">Git都在说些啥（二）</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-04-21T21:33:00+08:00" pubdate data-updated="true">Apr 21<span>st</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>这一次我们来说说 <code>git pull</code> 的时候经常会碰到的一段信息。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/04/21/git-gossip-2/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -550,11 +554,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (14)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (18)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (14)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (19)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/12/30/dmabuf-slash-dma-mapping-slash-iommu-slash-cma-slash-ttm-slash-gem-slash-gart-slash-smmu/">DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/12/29/linux-graphics-stack/">Linux Graphics Stack 理解</a>
@@ -570,10 +578,6 @@
     
       <li class="post">
         <a href="/blog/2015/12/25/setup-kgdb/">KGDB配置使用</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/24/ubuntu-install-microsoft-camera/">Ubuntu 12.04安装Microsoft Lifecam Studio摄像头</a>
       </li>
     
   </ul>
