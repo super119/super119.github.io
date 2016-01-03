@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://markzhang.cn/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2016-01-03T11:43:28+08:00</updated>
+  <updated>2016-01-03T11:45:16+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -18,13 +18,22 @@
     <link href="http://markzhang.cn/blog/2016/01/03/utf8-encoding-rules/"/>
     <updated>2016-01-03T11:38:00+08:00</updated>
     <id>http://markzhang.cn/blog/2016/01/03/utf8-encoding-rules</id>
-    <content type="html"><![CDATA[<p>/<em> UTF-8 encoding
-00000000-01111111  00-7F  US-ASCII (single byte)
-10000000-10111111  80-BF  Second, third, or fourth byte of a multi-byte sequence
-11000000-11011111  C0-DF  Start of 2-byte sequence
-11100000-11101111  E0-EF  Start of 3-byte sequence
-11110000-11110100  F0-F4  Start of 4-byte sequence
-</em>/</p>
+    <content type="html"><![CDATA[<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cm">/* UTF-8 encoding</span>
+</span><span class='line'><span class="cm">00000000-01111111  00-7F  US-ASCII (single byte)</span>
+</span><span class='line'><span class="cm">10000000-10111111  80-BF  Second, third, or fourth byte of a multi-byte sequence</span>
+</span><span class='line'><span class="cm">11000000-11011111  C0-DF  Start of 2-byte sequence</span>
+</span><span class='line'><span class="cm">11100000-11101111  E0-EF  Start of 3-byte sequence</span>
+</span><span class='line'><span class="cm">11110000-11110100  F0-F4  Start of 4-byte sequence</span>
+</span><span class='line'><span class="cm">*/</span>
+</span></code></pre></td></tr></table></div></figure>
+
 ]]></content>
   </entry>
   

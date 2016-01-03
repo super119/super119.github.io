@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux | Make Things Cool]]></title>
   <link href="http://markzhang.cn/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2016-01-03T11:43:28+08:00</updated>
+  <updated>2016-01-03T11:45:16+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -18,13 +18,15 @@
     <link href="http://markzhang.cn/blog/2016/01/03/utf8-encoding-rules/"/>
     <updated>2016-01-03T11:38:00+08:00</updated>
     <id>http://markzhang.cn/blog/2016/01/03/utf8-encoding-rules</id>
-    <content type="html"><![CDATA[<p>/<em> UTF-8 encoding
+    <content type="html"><![CDATA[<p><code>cpp
+/* UTF-8 encoding
 00000000-01111111  00-7F  US-ASCII (single byte)
 10000000-10111111  80-BF  Second, third, or fourth byte of a multi-byte sequence
 11000000-11011111  C0-DF  Start of 2-byte sequence
 11100000-11101111  E0-EF  Start of 3-byte sequence
 11110000-11110100  F0-F4  Start of 4-byte sequence
-</em>/</p>
+*/
+</code></p>
 ]]></content>
   </entry>
   
