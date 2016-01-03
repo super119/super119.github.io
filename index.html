@@ -9,7 +9,9 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="DMABUF can be used as a wrapper to encapsulate other memory management frameworks. All these memory management framework(I mean mostly for graphics &hellip;">
+  <meta name="description" content="/ UTF-8 encoding
+00000000-01111111 00-7F US-ASCII (single byte)
+10000000-10111111 80-BF Second, third, or fourth byte of a multi-byte sequence &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +75,93 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2016/01/03/utf8-encoding-rules/">UTF-8 Encoding Rules</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-03T11:38:00+08:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>/<em> UTF-8 encoding
+00000000-01111111  00-7F  US-ASCII (single byte)
+10000000-10111111  80-BF  Second, third, or fourth byte of a multi-byte sequence
+11000000-11011111  C0-DF  Start of 2-byte sequence
+11100000-11101111  E0-EF  Start of 3-byte sequence
+11110000-11110100  F0-F4  Start of 4-byte sequence
+</em>/</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2016/01/03/getty-l/">为什么linux的TTY登录程序getty/agetty一般都会设置一个-L的option？</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-03T11:36:00+08:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>-L option表示程序不等待DCD信号。DCD信号是串口通讯时的一个信号，表示Data Carrier Detected，一般是modem连通之后会发送回来的一个信号，表示数据载波OK，可以继续通信了。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/01/03/getty-l/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -427,96 +516,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2015/12/23/kernel-data-type-compat-ioctl/">Linux Kernel Data Types, Alignment, Compat_ioctl 数据类型，对齐问题和compat_ioctl</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-23T10:21:00+08:00" pubdate data-updated="true">Dec 23<span>rd</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>特别是在写IOCTL的时候，由于有32bit userspace + 64bit kernel的问题，而且由于architecture的不同，不同data type的length也不同，所以在IOCTL中建议用u32, u64, s32这样无视architecture fix size的data type。</p>
-
-<p>这里是来自LDD的不同的architecture的data type的size：</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/12/23/kernel-data-type-compat-ioctl/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2015/12/22/ezviz-family-protection/">家庭安防 - 一套萤石设备组建的家庭安防</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-22T15:07:00+08:00" pubdate data-updated="true">Dec 22<span>nd</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>智能硬件的火热也加速了安防产业的发展。家庭安防现在也成为了很多家庭考虑的一个方面。特别是对于楼层较低的家庭来说，安装一套安防系统还是相当之有必要。</p>
-
-<p>之前也试用过360智能摄像机、小蚁智能摄像机，但是只有一个摄像头始终还是觉得单薄了一些，在二手卖掉这两个摄像头之后，购买了一套萤石的安防设备。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/12/22/ezviz-family-protection/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -529,11 +528,19 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (14)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (19)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (15)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (20)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/01/03/utf8-encoding-rules/">UTF-8 Encoding Rules</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/03/getty-l/">为什么linux的TTY登录程序getty/agetty一般都会设置一个-L的option？</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/12/30/dmabuf-slash-dma-mapping-slash-iommu-slash-cma-slash-ttm-slash-gem-slash-gart-slash-smmu/">DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU</a>
@@ -545,14 +552,6 @@
     
       <li class="post">
         <a href="/blog/2015/12/25/share-fd-by-sendmsg/">Linux通过sendmsg在进程中共享FD</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/25/get-file-name-by-struct-file-star/">Kernel: 怎么通过struct File *得到文件名</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/25/setup-kgdb/">KGDB配置使用</a>
       </li>
     
   </ul>
@@ -592,7 +591,7 @@
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2015 - Mark Zhang -
+  Copyright &copy; 2016 - Mark Zhang -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>&nbsp;&nbsp;
   <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1000375590'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1000375590%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
 </p>

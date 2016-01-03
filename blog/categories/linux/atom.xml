@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux | Make Things Cool]]></title>
   <link href="http://markzhang.cn/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2015-12-30T09:25:23+08:00</updated>
+  <updated>2016-01-03T11:43:28+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,21 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[UTF-8 Encoding rules]]></title>
+    <link href="http://markzhang.cn/blog/2016/01/03/utf8-encoding-rules/"/>
+    <updated>2016-01-03T11:38:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2016/01/03/utf8-encoding-rules</id>
+    <content type="html"><![CDATA[<p>/<em> UTF-8 encoding
+00000000-01111111  00-7F  US-ASCII (single byte)
+10000000-10111111  80-BF  Second, third, or fourth byte of a multi-byte sequence
+11000000-11011111  C0-DF  Start of 2-byte sequence
+11100000-11101111  E0-EF  Start of 3-byte sequence
+11110000-11110100  F0-F4  Start of 4-byte sequence
+</em>/</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux通过sendmsg在进程中共享FD]]></title>
@@ -206,30 +221,6 @@ IdentityFile ~/.ssh/cmreview
 <p>```</p>
 
 <p>在最末尾默认禁止Public key的验证方式，也就是说，优先采用password验证。否则有些ssh server就会登录不上，因为有些ssh server优先验证public key，而我们这里有很多public key，一个一个验证失败之后就会因为验证失败次数太多从而连不上server。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[mmap: invalid argument & MAP_PRIVATE]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/17/mmap-invalid-arg/"/>
-    <updated>2015-12-17T10:53:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/17/mmap-invalid-arg</id>
-    <content type="html"><![CDATA[<p>mmap，使用PROT_READ | PROT_WRITE, MAP_SHARED，总是返回EINVAL。</p>
-
-<p>最后发现是因为被mmap的文件是一个network filesystem上的文件。</p>
-
-<!-- more -->
-
-
-<p>Linux实现MAP_SHARED是通过share文件的page cache做到的。对于一个网络上的文件来说，Linux无法做到文件的某个部分被修改了，同时打开该文件的其他机器上的程序能立马看到。</p>
-
-<p>所以自然就返回EINVAL了。</p>
-
-<p>悲催的是mmap的manual上并没有提到这种情况，所以查了半天。</p>
-
-<p>此外，MAP_PRIVATE其实就是当你修改了文件之后，会copy一个新的page出来，所以自然就无法跟其他进程共享你的修改了。</p>
-
-<p>同时还需要注意的是，MAP_PRIVATE的时候，对文件进行的修改将不会被写到文件中去！</p>
 ]]></content>
   </entry>
   

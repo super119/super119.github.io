@@ -5,11 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Raspberry Pi + ArchLinux：网络dhcp不稳定，经常无法获取IP地址 - Make Things Cool</title>
+  <title>UTF-8 Encoding rules - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="经常发现树莓派开机之后网络没有起来，最终发现是因为dhcpcd的-t参数，也就是等待dhcp server响应的timeout时间太短导致的。 默认是30秒，但是ArchLinux中配置的是10秒。 查看了脚本，调用dhcpcd的是netcfg，netcfg本身也是一个脚本，所以最终发现这个- &hellip;">
+  <meta name="description" content="/ UTF-8 encoding
+00000000-01111111 00-7F US-ASCII (single byte)
+10000000-10111111 80-BF Second, third, or fourth byte of a multi-byte sequence &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +20,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://markzhang.cn/blog/2015/12/16/raspberrypi-dhcp-timeout/">
+  <link rel="canonical" href="http://markzhang.cn/blog/2016/01/03/utf8-encoding-rules/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +79,7 @@
   <header>
     
       
-        <h1 class="entry-title">Raspberry Pi + ArchLinux：网络dhcp不稳定，经常无法获取IP地址</h1>
+        <h1 class="entry-title">UTF-8 Encoding Rules</h1>
       
     
     
@@ -94,22 +96,20 @@
   
 
 
-<time datetime="2015-12-16T14:40:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2015</time>
+<time datetime="2016-01-03T11:38:00+08:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2016</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>经常发现树莓派开机之后网络没有起来，最终发现是因为dhcpcd的-t参数，也就是等待dhcp server响应的timeout时间太短导致的。</p>
-
-<p>默认是30秒，但是ArchLinux中配置的是10秒。</p>
-
-<p>查看了脚本，调用dhcpcd的是netcfg，netcfg本身也是一个脚本，所以最终发现这个-t是在/usr/lib/network/connections/ethernet中设置的。</p>
-
-<p>于是在这个文件的开头加上了：<code>DHCP_TIMEOUT=300</code></p>
-
-<p>这样超时就变成了5分钟，足够了。</p>
+<div class="entry-content"><p>/<em> UTF-8 encoding
+00000000-01111111  00-7F  US-ASCII (single byte)
+10000000-10111111  80-BF  Second, third, or fourth byte of a multi-byte sequence
+11000000-11011111  C0-DF  Start of 2-byte sequence
+11100000-11101111  E0-EF  Start of 3-byte sequence
+11110000-11110100  F0-F4  Start of 4-byte sequence
+</em>/</p>
 </div>
 
 
@@ -117,7 +117,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2016 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2015/12/16/raspberrypi-dhcp-timeout/<br>
+原文链接: http://www.markzhang.cn/blog/2016/01/03/utf8-encoding-rules/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -140,7 +140,7 @@
   
 
 
-<time datetime="2015-12-16T14:40:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2015</time>
+<time datetime="2016-01-03T11:38:00+08:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2016</time>
       
 
 <span class="categories">
@@ -161,10 +161,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2015/08/31/hack-cisco-anyconnect/" title="Previous Post: How to HACK CISCO anyconnect secure mobile client">&laquo; How to HACK CISCO anyconnect secure mobile client</a>
+        <a class="basic-alignment left articlenav" href="/blog/2016/01/03/getty-l/" title="Previous Post: 为什么linux的TTY登录程序getty/agetty一般都会设置一个-L的option？">&laquo; 为什么linux的TTY登录程序getty/agetty一般都会设置一个-L的option？</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2015/12/16/chromiumos-chromeos/" title="Next Post: Chromium OS相比Chrome OS缩水的地方">Chromium OS相比Chrome OS缩水的地方 &raquo;</a>
       
     </p>
   </footer>

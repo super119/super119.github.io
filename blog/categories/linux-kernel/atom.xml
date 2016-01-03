@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux-kernel | Make Things Cool]]></title>
   <link href="http://markzhang.cn/blog/categories/linux-kernel/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2015-12-30T09:25:23+08:00</updated>
+  <updated>2016-01-03T11:43:28+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,26 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[为什么linux的TTY登录程序getty/agetty一般都会设置一个-L的option？]]></title>
+    <link href="http://markzhang.cn/blog/2016/01/03/getty-l/"/>
+    <updated>2016-01-03T11:36:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2016/01/03/getty-l</id>
+    <content type="html"><![CDATA[<p>-L option表示程序不等待DCD信号。DCD信号是串口通讯时的一个信号，表示Data Carrier Detected，一般是modem连通之后会发送回来的一个信号，表示数据载波OK，可以继续通信了。</p>
+
+<!-- more -->
+
+
+<p>但是，在现在的串口通信中，特别是嵌入式开发的时候，开发板上的串口，DCD这个pin一般都不会连线的，一般只连tx/rx/cts/rts四根线就OK了。</p>
+
+<p>所以，如果getty或者agetty没有指定-L选项，那么open /dev/ttyS0就会block在那里，因为kernel会wait在一个waitqueue上，等待串口的DCD信号上来（通过中断）。</p>
+
+<p>事实上，在getty/agetty程序中，指定-L option之后，代码中就会以NON_BLOCK的方式来打开/dev/ttyS0，这样kernel就不会去等待DCD信号了，从而打开串口就不会block了。</p>
+
+<p>对于local的开发板上的串口来说，不连DCD线是合理的。因为这是local设备，不是要和远程的一个modem进行通信，所以需要DCD。本地的串口连上述那四根线就OK了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU]]></title>
@@ -164,21 +184,6 @@ target remote /dev/ttyS0
 <p>Done. You can list source codes, set breakpoints now. Continue the debugging after finished.</p>
 
 <p>CAUTION: Close any other programs(normally it&rsquo;s minicom which we use to monitor serial outputs) which may occupy &ldquo;/dev/ttyS0&rdquo; before running gdb on remote machine. Otherwise gdb can&rsquo;t connect with target board.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Kernel barrier/wmb/mb宏的作用]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/23/kernel-barrier-mb-wmb/"/>
-    <updated>2015-12-23T10:28:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/23/kernel-barrier-mb-wmb</id>
-    <content type="html"><![CDATA[<p>内存屏障主要解决的问题是编译器的优化和CPU的乱序执行。</p>
-
-<p>编译器在优化的时候，生成的汇编指令可能和c语言程序的执行顺序不一样，在需要程序严格按照c语言顺序执行时，需要显式的告诉编译不需要优化，这在linux下是通过barrier()宏完成的，它依靠volidate关键字和memory关键字，前者告诉编译barrier()周围的指令不要被优化，后者作用是告诉编译器汇编代码会使内存里面的值更改，编译器应使用内存里的新值而非寄存器里保存的老值。</p>
-
-<p>同样，CPU执行会通过乱序以提高性能。汇编里的指令不一定是按照我们看到的顺序执行的。linux中通过mb()系列宏来保证执行的顺序。具体做法是通过mfence/lfence指令（它们是奔4后引进的，早期x86没有）以及x86指令中带有串行特性的指令（这样的指令很多，例如linux中实现时用到的lock指令，I/O指令，操作控制寄存器、系统寄存器、调试寄存器的指令、iret指令等等）。简单的说，如果在程序某处插入了mb()/rmb()/wmb()宏，则宏之前的程序保证比宏之后的程序先执行，从而实现串行化。wmb的实现和barrier()类似，是因为在x86平台上，写内存的操作不会被乱序执行。</p>
-
-<p>实际上在RSIC平台上，这些串行工作都有专门的指令由程序员显式的完成，比如在需要的地方调用串行指令，而不像x86上有这么多隐性的带有串行特性指令（例如lock指令）。所以在risc平台下工作的朋友通常对串行化操作理解的容易些。</p>
 ]]></content>
   </entry>
   
