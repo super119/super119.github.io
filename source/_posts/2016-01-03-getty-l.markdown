@@ -1,0 +1,19 @@
+---
+layout: post
+title: "为什么linux的TTY登录程序getty/agetty一般都会设置一个-L的option？"
+date: 2016-01-03 11:36
+comments: true
+categories: linux-kernel
+---
+
+-L option表示程序不等待DCD信号。DCD信号是串口通讯时的一个信号，表示Data Carrier Detected，一般是modem连通之后会发送回来的一个信号，表示数据载波OK，可以继续通信了。
+
+<!-- more -->
+
+但是，在现在的串口通信中，特别是嵌入式开发的时候，开发板上的串口，DCD这个pin一般都不会连线的，一般只连tx/rx/cts/rts四根线就OK了。
+
+所以，如果getty或者agetty没有指定-L选项，那么open /dev/ttyS0就会block在那里，因为kernel会wait在一个waitqueue上，等待串口的DCD信号上来（通过中断）。
+
+事实上，在getty/agetty程序中，指定-L option之后，代码中就会以NON_BLOCK的方式来打开/dev/ttyS0，这样kernel就不会去等待DCD信号了，从而打开串口就不会block了。
+
+对于local的开发板上的串口来说，不连DCD线是合理的。因为这是local设备，不是要和远程的一个modem进行通信，所以需要DCD。本地的串口连上述那四根线就OK了。
