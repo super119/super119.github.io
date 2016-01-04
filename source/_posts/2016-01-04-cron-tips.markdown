@@ -1,0 +1,25 @@
+---
+layout: post
+title: "使用Cron的一些小Tips"
+date: 2016-01-04 10:08
+comments: true
+categories: linux
+---
+
+- crontab -e编辑定时任务，crontab -l查看。最后的cron任务文件保存在/var/spool/cron/crontab目录下
+
+- cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户，然后执行定义的定时任务。
+
+- 但是cron切换用户的时候，任何环境变量，包括.bashrc都不会被执行到。所以诸如$HOME这样的变量也是没有定义的。所以，一般在定时任务的脚本中，我们会这样处理：
+
+``` bash
+#!/bin/bash
+HOME=/home/markz
+source ${HOME}/.bashrc
+export PATH=/usr/local/bin:$PATH
+.... <tasks>
+```
+
+有一点注意，~/.bashrc往往都含有大量的定义和脚本执行，这有可能会影响到source的成功执行。我们之所以在需要cron的脚本中加入这句source，大多数情况下是为了定义一些环境变量。所以为了让source能保证成功，一般我们都会把需要的环境变量单独存放到一个文件中，然后去source那个文件即可。直接source ~/.bashrc不是一个好的做法。
+
+- /var/log/syslog保存了cron的log，查看该log可以方便的知道定时任务执行的一些情况。
