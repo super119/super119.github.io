@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="OpenGL的设计与操作系统无关，与窗口系统也无关，所以，要编写一个可以运行（能看到界面）的程序，还需要一些额外的GUI的框架，比如glut。 glut基本上是所有OpenGL教科书上的唯一推荐了，因为它的API简单，跨平台。所以读者不需要花额外的时间去了解并使用glut。但是glut比较老了， &hellip;">
+  <meta name="description" content="卓普（Zopo）大黑（C7）手机在国内的行货默认安装的是阿里的云OS，而向国外销售的版本称为zp990，装的是原生的安卓（当然有一些针对这款手机的改动，比如FOTA部分，双卡设置部分等）。 如果你用云OS用腻了的话，肯定会想刷机，而要刷机，刷zp990的原生安卓版本成为一个好的选择。我的使用感受是 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,108 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/06/08/zopo-c7-flash/">卓普大黑（Zopo C7/zp990）刷原生ROM，root，升级触控屏，修改GPS</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-08T15:00:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>卓普（Zopo）大黑（C7）手机在国内的行货默认安装的是阿里的云OS，而向国外销售的版本称为zp990，装的是原生的安卓（当然有一些针对这款手机的改动，比如FOTA部分，双卡设置部分等）。</p>
+
+<p>如果你用云OS用腻了的话，肯定会想刷机，而要刷机，刷zp990的原生安卓版本成为一个好的选择。我的使用感受是，这个版本相比其他的民间ROM（比如民间做的MIUI的ROM）要稳定一些，所以你不想经常折腾的话，刷这个版本会安逸很多。</p>
+
+<p>本文中所有内容都是来自：</p>
+
+<ul>
+<li>移动叔叔论坛（bbs.ydss.cn），卓普大黑版块</li>
+<li><a href="http://forum.xda-developers.com/showthread.php?t=2403825">http://forum.xda-developers.com/showthread.php?t=2403825</a></li>
+</ul>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/06/08/zopo-c7-flash/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/06/03/ubuntu-disk-clone/">CloneZilla磁盘克隆，超快的更换硬盘</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-03T12:49:00+08:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>开发用的PC机用的是一块128G的SSD，安装的Ubuntu 12.04，速度明显比机械硬盘快了好多，唯一的不足就是容量太小。于是最近购入了一块新的240G的SSD，需要将原来128G的SSD上的东西全部克隆过来。</p>
+
+<p>对于Linux ext4文件分区系统的磁盘来说，<code>ghost</code>工作的并不好，工作的比较好的是<code>CloneZilla</code>，因为它能识别ext4的文件系统，从而使克隆变的无比快速，之前我写过一篇类似的文章：</p>
+
+<p><a href="http://www.cnblogs.com/super119/archive/2012/09/26/2703479.html">http://www.cnblogs.com/super119/archive/2012/09/26/2703479.html</a></p>
+
+<p>但是那一次的克隆是两块容量一样的磁盘，而这一次两块SSD的容量并不相同，所以我做了一些改变。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/06/03/ubuntu-disk-clone/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -434,96 +536,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/03/22/setup-wireless-wds/">架设无线桥接网络（WDS）</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-03-22T19:54:00+08:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>现在的无线路由器动辄3根天线，号称穿墙能力如何如何，信号可以从一楼一直覆盖到三楼。但是根据我几年来使用了N款无线路由器之后，发现都是扯。我现在使用的是一台ASUS的，3根天线，128M内存的无线路由器，支持刷第三方固件（如DD-WRT, Tomato），但是穿墙效果还是无法让人满意。路由器放在房间，客厅的信号就是时有时无。当然，我指的是使用ipad或者手机时，信号较弱，如果使用笔记本电脑要好一些。</p>
-
-<p>忍受了2年之后，我决定在客厅再放一个无线路由器，做无线桥接（WDS）使用，彻底摆脱信号之苦。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/03/22/setup-wireless-wds/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/03/20/juniper-vpn-on-ubuntu/">在Ubuntu上连接Juniper SSL VPN</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-03-20T22:26:00+08:00" pubdate data-updated="true">Mar 20<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>现在国内很多外企都使用Juniper SSL VPN，来让员工可以在家连入到公司的网络。但是我发现，Juniper的SSL VPN在windows和Mac OS X上都可以很好的工作，但是在Ubuntu上貌似就有问题。就算你正确安装了Java Runtime，打开浏览器，<code>Host Checker</code> 和 <code>Network Connect</code> 也无法正常运行。有人说这是因为现在我们大多使用64位的Ubuntu，而 <code>Host Checker</code> 和 <code>Network Connect</code> 需要32位的浏览器和32位的JRE才能工作。</p>
-
-<p>我没有去深究32位的Ubuntu下是否Juniper VPN就真的可以正常工作了，因为我找到了一个更简单的办法。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/03/20/juniper-vpn-on-ubuntu/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -538,11 +550,19 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (15)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (20)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (17)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (20)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/01/04/cron-tips/">使用Cron的一些小Tips</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/04/softfp-hardfp/">Compile: What Is Softfp & Hardfp?</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/01/03/utf8-encoding-rules/">UTF-8 Encoding Rules</a>
@@ -554,14 +574,6 @@
     
       <li class="post">
         <a href="/blog/2015/12/30/dmabuf-slash-dma-mapping-slash-iommu-slash-cma-slash-ttm-slash-gem-slash-gart-slash-smmu/">DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/29/linux-graphics-stack/">Linux Graphics Stack 理解</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/25/share-fd-by-sendmsg/">Linux通过sendmsg在进程中共享FD</a>
       </li>
     
   </ul>

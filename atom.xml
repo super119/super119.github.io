@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://markzhang.cn/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2016-01-03T11:45:16+08:00</updated>
+  <updated>2016-01-04T10:09:24+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,62 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用Cron的一些小Tips]]></title>
+    <link href="http://markzhang.cn/blog/2016/01/04/cron-tips/"/>
+    <updated>2016-01-04T10:08:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2016/01/04/cron-tips</id>
+    <content type="html"><![CDATA[<ul>
+<li><p>crontab -e编辑定时任务，crontab -l查看。最后的cron任务文件保存在/var/spool/cron/crontab目录下</p></li>
+<li><p>cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户，然后执行定义的定时任务。</p></li>
+<li><p>但是cron切换用户的时候，任何环境变量，包括.bashrc都不会被执行到。所以诸如$HOME这样的变量也是没有定义的。所以，一般在定时任务的脚本中，我们会这样处理：</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="nv">HOME</span><span class="o">=</span>/home/markz
+</span><span class='line'><span class="nb">source</span> <span class="k">${</span><span class="nv">HOME</span><span class="k">}</span>/.bashrc
+</span><span class='line'><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>/usr/local/bin:<span class="nv">$PATH</span>
+</span><span class='line'>.... &lt;tasks&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有一点注意，~/.bashrc往往都含有大量的定义和脚本执行，这有可能会影响到source的成功执行。我们之所以在需要cron的脚本中加入这句source，大多数情况下是为了定义一些环境变量。所以为了让source能保证成功，一般我们都会把需要的环境变量单独存放到一个文件中，然后去source那个文件即可。直接source ~/.bashrc不是一个好的做法。</p>
+
+<ul>
+<li>/var/log/syslog保存了cron的log，查看该log可以方便的知道定时任务执行的一些情况。</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Compile: what is softfp & hardfp?]]></title>
+    <link href="http://markzhang.cn/blog/2016/01/04/softfp-hardfp/"/>
+    <updated>2016-01-04T09:56:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2016/01/04/softfp-hardfp</id>
+    <content type="html"><![CDATA[<p>hardfp compiles inline FP instructions.  If you have an FPU this will be fastest.  If you don&rsquo;t, every FP instruction will trap to an emulation routine (assuming your runtime supports this).</p>
+
+<!-- more -->
+
+
+<p>softfp will compile a library call for every FP operation.  Use this if you never run on a system with an FPU.</p>
+
+<p>来自gcc的manual：</p>
+
+<blockquote><p>-mfloat-abi=name       Specifies which floating-point ABI to use.  Permissible values are: soft, softfp and hard.</p>
+
+<p>Specifying soft causes GCC to generate output containing library calls for floating-point operations.  softfp allows the generation of code using hardware floating-point instructions, but still uses the soft-float calling conventions.  hard allows generation of floating-point instructions and uses FPU-specific calling conventions.</p>
+
+<p>The default depends on the specific target configuration.  Note that the hard-float and soft-float ABIs are not link-compatible; you must compile your entire program with the same ABI, and link with a compatible set of libraries.</p></blockquote>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[UTF-8 Encoding rules]]></title>
@@ -787,135 +843,6 @@ and &lsquo;extern <strong>inline</strong>&rsquo;.</p>
 <p>而每次NAND Flash制程技术改朝换代，包括70纳米演进至50纳米，再演进至40纳米或30纳米制程技术，手机客户也都要重新设计，但半导体产品每1年制程技术都会推陈出新，存储器问题也拖累手机新机种推出的速度，因此像eMMC这种把所有存储器和管理NAND Flash的控制芯片都包在1颗MCP上的概念，逐渐风行起来。</p>
 
 <p>eMMC的设计概念，就是为了简化手机内存储器的使用，将NAND Flash芯片和控制芯片设计成1颗MCP芯片，手机客户只需要采购eMMC芯片，放进新手机中，不需处理其它繁复的NAND Flash兼容性和管理问题，最大优点是缩短新产品的上市周期和研发成本，加速产品的推陈出新速度。</p></blockquote>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[天语（k-touch） w619: Dump boot.img和system.img，然后做成recovery可用的刷机zip包]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/17/ktouch-w619-create-flash-package/"/>
-    <updated>2015-12-17T11:08:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/17/ktouch-w619-create-flash-package</id>
-    <content type="html"><![CDATA[<p>有的时候会有这样的问题：发现一个民间的刷机包很不错，但是就是缺少一些你想要的东西。这个时候，其实就可以尝试基于这个包自己做一些修改、添加，最终生成自己满意的系统包。</p>
-
-<p>也有的时候，要给老人一部安卓机器来用，但是老人不擅长智能手机操作，经常会把一些APP误删除。这个时候其实可以自己制作刷机包，将必须的一些APP放到<code>system</code>下面，这样就不怕老人误删除APP了。</p>
-
-<p>以下是我自己在天语w619的尝试：</p>
-
-<!-- more -->
-
-
-<ol>
-<li><p>root手机</p></li>
-<li><p>配置/etc/udev/rules.d/51-Android.conf，将手机的USB的vendor id/product id加进去。用lsusb可以看到这两个ID。</p></li>
-<li><p>adb shell</p></li>
-<li><p>su; cd /sdcard</p></li>
-<li><p>tar czvf system.tar.gz /system</p></li>
-<li><p>dd if=/dev/mtd/mtd0 of=/sdcard/boot.img  # 应该可以和system分区同样处理，用tar将/boot打包即可。dump整个分区有很多废数据产生</p></li>
-<li><p>退出adb shell</p></li>
-<li><p>在PC上：adb pull /sdcard/system.tar.gz</p></li>
-<li><p>tar zxvf system.tar.gz</p></li>
-<li><p>mkfs.yaffs2.x86 ./system system.img  # mkfs.yaffs2.x86在googlecode上下载</p></li>
-<li><p>有了boot.img和system.img，就可以使用Android Kitchen来制作一个刷机包了。</p></li>
-</ol>
-
-
-<p>cat /proc/mtd可以看到所有的mtd分区和对应的名字，这样就可以知道boot分区是哪个设备文件了。</p>
-
-<p>刷机时发现：</p>
-
-<ol>
-<li><p>Android kitchen做的刷机包，META-INF/com/google/android目录下的update-binary是不正确的，可以找一个别人制作的w619刷机包中的替代。不正确的update-binary的现象就是刷机出错：status 0（使用的是CWM recovery）</p></li>
-<li><p>META-INF/com/google/android目录下的updater-script中也有几个问题：</p>
-
-<ol type="a">
-<li><p>文件行尾不能有\r\n，只能有\r，也就是说必须是unix格式的文本。刷机现象：status 6</p></li>
-<li><p>format(&ldquo;MTD&rdquo;, &ldquo;system&rdquo;); &ndash;> format(&ldquo;yaffs2&rdquo;, &ldquo;MTD&rdquo;, &ldquo;system&rdquo;); 刷机现象：CWM recovery会提示format有三个参数</p></li>
-<li><p>mount(&ldquo;MTD&rdquo;, &ldquo;system&rdquo;, &ldquo;/system&rdquo;); &ndash;> mount(&ldquo;yaffs2&rdquo;, &ldquo;MTD&rdquo;, &ldquo;system&rdquo;, &ldquo;/system&rdquo;); # 和format的现象一样</p></li>
-</ol>
-</li>
-</ol>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[SSH client config Sample]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/17/ssh-config/"/>
-    <updated>2015-12-17T11:01:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/17/ssh-config</id>
-    <content type="html"><![CDATA[<p>man ssh_config，查看~/.ssh/config的语法。</p>
-
-<p>Host可以使用通配符，当ssh的时候如果server的URL能match上这里Host指定的值，则Host下面指定的HostName将被作为最终URL使用。同时该Host下配置的User, Port都将被使用。</p>
-
-<p>当然，User和Port都可以被命令行上指定的override。</p>
-
-<p>附上目前的一份sample配置：</p>
-
-<!-- more -->
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Host chromium
-</span><span class='line'>  HostName gerrit.chromium.org
-</span><span class='line'>  User markz
-</span><span class='line'>  Port 29418
-</span><span class='line'>  PubkeyAuthentication yes
-</span><span class='line'>  IdentityFile ~/.ssh/chromium
-</span><span class='line'>Host bitbucket.*
-</span><span class='line'>  HostName bitbucket.org
-</span><span class='line'>  PubkeyAuthentication yes
-</span><span class='line'>  IdentityFile ~/.ssh/bitbucket
-</span><span class='line'>Host gitorious.*
-</span><span class='line'>  HostName gitorious.org
-</span><span class='line'>  PubkeyAuthentication yes
-</span><span class='line'>  IdentityFile ~/.ssh/gitorious
-</span><span class='line'>Host gitse
-</span><span class='line'>  HostName gitse.nvidia.com
-</span><span class='line'>  PubkeyAuthentication yes
-</span><span class='line'>  IdentityFile ~/.ssh/gitse
-</span><span class='line'>Host github.*
-</span><span class='line'>  HostName github.com
-</span><span class='line'>  PubkeyAuthentication yes
-</span><span class='line'>  IdentityFile ~/.ssh/github
-</span><span class='line'>Host *.cyanogenmod.*
-</span><span class='line'>  HostName review.cyanogenmod.org
-</span><span class='line'>  PubkeyAuthentication yes
-</span><span class='line'>  IdentityFile ~/.ssh/cmreview
-</span><span class='line'>Host *
-</span><span class='line'>  PubkeyAuthentication no
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在最末尾默认禁止Public key的验证方式，也就是说，优先采用password验证。否则有些ssh server就会登录不上，因为有些ssh server优先验证public key，而我们这里有很多public key，一个一个验证失败之后就会因为验证失败次数太多从而连不上server。</p>
 ]]></content>
   </entry>
   

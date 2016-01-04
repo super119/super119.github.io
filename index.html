@@ -9,16 +9,9 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="1
-2
-3
-4
-5
-6
-7
-/* UTF-8 encoding
-00000000-01111111 00-7F US-ASCII (single byte)
-10000000-10111111 80-BF Second, third, or fourth byte of a multi-byte &hellip;">
+  <meta name="description" content="crontab -e编辑定时任务，crontab -l查看。最后的cron任务文件保存在/var/spool/cron/crontab目录下
+cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户，然后执行定义的定时任务。
+但是cron切换用户的时候 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +75,112 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2016/01/04/cron-tips/">使用Cron的一些小Tips</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-04T10:08:00+08:00" pubdate data-updated="true">Jan 4<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ul>
+<li><p>crontab -e编辑定时任务，crontab -l查看。最后的cron任务文件保存在/var/spool/cron/crontab目录下</p></li>
+<li><p>cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户，然后执行定义的定时任务。</p></li>
+<li><p>但是cron切换用户的时候，任何环境变量，包括.bashrc都不会被执行到。所以诸如$HOME这样的变量也是没有定义的。所以，一般在定时任务的脚本中，我们会这样处理：</p></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'><span class="nv">HOME</span><span class="o">=</span>/home/markz
+</span><span class='line'><span class="nb">source</span> <span class="k">${</span><span class="nv">HOME</span><span class="k">}</span>/.bashrc
+</span><span class='line'><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>/usr/local/bin:<span class="nv">$PATH</span>
+</span><span class='line'>.... &lt;tasks&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>有一点注意，~/.bashrc往往都含有大量的定义和脚本执行，这有可能会影响到source的成功执行。我们之所以在需要cron的脚本中加入这句source，大多数情况下是为了定义一些环境变量。所以为了让source能保证成功，一般我们都会把需要的环境变量单独存放到一个文件中，然后去source那个文件即可。直接source ~/.bashrc不是一个好的做法。</p>
+
+<ul>
+<li>/var/log/syslog保存了cron的log，查看该log可以方便的知道定时任务执行的一些情况。</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2016/01/04/softfp-hardfp/">Compile: What Is Softfp & Hardfp?</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-04T09:56:00+08:00" pubdate data-updated="true">Jan 4<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>hardfp compiles inline FP instructions.  If you have an FPU this will be fastest.  If you don&rsquo;t, every FP instruction will trap to an emulation routine (assuming your runtime supports this).</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/01/04/softfp-hardfp/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -445,93 +544,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2015/12/24/thunderbird-change-line-height/">Thunderbird on Ubuntu 12.04 - 调整邮件列表行间距</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-24T09:14:00+08:00" pubdate data-updated="true">Dec 24<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>很不幸必须手动修改配置文件来做到，Thunderbird本身没有提供这样的配置项：</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/12/24/thunderbird-change-line-height/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2015/12/23/kernel-barrier-mb-wmb/">Kernel Barrier/wmb/mb宏的作用</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-23T10:28:00+08:00" pubdate data-updated="true">Dec 23<span>rd</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>内存屏障主要解决的问题是编译器的优化和CPU的乱序执行。</p>
-
-<p>编译器在优化的时候，生成的汇编指令可能和c语言程序的执行顺序不一样，在需要程序严格按照c语言顺序执行时，需要显式的告诉编译不需要优化，这在linux下是通过barrier()宏完成的，它依靠volidate关键字和memory关键字，前者告诉编译barrier()周围的指令不要被优化，后者作用是告诉编译器汇编代码会使内存里面的值更改，编译器应使用内存里的新值而非寄存器里保存的老值。</p>
-
-<p>同样，CPU执行会通过乱序以提高性能。汇编里的指令不一定是按照我们看到的顺序执行的。linux中通过mb()系列宏来保证执行的顺序。具体做法是通过mfence/lfence指令（它们是奔4后引进的，早期x86没有）以及x86指令中带有串行特性的指令（这样的指令很多，例如linux中实现时用到的lock指令，I/O指令，操作控制寄存器、系统寄存器、调试寄存器的指令、iret指令等等）。简单的说，如果在程序某处插入了mb()/rmb()/wmb()宏，则宏之前的程序保证比宏之后的程序先执行，从而实现串行化。wmb的实现和barrier()类似，是因为在x86平台上，写内存的操作不会被乱序执行。</p>
-
-<p>实际上在RSIC平台上，这些串行工作都有专门的指令由程序员显式的完成，比如在需要的地方调用串行指令，而不像x86上有这么多隐性的带有串行特性指令（例如lock指令）。所以在risc平台下工作的朋友通常对串行化操作理解的容易些。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -544,11 +556,19 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (15)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (20)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (17)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (20)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/01/04/cron-tips/">使用Cron的一些小Tips</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/04/softfp-hardfp/">Compile: What Is Softfp & Hardfp?</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/01/03/utf8-encoding-rules/">UTF-8 Encoding Rules</a>
@@ -560,14 +580,6 @@
     
       <li class="post">
         <a href="/blog/2015/12/30/dmabuf-slash-dma-mapping-slash-iommu-slash-cma-slash-ttm-slash-gem-slash-gart-slash-smmu/">DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/29/linux-graphics-stack/">Linux Graphics Stack 理解</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/12/25/share-fd-by-sendmsg/">Linux通过sendmsg在进程中共享FD</a>
       </li>
     
   </ul>

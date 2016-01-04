@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux | Make Things Cool]]></title>
   <link href="http://markzhang.cn/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2016-01-03T11:45:16+08:00</updated>
+  <updated>2016-01-04T10:09:24+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,59 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用Cron的一些小Tips]]></title>
+    <link href="http://markzhang.cn/blog/2016/01/04/cron-tips/"/>
+    <updated>2016-01-04T10:08:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2016/01/04/cron-tips</id>
+    <content type="html"><![CDATA[<ul>
+<li><p>crontab -e编辑定时任务，crontab -l查看。最后的cron任务文件保存在/var/spool/cron/crontab目录下</p></li>
+<li><p>cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户，然后执行定义的定时任务。</p></li>
+<li><p>但是cron切换用户的时候，任何环境变量，包括.bashrc都不会被执行到。所以诸如$HOME这样的变量也是没有定义的。所以，一般在定时任务的脚本中，我们会这样处理：</p></li>
+</ul>
+
+
+<p>``` bash</p>
+
+<h1>!/bin/bash</h1>
+
+<p>HOME=/home/markz
+source ${HOME}/.bashrc
+export PATH=/usr/local/bin:$PATH
+&hellip;. <tasks>
+```</p>
+
+<p>有一点注意，~/.bashrc往往都含有大量的定义和脚本执行，这有可能会影响到source的成功执行。我们之所以在需要cron的脚本中加入这句source，大多数情况下是为了定义一些环境变量。所以为了让source能保证成功，一般我们都会把需要的环境变量单独存放到一个文件中，然后去source那个文件即可。直接source ~/.bashrc不是一个好的做法。</p>
+
+<ul>
+<li>/var/log/syslog保存了cron的log，查看该log可以方便的知道定时任务执行的一些情况。</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Compile: what is softfp & hardfp?]]></title>
+    <link href="http://markzhang.cn/blog/2016/01/04/softfp-hardfp/"/>
+    <updated>2016-01-04T09:56:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2016/01/04/softfp-hardfp</id>
+    <content type="html"><![CDATA[<p>hardfp compiles inline FP instructions.  If you have an FPU this will be fastest.  If you don&rsquo;t, every FP instruction will trap to an emulation routine (assuming your runtime supports this).</p>
+
+<!-- more -->
+
+
+<p>softfp will compile a library call for every FP operation.  Use this if you never run on a system with an FPU.</p>
+
+<p>来自gcc的manual：</p>
+
+<blockquote><p>-mfloat-abi=name       Specifies which floating-point ABI to use.  Permissible values are: soft, softfp and hard.</p>
+
+<p>Specifying soft causes GCC to generate output containing library calls for floating-point operations.  softfp allows the generation of code using hardware floating-point instructions, but still uses the soft-float calling conventions.  hard allows generation of floating-point instructions and uses FPU-specific calling conventions.</p>
+
+<p>The default depends on the specific target configuration.  Note that the hard-float and soft-float ABIs are not link-compatible; you must compile your entire program with the same ABI, and link with a compatible set of libraries.</p></blockquote>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[UTF-8 Encoding rules]]></title>
@@ -122,107 +175,6 @@ sudo cp usr/* /usr
 <p>貌似PeperFlash是Chrome自带的一个flashplayer，有GPU加速。</p>
 
 <p>Adobe的Linux flashplayer不会再有新版本，但是会有安全更新。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Thunderbird on Ubuntu 12.04 - 调整邮件列表行间距]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/24/thunderbird-change-line-height/"/>
-    <updated>2015-12-24T09:14:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/24/thunderbird-change-line-height</id>
-    <content type="html"><![CDATA[<p>很不幸必须手动修改配置文件来做到，Thunderbird本身没有提供这样的配置项：</p>
-
-<!-- more -->
-
-
-<p><code>bash
-markz@markz-hp6200:~$ cd .thunderbird/
-markz@markz-hp6200:~/.thunderbird$ ls
-a8feo3zj.default  Crash Reports  profiles.ini
-markz@markz-hp6200:~/.thunderbird$ cd a8feo3zj.default/
-markz@markz-hp6200:~/.thunderbird/a8feo3zj.default$ cd chrome/
-markz@markz-hp6200:~/.thunderbird/a8feo3zj.default/chrome$ ls
-userChrome.css
-markz@markz-hp6200:~/.thunderbird/a8feo3zj.default/chrome$ cat userChrome.css
-treechildren:-moz-tree-row {
-height: 35px !important;
-}
-markz@markz-hp6200:~/.thunderbird/a8feo3zj.default/chrome$
-</code></p>
-
-<p>这里注意如果没有发现那个 <code>chrome</code> 的目录，那就自己创建一个，<code>userChrome.css</code> 也自己创建，然后将内容填入即可。全部做完重启Thunderbird就能看到效果了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[SSH client config Sample]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/17/ssh-config/"/>
-    <updated>2015-12-17T11:01:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/17/ssh-config</id>
-    <content type="html"><![CDATA[<p>man ssh_config，查看~/.ssh/config的语法。</p>
-
-<p>Host可以使用通配符，当ssh的时候如果server的URL能match上这里Host指定的值，则Host下面指定的HostName将被作为最终URL使用。同时该Host下配置的User, Port都将被使用。</p>
-
-<p>当然，User和Port都可以被命令行上指定的override。</p>
-
-<p>附上目前的一份sample配置：</p>
-
-<!-- more -->
-
-
-<p>``` bash
-Host chromium</p>
-
-<pre><code>HostName gerrit.chromium.org
-User markz
-Port 29418
-PubkeyAuthentication yes
-IdentityFile ~/.ssh/chromium
-</code></pre>
-
-<p>Host bitbucket.*</p>
-
-<pre><code>HostName bitbucket.org
-PubkeyAuthentication yes
-IdentityFile ~/.ssh/bitbucket
-</code></pre>
-
-<p>Host gitorious.*</p>
-
-<pre><code>HostName gitorious.org
-PubkeyAuthentication yes
-IdentityFile ~/.ssh/gitorious
-</code></pre>
-
-<p>Host gitse</p>
-
-<pre><code>HostName gitse.nvidia.com
-PubkeyAuthentication yes
-IdentityFile ~/.ssh/gitse
-</code></pre>
-
-<p>Host github.*</p>
-
-<pre><code>HostName github.com
-PubkeyAuthentication yes
-IdentityFile ~/.ssh/github
-</code></pre>
-
-<p>Host <em>.cyanogenmod.</em></p>
-
-<pre><code>HostName review.cyanogenmod.org
-PubkeyAuthentication yes
-IdentityFile ~/.ssh/cmreview
-</code></pre>
-
-<p>Host *</p>
-
-<pre><code>PubkeyAuthentication no
-</code></pre>
-
-<p>```</p>
-
-<p>在最末尾默认禁止Public key的验证方式，也就是说，优先采用password验证。否则有些ssh server就会登录不上，因为有些ssh server优先验证public key，而我们这里有很多public key，一个一个验证失败之后就会因为验证失败次数太多从而连不上server。</p>
 ]]></content>
   </entry>
   
