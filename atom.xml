@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://markzhang.cn/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2016-01-04T10:09:24+08:00</updated>
+  <updated>2016-01-05T16:06:29+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,36 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Kernel resume的逻辑]]></title>
+    <link href="http://markzhang.cn/blog/2016/01/05/kernel-suspend-resume-description/"/>
+    <updated>2016-01-05T15:59:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2016/01/05/kernel-suspend-resume-description</id>
+    <content type="html"><![CDATA[<p>Resume的时候，其实最开始是从bootrom启动，再到uboot，然后再到kernel，到kernel的common code的时候，arch相关的代码都已经跑完，此时CPU已经起来了（其实CPU起来之后执行的第一句代码位于设定好的CPU reset handler指定地方的代码，一般这是一段汇编，在这里会去读取suspend结束的时候的一些系统状态，从而可以顺利的转到kernel层继续）。</p>
+
+<!-- more -->
+
+
+<p>所以到了kernel这边的时候，是从suspend结束时的下一条指令开始继续执行。具体就位于suspend.c的suspend_enter的下半部分代码。</p>
+
+<p>在这里就可以看到，比如dpm_resume_noirq就是关键函数。在这里就会依次去调用所有device对应的driver的resume方法，顺序是先suspend的后被resume，后suspend的先resume。</p>
+
+<p>结合之前说的suspend的逻辑，综合一下就是：</p>
+
+<p>device_add的时候：</p>
+
+<p>先被add的device，后被suspend，先被resume</p>
+
+<p>后被add的device，先被suspend，后被resume</p>
+
+<p>不过这不是绝对的，细节一点来说，这里面还分noirq的device resume list和irq enabled device resume list，具体的可以去看源代码。</p>
+
+<p>然后suspend_enter函数就会被执行完成，按照之前suspend时候的调用栈，就会回到函数：suspend_devices_and_enter这个函数中调用suspend_enter的下一句继续执行，在这里又会做一些resume的工作，比如console resume就在这里。</p>
+
+<p>最后就回到了调用suspend_devices_and_enter的函数enter_state，在这里会调用suspend_finish，这个函数里面就会调用到suspend_thaw_processes，这个函数就会thaw workqueues, thaw tasks，然后调用schedule开始进程调度，到这个时候userspace也就活过来了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用Cron的一些小Tips]]></title>
@@ -819,30 +849,6 @@ and &lsquo;extern <strong>inline</strong>&rsquo;.</p>
 <p>如果这两个都没有设置的话，kernel就会挨个去尝试/sbin/init, /bin/init, /bin/sh&hellip;</p>
 
 <p>这些都没有那就panic了</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Android system.img: yaffs or ext4?]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4/"/>
-    <updated>2015-12-17T11:18:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/17/android-system-dot-img-yaffs-or-ext4</id>
-    <content type="html"><![CDATA[<p>随着现在手机的内部存储从NAND转变到eMMC，现在的system.img已经越来越多的使用ext4作为文件系统，而不是以前的yaffs2。</p>
-
-<p>使用file命令查看system.img，如果输出是：VMS Alpha Exectutable，那么这是yaffs</p>
-
-<!-- more -->
-
-
-<p>如果输出是data，那么很可能是ext4的。只不过这个image是一个spare image，含有一些spare数据，所以需要先用simg2img处理一下，然后就可以直接mount了。</p>
-
-<p>至于为什么采用eMMC来代替NAND，摘录百度百科的一段话：</p>
-
-<blockquote><p>eMMC目前是最当红的移动设备本地存储解决方案，目的在于简化手机存储器的设计，由于NAND Flash芯片的不同厂牌包括三星、KingMax、东芝(Toshiba)或海力士(Hynix)、美光(Micron)等，入时，都需要根据每家公司的产品和技术特性来重新设计，过去并没有哪个技术能够通用所有厂牌的NAND Flash芯片。</p>
-
-<p>而每次NAND Flash制程技术改朝换代，包括70纳米演进至50纳米，再演进至40纳米或30纳米制程技术，手机客户也都要重新设计，但半导体产品每1年制程技术都会推陈出新，存储器问题也拖累手机新机种推出的速度，因此像eMMC这种把所有存储器和管理NAND Flash的控制芯片都包在1颗MCP上的概念，逐渐风行起来。</p>
-
-<p>eMMC的设计概念，就是为了简化手机内存储器的使用，将NAND Flash芯片和控制芯片设计成1颗MCP芯片，手机客户只需要采购eMMC芯片，放进新手机中，不需处理其它繁复的NAND Flash兼容性和管理问题，最大优点是缩短新产品的上市周期和研发成本，加速产品的推陈出新速度。</p></blockquote>
 ]]></content>
   </entry>
   

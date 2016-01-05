@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Octopress - 有条件的为文章添加转载声明 - Make Things Cool</title>
+  <title>Kernel resume的逻辑 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="对于原创的文章，我在Octopress的post模板文件中，加入了一段转载声明。但对于一些好的文章，经常也会忍不住想要转载。所以，对于转载的文章，还出现这么一个转载声明就是打自己耳光了。很显然，要做个小手脚，对于转载的文章，去掉这个转载声明。有意思的是，在这个过程中，我居然发现 liquid &hellip;">
+  <meta name="description" content="Resume的时候，其实最开始是从bootrom启动，再到uboot，然后再到kernel，到kernel的common code的时候，arch相关的代码都已经跑完，此时CPU已经起来了（其实CPU起来之后执行的第一句代码位于设定好的CPU reset handler指定地方的代码， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://markzhang.cn/blog/2013/12/27/add-origin-statement-conditionally/">
+  <link rel="canonical" href="http://markzhang.cn/blog/2016/01/05/kernel-suspend-resume-description/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">Octopress - 有条件的为文章添加转载声明</h1>
+        <h1 class="entry-title">Kernel Resume的逻辑</h1>
       
     
     
@@ -94,69 +94,35 @@
   
 
 
-<time datetime="2013-12-27T15:33:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
+<time datetime="2016-01-05T15:59:00+08:00" pubdate data-updated="true">Jan 5<span>th</span>, 2016</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>对于原创的文章，我在Octopress的post模板文件中，加入了一段转载声明。但对于一些好的文章，经常也会忍不住想要转载。所以，对于转载的文章，还出现这么一个转载声明就是打自己耳光了。很显然，要做个小手脚，对于转载的文章，去掉这个转载声明。有意思的是，在这个过程中，我居然发现 <code>liquid</code> 语法中没有 <code>逻辑非</code> ?!</p>
+<div class="entry-content"><p>Resume的时候，其实最开始是从bootrom启动，再到uboot，然后再到kernel，到kernel的common code的时候，arch相关的代码都已经跑完，此时CPU已经起来了（其实CPU起来之后执行的第一句代码位于设定好的CPU reset handler指定地方的代码，一般这是一段汇编，在这里会去读取suspend结束的时候的一些系统状态，从而可以顺利的转到kernel层继续）。</p>
 
 <!-- more -->
 
 
-<p>模板文件的改动非常简单：</p>
+<p>所以到了kernel这边的时候，是从suspend结束时的下一条指令开始继续执行。具体就位于suspend.c的suspend_enter的下半部分代码。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='diff'><span class='line'><span class="gh">diff --git a/source/_layouts/post.html b/source/_layouts/post.html</span>
-</span><span class='line'><span class="gh">index 5d83b4d201f6..12d6466734ec 100644</span>
-</span><span class='line'><span class="gd">--- a/source/_layouts/post.html</span>
-</span><span class='line'><span class="gi">+++ b/source/_layouts/post.html</span>
-</span><span class='line'><span class="gu">@@ -7,11 +7,14 @@ single: true</span>
-</span><span class='line'> &lt;article class=&quot;hentry&quot; role=&quot;article&quot;&gt;
-</span><span class='line'>   {% include article.html %}
-</span><span class='line'>   &lt;footer&gt;
-</span><span class='line'><span class="gi">+    {% if page.categories contains &quot;repost&quot; %}</span>
-</span><span class='line'><span class="gi">+    {% else %}</span>
-</span><span class='line'>     &lt;section style=&quot;margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em&quot;&gt;
-</span><span class='line'>       &lt;strong&gt;版权所有 &amp;copy;{{ site.time | date: &#39;%Y&#39; }} 转载本站文章请注明： &lt;/strong&gt;转载自 http://markzhang.cn&lt;br&gt;
-</span><span class='line'> 原文链接: http://www.markzhang.cn{{ page.url }}&lt;br&gt;
-</span><span class='line'> 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
-</span><span class='line'>     &lt;/section&gt;
-</span><span class='line'><span class="gi">+    {% endif %}</span>
-</span><span class='line'>
-</span><span class='line'>     &lt;p class=&quot;meta&quot;&gt;
-</span><span class='line'>       {% include post/author.html %}
-</span></code></pre></td></tr></table></div></figure>
+<p>在这里就可以看到，比如dpm_resume_noirq就是关键函数。在这里就会依次去调用所有device对应的driver的resume方法，顺序是先suspend的后被resume，后suspend的先resume。</p>
 
+<p>结合之前说的suspend的逻辑，综合一下就是：</p>
 
-<p>所以，大体上是这样：</p>
+<p>device_add的时候：</p>
 
-<ol>
-<li>代码检查当前的文章是否属于 <code>repost</code> 这个category，如果是的话，就不会加入转载声明那一段文字。</li>
-<li>由于Octopress中一篇文章可以属于多个category，所以，新增 <code>repost</code> 这么一个category不会带来什么影响，反而还可以让我们通过这个category快速的浏览所有我们转载的文章。</li>
-<li>有意思的就是，正如前面所说，<code>liquid</code> 语法中没有 <code>逻辑非</code>，所以我在StackOverflow上找到了大家一般是这么做的：if后面直接接else. 相当的ugly，但是it works!</li>
-</ol>
+<p>先被add的device，后被suspend，先被resume</p>
 
+<p>后被add的device，先被suspend，后被resume</p>
+
+<p>不过这不是绝对的，细节一点来说，这里面还分noirq的device resume list和irq enabled device resume list，具体的可以去看源代码。</p>
+
+<p>然后suspend_enter函数就会被执行完成，按照之前suspend时候的调用栈，就会回到函数：suspend_devices_and_enter这个函数中调用suspend_enter的下一句继续执行，在这里又会做一些resume的工作，比如console resume就在这里。</p>
+
+<p>最后就回到了调用suspend_devices_and_enter的函数enter_state，在这里会调用suspend_finish，这个函数里面就会调用到suspend_thaw_processes，这个函数就会thaw workqueues, thaw tasks，然后调用schedule开始进程调度，到这个时候userspace也就活过来了。</p>
 </div>
 
 
@@ -164,7 +130,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2016 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2013/12/27/add-origin-statement-conditionally/<br>
+原文链接: http://www.markzhang.cn/blog/2016/01/05/kernel-suspend-resume-description/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -187,12 +153,12 @@
   
 
 
-<time datetime="2013-12-27T15:33:00+08:00" pubdate data-updated="true">Dec 27<span>th</span>, 2013</time>
+<time datetime="2016-01-05T15:59:00+08:00" pubdate data-updated="true">Jan 5<span>th</span>, 2016</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/blog/'>Blog</a>
+    <a class='category' href='/blog/categories/linux-kernel/'>linux-kernel</a>
   
 </span>
 
@@ -208,10 +174,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/12/17/defeating-the-hackers/" title="Previous Post: Defeating the Hackers">&laquo; Defeating the Hackers</a>
+        <a class="basic-alignment left articlenav" href="/blog/2016/01/04/cron-tips/" title="Previous Post: 使用Cron的一些小Tips">&laquo; 使用Cron的一些小Tips</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/01/02/v911-2-tips/" title="Next Post: 伟力v911-2 心得体会">伟力v911-2 心得体会 &raquo;</a>
       
     </p>
   </footer>
