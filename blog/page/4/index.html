@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="所谓 out-of-tree 的内核模块，指的是源代码不在kernel tree里面的模块，比如 nouveau 的tree。 熟悉nouveau的都知道，nouveau的maintainer是单独维护nouveau tree的，所以，一般来说，我们会把nouveau的代码直接放在一个目录下， &hellip;">
+  <meta name="description" content="在Ubuntu上安装显卡驱动不是一件容易的事情，安装不是Ubuntu官方认证过的NVIDIA自家的驱动就更是困难，而我选择在一个老的Ubuntu版本上安装显卡驱动，事情就变的更加麻烦起来。 其实一开始我也不想安装NVIDIA自家的驱动，首先想尝试用 nouveau，但是悲剧的发现Ubuntu 12 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/06/03/nvidia-linux-driver-on-ubuntu/">NVIDIA Linux驱动在Ubuntu 12.04上的安装</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-06-03T21:35:00+08:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在Ubuntu上安装显卡驱动不是一件容易的事情，安装不是Ubuntu官方认证过的NVIDIA自家的驱动就更是困难，而我选择在一个老的Ubuntu版本上安装显卡驱动，事情就变的更加麻烦起来。</p>
+
+<p>其实一开始我也不想安装NVIDIA自家的驱动，首先想尝试用 <code>nouveau</code>，但是悲剧的发现Ubuntu 12.04上的nouveau无法驱动我的GTX970，可能需要新版本的Ubuntu才可以。所以，被迫选择安装NVIDIA自家的驱动。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/06/03/nvidia-linux-driver-on-ubuntu/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -492,49 +537,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/11/25/thunderbird-72-column/">Thunderbird 80(72) Column - 邮件在80(72)列处line Break</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-11-25T11:13:00+08:00" pubdate data-updated="true">Nov 25<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>这个需求做linux kernel upstream的人都懂的&hellip;&hellip;要设置Thunderbird在80列正确换行，只需要这样：</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/25/thunderbird-72-column/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/5/">&larr; Older</a>
@@ -549,11 +551,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (17)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (21)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (17)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (22)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/01/06/kernel-suspend-description/">Kernel Suspend的逻辑</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/01/05/kernel-suspend-resume-description/">Kernel Resume的逻辑</a>
@@ -569,10 +575,6 @@
     
       <li class="post">
         <a href="/blog/2016/01/03/utf8-encoding-rules/">UTF-8 Encoding Rules</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/03/getty-l/">为什么linux的TTY登录程序getty/agetty一般都会设置一个-L的option？</a>
       </li>
     
   </ul>

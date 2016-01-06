@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Kernel Submitting Patches，有关ifdef和static inline & macro - Make Things Cool</title>
+  <title>Kernel suspend的逻辑 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="From kernel: Documentation/SubmittingPatches 2) #ifdefs are ugly Code cluttered with ifdefs is difficult to read and maintain. Don&rsquo;t do
-it. &hellip;">
+  <meta name="description" content="代码位于：power/suspend.c，从函数pm_suspend开始。 suspend的逻辑和driver相关的主要就是遍历所有device，并调用他们相关driver的suspend函数指针（包括该device的class，bus这些的suspend函数指针）。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@ it. &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://markzhang.cn/blog/2015/12/21/kernel-ifdef-macros/">
+  <link rel="canonical" href="http://markzhang.cn/blog/2016/01/06/kernel-suspend-description/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -78,7 +77,7 @@ it. &hellip;">
   <header>
     
       
-        <h1 class="entry-title">Kernel Submitting Patches，有关ifdef和static Inline & Macro</h1>
+        <h1 class="entry-title">Kernel Suspend的逻辑</h1>
       
     
     
@@ -95,77 +94,31 @@ it. &hellip;">
   
 
 
-<time datetime="2015-12-21T14:19:00+08:00" pubdate data-updated="true">Dec 21<span>st</span>, 2015</time>
+<time datetime="2016-01-06T09:44:00+08:00" pubdate data-updated="true">Jan 6<span>th</span>, 2016</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>From kernel: Documentation/SubmittingPatches</p>
+<div class="entry-content"><p>代码位于：power/suspend.c，从函数pm_suspend开始。</p>
+
+<p>suspend的逻辑和driver相关的主要就是遍历所有device，并调用他们相关driver的suspend函数指针（包括该device的class，bus这些的suspend函数指针）。</p>
 
 <!-- more -->
 
 
-<p>2) #ifdefs are ugly</p>
+<p>至于device调用的先后次序是这样的：当我们执行device_add的时候，这些device会被加到一个dpm_list的list中，而且晚add的device会出现在list的靠前位置。也就是说，早add的device会晚一点被suspend，最后add的device会第一个被suspend。</p>
 
-<p>Code cluttered with ifdefs is difficult to read and maintain.  Don&rsquo;t do
-it.  Instead, put your ifdefs in a header, and conditionally define
-&lsquo;static inline&rsquo; functions, or macros, which are used in the code.
-Let the compiler optimize away the &ldquo;no-op&rdquo; case.</p>
+<p>resume的时候就正好反过来，最后add的device会第一个被resume。</p>
 
-<p>Simple example, of poor code:</p>
+<p>而具体在suspend一个device的时候，会依次调用这些函数指针：device所属的power domain，device的type，device所属的class，device所属的bus。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'>    <span class="n">dev</span> <span class="o">=</span> <span class="n">alloc_etherdev</span> <span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">funky_private</span><span class="p">));</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dev</span><span class="p">)</span>
-</span><span class='line'>            <span class="k">return</span> <span class="o">-</span><span class="n">ENODEV</span><span class="p">;</span>
-</span><span class='line'>    <span class="err">#</span><span class="n">ifdef</span> <span class="n">CONFIG_NET_FUNKINESS</span>
-</span><span class='line'>    <span class="n">init_funky_net</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
-</span><span class='line'>    <span class="err">#</span><span class="n">endif</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>在上述的逻辑之前，会有一个名为suspend_prepare的调用，在这里会freeze userspace（不schedule了就OK了），会freeze有freezable属性的workqueue。在上述逻辑之后，kernel就会转到arch层继续做suspend的动作。在这里就是每种arch，每种mach各不相同了。在这里一般就是针对具体的硬件，做state saving，clock gate，power gate，prepare cpu reset handler这样的一些动作了。</p>
 
+<p>上面提到的有Freezable属性的这个workqueue比较实用，在suspend的时候会freeze，这样就会避免当suspend的时候，一些设备被关闭（或者clock被gate，或者power被gate），但是workqueue中还有work在运行从而导致一些问题。</p>
 
-<p>Cleaned-up example:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="p">(</span><span class="n">in</span> <span class="n">header</span><span class="p">)</span>
-</span><span class='line'>        <span class="err">#</span><span class="n">ifndef</span> <span class="n">CONFIG_NET_FUNKINESS</span>
-</span><span class='line'>        <span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="n">init_funky_net</span> <span class="p">(</span><span class="k">struct</span> <span class="n">net_device</span> <span class="o">*</span><span class="n">d</span><span class="p">)</span> <span class="p">{}</span>
-</span><span class='line'>        <span class="err">#</span><span class="n">endif</span>
-</span><span class='line'><span class="p">(</span><span class="n">in</span> <span class="n">the</span> <span class="n">code</span> <span class="n">itself</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">dev</span> <span class="o">=</span> <span class="n">alloc_etherdev</span> <span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">funky_private</span><span class="p">));</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dev</span><span class="p">)</span>
-</span><span class='line'>                <span class="k">return</span> <span class="o">-</span><span class="n">ENODEV</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">init_funky_net</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>3) &lsquo;static inline&rsquo; is better than a macro</p>
-
-<p>Static inline functions are greatly preferred over macros.
-They provide type safety, have no length limitations, no formatting
-limitations, and under gcc they are as cheap as macros.
-Macros should only be used for cases where a static inline is clearly
-suboptimal [there are a few, isolated cases of this in fast paths],
-or where it is impossible to use a static inline function [such as
-string-izing].</p>
-
-<p>&lsquo;static inline&rsquo; is preferred over &lsquo;static <strong>inline</strong>&rsquo;, &lsquo;extern inline&rsquo;,
-and &lsquo;extern <strong>inline</strong>&rsquo;.</p>
+<p>跟了一下代码，这个system_freezable_wq主要就是在create workqueue的时候加上了一个FREEZABLE的flag，然后当suspend发生的时候，在没有开始真正suspend device之前，有一个suspend_prepare会调用suspend_freeze_processes，这样一路调用下来，最终会调用到freeze_workqueues_begin，在这里会将workqueue的maxactive设成0，这样workqueue里面的work就无法执行到了。</p>
 </div>
 
 
@@ -173,7 +126,7 @@ and &lsquo;extern <strong>inline</strong>&rsquo;.</p>
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2016 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2015/12/21/kernel-ifdef-macros/<br>
+原文链接: http://www.markzhang.cn/blog/2016/01/06/kernel-suspend-description/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -196,7 +149,7 @@ and &lsquo;extern <strong>inline</strong>&rsquo;.</p>
   
 
 
-<time datetime="2015-12-21T14:19:00+08:00" pubdate data-updated="true">Dec 21<span>st</span>, 2015</time>
+<time datetime="2016-01-06T09:44:00+08:00" pubdate data-updated="true">Jan 6<span>th</span>, 2016</time>
       
 
 <span class="categories">
@@ -217,10 +170,8 @@ and &lsquo;extern <strong>inline</strong>&rsquo;.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2015/12/21/kernel-decompress-zimage/" title="Previous Post: kernel: How to decompress the zImage?">&laquo; kernel: How to decompress the zImage?</a>
+        <a class="basic-alignment left articlenav" href="/blog/2016/01/05/kernel-suspend-resume-description/" title="Previous Post: Kernel resume的逻辑">&laquo; Kernel resume的逻辑</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2015/12/21/kernel-thunderbird/" title="Next Post: Thunderbird配置 - for kernel maillist">Thunderbird配置 - for kernel maillist &raquo;</a>
       
     </p>
   </footer>

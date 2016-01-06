@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="Resume的时候，其实最开始是从bootrom启动，再到uboot，然后再到kernel，到kernel的common code的时候，arch相关的代码都已经跑完，此时CPU已经起来了（其实CPU起来之后执行的第一句代码位于设定好的CPU reset handler指定地方的代码， &hellip;">
+  <meta name="description" content="代码位于：power/suspend.c，从函数pm_suspend开始。 suspend的逻辑和driver相关的主要就是遍历所有device，并调用他们相关driver的suspend函数指针（包括该device的class，bus这些的suspend函数指针）。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2016/01/06/kernel-suspend-description/">Kernel Suspend的逻辑</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-06T09:44:00+08:00" pubdate data-updated="true">Jan 6<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>代码位于：power/suspend.c，从函数pm_suspend开始。</p>
+
+<p>suspend的逻辑和driver相关的主要就是遍历所有device，并调用他们相关driver的suspend函数指针（包括该device的class，bus这些的suspend函数指针）。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/01/06/kernel-suspend-description/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -495,49 +540,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2015/12/25/setup-kgdb/">KGDB配置使用</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-25T10:49:00+08:00" pubdate data-updated="true">Dec 25<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>KGDB可以用于linux kernel的调试，具体的配置步骤是：</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/12/25/setup-kgdb/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -550,11 +552,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (17)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (21)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (17)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (22)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/01/06/kernel-suspend-description/">Kernel Suspend的逻辑</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/01/05/kernel-suspend-resume-description/">Kernel Resume的逻辑</a>
@@ -570,10 +576,6 @@
     
       <li class="post">
         <a href="/blog/2016/01/03/utf8-encoding-rules/">UTF-8 Encoding Rules</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/03/getty-l/">为什么linux的TTY登录程序getty/agetty一般都会设置一个-L的option？</a>
       </li>
     
   </ul>
