@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Kernel barrier/wmb/mb宏的作用 - Make Things Cool</title>
+  <title>Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="内存屏障主要解决的问题是编译器的优化和CPU的乱序执行。 编译器在优化的时候，生成的汇编指令可能和c语言程序的执行顺序不一样，在需要程序严格按照c语言顺序执行时，需要显式的告诉编译不需要优化，这在linux下是通过barrier()宏完成的，它依靠volidate关键字和memory关键字， &hellip;">
+  <meta name="description" content="跟老美共事发现它们很喜欢每件事情都起个Code Name，所以我也给我的博客每年都取一个Code Name。命名的逻辑跟Ubuntu一样，从2013年的H开始，每个Code Name都是两个单词且开头字母相同。如下： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://markzhang.cn/blog/2015/12/23/kernel-barrier-mb-wmb/">
+  <link rel="canonical" href="http://markzhang.cn/blog/page/9/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -71,13 +71,16 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div>
-<article class="hentry" role="article">
+      <div class="blog-index">
   
+  
+  
+    <article>
+      
   <header>
     
-      
-        <h1 class="entry-title">Kernel Barrier/wmb/mb宏的作用</h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/04/blog-code-names/">博客 Code Names</a></h1>
       
     
     
@@ -94,110 +97,34 @@
   
 
 
-<time datetime="2015-12-23T10:28:00+08:00" pubdate data-updated="true">Dec 23<span>rd</span>, 2015</time>
+<time datetime="2013-11-04T20:46:00+08:00" pubdate data-updated="true">Nov 4<span>th</span>, 2013</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>内存屏障主要解决的问题是编译器的优化和CPU的乱序执行。</p>
-
-<p>编译器在优化的时候，生成的汇编指令可能和c语言程序的执行顺序不一样，在需要程序严格按照c语言顺序执行时，需要显式的告诉编译不需要优化，这在linux下是通过barrier()宏完成的，它依靠volidate关键字和memory关键字，前者告诉编译barrier()周围的指令不要被优化，后者作用是告诉编译器汇编代码会使内存里面的值更改，编译器应使用内存里的新值而非寄存器里保存的老值。</p>
-
-<p>同样，CPU执行会通过乱序以提高性能。汇编里的指令不一定是按照我们看到的顺序执行的。linux中通过mb()系列宏来保证执行的顺序。具体做法是通过mfence/lfence指令（它们是奔4后引进的，早期x86没有）以及x86指令中带有串行特性的指令（这样的指令很多，例如linux中实现时用到的lock指令，I/O指令，操作控制寄存器、系统寄存器、调试寄存器的指令、iret指令等等）。简单的说，如果在程序某处插入了mb()/rmb()/wmb()宏，则宏之前的程序保证比宏之后的程序先执行，从而实现串行化。wmb的实现和barrier()类似，是因为在x86平台上，写内存的操作不会被乱序执行。</p>
-
-<p>实际上在RSIC平台上，这些串行工作都有专门的指令由程序员显式的完成，比如在需要的地方调用串行指令，而不像x86上有这么多隐性的带有串行特性指令（例如lock指令）。所以在risc平台下工作的朋友通常对串行化操作理解的容易些。</p>
-</div>
-
-
-  <footer>
-    
-    <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
-      <strong>版权所有 &copy;2016 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2015/12/23/kernel-barrier-mb-wmb/<br>
-您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
-    </section>
-    
-
-    <p class="meta">
-      
-  
-
-<span class="byline author vcard">Posted by <span class="fn">Mark Zhang</span></span>
-
-      
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-23T10:28:00+08:00" pubdate data-updated="true">Dec 23<span>rd</span>, 2015</time>
-      
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/linux-kernel/'>linux-kernel</a>
-  
-</span>
-
-
-    </p>
-    
-      <div class="sharing">
-  
-  
-  
-</div>
-
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left articlenav" href="/blog/2015/12/23/kernel-data-type-compat-ioctl/" title="Previous Post: Linux kernel data types, alignment, compat_ioctl 数据类型，对齐问题和compat_ioctl">&laquo; Linux kernel data types, alignment, compat_ioctl 数据类型，对齐问题和compat_ioctl</a>
-      
-      
-        <a class="basic-alignment right articlenav" href="/blog/2015/12/24/thunderbird-change-line-height/" title="Next Post: Thunderbird on Ubuntu 12.04 - 调整邮件列表行间距">Thunderbird on Ubuntu 12.04 - 调整邮件列表行间距 &raquo;</a>
-      
-    </p>
-  </footer>
-</article>
-
-  <section>
-    <!-- JiaThis Button BEGIN -->
-<div class="jiathis_style_24x24">
-	<a class="jiathis_button_qzone"></a>
-	<a class="jiathis_button_tsina"></a>
-	<a class="jiathis_button_tqq"></a>
-	<a class="jiathis_button_renren"></a>
-	<a class="jiathis_button_kaixin001"></a>
-	<a href="http://www.jiathis.com/share?uid=1860527" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
-	<a class="jiathis_counter_style"></a>
-</div>
-<script type="text/javascript">
-var jiathis_config = {data_track_clickback:'true'};
-</script>
-<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1352426099508779" charset="utf-8"></script>
-<!-- JiaThis Button END -->
-
-  </section>
-
-
-  <section>
-    <!-- UY BEGIN -->
-<div id="uyan_frame"></div>
-<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1860527"></script>
-<!-- UY END -->
-
-  </section>
+  <div class="entry-content"><p>跟老美共事发现它们很喜欢每件事情都起个Code Name，所以我也给我的博客每年都取一个Code Name。命名的逻辑跟Ubuntu一样，从2013年的H开始，每个Code Name都是两个单词且开头字母相同。如下：</p>
 
 </div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/11/04/blog-code-names/">Read on &rarr;</a>
+    </footer>
+  
 
+
+    </article>
+  
+  <div class="pagination">
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/8/">Newer &rarr;</a>
+    
+  </div>
+</div>
 <aside class="sidebar">
   
     <section>
@@ -234,7 +161,7 @@ var jiathis_config = {data_track_clickback:'true'};
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating...</li>
+    <li class="loading">Status updating&#8230;</li>
   </ul>
   
   <script type="text/javascript">
@@ -261,7 +188,6 @@ var jiathis_config = {data_track_clickback:'true'};
 
   
 </aside>
-
 
     </div>
   </div>

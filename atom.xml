@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://markzhang.cn/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2016-01-06T09:49:52+08:00</updated>
+  <updated>2016-01-07T11:07:00+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,98 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[为什么包含多句代码的宏要用do while包括起来？]]></title>
+    <link href="http://markzhang.cn/blog/2016/01/07/kernel-do-while-macro/"/>
+    <updated>2016-01-07T11:05:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2016/01/07/kernel-do-while-macro</id>
+    <content type="html"><![CDATA[<p>为了看起来更清晰，这里用一个简单点的宏来演示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#define SAFE_DELETE(p) do{ delete p; p = NULL} while(0)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>假设这里去掉 <code>do...while(0)</code>,</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#define SAFE_DELETE(p) delete p; p = NULL;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>那么以下代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">if</span><span class="p">(</span><span class="nb">NULL</span> <span class="o">!=</span> <span class="n">p</span><span class="p">)</span> <span class="n">SAFE_DELETE</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</span><span class='line'><span class="k">else</span>   <span class="p">...</span><span class="k">do</span> <span class="n">sth</span><span class="p">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>就有两个问题，</p>
+
+<ol>
+<li><p>因为if分支后有两个语句，else分支没有对应的if，编译失败</p></li>
+<li><p>假设没有else, SAFE_DELETE中的第二个语句无论if测试是否通过，会永远执行。</p></li>
+</ol>
+
+
+<p>你可能发现，为了避免这两个问题，我不一定要用这个令人费解的do&hellip;while,  我直接用{}括起来就可以了</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#define SAFE_DELETE(p) { delete p; p = NULL;}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>的确，这样的话上面的问题是不存在了，但是我想对于C++程序员来讲，在每个语句后面加分号是一种约定俗成的习惯，这样的话，以下代码:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">if</span><span class="p">(</span><span class="nb">NULL</span> <span class="o">!=</span> <span class="n">p</span><span class="p">)</span> <span class="n">SAFE_DELETE</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+</span><span class='line'><span class="k">else</span>   <span class="p">...</span><span class="k">do</span> <span class="n">sth</span><span class="p">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其else分支就无法通过编译了（原因同上），所以采用do&hellip;while(0)是做好的选择了。</p>
+
+<p>也许你会说，我们代码的习惯是在每个判断后面加上{}, 就不会有这种问题了，也就不需要do&hellip;while了，如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">if</span><span class="p">(...)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>诚然，这是一个好的，应该提倡的编程习惯，但一般这样的宏都是作为library的一部分出现的，而对于一个library的作者，他所要做的就是让其库具有通用性，强壮性，因此他不能有任何对库的使用者的假设，如其编码规范，技术水平等。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[netstat -na输出中Recv-Q和Send-Q两项的值不为零需要注意程序是否有问题]]></title>
+    <link href="http://markzhang.cn/blog/2016/01/07/recv-q-send-q/"/>
+    <updated>2016-01-07T10:59:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2016/01/07/recv-q-send-q</id>
+    <content type="html"><![CDATA[<p>Recv-Q：表示收到的数据中还有多少没有被进程取走（通过recv）</p>
+
+<p>Send-Q：表示需要发送的数据还有多少没有被发出</p>
+
+<p>所以，一般来说这两个值都是0，如果不为0且持续增长，那就表明程序出现了问题。</p>
+
+<p>比如Recv-Q的数字持续增长，表示没有进程去取这些收到的数据。比如使用select+recv来收数据的时候，由于select有1024这个限制，所以如果socket的FD大于1024的时候，就会导致这个socket FD上的数据不会被select检测到从而导致recv不会被调用。</p>
+
+<p>所以，通过netstat的这两个值就可以简单判断程序收不到包到底是包没到还是包没有被进程recv。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Kernel suspend的逻辑]]></title>
@@ -756,107 +848,6 @@ Then go to &ldquo;tools->add ons&rdquo;, select &ldquo;install&rdquo; at the bot
 and browse to where you saved the .xul file.  This adds an &ldquo;Enable
 Wordwrap&rdquo; entry under the Options menu of the message composer.</p></li>
 </ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Kernel Submitting Patches，有关ifdef和static inline & macro]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/21/kernel-ifdef-macros/"/>
-    <updated>2015-12-21T14:19:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/21/kernel-ifdef-macros</id>
-    <content type="html"><![CDATA[<p>From kernel: Documentation/SubmittingPatches</p>
-
-<!-- more -->
-
-
-<p>2) #ifdefs are ugly</p>
-
-<p>Code cluttered with ifdefs is difficult to read and maintain.  Don&rsquo;t do
-it.  Instead, put your ifdefs in a header, and conditionally define
-&lsquo;static inline&rsquo; functions, or macros, which are used in the code.
-Let the compiler optimize away the &ldquo;no-op&rdquo; case.</p>
-
-<p>Simple example, of poor code:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'>    <span class="n">dev</span> <span class="o">=</span> <span class="n">alloc_etherdev</span> <span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">funky_private</span><span class="p">));</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dev</span><span class="p">)</span>
-</span><span class='line'>            <span class="k">return</span> <span class="o">-</span><span class="n">ENODEV</span><span class="p">;</span>
-</span><span class='line'>    <span class="err">#</span><span class="n">ifdef</span> <span class="n">CONFIG_NET_FUNKINESS</span>
-</span><span class='line'>    <span class="n">init_funky_net</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
-</span><span class='line'>    <span class="err">#</span><span class="n">endif</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Cleaned-up example:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="p">(</span><span class="n">in</span> <span class="n">header</span><span class="p">)</span>
-</span><span class='line'>        <span class="err">#</span><span class="n">ifndef</span> <span class="n">CONFIG_NET_FUNKINESS</span>
-</span><span class='line'>        <span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="n">init_funky_net</span> <span class="p">(</span><span class="k">struct</span> <span class="n">net_device</span> <span class="o">*</span><span class="n">d</span><span class="p">)</span> <span class="p">{}</span>
-</span><span class='line'>        <span class="err">#</span><span class="n">endif</span>
-</span><span class='line'><span class="p">(</span><span class="n">in</span> <span class="n">the</span> <span class="n">code</span> <span class="n">itself</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">dev</span> <span class="o">=</span> <span class="n">alloc_etherdev</span> <span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">funky_private</span><span class="p">));</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">dev</span><span class="p">)</span>
-</span><span class='line'>                <span class="k">return</span> <span class="o">-</span><span class="n">ENODEV</span><span class="p">;</span>
-</span><span class='line'>        <span class="n">init_funky_net</span><span class="p">(</span><span class="n">dev</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>3) &lsquo;static inline&rsquo; is better than a macro</p>
-
-<p>Static inline functions are greatly preferred over macros.
-They provide type safety, have no length limitations, no formatting
-limitations, and under gcc they are as cheap as macros.
-Macros should only be used for cases where a static inline is clearly
-suboptimal [there are a few, isolated cases of this in fast paths],
-or where it is impossible to use a static inline function [such as
-string-izing].</p>
-
-<p>&lsquo;static inline&rsquo; is preferred over &lsquo;static <strong>inline</strong>&rsquo;, &lsquo;extern inline&rsquo;,
-and &lsquo;extern <strong>inline</strong>&rsquo;.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[kernel: How to decompress the zImage?]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/21/kernel-decompress-zimage/"/>
-    <updated>2015-12-21T14:00:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/21/kernel-decompress-zimage</id>
-    <content type="html"><![CDATA[<p>zImage不是标准的gzip文件，需要自己strip掉开头的一些东西才可以gunzip。</p>
-
-<p>基本上的思路就是找gzip的magic number &ldquo;1f 8b 08&#8221;。</p>
-
-<!-- more -->
-
-
-<p>具体步骤：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mkdir -p /tmp/kernel-uncompressed/; <span class="nb">cd</span> /tmp/kernel-uncompressed/
-</span><span class='line'><span class="nv">$ </span>cp /boot/vmlinuz-<span class="sb">`</span>uname -r<span class="sb">`</span> .
-</span><span class='line'><span class="nv">$ </span>od -t x1 -A d vmlinuz-2.6.18-128.el5.uvm6PAE | grep <span class="s2">&quot;1f 8b 08&quot;</span>
-</span><span class='line'>0008320 1b 00 1f 8b 08 00 d5 c2 9a 49 02 03 ec 3b 7d 7c
-</span><span class='line'><span class="nv">$ </span>dd <span class="nv">bs</span><span class="o">=</span>1 <span class="nv">skip</span><span class="o">=</span>8322 <span class="k">if</span><span class="o">=</span>vmlinuz-2.6.18-128.el5.uvm6PAE | zcat &gt; vmlinux
-</span></code></pre></td></tr></table></div></figure>
 
 ]]></content>
   </entry>

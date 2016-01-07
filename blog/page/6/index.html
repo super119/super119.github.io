@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="450 FBL有一个相位臂，没有这个相位臂那旋翼一旋转，十字盘拉杆就转成麻花了。但是由于十字盘是需要上下移动的（改变集体螺距），所以这个相位臂也是需要能运动的。基本上，当十字盘上下运动时，相位臂有两个地方也会发生运动：一个是中间部位，能改变角度；另外一个地方不起眼容易被忽略， &hellip;">
+  <meta name="description" content="之前写过一篇文章叫“Chnroutes的使用“，主要说的是如何通过使用 chnroutes 从而将国内和国外的路由分开，国内走正常路由，国外则走VPN。现在的问题是，如果在一台电脑上有了VPN之后，如何将这个VPN share给其他设备，比如PS3？ ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,94 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/07/17/mac-share-vpn-connection/">Mac OS X（Mavericks）共享VPN给其他设备</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-17T11:22:00+08:00" pubdate data-updated="true">Jul 17<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>之前写过一篇文章叫“Chnroutes的使用“，主要说的是如何通过使用 <code>chnroutes</code> 从而将国内和国外的路由分开，国内走正常路由，国外则走VPN。现在的问题是，如果在一台电脑上有了VPN之后，如何将这个VPN share给其他设备，比如PS3？</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/17/mac-share-vpn-connection/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/07/03/apple-cli-and-osx-gcc-installer/">Mac OS X(Mavericks) CommandLineTools 和 Osx-gcc-installer</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-07-03T13:22:00+08:00" pubdate data-updated="true">Jul 3<span>rd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Mac OS X Command Line Tools是Mac开发人员经常会遇到的一个问题。Command Line Tools（以下简称CLI）其实就是一堆Unix/Linux上开发需要的基础东西，比如gcc, make, g++等。在Mac上开发，如果使用Xcode的话，是不需要这些东西的，因为Xcode已经集成了这些东西，在Xcode的IDE中直接进行编译调试，所以用户不需要关心这些东西有没有，在哪。</p>
+
+<p>但是如果我们在开发自己的基于Makefile的程序时，或者是要porting UNIX/Linux上的一些程序时，这些东西就变成必须的了。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/07/03/apple-cli-and-osx-gcc-installer/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -448,94 +536,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/04/09/linux-driver-suspend-orders/">Linux设备驱动suspend/resume的顺序</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-04-09T16:07:00+08:00" pubdate data-updated="true">Apr 9<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Linux在进入suspend的时候，会首先freeze userspace，然后挨个去调用设备驱动程序的suspend，最后调用architecture dependent的callback（非常奔放的描述了，其实有大量的细节问题存在）。Resume就是反过来执行一遍，最后重新enable userspace。那么作为设备驱动程序的编写者来说，主要就是要实现本驱动的suspend/resume逻辑。但是事实上，很多设备之间是有依赖性的，比如在ARM上，很多设备在resume之前，要求 <code>IOMMU</code> 要已经被enable，否则硬件上就会出现问题，因为访问的地址不对了。</p>
-
-<p>那么Linux是如何设计/定义各个设备驱动之间的suspend/resume的顺序的呢？</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/04/09/linux-driver-suspend-orders/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/04/08/lastpass/">一站式密码管理器 - LastPass</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-04-08T19:56:00+08:00" pubdate data-updated="true">Apr 8<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>我个人感觉，密码是相当反人类的设计。当你刚接触互联网的时候，可能感觉不到，甚至感觉理所当然，银行卡也需要设置密码呢。但是当访问的网站越来越多，各个站点论坛都需要注册用户、设置密码，多了之后密码就会变成非常痛苦的一种体验。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/04/08/lastpass/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -550,11 +550,19 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (17)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (22)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/linux'>linux (18)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (23)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/01/07/kernel-do-while-macro/">为什么包含多句代码的宏要用do While包括起来？</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/07/recv-q-send-q/">Netstat -na输出中Recv-Q和Send-Q两项的值不为零需要注意程序是否有问题</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/01/06/kernel-suspend-description/">Kernel Suspend的逻辑</a>
@@ -566,14 +574,6 @@
     
       <li class="post">
         <a href="/blog/2016/01/04/cron-tips/">使用Cron的一些小Tips</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/04/softfp-hardfp/">Compile: What Is Softfp & Hardfp?</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/03/utf8-encoding-rules/">UTF-8 Encoding Rules</a>
       </li>
     
   </ul>
