@@ -10,8 +10,7 @@
 
   
   <meta name="description" content="为了看起来更清晰，这里用一个简单点的宏来演示： 1
-#define SAFE_DELETE(p) do{ delete p; p = NULL} while(0) 假设这里去掉 do...while(0), 1
-#define SAFE_DELETE(p) delete p; p = NULL; &hellip;">
+#define SAFE_DELETE(p) do{ delete p; p = NULL} while(0) ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -113,68 +112,14 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>假设这里去掉 <code>do...while(0)</code>,</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#define SAFE_DELETE(p) delete p; p = NULL;</span>
-</span></code></pre></td></tr></table></div></figure>
 
 
-<p>那么以下代码：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">if</span><span class="p">(</span><span class="nb">NULL</span> <span class="o">!=</span> <span class="n">p</span><span class="p">)</span> <span class="n">SAFE_DELETE</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-</span><span class='line'><span class="k">else</span>   <span class="p">...</span><span class="k">do</span> <span class="n">sth</span><span class="p">...</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>就有两个问题，</p>
-
-<ol>
-<li><p>因为if分支后有两个语句，else分支没有对应的if，编译失败</p></li>
-<li><p>假设没有else, SAFE_DELETE中的第二个语句无论if测试是否通过，会永远执行。</p></li>
-</ol>
-
-
-<p>你可能发现，为了避免这两个问题，我不一定要用这个令人费解的do&hellip;while,  我直接用{}括起来就可以了</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#define SAFE_DELETE(p) { delete p; p = NULL;}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>的确，这样的话上面的问题是不存在了，但是我想对于C++程序员来讲，在每个语句后面加分号是一种约定俗成的习惯，这样的话，以下代码:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">if</span><span class="p">(</span><span class="nb">NULL</span> <span class="o">!=</span> <span class="n">p</span><span class="p">)</span> <span class="n">SAFE_DELETE</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
-</span><span class='line'><span class="k">else</span>   <span class="p">...</span><span class="k">do</span> <span class="n">sth</span><span class="p">...</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>其else分支就无法通过编译了（原因同上），所以采用do&hellip;while(0)是做好的选择了。</p>
-
-<p>也许你会说，我们代码的习惯是在每个判断后面加上{}, 就不会有这种问题了，也就不需要do&hellip;while了，如：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">if</span><span class="p">(...)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="k">else</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>诚然，这是一个好的，应该提倡的编程习惯，但一般这样的宏都是作为library的一部分出现的，而对于一个library的作者，他所要做的就是让其库具有通用性，强壮性，因此他不能有任何对库的使用者的假设，如其编码规范，技术水平等。</p>
 </div>
   
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/01/07/kernel-do-while-macro/">Read on &rarr;</a>
+    </footer>
   
 
 
