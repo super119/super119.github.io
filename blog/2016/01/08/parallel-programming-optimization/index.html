@@ -5,11 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>CloneZilla磁盘克隆，超快的更换硬盘 - Make Things Cool</title>
+  <title>并行编程优化Tips - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="开发用的PC机用的是一块128G的SSD，安装的Ubuntu 12.04，速度明显比机械硬盘快了好多，唯一的不足就是容量太小。于是最近购入了一块新的240G的SSD，需要将原来128G的SSD上的东西全部克隆过来。 对于Linux ext4文件分区系统的磁盘来说，ghost工作的并不好， &hellip;">
+  <meta name="description" content="编程优化： 编程优化，比如Fortran二维数组中，要按行存放，按列访问，这样可以让cache工作更高效。
+循环展开，如CPU一拍能做四次浮点运算，那么可以将一个浮点计算循环（计算内容简单的）拆分成每次循环step为4，循环体内手动做四次循环代码。这样代码不好看，但是能得到性能提高。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://markzhang.cn/blog/2014/06/03/ubuntu-disk-clone/">
+  <link rel="canonical" href="http://markzhang.cn/blog/2016/01/08/parallel-programming-optimization/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +78,7 @@
   <header>
     
       
-        <h1 class="entry-title">CloneZilla磁盘克隆，超快的更换硬盘</h1>
+        <h1 class="entry-title">并行编程优化Tips</h1>
       
     
     
@@ -94,89 +95,49 @@
   
 
 
-<time datetime="2014-06-03T12:49:00+08:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2014</time>
+<time datetime="2016-01-08T09:56:00+08:00" pubdate data-updated="true">Jan 8<span>th</span>, 2016</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>开发用的PC机用的是一块128G的SSD，安装的Ubuntu 12.04，速度明显比机械硬盘快了好多，唯一的不足就是容量太小。于是最近购入了一块新的240G的SSD，需要将原来128G的SSD上的东西全部克隆过来。</p>
+<div class="entry-content"><p>编程优化：</p>
 
-<p>对于Linux ext4文件分区系统的磁盘来说，<code>ghost</code>工作的并不好，工作的比较好的是<code>CloneZilla</code>，因为它能识别ext4的文件系统，从而使克隆变的无比快速，之前我写过一篇类似的文章：</p>
+<ul>
+<li><p>编程优化，比如Fortran二维数组中，要按行存放，按列访问，这样可以让cache工作更高效。</p></li>
+<li><p>循环展开，如CPU一拍能做四次浮点运算，那么可以将一个浮点计算循环（计算内容简单的）拆分成每次循环step为4，循环体内手动做四次循环代码。这样代码不好看，但是能得到性能提高。</p></li>
+</ul>
 
-<p><a href="http://www.cnblogs.com/super119/archive/2012/09/26/2703479.html">http://www.cnblogs.com/super119/archive/2012/09/26/2703479.html</a></p>
-
-<p>但是那一次的克隆是两块容量一样的磁盘，而这一次两块SSD的容量并不相同，所以我做了一些改变。</p>
 
 <!-- more -->
 
 
-<p>两块磁盘的容量不一样，我能想到的问题是，如果是克隆整块硬盘的话，那MBR部分也会被克隆过去，也就是说，源磁盘的分区信息也会被克隆到目的盘上，这样，会不会240G的SSD就会变成120G？我没有试验，有可能 <code>CloneZilla</code> 能帮我们解决这个问题，但是为了避免麻烦，我还是手动的克隆了。</p>
-
-<p>所以我的做法是，不是克隆整个硬盘，而是只克隆源磁盘上的分区。完成之后，在目的盘上重建MBR信息，也就是在目的盘上恢复grub。具体我是这么做的：</p>
-
 <ul>
-<li><p>使用Ubuntu 12.04安装盘，进入Ubuntu Live（不是安装Ubuntu那个选项），然后使用Ubuntu的Disk Utility给目的盘分区</p></li>
-<li><p>使用CloneZilla的启动ISO启动系统，可以把这个ISO刻成光盘，也可以使用UltraISO这种工具将ISO烧录到U盘上，然后从USB启动电脑。启动起来之后，按照 <code>CloneZilla</code> 提供的向导，一步一步进行即可，超级简单。将源磁盘每个分区都克隆到目的盘对应的分区上即可。100G的数据五分钟搞定。</p></li>
+<li><p>运算顺序的调整，减少CPU流水线的迟滞。可以和循环展开配合，得到更好的性能。</p></li>
+<li><p>针对Cache的优化。</p>
+
+<ol>
+<li><p>数组合并: 利用块长，改善空间局部性</p></li>
+<li><p>循环交换: 改变嵌套循环中访问内存的次序</p></li>
+<li><p>循环合并: 增强数据的可重用性（时间局部性）</p></li>
+<li><p>分块: 集中访问可取入cache的块状矩阵，避免全行或全列的读写，以增强时间局部性。&mdash; 计算一个Cache中能放下的子矩阵。</p></li>
+</ol>
+</li>
+<li><p>做MPI通讯的时候，将小数据量多次通讯变成整合式少次通讯。这样回避网络latency的问题。</p></li>
+<li><p>文件I/O要尽量减少，除非是不能回避的。</p></li>
+<li><p>考虑OpenMP+MPI的并行编码方式，这样在单机内可以避免使用MPI。</p></li>
 </ul>
 
 
-<p><img src="/downloads/image/clonezilla.jpg" alt="CloneZilla Cloning" /></p>
+<p>编译等其他辅助性优化：</p>
 
 <ul>
-<li>接下来就可以将源磁盘从机器中拿出来了，我们只需要再把目的磁盘的MBR恢复就可以成功启动系统了。其实就是恢复grub的标准做法：首先还是使用Ubuntu的安装盘进入Ubuntu Live，然后打开终端，输入以下命令：</li>
+<li><p>Intel compiler &ndash; 针对硬件架构的优化，比如MMX/SSE等指令集的优化。可以优化一些looper等。Prefetch, loop interchange, cache blocking等。</p></li>
+<li><p>使用高效的数学库（BLAS/GOTO等）。</p></li>
+<li><p>利用vtunes等类似性能调试软件来调试性能热点。比如vtunes/Intel cluster toolkits可以看出计算/通讯的时间占用比。</p></li>
 </ul>
 
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Mount root partition to /mnt</span>
-</span><span class='line'>sudo mount /dev/sda1 /mnt
-</span><span class='line'>sudo mount --bind /dev /mnt/dev
-</span><span class='line'>sudo mount --bind /dev/pts /mnt/dev/pts
-</span><span class='line'>sudo mount --bind /proc /mnt/proc
-</span><span class='line'>sudo mount --bind /sys /mnt/sys
-</span><span class='line'>
-</span><span class='line'><span class="c"># Chroot into it and update grub</span>
-</span><span class='line'>sudo chroot /mnt
-</span><span class='line'>grub-install /dev/sda
-</span><span class='line'>grub-install --recheck /dev/sda
-</span><span class='line'>update-grub
-</span><span class='line'><span class="nb">exit</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># Quit chroot environment and umount all stuffs</span>
-</span><span class='line'>sudo umount /mnt/dev <span class="o">&amp;&amp;</span>
-</span><span class='line'>sudo umount /mnt/dev/pts <span class="o">&amp;&amp;</span>
-</span><span class='line'>sudo umount /mnt/proc <span class="o">&amp;&amp;</span>
-</span><span class='line'>sudo umount /mnt/sys <span class="o">&amp;&amp;</span>
-</span><span class='line'>sudo umount /mnt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样就完成了，在我的机器上，/dev/sda就是我新更换的240G的SSD，你需要根据你的机器上的磁盘配置来决定使用哪个磁盘。</p>
-
-<p>上述操作来自文章：</p>
-
-<p><a href="http://howtoubuntu.org/how-to-repair-restore-reinstall-grub-2-with-a-ubuntu-live-cd">http://howtoubuntu.org/how-to-repair-restore-reinstall-grub-2-with-a-ubuntu-live-cd</a></p>
 </div>
 
 
@@ -184,7 +145,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2016 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2014/06/03/ubuntu-disk-clone/<br>
+原文链接: http://www.markzhang.cn/blog/2016/01/08/parallel-programming-optimization/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -207,12 +168,12 @@
   
 
 
-<time datetime="2014-06-03T12:49:00+08:00" pubdate data-updated="true">Jun 3<span>rd</span>, 2014</time>
+<time datetime="2016-01-08T09:56:00+08:00" pubdate data-updated="true">Jan 8<span>th</span>, 2016</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/linux/'>linux</a>
+    <a class='category' href='/blog/categories/hpc/'>HPC</a>
   
 </span>
 
@@ -228,10 +189,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2014/04/23/wxwidget-on-mavericks/" title="Previous Post: 在Mavericks上使用Makefile编写wxWidgets程序">&laquo; 在Mavericks上使用Makefile编写wxWidgets程序</a>
+        <a class="basic-alignment left articlenav" href="/blog/2016/01/07/kernel-do-while-macro/" title="Previous Post: 为什么包含多句代码的宏要用do while包括起来？">&laquo; 为什么包含多句代码的宏要用do while包括起来？</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/06/08/zopo-c7-flash/" title="Next Post: 卓普大黑（Zopo C7/zp990）刷原生ROM，root，升级触控屏，修改GPS">卓普大黑（Zopo C7/zp990）刷原生ROM，root，升级触控屏，修改GPS &raquo;</a>
       
     </p>
   </footer>

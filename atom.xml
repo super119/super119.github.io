@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://markzhang.cn/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2016-01-07T11:10:10+08:00</updated>
+  <updated>2016-01-08T10:03:45+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,50 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[并行编程优化Tips]]></title>
+    <link href="http://markzhang.cn/blog/2016/01/08/parallel-programming-optimization/"/>
+    <updated>2016-01-08T09:56:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2016/01/08/parallel-programming-optimization</id>
+    <content type="html"><![CDATA[<p>编程优化：</p>
+
+<ul>
+<li><p>编程优化，比如Fortran二维数组中，要按行存放，按列访问，这样可以让cache工作更高效。</p></li>
+<li><p>循环展开，如CPU一拍能做四次浮点运算，那么可以将一个浮点计算循环（计算内容简单的）拆分成每次循环step为4，循环体内手动做四次循环代码。这样代码不好看，但是能得到性能提高。</p></li>
+</ul>
+
+
+<!-- more -->
+
+
+<ul>
+<li><p>运算顺序的调整，减少CPU流水线的迟滞。可以和循环展开配合，得到更好的性能。</p></li>
+<li><p>针对Cache的优化。</p>
+
+<ol>
+<li><p>数组合并: 利用块长，改善空间局部性</p></li>
+<li><p>循环交换: 改变嵌套循环中访问内存的次序</p></li>
+<li><p>循环合并: 增强数据的可重用性（时间局部性）</p></li>
+<li><p>分块: 集中访问可取入cache的块状矩阵，避免全行或全列的读写，以增强时间局部性。&mdash; 计算一个Cache中能放下的子矩阵。</p></li>
+</ol>
+</li>
+<li><p>做MPI通讯的时候，将小数据量多次通讯变成整合式少次通讯。这样回避网络latency的问题。</p></li>
+<li><p>文件I/O要尽量减少，除非是不能回避的。</p></li>
+<li><p>考虑OpenMP+MPI的并行编码方式，这样在单机内可以避免使用MPI。</p></li>
+</ul>
+
+
+<p>编译等其他辅助性优化：</p>
+
+<ul>
+<li><p>Intel compiler &ndash; 针对硬件架构的优化，比如MMX/SSE等指令集的优化。可以优化一些looper等。Prefetch, loop interchange, cache blocking等。</p></li>
+<li><p>使用高效的数学库（BLAS/GOTO等）。</p></li>
+<li><p>利用vtunes等类似性能调试软件来调试性能热点。比如vtunes/Intel cluster toolkits可以看出计算/通讯的时间占用比。</p></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[为什么包含多句代码的宏要用do while包括起来？]]></title>
@@ -808,52 +852,6 @@ the size of the structures to a multiple of the maximum member size.</p></li>
 
 
 <p>事实上，当repo init完成，在本地的.repo/manifests目录下就可以看到manifest这个git project，可以用git branch -av来查看branch，用git log来查看日志。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Thunderbird配置 - for kernel maillist]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/21/kernel-thunderbird/"/>
-    <updated>2015-12-21T14:22:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/21/kernel-thunderbird</id>
-    <content type="html"><![CDATA[<p>From kernel: Documentation/email-clients.txt</p>
-
-<!-- more -->
-
-
-<p>Thunderbird (GUI)</p>
-
-<p>Thunderbird is an Outlook clone that likes to mangle text, but there are ways
-to coerce it into behaving.</p>
-
-<ul>
-<li>Allows use of an external editor:
-The easiest thing to do with Thunderbird and patches is to use an
-&ldquo;external editor&rdquo; extension and then just use your favorite $EDITOR
-for reading/merging patches into the body text.  To do this, download
-and install the extension, then add a button for it using
-View->Toolbars->Customize&hellip; and finally just click on it when in the
-Compose dialog.</li>
-</ul>
-
-
-<p>To beat some sense out of the internal editor, do this:</p>
-
-<ul>
-<li><p>Edit your Thunderbird config settings so that it won&rsquo;t use format=flowed.
-Go to &ldquo;edit->preferences->advanced->config editor&rdquo; to bring up the
-thunderbird&rsquo;s registry editor, and set &ldquo;mailnews.send_plaintext_flowed&rdquo; to
-&ldquo;false&rdquo;.</p></li>
-<li><p>Disable HTML Format: Set &ldquo;mail.identity.id1.compose_html&rdquo; to &ldquo;false&rdquo;.</p></li>
-<li><p>Enable &ldquo;preformat&rdquo; mode: Set &ldquo;editor.quotesPreformatted&rdquo; to &ldquo;true&rdquo;.</p></li>
-<li><p>Enable UTF8: Set &ldquo;prefs.converted-to-utf8&rdquo; to &ldquo;true&rdquo;.</p></li>
-<li><p>Install the &ldquo;toggle wordwrap&rdquo; extension.  Download the file from:
-  <a href="https://addons.mozilla.org/thunderbird/addon/2351/">https://addons.mozilla.org/thunderbird/addon/2351/</a>
-Then go to &ldquo;tools->add ons&rdquo;, select &ldquo;install&rdquo; at the bottom of the screen,
-and browse to where you saved the .xul file.  This adds an &ldquo;Enable
-Wordwrap&rdquo; entry under the Options menu of the message composer.</p></li>
-</ul>
-
 ]]></content>
   </entry>
   

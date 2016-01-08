@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: HPC | Make Things Cool]]></title>
+  <link href="http://markzhang.cn/blog/categories/hpc/atom.xml" rel="self"/>
+  <link href="http://markzhang.cn/"/>
+  <updated>2016-01-08T10:03:45+08:00</updated>
+  <id>http://markzhang.cn/</id>
+  <author>
+    <name><![CDATA[Mark Zhang]]></name>
+    <email><![CDATA[super119@139.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[并行编程优化Tips]]></title>
+    <link href="http://markzhang.cn/blog/2016/01/08/parallel-programming-optimization/"/>
+    <updated>2016-01-08T09:56:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2016/01/08/parallel-programming-optimization</id>
+    <content type="html"><![CDATA[<p>编程优化：</p>
+
+<ul>
+<li><p>编程优化，比如Fortran二维数组中，要按行存放，按列访问，这样可以让cache工作更高效。</p></li>
+<li><p>循环展开，如CPU一拍能做四次浮点运算，那么可以将一个浮点计算循环（计算内容简单的）拆分成每次循环step为4，循环体内手动做四次循环代码。这样代码不好看，但是能得到性能提高。</p></li>
+</ul>
+
+
+<!-- more -->
+
+
+<ul>
+<li><p>运算顺序的调整，减少CPU流水线的迟滞。可以和循环展开配合，得到更好的性能。</p></li>
+<li><p>针对Cache的优化。</p>
+
+<ol>
+<li><p>数组合并: 利用块长，改善空间局部性</p></li>
+<li><p>循环交换: 改变嵌套循环中访问内存的次序</p></li>
+<li><p>循环合并: 增强数据的可重用性（时间局部性）</p></li>
+<li><p>分块: 集中访问可取入cache的块状矩阵，避免全行或全列的读写，以增强时间局部性。&mdash; 计算一个Cache中能放下的子矩阵。</p></li>
+</ol>
+</li>
+<li><p>做MPI通讯的时候，将小数据量多次通讯变成整合式少次通讯。这样回避网络latency的问题。</p></li>
+<li><p>文件I/O要尽量减少，除非是不能回避的。</p></li>
+<li><p>考虑OpenMP+MPI的并行编码方式，这样在单机内可以避免使用MPI。</p></li>
+</ul>
+
+
+<p>编译等其他辅助性优化：</p>
+
+<ul>
+<li><p>Intel compiler &ndash; 针对硬件架构的优化，比如MMX/SSE等指令集的优化。可以优化一些looper等。Prefetch, loop interchange, cache blocking等。</p></li>
+<li><p>使用高效的数学库（BLAS/GOTO等）。</p></li>
+<li><p>利用vtunes等类似性能调试软件来调试性能热点。比如vtunes/Intel cluster toolkits可以看出计算/通讯的时间占用比。</p></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>
