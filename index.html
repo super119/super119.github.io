@@ -9,8 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="编程优化： 编程优化，比如Fortran二维数组中，要按行存放，按列访问，这样可以让cache工作更高效。
-循环展开，如CPU一拍能做四次浮点运算，那么可以将一个浮点计算循环（计算内容简单的）拆分成每次循环step为4，循环体内手动做四次循环代码。这样代码不好看，但是能得到性能提高。 ">
+  <meta name="description" content="代码见文章末尾。 a是未初始化的全局变量，编译成.o的时候不会被放入.bss段，是一个弱符号。当有2个或多个弱符号的时候，linkder会挑选占用空间最大的弱符号。所以，这里最后链接完成后，a占用8个字节。但是在a.c中，a的类型仍然是int，在b.c中，a的类型是double。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +73,94 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2016/01/12/uninitialized-global-variable/">链接装载和库读书笔记 - 未初始化的全局变量是弱符号</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-12T09:43:00+08:00" pubdate data-updated="true">Jan 12<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>代码见文章末尾。</p>
+
+<p>a是未初始化的全局变量，编译成.o的时候不会被放入.bss段，是一个弱符号。当有2个或多个弱符号的时候，linkder会挑选占用空间最大的弱符号。所以，这里最后链接完成后，a占用8个字节。但是在a.c中，a的类型仍然是int，在b.c中，a的类型是double。只是占用空间是8个字节。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/01/12/uninitialized-global-variable/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2016/01/12/global-variable-in-shared-lib/">链接装载和库读书笔记 - 在动态库中尽量少使用全局变量，要使用请加上static</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-12T09:39:00+08:00" pubdate data-updated="true">Jan 12<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>动态共享库编译的时候，对于全局变量，一律视为模块间变量访问。变量会通过数据段的GOT表来访问。而且，当可执行文件中（由于可执行文件不是PIC的）有同名全局变量时，共享库中定义的变量会被ignore，进程中只会存在可执行程序中的super_a。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/01/12/global-variable-in-shared-lib/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -467,92 +554,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2016/01/03/getty-l/">为什么linux的TTY登录程序getty/agetty一般都会设置一个-L的option？</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-01-03T11:36:00+08:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2016</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>-L option表示程序不等待DCD信号。DCD信号是串口通讯时的一个信号，表示Data Carrier Detected，一般是modem连通之后会发送回来的一个信号，表示数据载波OK，可以继续通信了。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2016/01/03/getty-l/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2015/12/30/dmabuf-slash-dma-mapping-slash-iommu-slash-cma-slash-ttm-slash-gem-slash-gart-slash-smmu/">DMABUF/DMA Mapping/IOMMU/CMA/TTM/GEM/GART/SMMU</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-30T09:24:00+08:00" pubdate data-updated="true">Dec 30<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ol>
-<li><p>DMABUF can be used as a wrapper to encapsulate other memory management frameworks. All these memory management framework(I mean mostly for graphics), buffer is the keypoint. DMABUF defines a standard buffer structure. So DMABUF can be used as a wrapper for TTM/GEM/Android ION&hellip; and etc. Notice DMABUF can&rsquo;t replace these things, cause it doesn&rsquo;t cover everything. E.g: DMABUF has no userspace interfaces, right now only kernel interfaces(can be used in device driver).</p></li>
-<li><p>Kernel has DMA mapping API from origin. ARM defines IOMMU which can be used to connect scattered physical memory as a continuous region for devices which needs continue address to work(e.g: DMA). So IOMMU implementations &amp; CMA should work behind kernel DMA mapping API. E.g: dma_alloc_from_contiguous can be implemented by CMA; dma_alloc_coherent can be implemented by IOMMU or by the normal case(just call __get_free_pages). So for device drivers need dma buffers, we should use dma mapping APIs, not call iommu api directly.</p></li>
-<li><p>For tegra, GART &amp; SMMU can be used to implement IOMMU apis.</p></li>
-</ol>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -565,11 +566,19 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/hpc'>HPC (1)</a></li><li><a href='/blog/categories/linux'>linux (18)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (23)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/hpc'>HPC (1)</a></li><li><a href='/blog/categories/linux'>linux (20)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (23)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/01/12/uninitialized-global-variable/">链接装载和库读书笔记 - 未初始化的全局变量是弱符号</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/12/global-variable-in-shared-lib/">链接装载和库读书笔记 - 在动态库中尽量少使用全局变量，要使用请加上static</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/01/08/parallel-programming-optimization/">并行编程优化Tips</a>
@@ -581,14 +590,6 @@
     
       <li class="post">
         <a href="/blog/2016/01/07/recv-q-send-q/">Netstat -na输出中Recv-Q和Send-Q两项的值不为零需要注意程序是否有问题</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/06/kernel-suspend-description/">Kernel Suspend的逻辑</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/05/kernel-suspend-resume-description/">Kernel Resume的逻辑</a>
       </li>
     
   </ul>

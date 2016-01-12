@@ -331,12 +331,20 @@
         <lastmod>2016-01-08T09:58:39+08:00</lastmod>
     </url>
     <url>
+        <loc>http://markzhang.cn/blog/2016/01/12/global-variable-in-shared-lib/</loc>
+        <lastmod>2016-01-12T09:44:54+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://markzhang.cn/blog/2016/01/12/uninitialized-global-variable/</loc>
+        <lastmod>2016-01-12T09:44:27+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://markzhang.cn/blog/archives/</loc>
-        <lastmod>2016-01-08T09:58:39+08:00</lastmod>
+        <lastmod>2016-01-12T09:44:54+08:00</lastmod>
     </url>
     <url>
         <loc>http://markzhang.cn/</loc>
-        <lastmod>2016-01-08T09:58:39+08:00</lastmod>
+        <lastmod>2016-01-12T09:44:54+08:00</lastmod>
     </url>
     <url>
         <loc>http://markzhang.cn/about/</loc>

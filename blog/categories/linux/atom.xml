@@ -4,7 +4,7 @@
   <title><![CDATA[Category: linux | Make Things Cool]]></title>
   <link href="http://markzhang.cn/blog/categories/linux/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2016-01-08T10:03:45+08:00</updated>
+  <updated>2016-01-12T09:48:19+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,161 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[链接装载和库读书笔记 - 未初始化的全局变量是弱符号]]></title>
+    <link href="http://markzhang.cn/blog/2016/01/12/uninitialized-global-variable/"/>
+    <updated>2016-01-12T09:43:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2016/01/12/uninitialized-global-variable</id>
+    <content type="html"><![CDATA[<p>代码见文章末尾。</p>
+
+<p>a是未初始化的全局变量，编译成.o的时候不会被放入.bss段，是一个弱符号。当有2个或多个弱符号的时候，linkder会挑选占用空间最大的弱符号。所以，这里最后链接完成后，a占用8个字节。但是在a.c中，a的类型仍然是int，在b.c中，a的类型是double。只是占用空间是8个字节。</p>
+
+<!-- more -->
+
+
+<p>至于输出结果，由于b.c给a赋值了300，而且b.c中a是double类型，所以内存中a是：</p>
+
+<p><code>bash
+(gdb) x/1xg 0x601030
+0x601030 &lt;a&gt;:    0x4072c00000000000
+</code></p>
+
+<p>这就是为什么最后在a.c中打印a，出来的值是0。</p>
+
+<p>更多解释看链接装载和库的P111 &mdash; common块。</p>
+
+<p>BTW：如果两个a都是初始化了的全局变量，则链接会失败，因为两个强符号无法共存。如果一个初始化一个不初始化，则一个强符号一个弱符号，则以强符号占用的空间为准。</p>
+
+<p>测试代码如下：</p>
+
+<p>``` cpp
+super@super-desktop:~$ cat a.c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<h1>include &ldquo;b.h&rdquo;</h1>
+
+<p>int a;</p>
+
+<p>int main()
+{</p>
+
+<pre><code>a = 100;
+b_process();
+printf("A in main is: %d\n", a);
+return 0;
+</code></pre>
+
+<p>}
+super@super-desktop:~$ cat b.c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>double a;</p>
+
+<p>void b_process()
+{</p>
+
+<pre><code>a = 300;
+printf("A in b is: %f\n", a);
+</code></pre>
+
+<p>}
+super@super-desktop:~$ cat b.h</p>
+
+<h1>ifndef _B_H</h1>
+
+<h1>define _B_H</h1>
+
+<p>void b_process();</p>
+
+<h1>endif</h1>
+
+<p>```</p>
+
+<p>输出是：</p>
+
+<p>A in b is: 300.000000</p>
+
+<p>A in main is: 0</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[链接装载和库读书笔记 - 在动态库中尽量少使用全局变量，要使用请加上static]]></title>
+    <link href="http://markzhang.cn/blog/2016/01/12/global-variable-in-shared-lib/"/>
+    <updated>2016-01-12T09:39:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2016/01/12/global-variable-in-shared-lib</id>
+    <content type="html"><![CDATA[<p>动态共享库编译的时候，对于全局变量，一律视为模块间变量访问。变量会通过数据段的GOT表来访问。而且，当可执行文件中（由于可执行文件不是PIC的）有同名全局变量时，共享库中定义的变量会被ignore，进程中只会存在可执行程序中的super_a。</p>
+
+<!-- more -->
+
+
+<p>所以，编写动态库的时候，尽量少用全局变量，如果要用，请加上static，这样就不会有问题。</p>
+
+<p>参考链接装载和库的P198 &mdash; 共享模块的全局变量问题。</p>
+
+<p>BTW：如果是静态链接，链接会失败报错 &mdash; multiple definition of super_a。</p>
+
+<p>以下是测试代码：</p>
+
+<p>``` cpp
+super@super-desktop:~$ cat lib.h</p>
+
+<h1>ifndef _LIB_H</h1>
+
+<h1>define _LIB_H</h1>
+
+<p>void lib_func();</p>
+
+<h1>endif</h1>
+
+<p>super@super-desktop:~$ cat lib.c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<p>int super_a = 0;</p>
+
+<p>void lib_func()
+{</p>
+
+<pre><code>printf("A is: %d\n", super_a);
+return;
+</code></pre>
+
+<p>}
+super@super-desktop:~$ cat main.c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<h1>include &ldquo;lib.h&rdquo;</h1>
+
+<p>int super_a = 0;</p>
+
+<p>int main()
+{</p>
+
+<pre><code>super_a = 100;
+lib_func();
+printf("A in main is: %d\n", super_a);
+return 0;
+</code></pre>
+
+<p>}
+```</p>
+
+<p>输出是：</p>
+
+<p><code>bash
+super@super-desktop:~$ gcc -shared -fPIC -g -o liblib.so lib.c
+super@super-desktop:~$ gcc -o main main.c -L. -llib
+super@super-desktop:~$ ./main
+A is: 100
+A in main is: 100
+</code></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[netstat -na输出中Recv-Q和Send-Q两项的值不为零需要注意程序是否有问题]]></title>
@@ -80,55 +235,6 @@ export PATH=/usr/local/bin:$PATH
 <p>Specifying soft causes GCC to generate output containing library calls for floating-point operations.  softfp allows the generation of code using hardware floating-point instructions, but still uses the soft-float calling conventions.  hard allows generation of floating-point instructions and uses FPU-specific calling conventions.</p>
 
 <p>The default depends on the specific target configuration.  Note that the hard-float and soft-float ABIs are not link-compatible; you must compile your entire program with the same ABI, and link with a compatible set of libraries.</p></blockquote>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[UTF-8 Encoding rules]]></title>
-    <link href="http://markzhang.cn/blog/2016/01/03/utf8-encoding-rules/"/>
-    <updated>2016-01-03T11:38:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2016/01/03/utf8-encoding-rules</id>
-    <content type="html"><![CDATA[<p><code>cpp
-/* UTF-8 encoding
-00000000-01111111  00-7F  US-ASCII (single byte)
-10000000-10111111  80-BF  Second, third, or fourth byte of a multi-byte sequence
-11000000-11011111  C0-DF  Start of 2-byte sequence
-11100000-11101111  E0-EF  Start of 3-byte sequence
-11110000-11110100  F0-F4  Start of 4-byte sequence
-*/
-</code></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux通过sendmsg在进程中共享FD]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/25/share-fd-by-sendmsg/"/>
-    <updated>2015-12-25T10:57:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/25/share-fd-by-sendmsg</id>
-    <content type="html"><![CDATA[<p>对于现代Linux来说，FD的使用变的越来越广泛。FD不光用于一个文件或设备的打开句柄，现在FD还往往会用于一些其他数据类型的句柄，比如一块buffer。</p>
-
-<p>对于一些要避免拷贝的buffer来说（比如一块用于display的buffer，或者一块用于render的buffer），使用FD来表示这块buffer并在不同进程中传递就被使用的越来越广泛。而且进程退出（不管是正常退出还是被杀）的时候，FD还能被kernel回收，再加上 <code>reference count</code>，这块buffer就不会有泄漏的问题。看看Android和Linux kernel的代码就会发现，现在使用FD的这种例子是越来越多了。</p>
-
-<p>在userspace，进程共享FD可以通过 <code>sendmsg</code> 来实现：</p>
-
-<!-- more -->
-
-
-<p>man 7 unix</p>
-
-<p>man sendmsg</p>
-
-<p>sendmsg可以发送control message，也就是不是普通的regular数据。看sendmsg的manual可以知道。</p>
-
-<p>control message其实也是指定一个指针和一个长度，和普通数据一样。</p>
-
-<p>有趣的事，control message可以发送一个FD（或一组，以数组方式组织）给另外一个进程。不是说把FD这个数字发给了别人，而是这个FD真正的另外一个进程中存在，而且和发送进程的FD指向的是一个struct file</p>
-
-<p>简单来说，就好象接收进程dup了发送进程的那个FD一样。事实上嘛，大家都懂的，其实就是kernel帮助接收进程dup了一下而已。。。</p>
-
-<p>在man 7 unix中搜索SCM_RIGHTS可以看到具体用法和信息。</p>
-
-<p>有个条件是：必须工作在UNIX这个socket domain上（AF_UNIX），TCP/IP socket domain是不行的。</p>
 ]]></content>
   </entry>
   

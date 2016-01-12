@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Ubuntu 12.04安装Microsoft lifecam studio摄像头 - Make Things Cool</title>
+  <title>链接装载和库读书笔记 - 在动态库中尽量少使用全局变量，要使用请加上static - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="这是一个UVC摄像头，所以可以使用uvcvideo这个kernel驱动，一般kernel都编译了这个module。 什么是UVC？ UVC，全称为：USB video class 或USB video device class &hellip;">
+  <meta name="description" content="动态共享库编译的时候，对于全局变量，一律视为模块间变量访问。变量会通过数据段的GOT表来访问。而且，当可执行文件中（由于可执行文件不是PIC的）有同名全局变量时，共享库中定义的变量会被ignore，进程中只会存在可执行程序中的super_a。 所以，编写动态库的时候，尽量少用全局变量，如果要用， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://markzhang.cn/blog/2015/12/24/ubuntu-install-microsoft-camera/">
+  <link rel="canonical" href="http://markzhang.cn/blog/2016/01/12/global-variable-in-shared-lib/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">Ubuntu 12.04安装Microsoft Lifecam Studio摄像头</h1>
+        <h1 class="entry-title">链接装载和库读书笔记 - 在动态库中尽量少使用全局变量，要使用请加上static</h1>
       
     
     
@@ -94,75 +94,103 @@
   
 
 
-<time datetime="2015-12-24T09:20:00+08:00" pubdate data-updated="true">Dec 24<span>th</span>, 2015</time>
+<time datetime="2016-01-12T09:39:00+08:00" pubdate data-updated="true">Jan 12<span>th</span>, 2016</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>这是一个UVC摄像头，所以可以使用uvcvideo这个kernel驱动，一般kernel都编译了这个module。</p>
-
-<p>什么是UVC？</p>
-
-<p>UVC，全称为：USB video class 或USB video device class</p>
+<div class="entry-content"><p>动态共享库编译的时候，对于全局变量，一律视为模块间变量访问。变量会通过数据段的GOT表来访问。而且，当可执行文件中（由于可执行文件不是PIC的）有同名全局变量时，共享库中定义的变量会被ignore，进程中只会存在可执行程序中的super_a。</p>
 
 <!-- more -->
 
 
-<p>UVC是Microsoft与另外几家设备厂商联合推出的为USB视频捕获设备定义的协议标准，目前已成为USB org标准之一。</p>
+<p>所以，编写动态库的时候，尽量少用全局变量，如果要用，请加上static，这样就不会有问题。</p>
 
-<p>如今的主流操作系统(如Windows XP SP2 and later, Linux 2.4.6 and later, MacOS 10.5 and later)都已提供UVC设备驱动，因此符合UVC规格的硬件设备在不需要安装任何的驱动程序下即可在主机中正常使用。使用UVC技术的包括摄像头、数码相机、类比影像转换器、电视棒及静态影像相机等设备。</p>
+<p>参考链接装载和库的P198 &mdash; 共享模块的全局变量问题。</p>
 
-<p>最新的UVC版本为UVC 1.1，由USB Implementers Forum定义包括基本协议及负载格式。</p>
+<p>BTW：如果是静态链接，链接会失败报错 &mdash; multiple definition of super_a。</p>
 
-<p>网络摄像头是第一个支持UVC而且也是数量最多的UVC设备，目前，操作系统只要是 Windows XP SP2 之后的版本都可以支持 UVC，当然 Vista 就更不用说了。Linux系统自2.4以后的内核都支持了大量的设备驱动，其中支持UVC设备。</p>
-
-<p>使用 UVC 的好处 USB 在 Video这块也成为一项标准了之后，硬件在各个程序之间彼此运行会更加顺利，而且也省略了驱动程序安装这一环节。</p>
-
-<p>所以，apt-get一下guvcview就可以看到图像了。</p>
-
-<p>问题：</p>
-
-<p><strong> 第一个问题 </strong></p>
-
-<p>也是uvc驱动官方网站给出的问题，就是有关这款摄像头每次都请求最大USB带宽的问题，需要给uvcvideo这个kernel module添加一个参数，具体做法是：</p>
+<p>以下是测试代码：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo rmmod uvcvideo
-</span><span class='line'>sudo modprobe uvcvideo <span class="nv">quirks</span><span class="o">=</span>0x80
-</span><span class='line'>重新插拔摄像头
-</span><span class='line'>cat /sys/module/uvcvideo/parameters/quirks来检验是否设置成功了。
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">super</span><span class="err">@</span><span class="n">super</span><span class="o">-</span><span class="nl">desktop:</span><span class="o">~</span><span class="err">$</span> <span class="n">cat</span> <span class="n">lib</span><span class="p">.</span><span class="n">h</span>
+</span><span class='line'><span class="cp">#ifndef _LIB_H</span>
+</span><span class='line'><span class="cp">#define _LIB_H</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">lib_func</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'><span class="n">super</span><span class="err">@</span><span class="n">super</span><span class="o">-</span><span class="nl">desktop:</span><span class="o">~</span><span class="err">$</span> <span class="n">cat</span> <span class="n">lib</span><span class="p">.</span><span class="n">c</span>
+</span><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">super_a</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">lib_func</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;A is: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">super_a</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="n">super</span><span class="err">@</span><span class="n">super</span><span class="o">-</span><span class="nl">desktop:</span><span class="o">~</span><span class="err">$</span> <span class="n">cat</span> <span class="n">main</span><span class="p">.</span><span class="n">c</span>
+</span><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'><span class="cp">#include &quot;lib.h&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">super_a</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">super_a</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">lib_func</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;A in main is: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">super_a</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>参考资料：<a href="http://www.ideasonboard.org/uvc/faq/#faq6">http://www.ideasonboard.org/uvc/faq/#faq6</a></p>
-
-<p><strong> 第二个问题 </strong></p>
-
-<p>有的时候会发现好好的图像定格了，或者是整个摄像头设备都没了（在lsusb中看不到了）。此外还有个现象就是，摄像头上的蓝灯会莫名其妙的闪烁起来。Google下，这是由于Chrome中的Peperflash造成的。所以，禁用PeperFlash，安装Adobe的flash即可。做法：</p>
-
-<p>打开chrome，输入about:plugins，点右上角Details，Disable PeperFlash</p>
-
-<p>在Adobe网站下载11.2的flashplayer，可以下载.tar.gz包那个版本，解开，得到libflashplayer.so和一个usr目录。</p>
+<p>输出是：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo mkdir /opt/google/chrome/plugins
-</span><span class='line'>sudo cp &lt;libflashplayer.so&gt; /opt/google/chrome/plugins
-</span><span class='line'>sudo cp usr/* /usr
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>super@super-desktop:~<span class="nv">$ </span>gcc -shared -fPIC -g -o liblib.so lib.c
+</span><span class='line'>super@super-desktop:~<span class="nv">$ </span>gcc -o main main.c -L. -llib
+</span><span class='line'>super@super-desktop:~<span class="nv">$ </span>./main
+</span><span class='line'>A is: 100
+</span><span class='line'>A in main is: 100
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>重启Chrome，再次进入about:plugins，发现11.2的Adobe flash是enable的，PeperFlash是disable的，就OK了。</p>
-
-<p>貌似PeperFlash是Chrome自带的一个flashplayer，有GPU加速。</p>
-
-<p>Adobe的Linux flashplayer不会再有新版本，但是会有安全更新。</p>
 </div>
 
 
@@ -170,7 +198,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2016 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2015/12/24/ubuntu-install-microsoft-camera/<br>
+原文链接: http://www.markzhang.cn/blog/2016/01/12/global-variable-in-shared-lib/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -193,7 +221,7 @@
   
 
 
-<time datetime="2015-12-24T09:20:00+08:00" pubdate data-updated="true">Dec 24<span>th</span>, 2015</time>
+<time datetime="2016-01-12T09:39:00+08:00" pubdate data-updated="true">Jan 12<span>th</span>, 2016</time>
       
 
 <span class="categories">
@@ -214,10 +242,10 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2015/12/24/thunderbird-change-line-height/" title="Previous Post: Thunderbird on Ubuntu 12.04 - 调整邮件列表行间距">&laquo; Thunderbird on Ubuntu 12.04 - 调整邮件列表行间距</a>
+        <a class="basic-alignment left articlenav" href="/blog/2016/01/08/parallel-programming-optimization/" title="Previous Post: 并行编程优化Tips">&laquo; 并行编程优化Tips</a>
       
       
-        <a class="basic-alignment right articlenav" href="/blog/2015/12/25/setup-kgdb/" title="Next Post: KGDB配置使用">KGDB配置使用 &raquo;</a>
+        <a class="basic-alignment right articlenav" href="/blog/2016/01/12/uninitialized-global-variable/" title="Next Post: 链接装载和库读书笔记 - 未初始化的全局变量是弱符号">链接装载和库读书笔记 - 未初始化的全局变量是弱符号 &raquo;</a>
       
     </p>
   </footer>
