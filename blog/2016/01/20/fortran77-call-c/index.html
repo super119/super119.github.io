@@ -5,11 +5,20 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>链接装载和库读书笔记 - 未初始化的全局变量是弱符号 - Make Things Cool</title>
+  <title>Fortran77如何调用C代码 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="代码见文章末尾。 a是未初始化的全局变量，编译成.o的时候不会被放入.bss段，是一个弱符号。当有2个或多个弱符号的时候，linkder会挑选占用空间最大的弱符号。所以，这里最后链接完成后，a占用8个字节。但是在a.c中，a的类型仍然是int，在b.c中，a的类型是double。 &hellip;">
+  <meta name="description" content="比如C的代码（文件名：test.c）如下（注意C源代码里不能有main函数，编译时也一定要加-c开关）： 1
+2
+3
+4
+5
+6
+7
+8
+#include &lt;stdio.h&gt; #define sub1 sub1_ void sub1(int *num)
+{ printf(&quot;% &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +27,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://markzhang.cn/blog/2016/01/12/uninitialized-global-variable/">
+  <link rel="canonical" href="http://markzhang.cn/blog/2016/01/20/fortran77-call-c/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +86,7 @@
   <header>
     
       
-        <h1 class="entry-title">链接装载和库读书笔记 - 未初始化的全局变量是弱符号</h1>
+        <h1 class="entry-title">Fortran77如何调用C代码</h1>
       
     
     
@@ -94,38 +103,40 @@
   
 
 
-<time datetime="2016-01-12T09:43:00+08:00" pubdate data-updated="true">Jan 12<span>th</span>, 2016</time>
+<time datetime="2016-01-20T15:37:00+08:00" pubdate data-updated="true">Jan 20<span>th</span>, 2016</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>代码见文章末尾。</p>
-
-<p>a是未初始化的全局变量，编译成.o的时候不会被放入.bss段，是一个弱符号。当有2个或多个弱符号的时候，linkder会挑选占用空间最大的弱符号。所以，这里最后链接完成后，a占用8个字节。但是在a.c中，a的类型仍然是int，在b.c中，a的类型是double。只是占用空间是8个字节。</p>
+<div class="entry-content"><p>比如C的代码（文件名：test.c）如下（注意C源代码里不能有main函数，编译时也一定要加-c开关）：</p>
 
 <!-- more -->
 
 
-<p>至于输出结果，由于b.c给a赋值了300，而且b.c中a是double类型，所以内存中a是：</p>
+
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">(</span>gdb<span class="o">)</span> x/1xg 0x601030
-</span><span class='line'>0x601030 &lt;a&gt;:    0x4072c00000000000
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define sub1 sub1_</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">sub1</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">num</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">num</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p></p>
-
-<p>这就是为什么最后在a.c中打印a，出来的值是0。</p>
-
-<p>更多解释看链接装载和库的P111 &mdash; common块。</p>
-
-<p>BTW：如果两个a都是初始化了的全局变量，则链接会失败，因为两个强符号无法共存。如果一个初始化一个不初始化，则一个强符号一个弱符号，则以强符号占用的空间为准。</p>
-
-<p>测试代码如下：</p>
+<p>Fortran的代码（文件名：testf.f）如下（Fortran调用C的sub1函数）：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -136,65 +147,39 @@
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">super</span><span class="err">@</span><span class="n">super</span><span class="o">-</span><span class="nl">desktop:</span><span class="o">~</span><span class="err">$</span> <span class="n">cat</span> <span class="n">a</span><span class="p">.</span><span class="n">c</span>
-</span><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
-</span><span class='line'><span class="cp">#include &quot;b.h&quot;</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>  program main
+</span><span class='line'>  implicit none
 </span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="n">a</span><span class="p">;</span>
+</span><span class='line'>  integer a
+</span><span class='line'>  <span class="nv">a</span> <span class="o">=</span> 10
 </span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">a</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">b_process</span><span class="p">();</span>
-</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;A in main is: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="n">super</span><span class="err">@</span><span class="n">super</span><span class="o">-</span><span class="nl">desktop:</span><span class="o">~</span><span class="err">$</span> <span class="n">cat</span> <span class="n">b</span><span class="p">.</span><span class="n">c</span>
-</span><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'>  call sub1<span class="o">(</span>a<span class="o">)</span>
 </span><span class='line'>
-</span><span class='line'><span class="kt">double</span> <span class="n">a</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="n">b_process</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">a</span> <span class="o">=</span> <span class="mi">300</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;A in b is: %f</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="n">super</span><span class="err">@</span><span class="n">super</span><span class="o">-</span><span class="nl">desktop:</span><span class="o">~</span><span class="err">$</span> <span class="n">cat</span> <span class="n">b</span><span class="p">.</span><span class="n">h</span>
-</span><span class='line'><span class="cp">#ifndef _B_H</span>
-</span><span class='line'><span class="cp">#define _B_H</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="n">b_process</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'>  end
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>输出是：</p>
+<p>这样就OK 了！编译的时候，这样操作：</p>
 
-<p>A in b is: 300.000000</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>g77 -c testf.f -o testf.o
+</span><span class='line'>gcc -c test.c -o test.o
+</span><span class='line'>g77 test.o testf.o -o <span class="nb">test</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>A in main is: 0</p>
+
+<p>然后运行test程序就可以了。</p>
+
+<p>相关说明：</p>
+
+<ol>
+<li><p>C代码被编译后会在函数名前面或后面加上下划线，各编译器实现不同，这段代码是在gcc和intel的编译器上测试的，所以，在C的代码里要做一个define的动作</p></li>
+<li><p>Fortran默认的函数参数传递方式是传址操作，所以，被调用的C函数的参数必须都是指针</p></li>
+<li><p>在Fortran90里，Fortran和C的函数互调基本上没有上述的限制</p></li>
+</ol>
+
 </div>
 
 
@@ -202,7 +187,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2016 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2016/01/12/uninitialized-global-variable/<br>
+原文链接: http://www.markzhang.cn/blog/2016/01/20/fortran77-call-c/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -225,12 +210,12 @@
   
 
 
-<time datetime="2016-01-12T09:43:00+08:00" pubdate data-updated="true">Jan 12<span>th</span>, 2016</time>
+<time datetime="2016-01-20T15:37:00+08:00" pubdate data-updated="true">Jan 20<span>th</span>, 2016</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/linux/'>linux</a>
+    <a class='category' href='/blog/categories/hpc/'>HPC</a>
   
 </span>
 
@@ -246,10 +231,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2016/01/12/global-variable-in-shared-lib/" title="Previous Post: 链接装载和库读书笔记 - 在动态库中尽量少使用全局变量，要使用请加上static">&laquo; 链接装载和库读书笔记 - 在动态库中尽量少使用全局变量，要使用请加上static</a>
+        <a class="basic-alignment left articlenav" href="/blog/2016/01/20/mpirun-p4pg/" title="Previous Post: mpirun的p4pg参数的用法示例">&laquo; mpirun的p4pg参数的用法示例</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2016/01/20/fortran-90-code-tips/" title="Next Post: Fortran90 代码书写注意点">Fortran90 代码书写注意点 &raquo;</a>
       
     </p>
   </footer>

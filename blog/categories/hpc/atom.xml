@@ -4,7 +4,7 @@
   <title><![CDATA[Category: HPC | Make Things Cool]]></title>
   <link href="http://markzhang.cn/blog/categories/hpc/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2016-01-12T09:56:11+08:00</updated>
+  <updated>2016-01-20T15:39:35+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,181 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Fortran77如何调用C代码]]></title>
+    <link href="http://markzhang.cn/blog/2016/01/20/fortran77-call-c/"/>
+    <updated>2016-01-20T15:37:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2016/01/20/fortran77-call-c</id>
+    <content type="html"><![CDATA[<p>比如C的代码（文件名：test.c）如下（注意C源代码里不能有main函数，编译时也一定要加-c开关）：</p>
+
+<!-- more -->
+
+
+<p>``` cpp</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<h1>define sub1 sub1_</h1>
+
+<p>void sub1(int *num)
+{</p>
+
+<pre><code>printf("%d\n", *num);
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Fortran的代码（文件名：testf.f）如下（Fortran调用C的sub1函数）：</p>
+
+<p>``` bash</p>
+
+<pre><code>  program main
+  implicit none
+
+  integer a
+  a = 10
+
+  call sub1(a)
+
+  end
+</code></pre>
+
+<p>```</p>
+
+<p>这样就OK 了！编译的时候，这样操作：</p>
+
+<p><code>bash
+g77 -c testf.f -o testf.o
+gcc -c test.c -o test.o
+g77 test.o testf.o -o test
+</code></p>
+
+<p>然后运行test程序就可以了。</p>
+
+<p>相关说明：</p>
+
+<ol>
+<li><p>C代码被编译后会在函数名前面或后面加上下划线，各编译器实现不同，这段代码是在gcc和intel的编译器上测试的，所以，在C的代码里要做一个define的动作</p></li>
+<li><p>Fortran默认的函数参数传递方式是传址操作，所以，被调用的C函数的参数必须都是指针</p></li>
+<li><p>在Fortran90里，Fortran和C的函数互调基本上没有上述的限制</p></li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[mpirun的p4pg参数的用法示例]]></title>
+    <link href="http://markzhang.cn/blog/2016/01/20/mpirun-p4pg/"/>
+    <updated>2016-01-20T15:34:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2016/01/20/mpirun-p4pg</id>
+    <content type="html"><![CDATA[<p>./MPI程序名-p4pg 文件名[MPI程序参数]</p>
+
+<p>这种方式可以精确控制在每台结点机上启动的MPI 进程数与进程序号，并且允许在不同结点机上启动不同的可执行文件(适用于Master/Slave 模式的并行程序)。文件文件名中按下列格式列出各结点机上启动的程序名:</p>
+
+<p><code>bash
+结点机名1 0 可执行文件名1
+结点机名2 1 可执行文件名2
+结点机名3 1 可执行文件名3
+... ...
+结点机名n 1 可执行文件名n
+</code></p>
+
+<!-- more -->
+
+
+<p>其中结点机名1 必须是运行该命令时所在的结点机, 可执行文件名1 必须与命令行上的MPI程序名为同一文件。所有可执行文件名必须使用绝对路径(如/home/zlb/test/cpi)。通常情况下，所有可执行文件名是一样的。而当同一结点机名出现多次时表示在该结点机上启动多个进程。</p>
+
+<p>例如，假设用户在结点机node1 的 /home/zlb/test 目录下，该目录中有已经编译好的MPI程序cpi。在该目录下创建一个名为p4file 的文件，它包含如下内容:</p>
+
+<p><code>bash
+node1 0 /home/zlb/test/cpi
+node2 1 /home/zlb/test/cpi
+node1 1 /home/zlb/test/cpi
+node2 1 /home/zlb/test/cpi
+</code></p>
+
+<p>则命令 <code>./cpi -p4pg p4file</code> 将在node1, node2 上运行四个进程, 其中进程0 和进程2 在node1上, 进程1 和进程3 在node2 上。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Fortran90 代码书写注意点]]></title>
+    <link href="http://markzhang.cn/blog/2016/01/20/fortran-90-code-tips/"/>
+    <updated>2016-01-20T15:28:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2016/01/20/fortran-90-code-tips</id>
+    <content type="html"><![CDATA[<p>if语句后面的条件表达式一定要用（）括 起来，如</p>
+
+<p><code>cpp
+if ( salary &lt; 1000 ) then
+if ( (salary &gt;= 1000) .AND. ( salary &lt;= 5000) ) then
+</code></p>
+
+<p>没有括号的话编译会产生错误</p>
+
+<!-- more -->
+
+
+<hr />
+
+<p>if－else if从句不用end if语句。也就是说，虽然 <code>if－else if</code> 这个从句中含有两个if判断，但在最后条件判断结束后，只需要写一个 <code>end if</code> 就OK了，不用写多个，如：</p>
+
+<p><code>cpp
+if ( salary &lt; 1000 ) then
+! do something
+else if ( salary &gt; 5000) then
+! do something
+end if
+</code></p>
+
+<hr />
+
+<p>如果if语句后只有一句代码，那么要注意then和end if都应该省略不写，如 <code>if (salary &lt; 1000) exit !</code> 没有then和end if，如果exit写在下一行，那么就应该写上then和end if</p>
+
+<hr />
+
+<p>DO循环中：<code>do counter=1, 10, 1</code> 需要注意的是这里的第二个参数不要写成counter&lt;=10</p>
+
+<p>Fortran中自动会添加counter&lt;=这样的描述</p>
+
+<p>如果要实现递减的循环，可以将递变参数改成负数</p>
+
+<hr />
+
+<p>Fortran中使用write可以控制格式化的输出，如write(*, 10)表示取行号为10行的FORMAT语句中的格式化，但一般来说，我们会写在write语句中，这样可读性好，此时的write应该这样写：</p>
+
+<p><code>cpp
+write(*, "('Hello World! This is ', I2, ' Processes!')") process_number
+</code></p>
+
+<p>也就是说，首先要用"( )&ldquo;将格式化字符串包起来，然后在中间，常量字符串用单引号包住，格式控制代码使用,号分割开</p>
+
+<hr />
+
+<p>Fortran中非常容易混淆的两个元素是“字符串”和“字符数组”！这样声明的是一个字符串：</p>
+
+<p>character(len=20) string</p>
+
+<p>而这样声明的，就是一个字符数组：</p>
+
+<p>character :: string(20)</p>
+
+<p>对于字符串，是不可以通过string(i)这样来引用元素的，因为这是数组的做法，对于字符串来说，</p>
+
+<p>要想取得其中的一个或部分元素，需要使用string(i:i)或string(i:i+4)这样的代码</p>
+
+<p>对于数组来说，上面的方法一样可以用，另外，还可以通过string(i)这样的方法来直接引用其中的元素</p>
+
+<hr />
+
+<p>Fortran的所有变量声明都必须放在代码的一开始，不可以在某句代码之后又出现变量的定义，这和C是相同的。但对于C来说，gcc编译器在这一点上做的比较好，gcc编译器允许c代码的变量随处定义，并且允许使用//而不是/<em> </em>/来注释一行。注释使用！符号</p>
+
+<hr />
+
+<p>一行写不完的代码，在行末加上 &amp;，表示下一行和本行是一行代码；也可以在某行的开头使用 &amp;，表示，本行和上一行是一行代码</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[并行编程优化Tips]]></title>

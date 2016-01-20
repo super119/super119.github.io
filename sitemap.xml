@@ -339,12 +339,24 @@
         <lastmod>2016-01-12T09:44:27+08:00</lastmod>
     </url>
     <url>
+        <loc>http://markzhang.cn/blog/2016/01/20/fortran-90-code-tips/</loc>
+        <lastmod>2016-01-20T15:33:01+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://markzhang.cn/blog/2016/01/20/mpirun-p4pg/</loc>
+        <lastmod>2016-01-20T15:36:52+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://markzhang.cn/blog/2016/01/20/fortran77-call-c/</loc>
+        <lastmod>2016-01-20T15:39:32+08:00</lastmod>
+    </url>
+    <url>
         <loc>http://markzhang.cn/blog/archives/</loc>
-        <lastmod>2016-01-12T09:55:38+08:00</lastmod>
+        <lastmod>2016-01-20T15:39:32+08:00</lastmod>
     </url>
     <url>
         <loc>http://markzhang.cn/</loc>
-        <lastmod>2016-01-12T09:55:38+08:00</lastmod>
+        <lastmod>2016-01-20T15:39:32+08:00</lastmod>
     </url>
     <url>
         <loc>http://markzhang.cn/about/</loc>

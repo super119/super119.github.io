@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="代码见文章末尾。 a是未初始化的全局变量，编译成.o的时候不会被放入.bss段，是一个弱符号。当有2个或多个弱符号的时候，linkder会挑选占用空间最大的弱符号。所以，这里最后链接完成后，a占用8个字节。但是在a.c中，a的类型仍然是int，在b.c中，a的类型是double。 &hellip;">
+  <meta name="description" content="比如C的代码（文件名：test.c）如下（注意C源代码里不能有main函数，编译时也一定要加-c开关）： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,161 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2016/01/20/fortran77-call-c/">Fortran77如何调用C代码</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-20T15:37:00+08:00" pubdate data-updated="true">Jan 20<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>比如C的代码（文件名：test.c）如下（注意C源代码里不能有main函数，编译时也一定要加-c开关）：</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/01/20/fortran77-call-c/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2016/01/20/mpirun-p4pg/">Mpirun的p4pg参数的用法示例</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-20T15:34:00+08:00" pubdate data-updated="true">Jan 20<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>./MPI程序名-p4pg 文件名[MPI程序参数]</p>
+
+<p>这种方式可以精确控制在每台结点机上启动的MPI 进程数与进程序号，并且允许在不同结点机上启动不同的可执行文件(适用于Master/Slave 模式的并行程序)。文件文件名中按下列格式列出各结点机上启动的程序名:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>结点机名1 0 可执行文件名1
+</span><span class='line'>结点机名2 1 可执行文件名2
+</span><span class='line'>结点机名3 1 可执行文件名3
+</span><span class='line'>... ...
+</span><span class='line'>结点机名n 1 可执行文件名n
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/01/20/mpirun-p4pg/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2016/01/20/fortran-90-code-tips/">Fortran90 代码书写注意点</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-20T15:28:00+08:00" pubdate data-updated="true">Jan 20<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>if语句后面的条件表达式一定要用（）括 起来，如</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">if</span> <span class="p">(</span> <span class="n">salary</span> <span class="o">&lt;</span> <span class="mi">1000</span> <span class="p">)</span> <span class="n">then</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span> <span class="p">(</span><span class="n">salary</span> <span class="o">&gt;=</span> <span class="mi">1000</span><span class="p">)</span> <span class="p">.</span><span class="n">AND</span><span class="p">.</span> <span class="p">(</span> <span class="n">salary</span> <span class="o">&lt;=</span> <span class="mi">5000</span><span class="p">)</span> <span class="p">)</span> <span class="n">then</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>没有括号的话编译会产生错误</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/01/20/fortran-90-code-tips/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -395,165 +550,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2016/01/04/cron-tips/">使用Cron的一些小Tips</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-01-04T10:08:00+08:00" pubdate data-updated="true">Jan 4<span>th</span>, 2016</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ul>
-<li><p>crontab -e编辑定时任务，crontab -l查看。最后的cron任务文件保存在/var/spool/cron/crontab目录下</p></li>
-<li><p>cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户，然后执行定义的定时任务。</p></li>
-<li><p>但是cron切换用户的时候，任何环境变量，包括.bashrc都不会被执行到。所以诸如$HOME这样的变量也是没有定义的。所以，一般在定时任务的脚本中，我们会这样处理：</p></li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'><span class="nv">HOME</span><span class="o">=</span>/home/markz
-</span><span class='line'><span class="nb">source</span> <span class="k">${</span><span class="nv">HOME</span><span class="k">}</span>/.bashrc
-</span><span class='line'><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>/usr/local/bin:<span class="nv">$PATH</span>
-</span><span class='line'>.... &lt;tasks&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>有一点注意，~/.bashrc往往都含有大量的定义和脚本执行，这有可能会影响到source的成功执行。我们之所以在需要cron的脚本中加入这句source，大多数情况下是为了定义一些环境变量。所以为了让source能保证成功，一般我们都会把需要的环境变量单独存放到一个文件中，然后去source那个文件即可。直接source ~/.bashrc不是一个好的做法。</p>
-
-<ul>
-<li>/var/log/syslog保存了cron的log，查看该log可以方便的知道定时任务执行的一些情况。</li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2016/01/04/softfp-hardfp/">Compile: What Is Softfp & Hardfp?</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-01-04T09:56:00+08:00" pubdate data-updated="true">Jan 4<span>th</span>, 2016</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>hardfp compiles inline FP instructions.  If you have an FPU this will be fastest.  If you don&rsquo;t, every FP instruction will trap to an emulation routine (assuming your runtime supports this).</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2016/01/04/softfp-hardfp/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2016/01/03/utf8-encoding-rules/">UTF-8 Encoding Rules</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-01-03T11:38:00+08:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2016</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cm">/* UTF-8 encoding</span>
-</span><span class='line'><span class="cm">00000000-01111111  00-7F  US-ASCII (single byte)</span>
-</span><span class='line'><span class="cm">10000000-10111111  80-BF  Second, third, or fourth byte of a multi-byte sequence</span>
-</span><span class='line'><span class="cm">11000000-11011111  C0-DF  Start of 2-byte sequence</span>
-</span><span class='line'><span class="cm">11100000-11101111  E0-EF  Start of 3-byte sequence</span>
-</span><span class='line'><span class="cm">11110000-11110100  F0-F4  Start of 4-byte sequence</span>
-</span><span class='line'><span class="cm">*/</span>
-</span></code></pre></td></tr></table></div></figure>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -566,11 +562,23 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/hpc'>HPC (1)</a></li><li><a href='/blog/categories/linux'>linux (20)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (23)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/hpc'>HPC (4)</a></li><li><a href='/blog/categories/linux'>linux (20)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (23)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/01/20/fortran77-call-c/">Fortran77如何调用C代码</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/20/mpirun-p4pg/">Mpirun的p4pg参数的用法示例</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/20/fortran-90-code-tips/">Fortran90 代码书写注意点</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/01/12/uninitialized-global-variable/">链接装载和库读书笔记 - 未初始化的全局变量是弱符号</a>
@@ -578,18 +586,6 @@
     
       <li class="post">
         <a href="/blog/2016/01/12/global-variable-in-shared-lib/">链接装载和库读书笔记 - 在动态库中尽量少使用全局变量，要使用请加上static</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/08/parallel-programming-optimization/">并行编程优化Tips</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/07/kernel-do-while-macro/">为什么包含多句代码的宏要用do While包括起来？</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/07/recv-q-send-q/">Netstat -na输出中Recv-Q和Send-Q两项的值不为零需要注意程序是否有问题</a>
       </li>
     
   </ul>

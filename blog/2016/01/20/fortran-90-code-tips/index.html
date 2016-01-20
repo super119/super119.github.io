@@ -5,11 +5,14 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>链接装载和库读书笔记 - 未初始化的全局变量是弱符号 - Make Things Cool</title>
+  <title>Fortran90 代码书写注意点 - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="代码见文章末尾。 a是未初始化的全局变量，编译成.o的时候不会被放入.bss段，是一个弱符号。当有2个或多个弱符号的时候，linkder会挑选占用空间最大的弱符号。所以，这里最后链接完成后，a占用8个字节。但是在a.c中，a的类型仍然是int，在b.c中，a的类型是double。 &hellip;">
+  <meta name="description" content="if语句后面的条件表达式一定要用（）括 起来，如 1
+2
+if ( salary &lt; 1000 ) then
+if ( (salary &gt;= 1000) .AND. ( salary &lt;= 5000) ) then 没有括号的话编译会产生错误 if－else if从句不用end &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +21,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://markzhang.cn/blog/2016/01/12/uninitialized-global-variable/">
+  <link rel="canonical" href="http://markzhang.cn/blog/2016/01/20/fortran-90-code-tips/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +80,7 @@
   <header>
     
       
-        <h1 class="entry-title">链接装载和库读书笔记 - 未初始化的全局变量是弱符号</h1>
+        <h1 class="entry-title">Fortran90 代码书写注意点</h1>
       
     
     
@@ -94,107 +97,90 @@
   
 
 
-<time datetime="2016-01-12T09:43:00+08:00" pubdate data-updated="true">Jan 12<span>th</span>, 2016</time>
+<time datetime="2016-01-20T15:28:00+08:00" pubdate data-updated="true">Jan 20<span>th</span>, 2016</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>代码见文章末尾。</p>
+<div class="entry-content"><p>if语句后面的条件表达式一定要用（）括 起来，如</p>
 
-<p>a是未初始化的全局变量，编译成.o的时候不会被放入.bss段，是一个弱符号。当有2个或多个弱符号的时候，linkder会挑选占用空间最大的弱符号。所以，这里最后链接完成后，a占用8个字节。但是在a.c中，a的类型仍然是int，在b.c中，a的类型是double。只是占用空间是8个字节。</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">if</span> <span class="p">(</span> <span class="n">salary</span> <span class="o">&lt;</span> <span class="mi">1000</span> <span class="p">)</span> <span class="n">then</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span> <span class="p">(</span><span class="n">salary</span> <span class="o">&gt;=</span> <span class="mi">1000</span><span class="p">)</span> <span class="p">.</span><span class="n">AND</span><span class="p">.</span> <span class="p">(</span> <span class="n">salary</span> <span class="o">&lt;=</span> <span class="mi">5000</span><span class="p">)</span> <span class="p">)</span> <span class="n">then</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>没有括号的话编译会产生错误</p>
 
 <!-- more -->
 
 
-<p>至于输出结果，由于b.c给a赋值了300，而且b.c中a是double类型，所以内存中a是：</p>
+<hr />
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">(</span>gdb<span class="o">)</span> x/1xg 0x601030
-</span><span class='line'>0x601030 &lt;a&gt;:    0x4072c00000000000
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<p>这就是为什么最后在a.c中打印a，出来的值是0。</p>
-
-<p>更多解释看链接装载和库的P111 &mdash; common块。</p>
-
-<p>BTW：如果两个a都是初始化了的全局变量，则链接会失败，因为两个强符号无法共存。如果一个初始化一个不初始化，则一个强符号一个弱符号，则以强符号占用的空间为准。</p>
-
-<p>测试代码如下：</p>
+<p>if－else if从句不用end if语句。也就是说，虽然 <code>if－else if</code> 这个从句中含有两个if判断，但在最后条件判断结束后，只需要写一个 <code>end if</code> 就OK了，不用写多个，如：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">super</span><span class="err">@</span><span class="n">super</span><span class="o">-</span><span class="nl">desktop:</span><span class="o">~</span><span class="err">$</span> <span class="n">cat</span> <span class="n">a</span><span class="p">.</span><span class="n">c</span>
-</span><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
-</span><span class='line'><span class="cp">#include &quot;b.h&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="n">a</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">a</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">b_process</span><span class="p">();</span>
-</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;A in main is: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="n">super</span><span class="err">@</span><span class="n">super</span><span class="o">-</span><span class="nl">desktop:</span><span class="o">~</span><span class="err">$</span> <span class="n">cat</span> <span class="n">b</span><span class="p">.</span><span class="n">c</span>
-</span><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">double</span> <span class="n">a</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="n">b_process</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="n">a</span> <span class="o">=</span> <span class="mi">300</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;A in b is: %f</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="n">super</span><span class="err">@</span><span class="n">super</span><span class="o">-</span><span class="nl">desktop:</span><span class="o">~</span><span class="err">$</span> <span class="n">cat</span> <span class="n">b</span><span class="p">.</span><span class="n">h</span>
-</span><span class='line'><span class="cp">#ifndef _B_H</span>
-</span><span class='line'><span class="cp">#define _B_H</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">void</span> <span class="n">b_process</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="cp">#endif</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">if</span> <span class="p">(</span> <span class="n">salary</span> <span class="o">&lt;</span> <span class="mi">1000</span> <span class="p">)</span> <span class="n">then</span>
+</span><span class='line'><span class="o">!</span> <span class="k">do</span> <span class="n">something</span>
+</span><span class='line'><span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="n">salary</span> <span class="o">&gt;</span> <span class="mi">5000</span><span class="p">)</span> <span class="n">then</span>
+</span><span class='line'><span class="o">!</span> <span class="k">do</span> <span class="n">something</span>
+</span><span class='line'><span class="n">end</span> <span class="k">if</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>输出是：</p>
+<hr />
 
-<p>A in b is: 300.000000</p>
+<p>如果if语句后只有一句代码，那么要注意then和end if都应该省略不写，如 <code>if (salary &lt; 1000) exit !</code> 没有then和end if，如果exit写在下一行，那么就应该写上then和end if</p>
 
-<p>A in main is: 0</p>
+<hr />
+
+<p>DO循环中：<code>do counter=1, 10, 1</code> 需要注意的是这里的第二个参数不要写成counter&lt;=10</p>
+
+<p>Fortran中自动会添加counter&lt;=这样的描述</p>
+
+<p>如果要实现递减的循环，可以将递变参数改成负数</p>
+
+<hr />
+
+<p>Fortran中使用write可以控制格式化的输出，如write(*, 10)表示取行号为10行的FORMAT语句中的格式化，但一般来说，我们会写在write语句中，这样可读性好，此时的write应该这样写：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="s">&quot;(&#39;Hello World! This is &#39;, I2, &#39; Processes!&#39;)&quot;</span><span class="p">)</span> <span class="n">process_number</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>也就是说，首先要用&#8221;( )&ldquo;将格式化字符串包起来，然后在中间，常量字符串用单引号包住，格式控制代码使用,号分割开</p>
+
+<hr />
+
+<p>Fortran中非常容易混淆的两个元素是“字符串”和“字符数组”！这样声明的是一个字符串：</p>
+
+<p>character(len=20) string</p>
+
+<p>而这样声明的，就是一个字符数组：</p>
+
+<p>character :: string(20)</p>
+
+<p>对于字符串，是不可以通过string(i)这样来引用元素的，因为这是数组的做法，对于字符串来说，</p>
+
+<p>要想取得其中的一个或部分元素，需要使用string(i:i)或string(i:i+4)这样的代码</p>
+
+<p>对于数组来说，上面的方法一样可以用，另外，还可以通过string(i)这样的方法来直接引用其中的元素</p>
+
+<hr />
+
+<p>Fortran的所有变量声明都必须放在代码的一开始，不可以在某句代码之后又出现变量的定义，这和C是相同的。但对于C来说，gcc编译器在这一点上做的比较好，gcc编译器允许c代码的变量随处定义，并且允许使用//而不是/<em> </em>/来注释一行。注释使用！符号</p>
+
+<hr />
+
+<p>一行写不完的代码，在行末加上 &amp;，表示下一行和本行是一行代码；也可以在某行的开头使用 &amp;，表示，本行和上一行是一行代码</p>
 </div>
 
 
@@ -202,7 +188,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2016 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2016/01/12/uninitialized-global-variable/<br>
+原文链接: http://www.markzhang.cn/blog/2016/01/20/fortran-90-code-tips/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -225,12 +211,12 @@
   
 
 
-<time datetime="2016-01-12T09:43:00+08:00" pubdate data-updated="true">Jan 12<span>th</span>, 2016</time>
+<time datetime="2016-01-20T15:28:00+08:00" pubdate data-updated="true">Jan 20<span>th</span>, 2016</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/linux/'>linux</a>
+    <a class='category' href='/blog/categories/hpc/'>HPC</a>
   
 </span>
 
@@ -246,10 +232,10 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2016/01/12/global-variable-in-shared-lib/" title="Previous Post: 链接装载和库读书笔记 - 在动态库中尽量少使用全局变量，要使用请加上static">&laquo; 链接装载和库读书笔记 - 在动态库中尽量少使用全局变量，要使用请加上static</a>
+        <a class="basic-alignment left articlenav" href="/blog/2016/01/12/uninitialized-global-variable/" title="Previous Post: 链接装载和库读书笔记 - 未初始化的全局变量是弱符号">&laquo; 链接装载和库读书笔记 - 未初始化的全局变量是弱符号</a>
       
       
-        <a class="basic-alignment right articlenav" href="/blog/2016/01/20/fortran-90-code-tips/" title="Next Post: Fortran90 代码书写注意点">Fortran90 代码书写注意点 &raquo;</a>
+        <a class="basic-alignment right articlenav" href="/blog/2016/01/20/mpirun-p4pg/" title="Next Post: mpirun的p4pg参数的用法示例">mpirun的p4pg参数的用法示例 &raquo;</a>
       
     </p>
   </footer>
