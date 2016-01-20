@@ -4,7 +4,7 @@
   <title><![CDATA[Category: HPC | Make Things Cool]]></title>
   <link href="http://markzhang.cn/blog/categories/hpc/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2016-01-20T15:39:35+08:00</updated>
+  <updated>2016-01-20T15:46:50+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -81,7 +81,7 @@ g77 test.o testf.o -o test
     <link href="http://markzhang.cn/blog/2016/01/20/mpirun-p4pg/"/>
     <updated>2016-01-20T15:34:00+08:00</updated>
     <id>http://markzhang.cn/blog/2016/01/20/mpirun-p4pg</id>
-    <content type="html"><![CDATA[<p>./MPI程序名-p4pg 文件名[MPI程序参数]</p>
+    <content type="html"><![CDATA[<p>./MPI程序名 -p4pg 文件名 [MPI程序参数]</p>
 
 <p>这种方式可以精确控制在每台结点机上启动的MPI 进程数与进程序号，并且允许在不同结点机上启动不同的可执行文件(适用于Master/Slave 模式的并行程序)。文件文件名中按下列格式列出各结点机上启动的程序名:</p>
 
