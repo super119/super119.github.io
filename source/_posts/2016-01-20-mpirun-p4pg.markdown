@@ -1,0 +1,34 @@
+---
+layout: post
+title: "mpirun的p4pg参数的用法示例"
+date: 2016-01-20 15:34
+comments: true
+categories: HPC
+---
+
+./MPI程序名 -p4pg 文件名 [MPI程序参数] 
+
+这种方式可以精确控制在每台结点机上启动的MPI 进程数与进程序号，并且允许在不同结点机上启动不同的可执行文件(适用于Master/Slave 模式的并行程序)。文件文件名中按下列格式列出各结点机上启动的程序名: 
+
+``` bash
+结点机名1 0 可执行文件名1 
+结点机名2 1 可执行文件名2 
+结点机名3 1 可执行文件名3 
+... ... 
+结点机名n 1 可执行文件名n 
+```
+
+<!-- more -->
+
+其中结点机名1 必须是运行该命令时所在的结点机, 可执行文件名1 必须与命令行上的MPI程序名为同一文件。所有可执行文件名必须使用绝对路径(如/home/zlb/test/cpi)。通常情况下，所有可执行文件名是一样的。而当同一结点机名出现多次时表示在该结点机上启动多个进程。
+
+例如，假设用户在结点机node1 的 /home/zlb/test 目录下，该目录中有已经编译好的MPI程序cpi。在该目录下创建一个名为p4file 的文件，它包含如下内容: 
+
+``` bash
+node1 0 /home/zlb/test/cpi 
+node2 1 /home/zlb/test/cpi 
+node1 1 /home/zlb/test/cpi 
+node2 1 /home/zlb/test/cpi 
+```
+
+则命令 `./cpi -p4pg p4file` 将在node1, node2 上运行四个进程, 其中进程0 和进程2 在node1上, 进程1 和进程3 在node2 上。
