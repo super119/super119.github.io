@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="PS3上的杀戮地带3，当升级了1.14（最新版本）之后，有一个黑屏死机的问题： http://community.killzone.com/t5/Killzone-3-PS3/Patch-1-14-freezing-issues/td-p/1351164 ">
+  <meta name="description" content="ChromeOS是一个相当&#8221;Linux&#8221;的OS。现在一般能拿到手的ChromeOS的设备很多都是Chromebook，所以本文是在一台Chromebook上做的测试。 ChromeOS默认的零售版本是什么开发类工具都没有的，包括ssh client都没有。要enable &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/10/17/chromeos-enable-ssh-server/">ChromeOS配置SSH Server</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-17T12:52:00+08:00" pubdate data-updated="true">Oct 17<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>ChromeOS是一个相当&#8221;Linux&#8221;的OS。现在一般能拿到手的ChromeOS的设备很多都是Chromebook，所以本文是在一台Chromebook上做的测试。</p>
+
+<p>ChromeOS默认的零售版本是什么开发类工具都没有的，包括ssh client都没有。要enable SSH client/server，首先要将ChromeOS切换到 <code>Developer Mode</code>。在我手上的这台Chromebook上，做法很简单，就是三键同按开机即可（ESC + Refresh + Power）。</p>
+
+<p>具体的切换到 <code>Developer Mode</code> 的做法可以参考Google的ChromeOS网站上的文章。接下来来看怎么enable SSH Server。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/10/17/chromeos-enable-ssh-server/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -487,51 +534,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/06/08/thrust-bearing-and-one-way-bearing/">机械盲科普：推力轴承和单向轴承</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-06-08T21:08:00+08:00" pubdate data-updated="true">Jun 8<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>航模直升机中有两个重要的轴承。一个是位于旋翼桨夹内的推力轴承，另外一个是位于大齿盘中间的单向轴承。由于自己对机械不怎么懂，所以就去琢磨了一下这两个玩意，也在5imx上发了帖子询问，最终整理成了此文。</p>
-
-<p>本文中所有内容都来自<a href="http://bbs.5imx.com">http://bbs.5imx.com</a>。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/06/08/thrust-bearing-and-one-way-bearing/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -546,11 +548,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/hpc'>HPC (4)</a></li><li><a href='/blog/categories/linux'>linux (20)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (23)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/hpc'>HPC (4)</a></li><li><a href='/blog/categories/linux'>linux (20)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (24)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/02/15/top-calculation-linux-hz/">Top中是如何取到Linux内核中的Hertz的？CPU使用率到底是怎么算出来的？</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/01/20/fortran77-call-c/">Fortran77如何调用C代码</a>
@@ -566,10 +572,6 @@
     
       <li class="post">
         <a href="/blog/2016/01/12/uninitialized-global-variable/">链接装载和库读书笔记 - 未初始化的全局变量是弱符号</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/12/global-variable-in-shared-lib/">链接装载和库读书笔记 - 在动态库中尽量少使用全局变量，要使用请加上static</a>
       </li>
     
   </ul>

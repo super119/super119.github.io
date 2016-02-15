@@ -9,9 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="crontab -e编辑定时任务，crontab -l查看。最后的cron任务文件保存在/var/spool/cron/crontab目录下
-cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户，然后执行定义的定时任务。
-但是cron切换用户的时候 &hellip;">
+  <meta name="description" content="Resume的时候，其实最开始是从bootrom启动，再到uboot，然后再到kernel，到kernel的common code的时候，arch相关的代码都已经跑完，此时CPU已经起来了（其实CPU起来之后执行的第一句代码位于设定好的CPU reset handler指定地方的代码， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -75,6 +73,49 @@ cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户�
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2016/01/05/kernel-suspend-resume-description/">Kernel Resume的逻辑</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-05T15:59:00+08:00" pubdate data-updated="true">Jan 5<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Resume的时候，其实最开始是从bootrom启动，再到uboot，然后再到kernel，到kernel的common code的时候，arch相关的代码都已经跑完，此时CPU已经起来了（其实CPU起来之后执行的第一句代码位于设定好的CPU reset handler指定地方的代码，一般这是一段汇编，在这里会去读取suspend结束的时候的一些系统状态，从而可以顺利的转到kernel层继续）。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/01/05/kernel-suspend-resume-description/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -497,53 +538,6 @@ cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2015/12/24/ubuntu-install-microsoft-camera/">Ubuntu 12.04安装Microsoft Lifecam Studio摄像头</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-24T09:20:00+08:00" pubdate data-updated="true">Dec 24<span>th</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>这是一个UVC摄像头，所以可以使用uvcvideo这个kernel驱动，一般kernel都编译了这个module。</p>
-
-<p>什么是UVC？</p>
-
-<p>UVC，全称为：USB video class 或USB video device class</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/12/24/ubuntu-install-microsoft-camera/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -558,11 +552,15 @@ cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户�
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/hpc'>HPC (4)</a></li><li><a href='/blog/categories/linux'>linux (20)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (23)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/hpc'>HPC (4)</a></li><li><a href='/blog/categories/linux'>linux (20)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (24)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/02/15/top-calculation-linux-hz/">Top中是如何取到Linux内核中的Hertz的？CPU使用率到底是怎么算出来的？</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/01/20/fortran77-call-c/">Fortran77如何调用C代码</a>
@@ -578,10 +576,6 @@ cron会切换到/var/spool/cron/crontab目录下cron文件的owner这个用户�
     
       <li class="post">
         <a href="/blog/2016/01/12/uninitialized-global-variable/">链接装载和库读书笔记 - 未初始化的全局变量是弱符号</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/12/global-variable-in-shared-lib/">链接装载和库读书笔记 - 在动态库中尽量少使用全局变量，要使用请加上static</a>
       </li>
     
   </ul>

@@ -1,0 +1,464 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Top中是如何取到Linux内核中的Hertz的？CPU使用率到底是怎么算出来的？ - Make Things Cool</title>
+  <meta name="author" content="Mark Zhang">
+
+  
+  <meta name="description" content="首先来看CPU使用率到底是怎么算出来的。依据的是这个公式： 1
+(process jiffies) * 100.0f / ((float)Hertz * (float)et * (Rc.mode_irixps ? 1 : Cpu_tot)); process &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://markzhang.cn/blog/2016/02/15/top-calculation-linux-hz/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Make Things Cool" type="application/atom+xml">
+  <!-- <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'> -->
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!-- <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+<!-- <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css"> -->
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">s/no/yes/g</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">Make Things Cool</a></h1>
+  
+    <h2>2016 Kindly Kangaroo</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="markzhang.cn" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Top中是如何取到Linux内核中的Hertz的？CPU使用率到底是怎么算出来的？</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-02-15T10:29:00+08:00" pubdate data-updated="true">Feb 15<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>首先来看CPU使用率到底是怎么算出来的。依据的是这个公式：</p>
+
+<!-- more -->
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">(</span>process jiffies<span class="o">)</span> * 100.0f / <span class="o">((</span>float<span class="o">)</span>Hertz * <span class="o">(</span>float<span class="o">)</span>et * <span class="o">(</span>Rc.mode_irixps ? 1 : Cpu_tot<span class="o">))</span>;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>process jiffies是内核提供的该进程在DeltaT时间内消耗的jiffies。具体是/proc/<pid>/stat文件的第14-17 token。14－17token分别是utime, stime, cutime, cstime。cutime/cstime分别是该进程spawn的子进程在用户态和内核态消耗的jiffies。/proc/<pid>/task目录下有该进程所有线程的数据，也是在stat文件中读取，格式和process的是一样的，因为Linux内核中线程和进程区别不大的。所以 也完全可以将该进程所有线程消耗的jiffies累加起来，从而得到该进程的jiffies。man proc可以看到/proc下所有内容的解释。</p>
+
+<p>注意stat中的jiffies是一个绝对累计值，所以要取两个时间点，算DeltaT中消耗的jiffies。</p>
+
+<p>那 什么是jiffies呢？其实就是Linux内核定义的一个时间单位，值就是1/Hertz。Linux内核中，进程/线程消耗的时间，单位都是这个 jiffies。Linux内核没有开放什么系统调用，让程序可以直接取得这个Hertz，从而算出jiffies，为此，Top自己写了一个函数来算 Hertz这个值（不同的硬件平台，这个Hertz是不一样的。而且这个jiffies就是Linux内核调度进程的时间片大小）。最后会给出这个 Hertz在top中是如何计算出来的函数。</p>
+
+<p>OK，回到上面的公式。et表示流逝的时间，单位是秒。最后一个部分是CPU/core数。</p>
+
+<p>所以，总结来看，CPU使用率其实就是在DeltaT时间内，进程一共消耗了多少jiffies，消耗的越多，自然该进程的CPU使用率就越高了。更抽象一点来说，一个进程在单位时间内，被分配到的时间片越多，那么这个进程的CPU占用率就越高。</p>
+
+<p>最后给出Top中是如何计算这个Hertz的，一般现在这个Hertz都是100，也就是jiffies就代表10ms，这也是linux内核中调度时间片的大小。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cm">/***********************************************************************</span>
+</span><span class='line'><span class="cm">* Some values in /proc are expressed in units of 1/HZ seconds, where HZ</span>
+</span><span class='line'><span class="cm">* is the kernel clock tick rate. One of these units is called a jiffy.</span>
+</span><span class='line'><span class="cm">* The HZ value used in the kernel may vary according to hacker desire.</span>
+</span><span class='line'><span class="cm">* According to Linus Torvalds, this is not true. He considers the values</span>
+</span><span class='line'><span class="cm">* in /proc as being in architecture-dependant units that have no relation</span>
+</span><span class='line'><span class="cm">* to the kernel clock tick rate. Examination of the kernel source code</span>
+</span><span class='line'><span class="cm">* reveals that opinion as wishful thinking.</span>
+</span><span class='line'><span class="cm">*</span>
+</span><span class='line'><span class="cm">* In any case, we need the HZ constant as used in /proc. (the real HZ value</span>
+</span><span class='line'><span class="cm">* may differ, but we don&#39;t care) There are several ways we could get HZ:</span>
+</span><span class='line'><span class="cm">*</span>
+</span><span class='line'><span class="cm">* 1. Include the kernel header file. If it changes, recompile this library.</span>
+</span><span class='line'><span class="cm">* 2. Use the sysconf() function. When HZ changes, recompile the C library!</span>
+</span><span class='line'><span class="cm">* 3. Ask the kernel. This is obviously correct...</span>
+</span><span class='line'><span class="cm">*</span>
+</span><span class='line'><span class="cm">* Linus Torvalds won&#39;t let us ask the kernel, because he thinks we should</span>
+</span><span class='line'><span class="cm">* not know the HZ value. Oh well, we don&#39;t have to listen to him.</span>
+</span><span class='line'><span class="cm">* Someone smuggled out the HZ value. :-)</span>
+</span><span class='line'><span class="cm">*</span>
+</span><span class='line'><span class="cm">* This code should work fine, even if Linus fixes the kernel to match his</span>
+</span><span class='line'><span class="cm">* stated behavior. The code only fails in case of a partial conversion.</span>
+</span><span class='line'><span class="cm">*</span>
+</span><span class='line'><span class="cm">* Recent update: on some architectures, the 2.4 kernel provides an</span>
+</span><span class='line'><span class="cm">* ELF note to indicate HZ. This may be for ARM or user-mode Linux</span>
+</span><span class='line'><span class="cm">* support. This ought to be investigated. Note that sysconf() is still</span>
+</span><span class='line'><span class="cm">* unreliable, because it doesn&#39;t return an error code when it is</span>
+</span><span class='line'><span class="cm">* used with a kernel that doesn&#39;t support the ELF note. On some other</span>
+</span><span class='line'><span class="cm">* architectures there may be a system call or sysctl() that will work.</span>
+</span><span class='line'><span class="cm">*/</span>
+</span><span class='line'><span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">Hertz</span><span class="p">;</span>
+</span><span class='line'><span class="k">static</span> <span class="kt">void</span> <span class="n">old_Hertz_hack</span><span class="p">(</span><span class="kt">void</span><span class="p">){</span>
+</span><span class='line'>  <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">user_j</span><span class="p">,</span> <span class="n">nice_j</span><span class="p">,</span> <span class="n">sys_j</span><span class="p">,</span> <span class="n">other_j</span><span class="p">;</span>  <span class="cm">/* jiffies (clock ticks) */</span>
+</span><span class='line'>  <span class="kt">double</span> <span class="n">up_1</span><span class="p">,</span> <span class="n">up_2</span><span class="p">,</span> <span class="n">seconds</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">jiffies</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">unsigned</span> <span class="n">h</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">char</span> <span class="o">*</span><span class="k">restrict</span> <span class="n">savelocale</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">savelocale</span> <span class="o">=</span> <span class="n">setlocale</span><span class="p">(</span><span class="n">LC_NUMERIC</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">setlocale</span><span class="p">(</span><span class="n">LC_NUMERIC</span><span class="p">,</span> <span class="s">&quot;C&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">do</span><span class="p">{</span>
+</span><span class='line'>    <span class="n">FILE_TO_BUF</span><span class="p">(</span><span class="n">UPTIME_FILE</span><span class="p">,</span><span class="n">uptime_fd</span><span class="p">);</span>  <span class="n">sscanf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&quot;%lf&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">up_1</span><span class="p">);</span>
+</span><span class='line'>    <span class="cm">/* uptime(&amp;up_1, NULL); */</span>
+</span><span class='line'>    <span class="n">FILE_TO_BUF</span><span class="p">(</span><span class="n">STAT_FILE</span><span class="p">,</span><span class="n">stat_fd</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">sscanf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&quot;cpu %Lu %Lu %Lu %Lu&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">user_j</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">nice_j</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">sys_j</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">other_j</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">FILE_TO_BUF</span><span class="p">(</span><span class="n">UPTIME_FILE</span><span class="p">,</span><span class="n">uptime_fd</span><span class="p">);</span>  <span class="n">sscanf</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s">&quot;%lf&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">up_2</span><span class="p">);</span>
+</span><span class='line'>    <span class="cm">/* uptime(&amp;up_2, NULL); */</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">while</span><span class="p">((</span><span class="kt">long</span> <span class="kt">long</span><span class="p">)(</span> <span class="p">(</span><span class="n">up_2</span><span class="o">-</span><span class="n">up_1</span><span class="p">)</span><span class="o">*</span><span class="mf">1000.0</span><span class="o">/</span><span class="n">up_1</span> <span class="p">));</span> <span class="cm">/* want under 0.1% error */</span>
+</span><span class='line'>  <span class="n">setlocale</span><span class="p">(</span><span class="n">LC_NUMERIC</span><span class="p">,</span> <span class="n">savelocale</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">jiffies</span> <span class="o">=</span> <span class="n">user_j</span> <span class="o">+</span> <span class="n">nice_j</span> <span class="o">+</span> <span class="n">sys_j</span> <span class="o">+</span> <span class="n">other_j</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">seconds</span> <span class="o">=</span> <span class="p">(</span><span class="n">up_1</span> <span class="o">+</span> <span class="n">up_2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span><span class="p">)(</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">jiffies</span><span class="o">/</span><span class="n">seconds</span><span class="o">/</span><span class="n">smp_num_cpus</span> <span class="p">);</span>
+</span><span class='line'>  <span class="cm">/* actual values used by 2.4 kernels: 32 64 100 128 1000 1024 1200 */</span>
+</span><span class='line'>  <span class="k">switch</span><span class="p">(</span><span class="n">h</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">case</span>    <span class="mi">9</span> <span class="p">...</span>   <span class="mi">11</span> <span class="o">:</span>  <span class="n">Hertz</span> <span class="o">=</span>   <span class="mi">10</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span> <span class="cm">/* S/390 (sometimes) */</span>
+</span><span class='line'>  <span class="k">case</span>   <span class="mi">18</span> <span class="p">...</span>   <span class="mi">22</span> <span class="o">:</span>  <span class="n">Hertz</span> <span class="o">=</span>   <span class="mi">20</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span> <span class="cm">/* user-mode Linux */</span>
+</span><span class='line'>  <span class="k">case</span>   <span class="mi">30</span> <span class="p">...</span>   <span class="mi">34</span> <span class="o">:</span>  <span class="n">Hertz</span> <span class="o">=</span>   <span class="mi">32</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span> <span class="cm">/* ia64 emulator */</span>
+</span><span class='line'>  <span class="k">case</span>   <span class="mi">48</span> <span class="p">...</span>   <span class="mi">52</span> <span class="o">:</span>  <span class="n">Hertz</span> <span class="o">=</span>   <span class="mi">50</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">case</span>   <span class="mi">58</span> <span class="p">...</span>   <span class="mi">61</span> <span class="o">:</span>  <span class="n">Hertz</span> <span class="o">=</span>   <span class="mi">60</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">case</span>   <span class="mi">62</span> <span class="p">...</span>   <span class="mi">65</span> <span class="o">:</span>  <span class="n">Hertz</span> <span class="o">=</span>   <span class="mi">64</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span> <span class="cm">/* StrongARM /Shark */</span>
+</span><span class='line'>  <span class="k">case</span>   <span class="mi">95</span> <span class="p">...</span>  <span class="mi">105</span> <span class="o">:</span>  <span class="n">Hertz</span> <span class="o">=</span>  <span class="mi">100</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span> <span class="cm">/* normal Linux */</span>
+</span><span class='line'>  <span class="k">case</span>  <span class="mi">124</span> <span class="p">...</span>  <span class="mi">132</span> <span class="o">:</span>  <span class="n">Hertz</span> <span class="o">=</span>  <span class="mi">128</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span> <span class="cm">/* MIPS, ARM */</span>
+</span><span class='line'>  <span class="k">case</span>  <span class="mi">195</span> <span class="p">...</span>  <span class="mi">204</span> <span class="o">:</span>  <span class="n">Hertz</span> <span class="o">=</span>  <span class="mi">200</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span> <span class="cm">/* normal &lt;&lt; 1 */</span>
+</span><span class='line'>  <span class="k">case</span>  <span class="mi">253</span> <span class="p">...</span>  <span class="mi">260</span> <span class="o">:</span>  <span class="n">Hertz</span> <span class="o">=</span>  <span class="mi">256</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">case</span>  <span class="mi">393</span> <span class="p">...</span>  <span class="mi">408</span> <span class="o">:</span>  <span class="n">Hertz</span> <span class="o">=</span>  <span class="mi">400</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span> <span class="cm">/* normal &lt;&lt; 2 */</span>
+</span><span class='line'>  <span class="k">case</span>  <span class="mi">790</span> <span class="p">...</span>  <span class="mi">808</span> <span class="o">:</span>  <span class="n">Hertz</span> <span class="o">=</span>  <span class="mi">800</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span> <span class="cm">/* normal &lt;&lt; 3 */</span>
+</span><span class='line'>  <span class="k">case</span>  <span class="mi">990</span> <span class="p">...</span> <span class="mi">1010</span> <span class="o">:</span>  <span class="n">Hertz</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span> <span class="cm">/* ARM */</span>
+</span><span class='line'>  <span class="k">case</span> <span class="mi">1015</span> <span class="p">...</span> <span class="mi">1035</span> <span class="o">:</span>  <span class="n">Hertz</span> <span class="o">=</span> <span class="mi">1024</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span> <span class="cm">/* Alpha, ia64 */</span>
+</span><span class='line'>  <span class="k">case</span> <span class="mi">1180</span> <span class="p">...</span> <span class="mi">1220</span> <span class="o">:</span>  <span class="n">Hertz</span> <span class="o">=</span> <span class="mi">1200</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span> <span class="cm">/* Alpha */</span>
+</span><span class='line'>  <span class="k">default</span><span class="o">:</span>
+</span><span class='line'><span class="cp">#ifdef HZ</span>
+</span><span class='line'>    <span class="n">Hertz</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span><span class="p">)</span><span class="n">HZ</span><span class="p">;</span>    <span class="cm">/* &lt;asm/param.h&gt; */</span>
+</span><span class='line'><span class="cp">#else</span>
+</span><span class='line'>    <span class="cm">/* If 32-bit or big-endian (not Alpha or ia64), assume HZ is 100. */</span>
+</span><span class='line'>    <span class="n">Hertz</span> <span class="o">=</span> <span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">long</span><span class="p">)</span><span class="o">==</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="o">||</span> <span class="n">htons</span><span class="p">(</span><span class="mi">999</span><span class="p">)</span><span class="o">==</span><span class="mi">999</span><span class="p">)</span> <span class="o">?</span> <span class="mi">100UL</span> <span class="o">:</span> <span class="mi">1024UL</span><span class="p">;</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'>    <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;Unknown HZ value! (%d) Assume %Ld.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">Hertz</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>代码很简单，其实就是计算单位1秒内，每CPU/core产生了多少了jiffies。这个方法就和具体的硬件平台没有关系了。所以这是一个取得Linux内核Hertz的好方法。</p>
+</div>
+
+
+  <footer>
+    
+    <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
+      <strong>版权所有 &copy;2016 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
+原文链接: http://www.markzhang.cn/blog/2016/02/15/top-calculation-linux-hz/<br>
+您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
+    </section>
+    
+
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Mark Zhang</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-02-15T10:29:00+08:00" pubdate data-updated="true">Feb 15<span>th</span>, 2016</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/linux-kernel/'>linux-kernel</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2016/01/20/fortran77-call-c/" title="Previous Post: Fortran77如何调用C代码">&laquo; Fortran77如何调用C代码</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_24x24">
+	<a class="jiathis_button_qzone"></a>
+	<a class="jiathis_button_tsina"></a>
+	<a class="jiathis_button_tqq"></a>
+	<a class="jiathis_button_renren"></a>
+	<a class="jiathis_button_kaixin001"></a>
+	<a href="http://www.jiathis.com/share?uid=1860527" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript">
+var jiathis_config = {data_track_clickback:'true'};
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1352426099508779" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+  </section>
+
+
+  <section>
+    <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1860527"></script>
+<!-- UY END -->
+
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/hpc'>HPC (4)</a></li><li><a href='/blog/categories/linux'>linux (20)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (24)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/02/15/top-calculation-linux-hz/">Top中是如何取到Linux内核中的Hertz的？CPU使用率到底是怎么算出来的？</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/20/fortran77-call-c/">Fortran77如何调用C代码</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/20/mpirun-p4pg/">Mpirun的p4pg参数的用法示例</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/20/fortran-90-code-tips/">Fortran90 代码书写注意点</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/01/12/uninitialized-global-variable/">链接装载和库读书笔记 - 未初始化的全局变量是弱符号</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'super119',
+            count: 0,
+            skip_forks: false,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Mark Zhang -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>&nbsp;&nbsp;
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1000375590'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/z_stat.php%3Fid%3D1000375590%26show%3Dpic' type='text/javascript'%3E%3C/script%3E"));</script>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
