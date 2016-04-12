@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="这是一个UVC摄像头，所以可以使用uvcvideo这个kernel驱动，一般kernel都编译了这个module。 什么是UVC？ UVC，全称为：USB video class 或USB video device class ">
+  <meta name="description" content="KGDB可以用于linux kernel的调试，具体的配置步骤是： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,49 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/12/25/setup-kgdb/">KGDB配置使用</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-25T10:49:00+08:00" pubdate data-updated="true">Dec 25<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>KGDB可以用于linux kernel的调试，具体的配置步骤是：</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/12/25/setup-kgdb/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -474,52 +517,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2015/12/21/kernel-calls-init/">Kernel: 调用init程序的地方</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-21T13:57:00+08:00" pubdate data-updated="true">Dec 21<span>st</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>start_kernel函数的最后一行：rest_init，调用了init程序。</p>
-
-<p>看代码就很清楚了。有个地方值得注意的是，优先被调用的是initramfs中的init程序（可以通过rdinit=xxx来设定）。</p>
-
-<p>然后才会去检查 <code>init=</code> 的设置。</p>
-
-<p>如果这两个都没有设置的话，kernel就会挨个去尝试/sbin/init, /bin/init, /bin/sh&hellip;</p>
-
-<p>这些都没有那就panic了</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -534,11 +531,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/hpc'>HPC (4)</a></li><li><a href='/blog/categories/linux'>linux (20)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (24)</a></li><li><a href='/blog/categories/macosx'>MacOSX (5)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/hpc'>HPC (4)</a></li><li><a href='/blog/categories/linux'>linux (20)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (24)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/04/12/swift-cocoa-nstask/">NSTask Tips (Swift)</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/02/15/top-calculation-linux-hz/">Top中是如何取到Linux内核中的Hertz的？CPU使用率到底是怎么算出来的？</a>
@@ -554,10 +555,6 @@
     
       <li class="post">
         <a href="/blog/2016/01/20/fortran-90-code-tips/">Fortran90 代码书写注意点</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/12/uninitialized-global-variable/">链接装载和库读书笔记 - 未初始化的全局变量是弱符号</a>
       </li>
     
   </ul>

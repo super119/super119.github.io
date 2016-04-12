@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://markzhang.cn/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2016-03-07T10:39:23+08:00</updated>
+  <updated>2016-04-12T14:02:36+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,108 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[NSTask Tips (swift)]]></title>
+    <link href="http://markzhang.cn/blog/2016/04/12/swift-cocoa-nstask/"/>
+    <updated>2016-04-12T12:51:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2016/04/12/swift-cocoa-nstask</id>
+    <content type="html"><![CDATA[<p>NSTask是常用的一个Foundation class，它相当于Linux中的popen，可以用来fork执行一个程序，然后将程序的输入输出重定向。然而我在使用这个class的时候，遇到了一些问题，记录在此。</p>
+
+<!-- more -->
+
+
+<h2>如何取得程序的输出（比如stdout）</h2>
+
+<p>这个比较容易，比如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">let</span> <span class="n">task</span> <span class="o">=</span> <span class="n">NSTask</span><span class="o">()</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="na">launchPath</span> <span class="o">=</span> <span class="n">xxx</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="na">arguments</span> <span class="o">=</span> <span class="n">xxx</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">let</span> <span class="n">outPipe</span> <span class="o">=</span> <span class="n">NSPipe</span><span class="o">()</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="na">standardOutput</span> <span class="o">=</span> <span class="n">outPipe</span>
+</span><span class='line'><span class="n">let</span> <span class="n">errPipe</span> <span class="o">=</span> <span class="n">NSPipe</span><span class="o">()</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="na">standardError</span> <span class="o">=</span> <span class="n">errPipe</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">outPipe</span><span class="o">.</span><span class="na">fileHandleForReading</span><span class="o">.</span><span class="na">readabilityHandler</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">(</span><span class="nl">handle:</span> <span class="n">NSFileHandle</span><span class="o">)</span> <span class="n">in</span>
+</span><span class='line'>    <span class="n">let</span> <span class="n">data</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="na">readDataOfLength</span><span class="o">(</span><span class="n">TASK_READ_WINDOW</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="n">your</span> <span class="n">String</span><span class="o">&gt;.</span><span class="na">appendContentsOf</span><span class="o">(</span><span class="n">String</span><span class="o">(</span><span class="nl">data:</span> <span class="n">data</span><span class="o">,</span> <span class="nl">encoding:</span> <span class="n">NSUTF8StringEncoding</span><span class="o">)!)</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="na">launch</span><span class="o">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然你也可以用NSPipe.fileHandleForReading的readToEndOfFile来一次性读出来（等待task执行完毕之后）。</p>
+
+<h2>如何知道程序执行结束</h2>
+
+<p>根据NSTask的manual，有两种方法：</p>
+
+<ul>
+<li><p>设置NSTask的terminationHandler</p></li>
+<li><p>使用NSNotificationCenter，注册监听消息：NSTaskDidTerminateNotification</p></li>
+</ul>
+
+
+<p>这两种方法都可以，但是有一些区别：</p>
+
+<ul>
+<li><p>terminationHandler是在NSTask的线程中被调用的，所以如果我们要在程序执行结束后去update UI，那么在这里做是不行的，运行的时候xcode会告诉你，UI被另外一个background thread修改，会出一个assertion。</p></li>
+<li><p>NSTaskDidTerminateNotification就没有上述的问题，因为我们注册的NSTaskDidTerminateNotification的observer就是在程序的主线程（main）被调用的。</p></li>
+</ul>
+
+
+<p>我们可以通过在terminationHandler和NSTaskDidTerminateNotification observer函数中加入这样的代码来看出区别：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">NSLog</span><span class="o">(</span><span class="s">&quot;Current thread is: %@&quot;</span><span class="o">,</span> <span class="n">NSThread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">())</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过打印当前thread的信息，就可以看出terminationHandler是在一条非main的线程中被call的，而notification则不是。</p>
+
+<p>由此可以猜测，NSTask应该是首先create一条thread，然后在这条thread中去执行fork，最后调用类似waitpid这样的函数等待被执行的程序执行完毕，并且同时调用我们注册的terminationHandler。</p>
+
+<p>此外还有一点：如果我们有设置terminationHandler，那么NSTaskDidTerminateNotification就不会被发送了。</p>
+
+<h2>如何得知程序的return value</h2>
+
+<p>按照NSTask的manual，可以通过读取：terminationStatus来得知。但是我做下来发现这个property读取出来的值不一定正确。</p>
+
+<p>也就是说，terminationStatus和我们手动执行：<code>run xxx program; echo $?</code> 这样出来的结果是不同的。</p>
+
+<p>目前还不知道这个问题的原因和解决方法。</p>
+
+<h2>有关Swift的selector</h2>
+
+<p>在注册notification的时候，需要填写一个名为selector的param，也就是我们的notification observer的function。</p>
+
+<p>在swift 2.1中，这里可以直接写function的名字（作为一个字符串），但是一定要注意和objective-C一样，function name是要带参数的，比如：<code>myNotificationObserverFunction:</code>，最后的冒号就表示这个function有一个参数。</p>
+
+<p>漏写这个冒号就会导致runtime 程序无法找到这个function：unknown selector&hellip;.</p>
+
+<p>在Swift 2.2中，有一个新的语法可以显式的生成一个selector：<code>#selector(function name)</code>，不过貌似目前最新的Xcode还只支持到swift 2.1，所以目前还只能用上面的方法。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Top中是如何取到Linux内核中的Hertz的？CPU使用率到底是怎么算出来的？]]></title>
@@ -1053,65 +1155,6 @@
 </span><span class='line'><span class="n">free_page</span><span class="p">((</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span><span class="n">tmp</span><span class="p">);</span>
 </span></code></pre></td></tr></table></div></figure>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[KGDB配置使用]]></title>
-    <link href="http://markzhang.cn/blog/2015/12/25/setup-kgdb/"/>
-    <updated>2015-12-25T10:49:00+08:00</updated>
-    <id>http://markzhang.cn/blog/2015/12/25/setup-kgdb</id>
-    <content type="html"><![CDATA[<p>KGDB可以用于linux kernel的调试，具体的配置步骤是：</p>
-
-<!-- more -->
-
-
-<p>make menuconfig, under &ldquo;Kernel Hacking&rdquo;, enable &ldquo;KGDB&rdquo; &amp; &ldquo;KGDB over serial line&rdquo;. Enable &ldquo;compile kernel with debug info&rdquo;(CONFIG_DEBUG_INFO) &amp; &ldquo;enable frame pointer&rdquo;(CONFIG_FRAME_POINTER) options(both are under &ldquo;Kernel Hacking&rdquo;).</p>
-
-<p>有关CONFIG_FRAME_POINTER这个option，需要在enable了ARCH_CONFIG_FRAME_POINTERS这个option之后才会出现在Kernel hacking下面。</p>
-
-<p>这ARCH_CONFIG_FRAME_POINTERS在make menuconfig里面是找不到的。这个option是专门给其他人select用的。一般都是在ARCH config的时候会去select这个option</p>
-
-<p>比如x86下，一般会enable这个option。而ARM则不会（可能是考虑到生成的kernel文件尺寸和性能）。</p>
-
-<p>所以，在ARM下，可以编辑arch/arm/Kconfig，在CONFIG_ARM下面的一堆select的最后，添加上一句select CONFIG_ARCH_FRAME_POINTERS就可以了。</p>
-
-<p>从实验结果来看，只要enable了CONFIG_DEBUG_INFO，基本上就差不多了，能看到代码了。</p>
-
-<hr />
-
-<p>Add kernel option: <code>kgdboc=ttyS0,38400 kgdbwait</code> into kernel command line.</p>
-
-<p>根据我的实验，这里115200不行。在后面gdb设置target remote /dev/ttyS0的时候，会被告知最高支持到38400.</p>
-
-<p>所以，这里如果115200不行，就改成38400。</p>
-
-<hr />
-
-<p>Start kernel, kernel will wait for connection from remote PC&rsquo;s gdb.</p>
-
-<p>On remote machine, &ldquo;<gdb path> ./vmlinux&rdquo; &mdash; this &ldquo;vmlinux&rdquo; mostly is under the root directory of kernel(a big kernel image with debug infos, not the one under arch/arm/boot, that is stripped version).</p>
-
-<p>需要注意的是，这里的GDB必须使用host是x86-64，target是ARM的那种GDB。我们PC上的gdb一般host和target都是x86-64。</p>
-
-<p>这样的GDB可以在一些常见的toolchain网站找到，比如linaro。</p>
-
-<hr />
-
-<p>Enter gdb commands:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">set </span>remotebaud 38400
-</span><span class='line'>target remote /dev/ttyS0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<hr />
-
-<p>Done. You can list source codes, set breakpoints now. Continue the debugging after finished.</p>
-
-<p>CAUTION: Close any other programs(normally it&rsquo;s minicom which we use to monitor serial outputs) which may occupy &ldquo;/dev/ttyS0&rdquo; before running gdb on remote machine. Otherwise gdb can&rsquo;t connect with target board.</p>
 ]]></content>
   </entry>
   

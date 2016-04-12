@@ -5,33 +5,16 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Git都在说些啥（二） - Make Things Cool</title>
+  <title>NSTask Tips (swift) - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="这一次我们来说说 git pull 的时候经常会碰到的一段信息。 1
+  <meta name="description" content="NSTask是常用的一个Foundation class，它相当于Linux中的popen，可以用来fork执行一个程序，然后将程序的输入输出重定向。然而我在使用这个class的时候，遇到了一些问题，记录在此。 如何取得程序的输出（比如stdout） 这个比较容易，比如： 1
 2
 3
 4
 5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-Marks-RMBP:~/Graphics/OpenGL-ProgrammingGuide$ git pull
-You &hellip;">
+6 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -40,7 +23,7 @@ You &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://markzhang.cn/blog/2014/04/21/git-gossip-2/">
+  <link rel="canonical" href="http://markzhang.cn/blog/2016/04/12/swift-cocoa-nstask/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -99,7 +82,7 @@ You &hellip;">
   <header>
     
       
-        <h1 class="entry-title">Git都在说些啥（二）</h1>
+        <h1 class="entry-title">NSTask Tips (Swift)</h1>
       
     
     
@@ -116,19 +99,21 @@ You &hellip;">
   
 
 
-<time datetime="2014-04-21T21:33:00+08:00" pubdate data-updated="true">Apr 21<span>st</span>, 2014</time>
+<time datetime="2016-04-12T12:51:00+08:00" pubdate data-updated="true">Apr 12<span>th</span>, 2016</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>这一次我们来说说 <code>git pull</code> 的时候经常会碰到的一段信息。</p>
+<div class="entry-content"><p>NSTask是常用的一个Foundation class，它相当于Linux中的popen，可以用来fork执行一个程序，然后将程序的输入输出重定向。然而我在使用这个class的时候，遇到了一些问题，记录在此。</p>
 
 <!-- more -->
 
 
+<h2>如何取得程序的输出（比如stdout）</h2>
 
+<p>这个比较容易，比如：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -146,95 +131,75 @@ You &hellip;">
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Marks-RMBP:~/Graphics/OpenGL-ProgrammingGuide<span class="nv">$ </span>git pull
-</span><span class='line'>You asked me to pull without telling me which branch you
-</span><span class='line'>want to merge with, and <span class="s1">&#39;branch.tmp.merge&#39;</span> in
-</span><span class='line'>your configuration file does not tell me, either. Please
-</span><span class='line'>specify which branch you want to use on the <span class="nb">command </span>line and
-</span><span class='line'>try again <span class="o">(</span>e.g. <span class="s1">&#39;git pull &lt;repository&gt; &lt;refspec&gt;&#39;</span><span class="o">)</span>.
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">let</span> <span class="n">task</span> <span class="o">=</span> <span class="n">NSTask</span><span class="o">()</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="na">launchPath</span> <span class="o">=</span> <span class="n">xxx</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="na">arguments</span> <span class="o">=</span> <span class="n">xxx</span>
 </span><span class='line'>
-</span><span class='line'>See git-pull<span class="o">(</span>1<span class="o">)</span> <span class="k">for </span>details.
+</span><span class='line'><span class="n">let</span> <span class="n">outPipe</span> <span class="o">=</span> <span class="n">NSPipe</span><span class="o">()</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="na">standardOutput</span> <span class="o">=</span> <span class="n">outPipe</span>
+</span><span class='line'><span class="n">let</span> <span class="n">errPipe</span> <span class="o">=</span> <span class="n">NSPipe</span><span class="o">()</span>
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="na">standardError</span> <span class="o">=</span> <span class="n">errPipe</span>
 </span><span class='line'>
-</span><span class='line'>If you often merge with the same branch, you may want to
-</span><span class='line'>use something like the following in your configuration file:
+</span><span class='line'><span class="n">outPipe</span><span class="o">.</span><span class="na">fileHandleForReading</span><span class="o">.</span><span class="na">readabilityHandler</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">(</span><span class="nl">handle:</span> <span class="n">NSFileHandle</span><span class="o">)</span> <span class="n">in</span>
+</span><span class='line'>    <span class="n">let</span> <span class="n">data</span> <span class="o">=</span> <span class="n">handle</span><span class="o">.</span><span class="na">readDataOfLength</span><span class="o">(</span><span class="n">TASK_READ_WINDOW</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="n">your</span> <span class="n">String</span><span class="o">&gt;.</span><span class="na">appendContentsOf</span><span class="o">(</span><span class="n">String</span><span class="o">(</span><span class="nl">data:</span> <span class="n">data</span><span class="o">,</span> <span class="nl">encoding:</span> <span class="n">NSUTF8StringEncoding</span><span class="o">)!)</span>
+</span><span class='line'><span class="o">}</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="o">[</span>branch <span class="s2">&quot;tmp&quot;</span><span class="o">]</span>
-</span><span class='line'>    <span class="nv">remote</span> <span class="o">=</span> &lt;nickname&gt;
-</span><span class='line'>    <span class="nv">merge</span> <span class="o">=</span> &lt;remote-ref&gt;
-</span><span class='line'>
-</span><span class='line'>    <span class="o">[</span>remote <span class="s2">&quot;&lt;nickname&gt;&quot;</span><span class="o">]</span>
-</span><span class='line'>    <span class="nv">url</span> <span class="o">=</span> &lt;url&gt;
-</span><span class='line'>    <span class="nv">fetch</span> <span class="o">=</span> &lt;refspec&gt;
-</span><span class='line'>
-</span><span class='line'>See git-config<span class="o">(</span>1<span class="o">)</span> <span class="k">for </span>details.
+</span><span class='line'><span class="n">task</span><span class="o">.</span><span class="na">launch</span><span class="o">()</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>首先来看一下怎么操作，git就会唠叨上面一段话（假设我们现在在一个git repository的根目录，目前位于master branch）：</p>
+<p>当然你也可以用NSPipe.fileHandleForReading的readToEndOfFile来一次性读出来（等待task执行完毕之后）。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>git branch tmp
-</span><span class='line'>git checkout tmp
-</span><span class='line'>git pull
-</span></code></pre></td></tr></table></div></figure>
+<h2>如何知道程序执行结束</h2>
 
-
-<p>上面的三个命令很简单，首先就是基于当前的branch，创建一个新的branch叫 <code>tmp</code>，然后checkout到这个branch，最后执行 <code>git pull</code>。那为什么最后执行 <code>git pull</code> 的时候就会出现上面那一大段信息呢？</p>
-
-<p>其实很简单。我们都知道，<code>git pull</code> 是做两件事情：首先做 <code>git fetch</code>，也就是将远端仓库中的所有改动都取回来；然后就是做 <code>git merge</code>，也就是将远端仓库的某个branch和我们当前本地所在的branch做一次merge。</p>
-
-<p>所以，当 <code>git pull</code> 做第二件事情，也就是 <code>git merge</code> 的时候，它需要知道将本地的当前所在的这个branch和远端的哪个branch进行merge。当git不知道需要和远端的哪个branch进行merge时，就会出现上述的错误信息了。</p>
-
-<p>解决办法有两个：</p>
+<p>根据NSTask的manual，有两种方法：</p>
 
 <ul>
-<li><p>写全 <code>git pull</code> 命令，比如 <code>git pull origin master</code>。这样git就知道跟 <code>origin</code> 这个remote git仓库的master branch进行merge。</p></li>
-<li><p>使用 <code>git checkout -b &lt;branch name&gt; &lt;remote refs&gt;</code> 来创建branch，比如 <code>git checkout -b tmp origin/master</code>。这里我们在checkout的时候，明确指定了checkout名为origin的remote git仓库中的master branch，所以将来我们在这个tmp branch上进行 <code>git pull</code> 的时候，git自然就知道去和哪个远端的branch merge了。</p></li>
+<li><p>设置NSTask的terminationHandler</p></li>
+<li><p>使用NSNotificationCenter，注册监听消息：NSTaskDidTerminateNotification</p></li>
 </ul>
 
 
-<p><strong> NOTE：</strong> 事实上，<code>git branch</code> / <code>git checkout</code>，也可以使用 <code>-t</code> 这个参数来明确指定新的本地branch需要”track“哪个branch。</p>
+<p>这两种方法都可以，但是有一些区别：</p>
 
-<p>最后提一下，一开头git的那段出错信息中提到的一些所谓的配置项：</p>
+<ul>
+<li><p>terminationHandler是在NSTask的线程中被调用的，所以如果我们要在程序执行结束后去update UI，那么在这里做是不行的，运行的时候xcode会告诉你，UI被另外一个background thread修改，会出一个assertion。</p></li>
+<li><p>NSTaskDidTerminateNotification就没有上述的问题，因为我们注册的NSTaskDidTerminateNotification的observer就是在程序的主线程（main）被调用的。</p></li>
+</ul>
+
+
+<p>我们可以通过在terminationHandler和NSTaskDidTerminateNotification observer函数中加入这样的代码来看出区别：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>If you often merge with the same branch, you may want to
-</span><span class='line'>use something like the following in your configuration file:
-</span><span class='line'>
-</span><span class='line'>    <span class="o">[</span>branch <span class="s2">&quot;tmp&quot;</span><span class="o">]</span>
-</span><span class='line'>    <span class="nv">remote</span> <span class="o">=</span> &lt;nickname&gt;
-</span><span class='line'>    <span class="nv">merge</span> <span class="o">=</span> &lt;remote-ref&gt;
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">NSLog</span><span class="o">(</span><span class="s">&quot;Current thread is: %@&quot;</span><span class="o">,</span> <span class="n">NSThread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">())</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p></p>
+<p>通过打印当前thread的信息，就可以看出terminationHandler是在一条非main的线程中被call的，而notification则不是。</p>
 
-<p>其实，这段信息的意思就是，git无法在你的git仓库的根目录下的 <code>.git/config</code> 中找到tmp这个branch的merge信息，也没有在你的全局git配置：<code>$HOME/.gitconfig</code> 中找到。</p>
+<p>由此可以猜测，NSTask应该是首先create一条thread，然后在这条thread中去执行fork，最后调用类似waitpid这样的函数等待被执行的程序执行完毕，并且同时调用我们注册的terminationHandler。</p>
 
-<p>而对于一个没有上述问题的branch，比如在本文所举的例子中，master branch，在 <code>.git/config</code> 中就有这样的设置：</p>
+<p>此外还有一点：如果我们有设置terminationHandler，那么NSTaskDidTerminateNotification就不会被发送了。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>branch <span class="s2">&quot;master&quot;</span><span class="o">]</span>
-</span><span class='line'>  <span class="nv">remote</span> <span class="o">=</span> origin
-</span><span class='line'>  <span class="nv">merge</span> <span class="o">=</span> refs/heads/master
-</span></code></pre></td></tr></table></div></figure>
+<h2>如何得知程序的return value</h2>
 
+<p>按照NSTask的manual，可以通过读取：terminationStatus来得知。但是我做下来发现这个property读取出来的值不一定正确。</p>
 
-<p>所以可以看到，其实git的逻辑很简单，只是我们需要确切的知道它究竟在干些啥，这样也就能理解它的抱怨了。</p>
+<p>也就是说，terminationStatus和我们手动执行：<code>run xxx program; echo $?</code> 这样出来的结果是不同的。</p>
+
+<p>目前还不知道这个问题的原因和解决方法。</p>
+
+<h2>有关Swift的selector</h2>
+
+<p>在注册notification的时候，需要填写一个名为selector的param，也就是我们的notification observer的function。</p>
+
+<p>在swift 2.1中，这里可以直接写function的名字（作为一个字符串），但是一定要注意和objective-C一样，function name是要带参数的，比如：<code>myNotificationObserverFunction:</code>，最后的冒号就表示这个function有一个参数。</p>
+
+<p>漏写这个冒号就会导致runtime 程序无法找到这个function：unknown selector&hellip;.</p>
+
+<p>在Swift 2.2中，有一个新的语法可以显式的生成一个selector：<code>#selector(function name)</code>，不过貌似目前最新的Xcode还只支持到swift 2.1，所以目前还只能用上面的方法。</p>
 </div>
 
 
@@ -242,7 +207,7 @@ You &hellip;">
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2016 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2014/04/21/git-gossip-2/<br>
+原文链接: http://www.markzhang.cn/blog/2016/04/12/swift-cocoa-nstask/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -265,12 +230,12 @@ You &hellip;">
   
 
 
-<time datetime="2014-04-21T21:33:00+08:00" pubdate data-updated="true">Apr 21<span>st</span>, 2014</time>
+<time datetime="2016-04-12T12:51:00+08:00" pubdate data-updated="true">Apr 12<span>th</span>, 2016</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/git/'>git</a>
+    <a class='category' href='/blog/categories/macosx/'>MacOSX</a>
   
 </span>
 
@@ -286,10 +251,8 @@ You &hellip;">
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2014/04/15/prime-lc-42t18-fix/" title="Previous Post: 厦华LC-42T18电视机维修">&laquo; 厦华LC-42T18电视机维修</a>
+        <a class="basic-alignment left articlenav" href="/blog/2016/02/15/top-calculation-linux-hz/" title="Previous Post: Top中是如何取到Linux内核中的Hertz的？CPU使用率到底是怎么算出来的？">&laquo; Top中是如何取到Linux内核中的Hertz的？CPU使用率到底是怎么算出来的？</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2014/04/22/git-gossip-3/" title="Next Post: Git都在说些啥（三）">Git都在说些啥（三） &raquo;</a>
       
     </p>
   </footer>
