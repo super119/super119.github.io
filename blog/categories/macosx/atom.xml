@@ -4,7 +4,7 @@
   <title><![CDATA[Category: MacOSX | Make Things Cool]]></title>
   <link href="http://markzhang.cn/blog/categories/macosx/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2016-04-12T14:02:36+08:00</updated>
+  <updated>2016-04-12T14:07:08+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -40,7 +40,7 @@ task.standardError = errPipe</p>
 <p>outPipe.fileHandleForReading.readabilityHandler = {</p>
 
 <pre><code>(handle: NSFileHandle) in
-let data = handle.readDataOfLength(TASK_READ_WINDOW)
+let data = handle.readDataOfLength(128)
 &lt;your String&gt;.appendContentsOf(String(data: data, encoding: NSUTF8StringEncoding)!)
 </code></pre>
 
@@ -78,6 +78,8 @@ NSLog("Current thread is: %@", NSThread.currentThread())
 <p>通过打印当前thread的信息，就可以看出terminationHandler是在一条非main的线程中被call的，而notification则不是。</p>
 
 <p>由此可以猜测，NSTask应该是首先create一条thread，然后在这条thread中去执行fork，最后调用类似waitpid这样的函数等待被执行的程序执行完毕，并且同时调用我们注册的terminationHandler。</p>
+
+<p>需要注意的是，注册的notification observer一定要及时的remove（可以在observer function里面去remove），否则一旦你多注册一次，你的observer function就会被多call一次。很显然，notification center是用一张list来记录所有的observer的，当有notification发生时，这个list上所有的observer function都会被call一遍。</p>
 
 <p>此外还有一点：如果我们有设置terminationHandler，那么NSTaskDidTerminateNotification就不会被发送了。</p>
 
