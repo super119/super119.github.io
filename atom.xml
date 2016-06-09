@@ -4,7 +4,7 @@
   <title><![CDATA[Make Things Cool]]></title>
   <link href="http://markzhang.cn/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2016-06-09T19:56:36+08:00</updated>
+  <updated>2016-06-09T20:00:10+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -58,7 +58,7 @@
 </span><span class='line'>update-grub
 </span><span class='line'>grub-install /dev/sdb  <span class="c"># 按照自己机器的配置，看把grub安装到哪个硬盘上</span>
 </span><span class='line'>update-grub
-</span><span class='line'>sudo grub-mkconfig -o /boot/grub/grub.cfg
+</span><span class='line'>grub-mkconfig -o /boot/grub/grub.cfg
 </span><span class='line'><span class="nb">exit</span>
 </span><span class='line'>sudo reboot
 </span></code></pre></td></tr></table></div></figure>
@@ -67,6 +67,8 @@
 <p>这样重启就OK了，注意这样做了之后默认是不会出现grub界面的，第一次要在BIOS启动完毕之后，按住 <code>左shift</code> ，然后就能看到grub界面了，做过一次之后以后每次启动都会自动出现grub界面，等待读秒。</p>
 
 <p>还有就是上面有一句：<code>grub-mkconfig</code>，这是一定要做的，否则你在grub的界面中会看不到windows的启动项。<code>grub-mkconfig</code> 会自动分析机器中所有的分区然后给出一个完整的启动列表，非常的好用。</p>
+
+<p>如果担心 <code>grub-mkconfig</code> 会覆盖之前的 <code>/boot/grub/grub.cfg</code>，可以将之前的 <code>grub.cfg</code> 先备份然后再操作。</p>
 ]]></content>
   </entry>
   
