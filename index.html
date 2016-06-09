@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="NSTask是常用的一个Foundation class，它相当于Linux中的popen，可以用来fork执行一个程序，然后将程序的输入输出重定向。然而我在使用这个class的时候，遇到了一些问题，记录在此。 ">
+  <meta name="description" content="重装系统这个事情发现每两年就要搞一次，windows经常莫名其妙的就起不来了。。。 而对于安装了双系统的机器来说，重装了windows之后如何恢复grub重新实现双启动就是一个问题。网上的方法很多，但是一直没有总结一套能完全解决问题的步骤。所以这次在重装完windows之后将步骤记录如下。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2016/06/09/restore-grub-tutorial/">安装Ubuntu/Windows双系统后恢复grub</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-06-09T19:38:00+08:00" pubdate data-updated="true">Jun 9<span>th</span>, 2016</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>重装系统这个事情发现每两年就要搞一次，windows经常莫名其妙的就起不来了。。。</p>
+
+<p>而对于安装了双系统的机器来说，重装了windows之后如何恢复grub重新实现双启动就是一个问题。网上的方法很多，但是一直没有总结一套能完全解决问题的步骤。所以这次在重装完windows之后将步骤记录如下。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2016/06/09/restore-grub-tutorial/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -502,52 +547,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2016/01/07/recv-q-send-q/">Netstat -na输出中Recv-Q和Send-Q两项的值不为零需要注意程序是否有问题</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2016-01-07T10:59:00+08:00" pubdate data-updated="true">Jan 7<span>th</span>, 2016</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Recv-Q：表示收到的数据中还有多少没有被进程取走（通过recv）</p>
-
-<p>Send-Q：表示需要发送的数据还有多少没有被发出</p>
-
-<p>所以，一般来说这两个值都是0，如果不为0且持续增长，那就表明程序出现了问题。</p>
-
-<p>比如Recv-Q的数字持续增长，表示没有进程去取这些收到的数据。比如使用select+recv来收数据的时候，由于select有1024这个限制，所以如果socket的FD大于1024的时候，就会导致这个socket FD上的数据不会被select检测到从而导致recv不会被调用。</p>
-
-<p>所以，通过netstat的这两个值就可以简单判断程序收不到包到底是包没到还是包没有被进程recv。</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -560,11 +559,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/hpc'>HPC (4)</a></li><li><a href='/blog/categories/linux'>linux (20)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (24)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/hpc'>HPC (4)</a></li><li><a href='/blog/categories/linux'>linux (21)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (24)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/06/09/restore-grub-tutorial/">安装Ubuntu/Windows双系统后恢复grub</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/04/12/swift-cocoa-nstask/">NSTask Tips (Swift)</a>
@@ -580,10 +583,6 @@
     
       <li class="post">
         <a href="/blog/2016/01/20/mpirun-p4pg/">Mpirun的p4pg参数的用法示例</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/20/fortran-90-code-tips/">Fortran90 代码书写注意点</a>
       </li>
     
   </ul>
