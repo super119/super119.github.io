@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Android | Make Things Cool]]></title>
   <link href="http://markzhang.cn/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://markzhang.cn/"/>
-  <updated>2016-06-09T20:00:10+08:00</updated>
+  <updated>2016-09-16T11:40:29+08:00</updated>
   <id>http://markzhang.cn/</id>
   <author>
     <name><![CDATA[Mark Zhang]]></name>
@@ -12,6 +12,59 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[小米盒子1s（MDZ-06-AA） ROOT，更换桌面（Launcher）]]></title>
+    <link href="http://markzhang.cn/blog/2016/09/16/xiaomi-box-1s-root-change-launcher/"/>
+    <updated>2016-09-16T11:07:00+08:00</updated>
+    <id>http://markzhang.cn/blog/2016/09/16/xiaomi-box-1s-root-change-launcher</id>
+    <content type="html"><![CDATA[<p>两年前买的小米盒子1s，买的时候是卖家代刷的系统（沙发桌面），给父母用到现在出现了问题。问题就是小米盒子会自动升级系统，而系统升级了之后，原来卖家代刷的沙发桌面貌似就失效了，开机进入了小米盒子原来的桌面导致父母看不懂了。。。</p>
+
+<!-- more -->
+
+
+<p>其实我没有去研究为什么小米盒子系统可以升级，因为理论上来说，原来卖家要能把沙发桌面替换掉原来的小米桌面，是需要首先root系统的，而root过的系统还能自动OTA成功我也感觉有点奇怪。</p>
+
+<p>总之现在的问题就是小米盒子的系统已经被升级成了 <code>1.3.98</code>，而我需要做的是重新root这个系统，然后安装第三方的桌面进去替换掉小米的电视桌面。</p>
+
+<p>Google了一番之后，步骤如下：</p>
+
+<h2>系统降级</h2>
+
+<p>据说 <code>1.3.98</code> 是无法root的（或者说没有简单办法可以root），于是按照网上的建议，先降级到 <code>1.3.88</code>，找来了 <code>1.3.88</code> 的原生rom之后，拷贝进一个FAT32的U盘的根目录。这个一共是两个文件，一个是名为 <code>xiaomi-update</code> 的文本文件，里面就是一句命令，另外就是一个zip包了。关机拔电，用一根MicroUSB OTG线，一头插盒子，一头插上U盘，盒子上电，然后迅速按住遥控器上的 <code>Home + Menu</code> 两个键，进入小米盒子原生的recovery，就会看到一个米兔搞基小机器人的画面，等待完成，<code>1.3.88</code> 降级成功。</p>
+
+<h2>ROOT</h2>
+
+<p>在PC上使用诸如360root，root精灵这样的一键root软件root盒子。我的PC是win10，虽然网上一面倒的推荐使用360root，但是我的360root就是不工作，一直显示 <code>正在连接设备</code>，所以最后我使用了root精灵搞定。这里面有几点需要注意：</p>
+
+<ul>
+<li><p>在小米盒子设置中，将 <code>允许安装未知来源应用</code> 和 <code>ADB调试</code> 两个选项打开</p></li>
+<li><p>当root精灵开始运行时，小米盒子会弹出两种提示需要我们手动允许。第一个当然就是允许ADB调试，这是Android自带的一个对话框，需要手动选择确定。第二就是root精灵会通过adb安装一些apk，此时盒子也会跳出一个对话框让我们确认。</p></li>
+<li><p>我的经验是，如果你没有及时的去确认上述的两种对话框，可能会导致root失败。。。我的第一次尝试就是最后root精灵停在71%的进度，然后盒子一直重启，最终root fail。遇到这种情况不用奇怪，从头再来一遍即可，记得时刻关注盒子上的反应。</p></li>
+</ul>
+
+
+<h2>替换小米电视桌面</h2>
+
+<p>原生的小米电视桌面太复杂，父母看不懂。父母需要的是一个有天气和几个按钮的东西，告诉他们按这个按钮就可以开始看电视剧了。</p>
+
+<p>那要替换掉原生的桌面，首先自然是先安装一个第三方的。步骤是：</p>
+
+<ul>
+<li><p>在PC上下载当贝市场APK（之前用的是沙发市场，这次换换），用 <code>adb install xxx.apk</code> 安装到盒子中</p></li>
+<li><p>在盒子上启动当贝市场，安装当贝桌面</p></li>
+<li><p>这个时候你在遥控器上按 <code>Home</code> 键，就会弹出来一个对话框了，询问你要启动哪个桌面（Launcher），但是即使你选择了当贝桌面，而且勾选了 <code>不再提醒</code>，盒子重新启动之后出现的仍然是小米原生桌面。当贝桌面本身的设置中也有有关默认桌面的选项，但是我试验下来也不管用</p></li>
+<li><p>到这里就要想一个暴力的办法了。首先由于我们已经root了盒子，所以就会出现一个名为 <code>授权管理</code> 的APP（现在大部分的root软件都是使用这个APP使用的漏洞），在这个app中，有一个功能是卸载预装软件，但是进入之后发现小米电视桌面是无法卸载的&hellip; P.S：这个APP不支持遥控器选择，所以要使用它，我们可以使用一个鼠标（利用MicroUSB OTG线）</p></li>
+<li><p>看来还是得回到使用一些“暴力”软件了 &mdash; 我下载了360手机助手，连接上盒子，在系统预装软件中，我将 <code>系统升级</code> 和 <code>小米电视桌面</code> 这两个APP禁用了。我尝试删除这两个APP，但是结果是失败，只能禁用。禁用了这两个APP之后，现在盒子开机就会自动进入当贝桌面了</p></li>
+<li><p>最后在盒子上再次启动 <code>授权管理</code>，将一些我们不需要的APP删除，比如使用360软件助手的时候在盒子中安装的360助手APP等</p></li>
+</ul>
+
+
+<h2>最后</h2>
+
+<p>我没有去研究360软件助手禁用一个APP的原理和做法，如果有知道的朋友麻烦告知一声</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Android system.img: yaffs or ext4?]]></title>

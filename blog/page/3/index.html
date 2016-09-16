@@ -9,7 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="只是一个小Tip，代码如下： ">
+  <meta name="description" content="对于现代Linux来说，FD的使用变的越来越广泛。FD不光用于一个文件或设备的打开句柄，现在FD还往往会用于一些其他数据类型的句柄，比如一块buffer。 对于一些要避免拷贝的buffer来说（比如一块用于display的buffer，或者一块用于render的buffer）， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -73,6 +73,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2015/12/25/share-fd-by-sendmsg/">Linux通过sendmsg在进程中共享FD</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-12-25T10:57:00+08:00" pubdate data-updated="true">Dec 25<span>th</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>对于现代Linux来说，FD的使用变的越来越广泛。FD不光用于一个文件或设备的打开句柄，现在FD还往往会用于一些其他数据类型的句柄，比如一块buffer。</p>
+
+<p>对于一些要避免拷贝的buffer来说（比如一块用于display的buffer，或者一块用于render的buffer），使用FD来表示这块buffer并在不同进程中传递就被使用的越来越广泛。而且进程退出（不管是正常退出还是被杀）的时候，FD还能被kernel回收，再加上 <code>reference count</code>，这块buffer就不会有泄漏的问题。看看Android和Linux kernel的代码就会发现，现在使用FD的这种例子是越来越多了。</p>
+
+<p>在userspace，进程共享FD可以通过 <code>sendmsg</code> 来实现：</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/12/25/share-fd-by-sendmsg/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -472,49 +519,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2015/12/21/kernel-ifdef-macros/">Kernel Submitting Patches，有关ifdef和static Inline & Macro</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2015-12-21T14:19:00+08:00" pubdate data-updated="true">Dec 21<span>st</span>, 2015</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>From kernel: Documentation/SubmittingPatches</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/12/21/kernel-ifdef-macros/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -529,11 +533,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/hpc'>HPC (4)</a></li><li><a href='/blog/categories/linux'>linux (21)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (24)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (5)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/hpc'>HPC (4)</a></li><li><a href='/blog/categories/linux'>linux (21)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (24)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/09/16/xiaomi-box-1s-root-change-launcher/">小米盒子1s（MDZ-06-AA） ROOT，更换桌面（Launcher）</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/06/09/restore-grub-tutorial/">安装Ubuntu/Windows双系统后恢复grub</a>
@@ -549,10 +557,6 @@
     
       <li class="post">
         <a href="/blog/2016/01/20/fortran77-call-c/">Fortran77如何调用C代码</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/20/mpirun-p4pg/">Mpirun的p4pg参数的用法示例</a>
       </li>
     
   </ul>

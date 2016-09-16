@@ -9,8 +9,7 @@
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="远程启动 远程启动其实就是 WOL(Wake on Lan)，现在的PC机基本上都支持。需要两个东西： 在BIOS里面打开 WOL
-使用一个程序，发送WOL的一个包（所谓magic packet）给PC机 先说第一个，在我的PC机上，这个设置是 Advanced Options &ndash;> &hellip;">
+  <meta name="description" content="32/64有很多问题，指针转换是其中一个，比如这个例子： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +73,49 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/12/16/convert-32bit-pointer-to-64bit/">32/64的问题：32bit指针转换成64bit - Sign Extension</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-16T15:09:00+08:00" pubdate data-updated="true">Dec 16<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>32/64有很多问题，指针转换是其中一个，比如这个例子：</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/12/16/convert-32bit-pointer-to-64bit/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -498,49 +540,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/07/17/mac-share-vpn-connection/">Mac OS X（Mavericks）共享VPN给其他设备</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-07-17T11:22:00+08:00" pubdate data-updated="true">Jul 17<span>th</span>, 2014</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>之前写过一篇文章叫“Chnroutes的使用“，主要说的是如何通过使用 <code>chnroutes</code> 从而将国内和国外的路由分开，国内走正常路由，国外则走VPN。现在的问题是，如果在一台电脑上有了VPN之后，如何将这个VPN share给其他设备，比如PS3？</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/07/17/mac-share-vpn-connection/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -555,11 +554,15 @@
   
     <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>Android (4)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/hpc'>HPC (4)</a></li><li><a href='/blog/categories/linux'>linux (21)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (24)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>Android (5)</a></li><li><a href='/blog/categories/blog'>Blog (4)</a></li><li><a href='/blog/categories/games'>Games (1)</a></li><li><a href='/blog/categories/git'>git (7)</a></li><li><a href='/blog/categories/hardware'>hardware (2)</a></li><li><a href='/blog/categories/history-science'>History-Science (1)</a></li><li><a href='/blog/categories/hpc'>HPC (4)</a></li><li><a href='/blog/categories/linux'>linux (21)</a></li><li><a href='/blog/categories/linux-kernel'>linux-kernel (24)</a></li><li><a href='/blog/categories/macosx'>MacOSX (6)</a></li><li><a href='/blog/categories/network'>network (13)</a></li><li><a href='/blog/categories/opengl'>OpenGL (2)</a></li><li><a href='/blog/categories/rchelicopter'>RCHelicopter (5)</a></li></ul>
 </section>
 <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2016/09/16/xiaomi-box-1s-root-change-launcher/">小米盒子1s（MDZ-06-AA） ROOT，更换桌面（Launcher）</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2016/06/09/restore-grub-tutorial/">安装Ubuntu/Windows双系统后恢复grub</a>
@@ -575,10 +578,6 @@
     
       <li class="post">
         <a href="/blog/2016/01/20/fortran77-call-c/">Fortran77如何调用C代码</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2016/01/20/mpirun-p4pg/">Mpirun的p4pg参数的用法示例</a>
       </li>
     
   </ul>

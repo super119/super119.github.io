@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Chnroutes的使用（Mac OS X Mavericks） - Make Things Cool</title>
+  <title>小米盒子1s（MDZ-06-AA） ROOT，更换桌面（Launcher） - Make Things Cool</title>
   <meta name="author" content="Mark Zhang">
 
   
-  <meta name="description" content="翻墙是我朝人民的普遍需求。现在翻墙的普遍做法是搞一个VPN。买一个也好，找免费的也好。有了VPN之后面临的问题就是当VPN连接之后，所有的网络数据都会走VPN，这显然不是最高效的做法，对于一些没有被墙的网站或是应用，没有必要再走VPN，这样反而更慢。为此，chnroutes应蕴而生了。 &hellip;">
+  <meta name="description" content="两年前买的小米盒子1s，买的时候是卖家代刷的系统（沙发桌面），给父母用到现在出现了问题。问题就是小米盒子会自动升级系统，而系统升级了之后，原来卖家代刷的沙发桌面貌似就失效了，开机进入了小米盒子原来的桌面导致父母看不懂了。。。 其实我没有去研究为什么小米盒子系统可以升级，因为理论上来说， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://markzhang.cn/blog/2013/12/04/chnroutes-on-mac/">
+  <link rel="canonical" href="http://markzhang.cn/blog/2016/09/16/xiaomi-box-1s-root-change-launcher/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +77,7 @@
   <header>
     
       
-        <h1 class="entry-title">Chnroutes的使用（Mac OS X Mavericks）</h1>
+        <h1 class="entry-title">小米盒子1s（MDZ-06-AA） ROOT，更换桌面（Launcher）</h1>
       
     
     
@@ -94,29 +94,58 @@
   
 
 
-<time datetime="2013-12-04T14:00:00+08:00" pubdate data-updated="true">Dec 4<span>th</span>, 2013</time>
+<time datetime="2016-09-16T11:07:00+08:00" pubdate data-updated="true">Sep 16<span>th</span>, 2016</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>翻墙是我朝人民的普遍需求。现在翻墙的普遍做法是搞一个VPN。买一个也好，找免费的也好。有了VPN之后面临的问题就是当VPN连接之后，所有的网络数据都会走VPN，这显然不是最高效的做法，对于一些没有被墙的网站或是应用，没有必要再走VPN，这样反而更慢。为此，<code>chnroutes</code>应蕴而生了。</p>
+<div class="entry-content"><p>两年前买的小米盒子1s，买的时候是卖家代刷的系统（沙发桌面），给父母用到现在出现了问题。问题就是小米盒子会自动升级系统，而系统升级了之后，原来卖家代刷的沙发桌面貌似就失效了，开机进入了小米盒子原来的桌面导致父母看不懂了。。。</p>
 
 <!-- more -->
 
 
-<p><code>chnroutes</code>就是一份路由表配置，它收集了绝大部分国内没有被墙的网站/IP，然后将他们加到路由表中，设定访问这些IP地址使用原来的网关（非VPN）。这样，在路由表中的IP地址就会走原来的网关，剩下来的就都走VPN了。</p>
+<p>其实我没有去研究为什么小米盒子系统可以升级，因为理论上来说，原来卖家要能把沙发桌面替换掉原来的小米桌面，是需要首先root系统的，而root过的系统还能自动OTA成功我也感觉有点奇怪。</p>
 
-<p>在<code>https://code.google.com/p/chnroutes/</code>上下载<code>chnroutes.py</code>，在Mac OS X上运行<code>./chnroutes.py -p mac</code>就得到两个文件：<code>ip-up</code> 和 <code>ip-down</code>。</p>
+<p>总之现在的问题就是小米盒子的系统已经被升级成了 <code>1.3.98</code>，而我需要做的是重新root这个系统，然后安装第三方的桌面进去替换掉小米的电视桌面。</p>
 
-<p>打开文件一看就明白，没比这更简单的脚本了。<code>ip-up</code>就是使用netstat等命令取到非VPN的网关的IP地址，然后就调用<code>route</code>命令设置一大堆的路由信息。</p>
+<p>Google了一番之后，步骤如下：</p>
 
-<p>这里要注意的是，在我的Macbook上（Mac OS X Mavericks），<code>ip-up</code>取到的所谓<code>OLDGW</code>是不对的。<code>ip-up</code>试图去取非VPN的那个网关IP地址，但其实取到的是我所有的网关，也就是包含了VPN的和本地的两个网关IP地址。所以我注释掉了<code>ip-up</code>中获取<code>OLDGW</code>的一行，直接将<code>OLDGW</code>设置成了我本地的网关IP地址。</p>
+<h2>系统降级</h2>
 
-<p>这样，连接上VPN，然后运行<code>ip-up</code>就可以舒服的上网了。运行<code>ip-down</code>就可以删除掉<code>ip-up</code>添加的路由信息。</p>
+<p>据说 <code>1.3.98</code> 是无法root的（或者说没有简单办法可以root），于是按照网上的建议，先降级到 <code>1.3.88</code>，找来了 <code>1.3.88</code> 的原生rom之后，拷贝进一个FAT32的U盘的根目录。这个一共是两个文件，一个是名为 <code>xiaomi-update</code> 的文本文件，里面就是一句命令，另外就是一个zip包了。关机拔电，用一根MicroUSB OTG线，一头插盒子，一头插上U盘，盒子上电，然后迅速按住遥控器上的 <code>Home + Menu</code> 两个键，进入小米盒子原生的recovery，就会看到一个米兔搞基小机器人的画面，等待完成，<code>1.3.88</code> 降级成功。</p>
 
-<p>为了验证<code>ip-up</code>的确做了我们所想的事情，可以用命令<code>traceroute</code>来验证，比如：<code>traceroute www.youku.com</code>，就可以看到数据是从本地网关走的，而如果是：<code>traceroute www.youtube.com</code>，就可以看到数据是从VPN走的。</p>
+<h2>ROOT</h2>
+
+<p>在PC上使用诸如360root，root精灵这样的一键root软件root盒子。我的PC是win10，虽然网上一面倒的推荐使用360root，但是我的360root就是不工作，一直显示 <code>正在连接设备</code>，所以最后我使用了root精灵搞定。这里面有几点需要注意：</p>
+
+<ul>
+<li><p>在小米盒子设置中，将 <code>允许安装未知来源应用</code> 和 <code>ADB调试</code> 两个选项打开</p></li>
+<li><p>当root精灵开始运行时，小米盒子会弹出两种提示需要我们手动允许。第一个当然就是允许ADB调试，这是Android自带的一个对话框，需要手动选择确定。第二就是root精灵会通过adb安装一些apk，此时盒子也会跳出一个对话框让我们确认。</p></li>
+<li><p>我的经验是，如果你没有及时的去确认上述的两种对话框，可能会导致root失败。。。我的第一次尝试就是最后root精灵停在71%的进度，然后盒子一直重启，最终root fail。遇到这种情况不用奇怪，从头再来一遍即可，记得时刻关注盒子上的反应。</p></li>
+</ul>
+
+
+<h2>替换小米电视桌面</h2>
+
+<p>原生的小米电视桌面太复杂，父母看不懂。父母需要的是一个有天气和几个按钮的东西，告诉他们按这个按钮就可以开始看电视剧了。</p>
+
+<p>那要替换掉原生的桌面，首先自然是先安装一个第三方的。步骤是：</p>
+
+<ul>
+<li><p>在PC上下载当贝市场APK（之前用的是沙发市场，这次换换），用 <code>adb install xxx.apk</code> 安装到盒子中</p></li>
+<li><p>在盒子上启动当贝市场，安装当贝桌面</p></li>
+<li><p>这个时候你在遥控器上按 <code>Home</code> 键，就会弹出来一个对话框了，询问你要启动哪个桌面（Launcher），但是即使你选择了当贝桌面，而且勾选了 <code>不再提醒</code>，盒子重新启动之后出现的仍然是小米原生桌面。当贝桌面本身的设置中也有有关默认桌面的选项，但是我试验下来也不管用</p></li>
+<li><p>到这里就要想一个暴力的办法了。首先由于我们已经root了盒子，所以就会出现一个名为 <code>授权管理</code> 的APP（现在大部分的root软件都是使用这个APP使用的漏洞），在这个app中，有一个功能是卸载预装软件，但是进入之后发现小米电视桌面是无法卸载的&hellip; P.S：这个APP不支持遥控器选择，所以要使用它，我们可以使用一个鼠标（利用MicroUSB OTG线）</p></li>
+<li><p>看来还是得回到使用一些“暴力”软件了 &mdash; 我下载了360手机助手，连接上盒子，在系统预装软件中，我将 <code>系统升级</code> 和 <code>小米电视桌面</code> 这两个APP禁用了。我尝试删除这两个APP，但是结果是失败，只能禁用。禁用了这两个APP之后，现在盒子开机就会自动进入当贝桌面了</p></li>
+<li><p>最后在盒子上再次启动 <code>授权管理</code>，将一些我们不需要的APP删除，比如使用360软件助手的时候在盒子中安装的360助手APP等</p></li>
+</ul>
+
+
+<h2>最后</h2>
+
+<p>我没有去研究360软件助手禁用一个APP的原理和做法，如果有知道的朋友麻烦告知一声</p>
 </div>
 
 
@@ -124,7 +153,7 @@
     
     <section style="margin-top:15px;background:none repeat scroll 0pt 0pt rgb(220,220,220);padding:0.4em 0.8em">
       <strong>版权所有 &copy;2016 转载本站文章请注明： </strong>转载自 http://markzhang.cn<br>
-原文链接: http://www.markzhang.cn/blog/2013/12/04/chnroutes-on-mac/<br>
+原文链接: http://www.markzhang.cn/blog/2016/09/16/xiaomi-box-1s-root-change-launcher/<br>
 您可以随意地转载本站的文章，但是必须在醒目位置注明来源及本站链接，不可以将本站文章商业化使用，或者修改、转换或者以本作品为基础进行创作。
     </section>
     
@@ -147,12 +176,12 @@
   
 
 
-<time datetime="2013-12-04T14:00:00+08:00" pubdate data-updated="true">Dec 4<span>th</span>, 2013</time>
+<time datetime="2016-09-16T11:07:00+08:00" pubdate data-updated="true">Sep 16<span>th</span>, 2016</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/network/'>network</a>
+    <a class='category' href='/blog/categories/android/'>Android</a>
   
 </span>
 
@@ -168,10 +197,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/11/27/dt-interrupts/" title="Previous Post: Device tree: interrupts的解释">&laquo; Device tree: interrupts的解释</a>
+        <a class="basic-alignment left articlenav" href="/blog/2016/06/09/restore-grub-tutorial/" title="Previous Post: 安装Ubuntu/Windows双系统后恢复grub">&laquo; 安装Ubuntu/Windows双系统后恢复grub</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/12/17/defeating-the-hackers/" title="Next Post: Defeating the Hackers">Defeating the Hackers &raquo;</a>
       
     </p>
   </footer>
